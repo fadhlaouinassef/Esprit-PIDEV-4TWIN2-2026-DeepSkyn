@@ -3,6 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react"
+import { motion } from "framer-motion"
+import { toast, Toaster } from "sonner"
 
 export default function SignIn() {
   const [email, setEmail] = useState("")
@@ -12,55 +14,143 @@ export default function SignIn() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validation des champs
+    if (!email.trim()) {
+      toast.error("Email requis", {
+        description: "Veuillez entrer votre adresse email"
+      })
+      return
+    }
+    
+    if (!password.trim()) {
+      toast.error("Mot de passe requis", {
+        description: "Veuillez entrer votre mot de passe"
+      })
+      return
+    }
+    
+    // Validation format email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast.error("Email invalide", {
+        description: "Veuillez entrer une adresse email valide"
+      })
+      return
+    }
+    
     // Handle sign in logic here
+    toast.success("Connexion réussie!", {
+      description: "Vous allez être redirigé..."
+    })
     console.log("Sign in with:", { email, password, rememberMe })
   }
 
   const handleGoogleSignIn = () => {
     // Handle Google sign in
+    toast.info("Google Sign-In", {
+      description: "Cette fonctionnalité sera bientôt disponible"
+    })
     console.log("Sign in with Google")
   }
 
   return (
-    <div className="flex items-center justify-center bg-[#f5f5f7] px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl shadow-lg p-8 md:p-10">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-12">
+      <Toaster position="top-center" richColors closeButton />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 backdrop-blur-sm border border-white/20"
+        >
           {/* Back Button */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[#666666] hover:text-[#202020] transition-colors mb-6 group"
+            className="inline-flex items-center gap-2 text-[#666666] hover:text-[#202020] transition-all duration-300 mb-6 group"
             style={{ fontFamily: "Figtree" }}
           >
-            <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+            <motion.div
+              whileHover={{ x: -4 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </motion.div>
             <span className="text-sm font-medium">Back to Home</span>
           </Link>
 
           {/* Logo/Icon */}
-          <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#156d95] to-[#0d4a6b] rounded-xl flex items-center justify-center">
-              <div className="grid grid-cols-2 gap-0.5">
-                <div className="w-2 h-2 bg-white rounded-sm"></div>
-                <div className="w-2 h-2 bg-white rounded-sm"></div>
-                <div className="w-2 h-2 bg-white rounded-sm"></div>
-                <div className="w-2 h-2 bg-white rounded-sm"></div>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ 
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+              delay: 0.2
+            }}
+            className="flex justify-center mb-6"
+          >
+            <div className="w-16 h-16 bg-gradient-to-br from-[#156d95] via-[#1a7aaa] to-[#0d4a6b] rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="grid grid-cols-2 gap-1">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="w-2.5 h-2.5 bg-white rounded-sm"
+                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="w-2.5 h-2.5 bg-white rounded-sm"
+                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="w-2.5 h-2.5 bg-white rounded-sm"
+                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="w-2.5 h-2.5 bg-white rounded-sm"
+                />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-4xl font-bold text-[#202020] mb-3 bg-gradient-to-r from-[#202020] to-[#156d95] bg-clip-text text-transparent" style={{ fontFamily: "Figtree" }}>
               Welcome back
             </h1>
             <p className="text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
               Please enter your details to sign in.
             </p>
-          </div>
+          </motion.div>
 
           {/* Google Sign In */}
-          <button
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[#e0e0e0] rounded-xl hover:bg-[#f9f9f9] transition-colors mb-6"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-[#e0e0e0] rounded-xl hover:bg-[#f9f9f9] hover:border-[#156d95]/30 transition-all duration-300 mb-6 shadow-sm hover:shadow-md"
             style={{ fontFamily: "Figtree" }}
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,11 +171,16 @@ export default function SignIn() {
                 fill="#EB4335"
               />
             </svg>
-            <span className="text-[#202020] font-medium">Continue with Google</span>
-          </button>
+            <span className="text-[#202020] font-semibold">Continue with Google</span>
+          </motion.button>
 
           {/* Divider */}
-          <div className="relative mb-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="relative mb-6"
+          >
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#e0e0e0]"></div>
             </div>
@@ -94,72 +189,78 @@ export default function SignIn() {
                 OR
               </span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <motion.form
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            onSubmit={handleSubmit}
+            className="space-y-5"
+          >
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+              <label htmlFor="email" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
                 Email address
               </label>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full px-4 py-3 pr-10 border border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
                   style={{ fontFamily: "Figtree" }}
-                  required
                 />
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#999999]" />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#999999] group-focus-within:text-[#156d95] transition-colors duration-300" />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+              <label htmlFor="password" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
                 Password
               </label>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-10 border border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
                   style={{ fontFamily: "Figtree" }}
-                  required
                 />
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#666666] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#156d95] transition-colors duration-300"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+                </motion.button>
               </div>
             </div>
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center cursor-pointer">
+              <label className="flex items-center cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#e0e0e0] text-[#156d95] focus:ring-[#156d95] focus:ring-offset-0 cursor-pointer"
+                  className="w-4 h-4 rounded border-2 border-[#e0e0e0] text-[#156d95] focus:ring-[#156d95] focus:ring-offset-0 cursor-pointer transition-all duration-300"
                 />
-                <span className="ml-2 text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
+                <span className="ml-2 text-sm text-[#666666] group-hover:text-[#202020] transition-colors duration-300" style={{ fontFamily: "Figtree" }}>
                   Remember me
                 </span>
               </label>
               <Link
                 href="/forgot-password"
-                className="text-sm text-[#156d95] hover:text-[#0d4a6b] transition-colors"
+                className="text-sm text-[#156d95] hover:text-[#0d4a6b] font-medium transition-all duration-300 hover:underline underline-offset-2"
                 style={{ fontFamily: "Figtree" }}
               >
                 Forgot password?
@@ -167,27 +268,34 @@ export default function SignIn() {
             </div>
 
             {/* Sign In Button */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
-              className="w-full bg-[#156d95] text-white py-3 rounded-xl font-medium hover:bg-[#0d4a6b] transition-all shadow-sm hover:shadow-md"
+              className="w-full bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white py-3.5 rounded-xl font-semibold hover:from-[#0d4a6b] hover:to-[#156d95] transition-all duration-300 shadow-lg hover:shadow-xl"
               style={{ fontFamily: "Figtree" }}
             >
               Sign in
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
 
           {/* Sign Up Link */}
-          <div className="mt-6 text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="mt-6 text-center"
+          >
             <p className="text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
               Don't have an account?{" "}
-              <Link href="/signup" className="text-[#156d95] font-medium hover:text-[#0d4a6b] transition-colors">
+              <Link href="/signup" className="text-[#156d95] font-semibold hover:text-[#0d4a6b] transition-colors duration-300 hover:underline underline-offset-2">
                 Sign up
               </Link>
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         
-      </div>
+      </motion.div>
     </div>
   )
 }
