@@ -1,17 +1,121 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Architecture du Projet
+
+Le projet **DeepSkyN** suit une architecture en couches pour séparer clairement les responsabilités :
+
+```
+deepskyn/
+├─ public/                   ← Ressources statiques (images, icônes)
+│
+├─ src/
+│  ├─ app/                   ← FRONTEND (rendu & routing)
+│  │  ├─ globals.css        ← Styles globaux de l'application
+│  │  ├─ layout.tsx         ← Layout principal
+│  │  ├─ not-found.tsx      ← Page 404
+│  │  ├─ page.tsx           ← Page d'accueil principale
+│  │  │
+│  │  ├─ components/         ← Composants de l'application
+│  │  │  └─ home_page/      ← Composants de la page d'accueil
+│  │  │     ├─ BankingScaleHero.tsx
+│  │  │     ├─ CaseStudiesCarousel.tsx
+│  │  │     ├─ FAQSection.tsx
+│  │  │     ├─ Footer.tsx
+│  │  │     ├─ IntegrationCarousel.tsx
+│  │  │     ├─ PortfolioNavbar.tsx
+│  │  │     ├─ PricingSection.tsx
+│  │  │     ├─ ProductTeaserCard.tsx
+│  │  │     └─ theme-provider.tsx
+│  │  │
+│  │  ├─ home/              ← Page home
+│  │  │  └─ page.tsx
+│  │  │
+│  │  └─ ui/                ← Interface utilisateur
+│  │     └─ home.tsx
+│  │
+│  ├─ components/           ← (À compléter)
+│  │
+│  ├─ services/             ← BACKEND (logique applicative)
+│  │
+│  ├─ entities/             ← ENTITÉS métier (données)
+│  │
+│  ├─ modele/               ← MODÈLE IA (TypeScript pur)
+│  │
+│  ├─ lib/                  ← Infrastructure & utilitaires
+│  │  └─ utils.ts          ← Fonctions utilitaires
+│  │
+│  └─ styles/               ← Styles globaux
+│     └─ globals.css
+│
+├─ components.json          ← Configuration des composants UI
+├─ eslint.config.mjs        ← Configuration ESLint
+├─ next-env.d.ts            ← Définitions TypeScript Next.js
+├─ next.config.ts           ← Configuration Next.js
+├─ package.json             ← Dépendances du projet
+├─ postcss.config.mjs       ← Configuration PostCSS
+├─ tsconfig.json            ← Configuration TypeScript
+└─ README.md                ← Documentation du projet
+```
+
+### Description des Couches
+
+#### 🎨 **app/ui/** - Interface Utilisateur
+- Contient toutes les pages accessibles par l'utilisateur
+- Gère le routing et le rendu des composants
+- Utilise les composants réutilisables et appelle les services
+
+#### 🧩 **components/** - Composants Réutilisables
+- Boutons, cartes, formulaires, etc.
+- Composants partagés entre plusieurs pages
+- Aucune logique métier, uniquement l'affichage
+
+#### ⚙️ **services/** - Logique Applicative (Backend)
+- Contient toute la logique métier
+- Fait le lien entre l'UI et les entités/modèles
+- Gère les appels API et les opérations sur les données
+
+#### 📦 **entities/** - Entités Métier
+- Définit les structures de données principales
+- Classes et interfaces représentant les objets métier
+- Validation et méthodes métier associées
+
+#### 🤖 **modele/** - Modèle IA
+- Code TypeScript pur pour l'analyse de peau par IA
+- Règles de prédiction et scoring
+- Indépendant du framework (peut être réutilisé ailleurs)
+
+#### 🔧 **lib/** - Infrastructure
+- Utilitaires et configurations
+- Connexion à la base de données
+- Helpers génériques
+
+#### 🎨 **styles/** - Styles
+- Fichiers CSS globaux
+- Variables de thème
+
 ## Getting Started
 
-First, run the development server:
+### 1. Démarrer le serveur PostgreSQL
+
+Avant de lancer le projet, vous devez démarrer le serveur PostgreSQL.
+
+Ouvrez PowerShell en tant qu'administrateur et exécutez :
+
+```powershell
+# Démarrer PostgreSQL
+net start postgresql-x64-18
+
+# Pour arrêter PostgreSQL (si nécessaire)
+net stop postgresql-x64-18
+```
+
+### 2. Lancer le projet
+
+Naviguez vers le dossier du projet et démarrez le serveur de développement :
 
 ```bash
+cd deepskyn
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

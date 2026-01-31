@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Figtree, Inter, Geist_Mono } from "next/font/google";
+import "./globals.css"
+import { NavigationProvider } from "./components/NavigationProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const figtree = Figtree({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -23,11 +31,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${figtree.variable} ${inter.variable} ${geistMono.variable} font-sans antialiased`}
+        suppressHydrationWarning
       >
-        {children}
+        <NavigationProvider>
+          {children}
+        </NavigationProvider>
       </body>
     </html>
   );
