@@ -1,6 +1,7 @@
 "use client"
 import { motion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
+import HeroSection from "./HeroSection"
 type ProductTeaserCardProps = {
   dailyVolume?: string
   dailyVolumeLabel?: string
@@ -168,33 +169,10 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
               delay: 0.2,
             }}
             className="col-span-12 lg:col-span-6 bg-white rounded-[40px] flex justify-center items-center aspect-square overflow-hidden"
-            style={{
-              backgroundImage:
-                "url(https://storage.googleapis.com/storage.magicpath.ai/user/282171029206482944/assets/882ef3dd-3459-4fd8-a939-52ceada51d5c.png)",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              opacity: "1",
-            }}
           >
-            <video
-              src={videoSrc}
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster={posterSrc}
-              className="block w-full h-full object-cover"
-              style={{
-                backgroundImage:
-                  "url(https://storage.googleapis.com/storage.magicpath.ai/user/282171029206482944/assets/38855cdf-b40a-445b-a17c-c2bbb35c884e.png)",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                opacity: "1",
-                display: "none",
-              }}
-            />
+            <div className="w-full h-full">
+              <HeroSection />
+            </div>
           </motion.div>
         </div>
       </div>
