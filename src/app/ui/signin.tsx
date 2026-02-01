@@ -67,7 +67,7 @@ export default function SignIn() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 backdrop-blur-sm border border-white/20"
+          className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-white/20"
         >
           {/* Back Button */}
           <Link
