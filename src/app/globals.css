@@ -39,6 +39,20 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* Ensure Sonner toasts are above all page content */
+[data-sonner-toaster] {
+  z-index: 2147483647 !important;
+  position: fixed !important;
+}
+
+/* Allow interaction with individual toasts while disabling clicks through container */
+[data-sonner-toaster] {
+  pointer-events: none;
+}
+[data-sonner-toaster] [data-sonner-toast] {
+  pointer-events: auto;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

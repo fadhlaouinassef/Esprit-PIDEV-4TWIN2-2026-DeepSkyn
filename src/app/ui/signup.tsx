@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Mail, Lock, Eye, EyeOff, User, ArrowLeft } from "lucide-react"
 import { motion } from "framer-motion"
-import { toast, Toaster } from "sonner"
+import { toast } from "sonner"
 
 export default function SignUp() {
   const [fullName, setFullName] = useState("")
@@ -71,7 +71,6 @@ export default function SignUp() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-8">
-      <Toaster position="top-center" richColors closeButton />
       
       <motion.div
         initial={{ opacity: 0, y: 30 }}
