@@ -150,17 +150,17 @@ export default function InteractivePortrait() {
     const blob = new Blob(renderer, width, height, container, gu)
 
     const textureLoader = new THREE.TextureLoader()
-    const baseTexture = textureLoader.load("/sansSkinCare.png", (texture: THREE.Texture) => {
+    const baseTexture = textureLoader.load("/hero-skincare-off.png", (texture: THREE.Texture) => {
       const img = texture.image as HTMLImageElement
       const imgAspect = img.width / img.height
       const containerAspect = width / height
       let planeWidth, planeHeight
       if (imgAspect > containerAspect) {
-        planeWidth = width
-        planeHeight = width / imgAspect
-      } else {
         planeHeight = height
         planeWidth = height * imgAspect
+      } else {
+        planeWidth = width
+        planeHeight = width / imgAspect
       }
       baseImage.geometry.dispose()
       baseImage.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
@@ -168,7 +168,7 @@ export default function InteractivePortrait() {
       helmetImage.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
     })
 
-    const helmetTexture = textureLoader.load("/avecSkinCare.png")
+    const helmetTexture = textureLoader.load("/hero-skincare-on.png")
 
     baseTexture.colorSpace = THREE.SRGBColorSpace
     helmetTexture.colorSpace = THREE.SRGBColorSpace
@@ -327,11 +327,11 @@ export default function InteractivePortrait() {
         const containerAspect = newWidth / newHeight
         let planeWidth, planeHeight
         if (imgAspect > containerAspect) {
-          planeWidth = newWidth
-          planeHeight = newWidth / imgAspect
-        } else {
           planeHeight = newHeight
           planeWidth = newHeight * imgAspect
+        } else {
+          planeWidth = newWidth
+          planeHeight = newWidth / imgAspect
         }
         baseImage.geometry.dispose()
         baseImage.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)

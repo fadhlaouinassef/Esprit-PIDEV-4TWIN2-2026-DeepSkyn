@@ -72,7 +72,7 @@ export default function SignIn() {
         >
           {/* Back Button */}
           <Link
-            href="/"
+            href="/home"
             className="inline-flex items-center gap-2 text-[#666666] hover:text-[#202020] transition-all duration-300 mb-6 group"
             style={{ fontFamily: "Figtree" }}
           >
