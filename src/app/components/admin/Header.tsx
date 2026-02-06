@@ -1,0 +1,78 @@
+
+"use client";
+
+import { Search, Menu, Moon, Sun, ChevronDown } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useSidebarContext } from "../admin/sidebar-context";
+import { useState } from "react";
+import { Notification } from "./Notification";
+import { UserInfo } from "./UserInfo";
+import { cn } from "@/lib/utils";
+
+export function Header() {
+    const { toggleSidebar, isMobile } = useSidebarContext();
+    const [darkMode, setDarkMode] = useState(false);
+
+    return (
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-100 bg-white px-8 py-5 dark:border-gray-800 dark:bg-gray-dark md:px-10">
+            {/* Left side: Dashboard Title */}
+            <div className="flex items-center gap-4">
+                <button
+                    onClick={toggleSidebar}
+                    className="rounded-lg border border-gray-100 p-1.5 dark:border-gray-700 dark:bg-gray-900 transition-colors hover:bg-gray-50 lg:hidden"
+                >
+                    <Menu className="w-6 h-6" />
+                    <span className="sr-only">Toggle Sidebar</span>
+                </button>
+
+                <div className="max-sm:hidden">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        Dashboard
+                    </h1>
+                    <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-1">
+                        Next.js Admin Dashboard Solution
+                    </p>
+                </div>
+            </div>
+
+            {/* Right side: Search, Toggle, Notifications, User */}
+            <div className="flex items-center gap-3 sm:gap-6">
+                {/* Search Bar */}
+                <div className="relative hidden md:block w-70">
+                    <input
+                        type="search"
+                        placeholder="Search"
+                        className="w-full rounded-full border-none bg-gray-50 py-3 pl-12 pr-5 text-sm outline-none transition-all focus:ring-1 focus:ring-gray-200 dark:bg-gray-900/50 dark:text-white dark:focus:ring-gray-700"
+                    />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                </div>
+
+                {/* Pill Theme Toggle */}
+                <div
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="flex cursor-pointer items-center rounded-full bg-gray-100 p-1 dark:bg-gray-800"
+                >
+                    <div className={cn(
+                        "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
+                        !darkMode ? "bg-white shadow-sm text-gray-900" : "text-gray-400"
+                    )}>
+                        <Sun className="w-5 h-5" />
+                    </div>
+                    <div className={cn(
+                        "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
+                        darkMode ? "bg-[#156d95] shadow-sm text-white" : "text-gray-400"
+                    )}>
+                        <Moon className="w-5 h-5" />
+                    </div>
+                </div>
+
+                {/* Notification */}
+                <Notification />
+
+                {/* User Info */}
+                <UserInfo />
+            </div>
+        </header>
+    );
+}

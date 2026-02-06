@@ -74,8 +74,8 @@ export function PricingSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="font-figtree text-[40px] font-normal leading-tight mb-4" style={{ fontFamily: "Figtree" }}>Choose Your Plan</h2>
-          <p className="font-figtree text-lg text-muted-foreground max-w-2xl mx-auto" style={{ fontFamily: "Figtree" }}>
+          <h2 className="font-figtree text-[40px] font-normal leading-tight mb-4" style={{ fontFamily: "Satoshi" }}>Choose Your Plan</h2>
+          <p className="font-figtree text-lg text-muted-foreground max-w-2xl mx-auto" style={{ fontFamily: "Satoshi" }}>
             Discover our skincare subscriptions tailored to your needs. All plans include AI skin analysis and mobile app access.
           </p>
         </div>
@@ -90,7 +90,7 @@ export function PricingSection() {
                 "px-6 py-2 rounded-full text-lg transition-all",
                 !isYearly ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
               )}
-              style={{ fontFamily: "Figtree" }}
+              style={{ fontFamily: "Satoshi" }}
             >
               Monthly
             </button>
@@ -101,7 +101,7 @@ export function PricingSection() {
                 "px-6 py-2 rounded-full text-lg transition-all",
                 isYearly ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
               )}
-              style={{ fontFamily: "Figtree" }}
+              style={{ fontFamily: "Satoshi" }}
             >
               Yearly
               <span className="ml-2 text-sm text-[#156d95]">Save 17%</span>
@@ -124,7 +124,7 @@ export function PricingSection() {
               )}
             >
               {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#156d95] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: "Figtree" }}>
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#156d95] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: "Satoshi" }}>
                   Most Popular
                 </span>
               )}
@@ -142,7 +142,7 @@ export function PricingSection() {
                   "w-full py-3 px-6 rounded-full text-lg transition-all text-center",
                   selectedPlan === plan.level ? "bg-[#156d95] text-white" : "bg-secondary text-foreground",
                 )}
-                style={{ fontFamily: "Figtree" }}
+                style={{ fontFamily: "Satoshi" }}
               >
                 {selectedPlan === plan.level ? "Selected" : "Select Plan"}
               </div>
@@ -157,7 +157,7 @@ export function PricingSection() {
               {/* Table Header */}
               <div className="flex items-center p-6 bg-secondary border-b border-border">
                 <div className="flex-1">
-                  <h3 className="text-xl font-medium" style={{ fontFamily: "Figtree" }}>Features</h3>
+                  <h3 className="text-xl font-medium" style={{ fontFamily: "Satoshi" }}>Features</h3>
                 </div>
                 <div className="flex items-center gap-8">
                   {plans.map((plan) => (
@@ -210,7 +210,7 @@ export function PricingSection() {
               }
             }}
             className="bg-[#156d95] text-white px-[18px] py-[15px] rounded-full text-lg hover:rounded-2xl transition-all"
-            style={{ fontFamily: "Figtree" }}>
+            style={{ fontFamily: "Satoshi" }}>
             Get Started with {plans.find((p) => p.level === selectedPlan)?.name}
           </button>
         </div>
@@ -218,3 +218,5 @@ export function PricingSection() {
     </section>
   )
 }
+
+

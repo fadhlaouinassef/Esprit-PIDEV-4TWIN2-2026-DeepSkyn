@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Mail, Lock, Eye, EyeOff, User, ArrowLeft } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 
 export default function SignUp() {
+  const router = useRouter()
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -14,7 +16,7 @@ export default function SignUp() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Validation des champs
     if (!fullName.trim()) {
       toast.error("Nom complet requis", {
@@ -22,21 +24,21 @@ export default function SignUp() {
       })
       return
     }
-    
+
     if (!email.trim()) {
       toast.error("Email requis", {
         description: "Veuillez entrer votre adresse email"
       })
       return
     }
-    
+
     if (!password.trim()) {
       toast.error("Mot de passe requis", {
         description: "Veuillez entrer un mot de passe"
       })
       return
     }
-    
+
     // Validation format email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
@@ -45,7 +47,7 @@ export default function SignUp() {
       })
       return
     }
-    
+
     // Validation mot de passe
     if (password.length < 8) {
       toast.error("Mot de passe trop court", {
@@ -53,17 +55,18 @@ export default function SignUp() {
       })
       return
     }
-    
+
     // Handle sign up logic here
     toast.success("Compte créé avec succès!", {
       description: "Bienvenue dans DeepSkyN"
     })
     console.log("Sign up with:", { fullName, email, password })
+    router.push("/admin")
   }
 
   const handleGoogleSignUp = () => {
     // Handle Google sign up
-    toast.info("Google Sign-Up", {
+    toast.info("Google Sign-In", {
       description: "Cette fonctionnalité sera bientôt disponible"
     })
     console.log("Sign up with Google")
@@ -71,7 +74,7 @@ export default function SignUp() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-8">
-      
+
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -103,7 +106,7 @@ export default function SignUp() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ 
+            transition={{
               type: "spring",
               stiffness: 260,
               damping: 20,

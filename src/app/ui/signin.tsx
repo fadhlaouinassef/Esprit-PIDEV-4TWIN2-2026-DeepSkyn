@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
 
 export default function SignIn() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
@@ -14,7 +16,7 @@ export default function SignIn() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Validation des champs
     if (!email.trim()) {
       toast.error("Email requis", {
@@ -22,14 +24,14 @@ export default function SignIn() {
       })
       return
     }
-    
+
     if (!password.trim()) {
       toast.error("Mot de passe requis", {
         description: "Veuillez entrer votre mot de passe"
       })
       return
     }
-    
+
     // Validation format email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
@@ -38,12 +40,13 @@ export default function SignIn() {
       })
       return
     }
-    
+
     // Handle sign in logic here
     toast.success("Connexion réussie!", {
       description: "Vous allez être redirigé..."
     })
     console.log("Sign in with:", { email, password, rememberMe })
+    router.push("/admin")
   }
 
   const handleGoogleSignIn = () => {
@@ -56,7 +59,7 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-12">
-      
+
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -88,7 +91,7 @@ export default function SignIn() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ 
+            transition={{
               type: "spring",
               stiffness: 260,
               damping: 20,
@@ -293,7 +296,7 @@ export default function SignIn() {
             </p>
           </motion.div>
         </motion.div>
-        
+
       </motion.div>
     </div>
   )

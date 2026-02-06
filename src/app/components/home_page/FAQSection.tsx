@@ -42,7 +42,7 @@ export const FAQSection = ({ title = "Frequently Asked Questions", faqs = defaul
             <h2
               className="text-[40px] leading-tight font-normal text-[#202020] tracking-tight sticky top-24"
               style={{
-                fontFamily: "Figtree",
+                fontFamily: "Satoshi",
                 fontWeight: "400",
                 fontSize: "40px",
               }}
@@ -64,7 +64,7 @@ export const FAQSection = ({ title = "Frequently Asked Questions", faqs = defaul
                     <span
                       className="text-lg leading-7 text-[#202020] pr-8"
                       style={{
-                        fontFamily: "Figtree",
+                        fontFamily: "Satoshi",
                         fontWeight: "400",
                       }}
                     >
@@ -109,7 +109,7 @@ export const FAQSection = ({ title = "Frequently Asked Questions", faqs = defaul
                           <p
                             className="text-lg leading-6 text-[#666666]"
                             style={{
-                              fontFamily: "Figtree",
+                              fontFamily: "Satoshi",
                             }}
                           >
                             {faq.answer}
@@ -127,3 +127,5 @@ export const FAQSection = ({ title = "Frequently Asked Questions", faqs = defaul
     </section>
   )
 }
+
+

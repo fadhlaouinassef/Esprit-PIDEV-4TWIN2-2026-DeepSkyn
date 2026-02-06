@@ -67,7 +67,7 @@ export const PortfolioNavbar = () => {
             >
               <span
                 style={{
-                  fontFamily: "Figtree",
+                  fontFamily: "Satoshi",
                   fontWeight: "800",
                 }}
               >
@@ -84,7 +84,7 @@ export const PortfolioNavbar = () => {
                   onClick={() => handleLinkClick(link.href)}
                   className="text-foreground hover:text-primary px-3 py-2 text-base font-medium transition-colors duration-200 relative group"
                   style={{
-                    fontFamily: "Figtree",
+                    fontFamily: "Satoshi",
                     fontWeight: "500",
                   }}
                 >
@@ -105,7 +105,7 @@ export const PortfolioNavbar = () => {
             >
               <span
                 style={{
-                  fontFamily: "Figtree",
+                  fontFamily: "Satoshi",
                   fontWeight: "500",
                 }}
               >
@@ -154,7 +154,7 @@ export const PortfolioNavbar = () => {
                   onClick={() => handleLinkClick(link.href)}
                   className="block w-full text-left text-foreground hover:text-primary py-3 text-lg font-medium transition-colors duration-200"
                   style={{
-                    fontFamily: "Figtree, sans-serif",
+                    fontFamily: "Satoshi, sans-serif",
                     fontWeight: "400",
                   }}
                 >
@@ -166,7 +166,7 @@ export const PortfolioNavbar = () => {
                   href="/signin"
                   className="w-full bg-[#156d95] text-white px-[18px] py-[15px] rounded-full text-base font-semibold hover:bg-[#156d95]/90 transition-all duration-200 block text-center"
                   style={{
-                    fontFamily: "Plus Jakarta Sans, sans-serif",
+                    fontFamily: "Satoshi, sans-serif",
                   }}
                 >
                   <span>Login</span>
@@ -179,3 +179,5 @@ export const PortfolioNavbar = () => {
     </nav>
   )
 }
+
+

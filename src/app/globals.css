@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '../styles/satoshi.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -49,6 +50,7 @@
 [data-sonner-toaster] {
   pointer-events: none;
 }
+
 [data-sonner-toaster] [data-sonner-toast] {
   pointer-events: auto;
 }
@@ -89,7 +91,7 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
+  --font-sans: 'Satoshi', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -133,42 +135,50 @@
   * {
     @apply border-border outline-ring/50;
   }
-  
+
+  /* Augmenter la taille de base pour le dashboard */
+  .admin-dashboard {
+    font-size: 1.125rem;
+    /* 18px au lieu de 16px */
+  }
+
   /* Ultra Smooth Scroll */
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 80px; /* Pour compenser la navbar fixe */
+    scroll-padding-top: 80px;
+    /* Pour compenser la navbar fixe */
   }
-  
+
   body {
     @apply bg-background text-foreground;
     overflow-x: hidden;
   }
-  
+
   /* Optimisation du scroll pour tous les éléments scrollables */
   * {
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* Pour iOS */
+    -webkit-overflow-scrolling: touch;
+    /* Pour iOS */
   }
-  
+
   /* Performance optimizations pour le scroll */
   section {
     will-change: transform;
     transform: translateZ(0);
     backface-visibility: hidden;
   }
-  
+
   /* Transitions ultra smooth pour les animations de scroll */
   @media (prefers-reduced-motion: no-preference) {
     html {
       scroll-behavior: smooth;
     }
-    
+
     * {
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
-  
+
   /* Désactiver le smooth scroll pour ceux qui préfèrent moins d'animations */
   @media (prefers-reduced-motion: reduce) {
     html {
@@ -176,4 +186,3 @@
     }
   }
 }
-
