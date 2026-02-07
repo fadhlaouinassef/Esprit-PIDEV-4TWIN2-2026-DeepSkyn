@@ -4,7 +4,7 @@
 import { Sidebar } from "@/app/components/admin/Sidebar";
 import { Header } from "@/app/components/admin/Header";
 import { SidebarProvider, useSidebarContext } from "@/app/components/admin/sidebar-context";
-import "@/styles/satoshi.css";
+import "@/app/css/satoshi.css";
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     const { isOpen, isMobile } = useSidebarContext();

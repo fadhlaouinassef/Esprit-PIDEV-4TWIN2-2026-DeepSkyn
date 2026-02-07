@@ -3,7 +3,7 @@
 import { Sidebar } from "@/app/components/user/Sidebar";
 import { Header } from "@/app/components/user/Header";
 import { SidebarProvider, useSidebarContext } from "@/app/components/user/sidebar-context";
-import "@/styles/satoshi.css";
+import "@/app/css/satoshi.css";
 
 interface UserLayoutProps {
     children: React.ReactNode;
