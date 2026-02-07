@@ -16,7 +16,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
             gestureOrientation: "vertical",
             smoothWheel: true, // Activer le smooth scroll avec la molette
             wheelMultiplier: 1, // Multiplicateur de vitesse de la molette
-            smoothTouch: false, // Désactiver sur mobile pour de meilleures performances
+            syncTouch: false, // Désactiver sur mobile pour de meilleures performances
             touchMultiplier: 2,
             infinite: false,
         })
