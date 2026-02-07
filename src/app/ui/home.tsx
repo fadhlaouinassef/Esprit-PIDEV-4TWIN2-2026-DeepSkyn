@@ -27,6 +27,7 @@ const staggerContainer = {
 
 export default function HomePage() {
   return (
+    
     <motion.div
       initial="initial"
       animate="animate"

@@ -71,7 +71,7 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
                 }}
                 className="text-sm uppercase tracking-tight flex items-center gap-1"
                 style={{
-                  fontFamily: "Figtree",
+                  fontFamily: "Satoshi",
                   fontWeight: "600",
                   letterSpacing: "0.05em",
                 }}
@@ -97,7 +97,7 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
               className="text-[56px] leading-[60px] tracking-tight text-[#202020] max-w-[520px] mb-6"
               style={{
                 fontWeight: "500",
-                fontFamily: "Figtree",
+                fontFamily: "Satoshi",
               }}
             >
               {headline}
@@ -106,7 +106,7 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
             <p
               className="text-lg leading-7 text-[#404040] max-w-[520px] mb-6"
               style={{
-                fontFamily: "Figtree",
+                fontFamily: "Satoshi",
               }}
             >
               {subheadline}
@@ -179,3 +179,5 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
     </section>
   )
 }
+
+

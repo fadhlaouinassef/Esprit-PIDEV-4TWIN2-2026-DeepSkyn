@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Figtree, Inter, Geist_Mono } from "next/font/google";
-import "./globals.css"
-import "./lenis.css"
+import "./css/globals.css"
+import "./css/satoshi.css";
+import "./css/lenis.css"
 import { NavigationProvider } from "./components/NavigationProvider";
 import SmoothScrollProvider from "./components/SmoothScrollProvider";
 import { Toaster } from "sonner"

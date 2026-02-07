@@ -98,11 +98,11 @@ export const Footer = ({
             <div className="mb-4">
               <h3
                 className="text-2xl font-semibold text-[#202020] mb-2"
-                style={{ fontFamily: "Figtree", fontWeight: "500" }}
+                style={{ fontFamily: "Satoshi", fontWeight: "500" }}
               >
                 {companyName}
               </h3>
-              <p className="text-sm leading-5 text-[#666666] max-w-xs" style={{ fontFamily: "Figtree" }}>
+              <p className="text-sm leading-5 text-[#666666] max-w-xs" style={{ fontFamily: "Satoshi" }}>
                 {tagline}
               </p>
             </div>
@@ -160,7 +160,7 @@ export const Footer = ({
             >
               <h4
                 className="text-sm font-medium text-[#202020] mb-4 uppercase tracking-wide"
-                style={{ fontFamily: "Figtree", fontWeight: "500" }}
+                style={{ fontFamily: "Satoshi", fontWeight: "500" }}
               >
                 {section.title}
               </h4>
@@ -170,7 +170,7 @@ export const Footer = ({
                     <a
                       href={link.href}
                       className="text-sm text-[#666666] hover:text-[#202020] transition-colors duration-150"
-                      style={{ fontFamily: "Figtree" }}
+                      style={{ fontFamily: "Satoshi" }}
                     >
                       {link.label}
                     </a>
@@ -190,21 +190,21 @@ export const Footer = ({
           className="pt-8 border-t border-[#e5e5e5]"
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
+            <p className="text-sm text-[#666666]" style={{ fontFamily: "Satoshi" }}>
               {copyright}
             </p>
             <div className="flex items-center gap-6">
               <a
                 href="#status"
                 className="text-sm text-[#666666] hover:text-[#202020] transition-colors duration-150"
-                style={{ fontFamily: "Figtree" }}
+                style={{ fontFamily: "Satoshi" }}
               >
                 Status
               </a>
               <a
                 href="#sitemap"
                 className="text-sm text-[#666666] hover:text-[#202020] transition-colors duration-150"
-                style={{ fontFamily: "Figtree" }}
+                style={{ fontFamily: "Satoshi" }}
               >
                 Sitemap
               </a>
@@ -215,3 +215,5 @@ export const Footer = ({
     </footer>
   )
 }
+
+

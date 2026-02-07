@@ -127,7 +127,7 @@ export const BankingScaleHero = () => {
             <h2
               className="text-[40px] font-normal leading-tight tracking-tight text-[#111A4A] mb-6"
               style={{
-                fontFamily: "Figtree",
+                fontFamily: "Satoshi",
                 fontSize: "40px",
                 fontWeight: "400",
               }}
@@ -147,7 +147,7 @@ export const BankingScaleHero = () => {
             <p
               className="text-lg leading-6 text-[#111A4A] opacity-60 mt-0 mb-6"
               style={{
-                fontFamily: "Figtree",
+                fontFamily: "Satoshi",
               }}
             >
               Discover our premium skincare collection, formulated with natural ingredients for radiant, healthy skin.
@@ -160,7 +160,7 @@ export const BankingScaleHero = () => {
                   element.scrollIntoView({ behavior: 'smooth' })
                 }
               }}
-              className="relative inline-flex justify-center items-center leading-4 text-center cursor-pointer whitespace-nowrap outline-none font-medium h-9 text-[#232730] bg-white/50 backdrop-blur-sm shadow-[0_1px_1px_0_rgba(255,255,255,0),0_0_0_1px_rgba(87,90,100,0.12)] transition-all duration-200 ease-in-out rounded-lg px-4 mt-5 text-sm group hover:shadow-[0_1px_2px_0_rgba(0,0,0,0.05),0_0_0_1px_rgba(87,90,100,0.18)]" style={{ fontFamily: "Figtree" }}>
+              className="relative inline-flex justify-center items-center leading-4 text-center cursor-pointer whitespace-nowrap outline-none font-medium h-9 text-[#232730] bg-white/50 backdrop-blur-sm shadow-[0_1px_1px_0_rgba(255,255,255,0),0_0_0_1px_rgba(87,90,100,0.12)] transition-all duration-200 ease-in-out rounded-lg px-4 mt-5 text-sm group hover:shadow-[0_1px_2px_0_rgba(0,0,0,0.05),0_0_0_1px_rgba(87,90,100,0.18)]" style={{ fontFamily: "Satoshi" }}>
               <span className="relative z-10 flex items-center gap-1">
                 Explore Our Products
                 <ArrowRight className="w-4 h-4 -mr-1 transition-transform duration-150 group-hover:translate-x-1" />
@@ -279,3 +279,5 @@ export const BankingScaleHero = () => {
     </div>
   )
 }
+
+
