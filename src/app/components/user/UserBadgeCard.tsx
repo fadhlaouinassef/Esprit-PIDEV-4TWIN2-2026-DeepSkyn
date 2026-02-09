@@ -3,7 +3,7 @@
 import React from "react"
 import Image from "next/image"
 
-export type BadgeVariant = "silver" | "gold" | "platinum" | "bronze" | "platinium" | "ruby"
+export type BadgeVariant = "silver" | "gold" | "platinium" | "bronze" | "ruby"
 
 interface UserBadgeCardProps {
     userPhoto: string
