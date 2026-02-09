@@ -11,7 +11,7 @@ interface NavigationContextType {
 }
 
 const NavigationContext = createContext<NavigationContextType>({
-  startLoading: () => {},
+  startLoading: () => { },
   isLoading: false,
 });
 
@@ -32,12 +32,12 @@ function NavigationHandler({ children }: { children: React.ReactNode }) {
     // Détecte le changement de route
     if (pathname !== prevPathnameRef.current) {
       setIsLoading(true);
-      
+
       // Clear any existing timer
       if (loadingTimerRef.current) {
         clearTimeout(loadingTimerRef.current);
       }
-      
+
       // Garde le loader visible pendant au moins 500ms pour une meilleure UX
       loadingTimerRef.current = setTimeout(() => {
         prevPathnameRef.current = pathname;

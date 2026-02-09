@@ -244,7 +244,6 @@
     background: #d1d5db;
   }
 
-  /* Badge Silver Metallic Styles */
   .badge-card-container {
     position: relative;
     width: 320px;
@@ -259,74 +258,104 @@
     transform: scale(1.02);
   }
 
-  /* NEW: Separate Border Wrapper that takes the filter */
-  .badge-border-wrapper {
+  .badge-inner-container {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    z-index: 1;
+  }
+
+  .badge-electric-border-wrapper {
     position: absolute;
     inset: -4px;
     filter: url(#turbulent-displace);
-    border-radius: 28px;
+    border-radius: 30px;
     z-index: 1;
     pointer-events: none;
+    padding: 4px;
+    /* Creates the thickness of the distorted border */
   }
 
-  .badge-silver-border {
+  .badge-electric-border-glow {
     position: absolute;
     inset: 0;
-    animation: silver-flow 4s linear infinite;
-    border-radius: 28px;
-    padding: 4px;
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
+    border-radius: 24px;
+    animation: electric-flow 4s linear infinite;
   }
 
-  .badge-main-card {
+  .badge-main-card-clean {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    border-radius: 24px;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .badge-image-wrapper {
     position: absolute;
     inset: 2px;
     background: #000;
     border-radius: 22px;
     overflow: hidden;
-    z-index: 2;
+    z-index: 3;
   }
 
-  .badge-main-card img {
+  .badge-image-wrapper img {
     filter: contrast(1) brightness(0.9);
     transition: all 0.5s ease;
   }
 
-  .badge-card-container:hover .badge-main-card img {
+  .badge-card-container:hover .badge-image-wrapper img {
     filter: contrast(1.05) brightness(1.1);
     transform: scale(1.05);
   }
 
   .badge-glow-layer-1 {
     position: absolute;
-    inset: -30px;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    filter: blur(20px);
+    inset: -2px;
+    background: rgba(255, 255, 255, 0.2);
+    filter: blur(8px);
+    border-radius: 24px;
     z-index: -1;
+    opacity: 0.6;
   }
 
   .badge-glow-layer-2 {
     position: absolute;
-    inset: -15px;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
-    filter: blur(10px);
+    inset: -4px;
+    background: rgba(255, 255, 255, 0.1);
+    filter: blur(16px);
+    border-radius: 24px;
     z-index: -2;
+    opacity: 0.4;
   }
 
-  .badge-overlay-reflect {
+  .badge-overlay-1 {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
     z-index: 5;
     pointer-events: none;
     border-radius: 24px;
+  }
+
+  .badge-overlay-2 {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 40%);
+    z-index: 6;
+    pointer-events: none;
+    border-radius: 24px;
+  }
+
+  .badge-background-glow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+    filter: blur(30px);
+    z-index: -3;
+    pointer-events: none;
   }
 
   .badge-content-container {
@@ -384,13 +413,40 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   }
 
-  @keyframes silver-flow {
+  @keyframes electric-flow {
     0% {
       background-position: 0% 0%;
     }
 
     100% {
       background-position: 200% 200%;
+    }
+  }
+
+  @keyframes lightning-flicker {
+
+    0%,
+    19%,
+    21%,
+    23%,
+    25%,
+    54%,
+    56%,
+    100% {
+      opacity: 1;
+      filter: url(#turbulent-displace) brightness(1);
+    }
+
+    20%,
+    24%,
+    55% {
+      opacity: 0.8;
+      filter: url(#turbulent-displace) brightness(2) contrast(1.5);
+    }
+
+    22% {
+      opacity: 0.9;
+      filter: url(#turbulent-displace) brightness(3);
     }
   }
 
