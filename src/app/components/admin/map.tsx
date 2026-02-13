@@ -46,7 +46,7 @@ export default function Map() {
                     onMoveEnd={handleMoveEnd}
                 >
                     <Geographies geography={geoUrl}>
-                        {({ geographies }) =>
+                        {({ geographies }: { geographies: any[] }) =>
                             geographies.map((geo) => (
                                 <Geography
                                     key={geo.rsmKey}
