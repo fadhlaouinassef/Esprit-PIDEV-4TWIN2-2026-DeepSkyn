@@ -1,5 +1,18 @@
 
-import { LayoutDashboard, Users, Settings, User, LucideIcon } from "lucide-react";
+import {
+    LayoutDashboard,
+    Users,
+    Settings,
+    User,
+    Package,
+    BarChart3,
+    CreditCard,
+    Sparkles,
+    FileText,
+    MessageSquare,
+    ClipboardList,
+    LucideIcon
+} from "lucide-react";
 
 export interface NavSubItem {
     title: string;
@@ -29,15 +42,68 @@ export const NAV_DATA: NavSection[] = [
                 items: [],
             },
             {
+                title: "Analytics",
+                url: "/admin/analytics",
+                icon: BarChart3,
+                items: [],
+            },
+        ],
+    },
+    {
+        label: "Management",
+        items: [
+            {
                 title: "Users",
                 url: "/admin/users",
                 icon: Users,
+                items: [
+                    { title: "All Users", url: "/admin/users" },
+                    { title: "Verification", url: "/admin/users/verify" },
+                    { title: "Badges", url: "/admin/users/badges" },
+                ],
+            },
+            {
+                title: "Products",
+                url: "/admin/products",
+                icon: Package,
                 items: [],
             },
             {
-                title: "Profile",
-                url: "/admin/profile",
-                icon: User,
+                title: "Routines",
+                url: "/admin/routines",
+                icon: Sparkles,
+                items: [],
+            },
+            {
+                title: "Subscriptions",
+                url: "/admin/subscriptions",
+                icon: CreditCard,
+                items: [],
+            },
+        ],
+    },
+    {
+        label: "Administrative",
+        items: [
+            {
+                title: "Blog & Content",
+                url: "/admin/content",
+                icon: FileText,
+                items: [
+                    { title: "Articles", url: "/admin/content/articles" },
+                    { title: "Categories", url: "/admin/content/categories" },
+                ],
+            },
+            {
+                title: "FAQs",
+                url: "/admin/faqs",
+                icon: ClipboardList,
+                items: [],
+            },
+            {
+                title: "Feedback",
+                url: "/admin/feedback",
+                icon: MessageSquare,
                 items: [],
             },
         ],
@@ -46,7 +112,13 @@ export const NAV_DATA: NavSection[] = [
         label: "Settings",
         items: [
             {
-                title: "Settings",
+                title: "Profile",
+                url: "/admin/profile",
+                icon: User,
+                items: [],
+            },
+            {
+                title: "System Settings",
                 url: "/admin/settings",
                 icon: Settings,
                 items: [],

@@ -2,5 +2,4 @@
 
 * recommandation : affichage des produits avec web scraping (para-pharmacies) ...
 
-
 * l'ajout de 'notes' pour l'admin

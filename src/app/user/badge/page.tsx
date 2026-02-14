@@ -8,8 +8,8 @@ export default function BadgePage() {
     const user = {
         name: "Nassef",
         photo: "/avatar.png",
-        badgeName: "Gold Explorer",
-        variant: "gold" as const,
+        badgeName: "Ruby Master",
+        variant: "ruby" as const, //niveau du badge
         description: "Awarded for completing the initial skin analysis and contributing to the DeepSkyn community with helpful insights."
     };
 
