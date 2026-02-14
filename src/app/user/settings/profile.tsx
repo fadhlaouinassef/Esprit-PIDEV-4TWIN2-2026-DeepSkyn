@@ -1,9 +1,8 @@
 
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { User, Mail, Edit, Upload, ChevronRight } from "lucide-react";
+import React, { useState } from "react";
+import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Internal Helper Components ---
@@ -30,7 +29,8 @@ function InputGroup({
     placeholder,
     defaultValue,
     icon,
-    className = ""
+    className = "",
+    readOnly = false
 }: {
     label: string;
     type: string;
@@ -39,6 +39,7 @@ function InputGroup({
     defaultValue: string;
     icon: React.ReactNode;
     className?: string;
+    readOnly?: boolean;
 }) {
     return (
         <div className={cn("mb-6", className)}>
@@ -54,7 +55,11 @@ function InputGroup({
                     name={name}
                     placeholder={placeholder}
                     defaultValue={defaultValue}
-                    className="w-full rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]"
+                    readOnly={readOnly}
+                    className={cn(
+                        "w-full rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]",
+                        readOnly && "bg-gray-100 cursor-not-allowed opacity-70"
+                    )}
                 />
             </div>
         </div>
@@ -103,37 +108,131 @@ export function PersonalInfoForm() {
                         type="text"
                         name="fullName"
                         label="Full Name"
-                        placeholder="David Jhon"
-                        defaultValue="David Jhon"
+                        placeholder="Nassef"
+                        defaultValue="Nassef"
                         icon={<User size={20} />}
                     />
 
+                    <InputGroup
+                        type="email"
+                        name="email"
+                        label="Email Address"
+                        placeholder="nassef@example.com"
+                        defaultValue="nassef@example.com"
+                        icon={<Mail size={20} />}
+                    />
                 </div>
 
-                <InputGroup
-                    type="email"
-                    name="email"
-                    label="Email Address"
-                    placeholder="devidjond45@gmail.com"
-                    defaultValue="devidjond45@gmail.com"
-                    icon={<Mail size={20} />}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputGroup
+                        type="date"
+                        name="birthDate"
+                        label="Date of Birth"
+                        placeholder=""
+                        defaultValue="2000-01-01"
+                        icon={<Calendar size={20} />}
+                    />
 
-                <InputGroup
-                    type="text"
-                    name="username"
-                    label="Username"
-                    placeholder="devidjhon24"
-                    defaultValue="devidjhon24"
-                    icon={<User size={20} />}
-                />
+                    <div className="mb-6">
+                        <label className="mb-3 block text-[13px] font-medium text-gray-900 dark:text-white">
+                            Sex (Gender)
+                        </label>
+                        <div className="relative">
+                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
+                                <UserCircle size={20} />
+                            </span>
+                            <select
+                                name="gender"
+                                defaultValue="Male"
+                                className="w-full appearance-none rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]"
+                            >
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputGroup
+                        type="text"
+                        name="username"
+                        label="Username"
+                        placeholder="nassef_dev"
+                        defaultValue="nassef_dev"
+                        icon={<User size={20} />}
+                    />
+                    <div />
+                </div>
 
                 <TextAreaGroup
                     label="BIO"
                     placeholder="Write your bio here"
                     icon={<Edit size={20} />}
-                    defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam lacinia turpis tortor, consequat efficitur mi congue a. Curabitur cursus, ipsum ut lobortis sodales, enim arcu pellentesque lectus ac suscipit diam sem a felis. Cras sapien ex, blandit eu dui et suscipit gravida nunc. Sed sed est quis dui."
+                    defaultValue="Passionate deep sky enthusiast and software developer. Currently exploring the limits of AI and web technology."
                 />
+
+                <div className="flex justify-end gap-3">
+                    <button
+                        className="rounded-xl border border-gray-200 px-8 py-3.5 text-[15px] font-bold text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900 transition-all"
+                        type="button"
+                    >
+                        Reset
+                    </button>
+                    <button
+                        className="rounded-xl bg-[#156d95] px-8 py-3.5 text-[15px] font-bold text-white hover:shadow-lg hover:bg-opacity-95 transition-all"
+                        type="submit"
+                    >
+                        Update Profile
+                    </button>
+                </div>
+            </form>
+        </ShowcaseSection>
+    );
+}
+
+export function SecurityForm() {
+    return (
+        <ShowcaseSection title="Security & Password" className="mt-8">
+            <form>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputGroup
+                        type="password"
+                        name="currentPassword"
+                        label="Current Password"
+                        placeholder="••••••••"
+                        defaultValue=""
+                        icon={<Lock size={20} />}
+                    />
+                    <div />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InputGroup
+                        type="password"
+                        name="newPassword"
+                        label="New Password"
+                        placeholder="••••••••"
+                        defaultValue=""
+                        icon={<Lock size={20} />}
+                    />
+                    <InputGroup
+                        type="password"
+                        name="confirmNewPassword"
+                        label="Confirm New Password"
+                        placeholder="••••••••"
+                        defaultValue=""
+                        icon={<Lock size={20} />}
+                    />
+                </div>
+                <div className="flex justify-end pt-4">
+                    <button
+                        className="rounded-xl bg-[#156d95] px-8 py-3.5 text-[15px] font-bold text-white hover:shadow-lg hover:bg-opacity-95 transition-all"
+                        type="submit"
+                    >
+                        Change Password
+                    </button>
+                </div>
             </form>
         </ShowcaseSection>
     );
@@ -202,7 +301,7 @@ export function UploadPhotoForm() {
                         className="rounded-xl bg-[#156d95] px-8 py-3.5 text-[15px] font-bold text-white hover:shadow-lg hover:bg-opacity-95 transition-all"
                         type="submit"
                     >
-                        Save
+                        Save Photo
                     </button>
                 </div>
             </form>
@@ -212,10 +311,11 @@ export function UploadPhotoForm() {
 
 export default function Profile() {
     return (
-        <div className="mx-auto w-full max-w-[1200px]">
+        <div className="mx-auto w-full max-w-[1200px] mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
-                <div className="lg:col-span-3">
+                <div className="lg:col-span-3 flex flex-col gap-8">
                     <PersonalInfoForm />
+                    <SecurityForm />
                 </div>
                 <div className="lg:col-span-2">
                     <UploadPhotoForm />

@@ -3,8 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react"
-import { motion } from "framer-motion"
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 
 export default function SignIn() {
@@ -13,52 +13,71 @@ export default function SignIn() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [shakeField, setShakeField] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required"
+    } else {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!emailRegex.test(email)) {
+        newErrors.email = "Invalid email format"
+      }
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required"
+    } else if (password.length < 8) {
+      newErrors.password = "Invalid password (min. 8 characters)"
+    }
+
+    setErrors(newErrors)
+    if (Object.keys(newErrors).length > 0) {
+      const firstError = Object.keys(newErrors)[0]
+      setShakeField(firstError)
+      setTimeout(() => setShakeField(null), 500)
+    }
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validation des champs
-    if (!email.trim()) {
-      toast.error("Email requis", {
-        description: "Veuillez entrer votre adresse email"
-      })
-      return
-    }
+    if (validateForm()) {
+      setIsSubmitting(true)
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
 
-    if (!password.trim()) {
-      toast.error("Mot de passe requis", {
-        description: "Veuillez entrer votre mot de passe"
+      toast.success("Login successful!", {
+        description: "You are being redirected..."
       })
-      return
-    }
-
-    // Validation format email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      toast.error("Email invalide", {
-        description: "Veuillez entrer une adresse email valide"
+      console.log("Sign in with:", { email, password, rememberMe })
+      router.push("/admin")
+      setIsSubmitting(false)
+    } else {
+      toast.error("Login Failed", {
+        description: "Please check the fields in red"
       })
-      return
     }
-
-    // Handle sign in logic here
-    toast.success("Connexion réussie!", {
-      description: "Vous allez être redirigé..."
-    })
-    console.log("Sign in with:", { email, password, rememberMe })
-    router.push("/admin")
   }
 
   const handleGoogleSignIn = () => {
     // Handle Google sign in
     toast.info("Google Sign-In", {
-      description: "Cette fonctionnalité sera bientôt disponible"
+      description: "This feature will be available soon"
     })
     console.log("Sign in with Google")
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-12 relative overflow-hidden">
+      {/* Decorative Blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#156d95]/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#0d4a6b]/5 rounded-full blur-[120px]" />
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -140,7 +159,7 @@ export default function SignIn() {
               Welcome back
             </h1>
             <p className="text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
-              Please enter your details to sign in.
+              Please enter your credentials to log in.
             </p>
           </motion.div>
 
@@ -200,24 +219,63 @@ export default function SignIn() {
             transition={{ delay: 0.6, duration: 0.5 }}
             onSubmit={handleSubmit}
             className="space-y-5"
+            noValidate
           >
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
                 Email address
               </label>
-              <div className="relative group">
+              <motion.div
+                className="relative group"
+                animate={shakeField === 'email' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
                 <input
                   id="email"
                   type="email"
+                  required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (errors.email) setErrors({ ...errors, email: "" })
+                  }}
                   placeholder="name@company.com"
-                  className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
+                  className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.email
+                      ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
+                      : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
+                    }`}
                   style={{ fontFamily: "Figtree" }}
                 />
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#999999] group-focus-within:text-[#156d95] transition-colors duration-300" />
-              </div>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <AnimatePresence>
+                    {errors.email && (
+                      <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}>
+                        <AlertCircle className="w-5 h-5 text-red-500 filter drop-shadow-[0_0_3px_rgba(239,68,68,0.4)]" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <Mail className={`w-5 h-5 transition-colors duration-300 ${errors.email ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
+                </div>
+              </motion.div>
+              <AnimatePresence mode="wait">
+                {errors.email && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.email}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Password */}
@@ -225,14 +283,26 @@ export default function SignIn() {
               <label htmlFor="password" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
                 Password
               </label>
-              <div className="relative group">
+              <motion.div
+                className="relative group"
+                animate={shakeField === 'password' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
+                  required
+                  minLength={8}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (errors.password) setErrors({ ...errors, password: "" })
+                  }}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
+                  className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.password
+                      ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
+                      : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
+                    }`}
                   style={{ fontFamily: "Figtree" }}
                 />
                 <motion.button
@@ -240,11 +310,29 @@ export default function SignIn() {
                   whileTap={{ scale: 0.95 }}
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#156d95] transition-colors duration-300"
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${errors.password ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </motion.button>
-              </div>
+              </motion.div>
+              <AnimatePresence mode="wait">
+                {errors.password && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.password}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Remember Me & Forgot Password */}
@@ -273,11 +361,22 @@ export default function SignIn() {
             <motion.button
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
+              disabled={isSubmitting}
               type="submit"
-              className="w-full bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white py-3.5 rounded-xl font-semibold hover:from-[#0d4a6b] hover:to-[#156d95] transition-all duration-300 shadow-lg hover:shadow-xl"
+              className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl ${isSubmitting
+                ? "bg-[#666666] cursor-not-allowed"
+                : "bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white hover:from-[#0d4a6b] hover:to-[#156d95]"
+                }`}
               style={{ fontFamily: "Figtree" }}
             >
-              Sign in
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign in"
+              )}
             </motion.button>
           </motion.form>
 

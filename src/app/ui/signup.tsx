@@ -3,8 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Mail, Lock, Eye, EyeOff, User, ArrowLeft } from "lucide-react"
-import { motion } from "framer-motion"
+import { Mail, Lock, Eye, EyeOff, User, ArrowLeft, Calendar, UserCircle, AlertCircle, CheckCircle2, Loader2, ShieldCheck, Camera, FileText, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 
 export default function SignUp() {
@@ -12,68 +12,137 @@ export default function SignUp() {
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [birthDate, setBirthDate] = useState("")
+  const [age, setAge] = useState<number | null>(null)
+  const [gender, setGender] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [shakeField, setShakeField] = useState<string | null>(null)
+  const [showConsentModal, setShowConsentModal] = useState(false)
+
+  const calculateAge = (date: string) => {
+    if (!date) return null
+    const today = new Date()
+    const birthDate = new Date(date)
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const m = today.getMonth() - birthDate.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    return age
+  }
+
+  const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = e.target.value
+    setBirthDate(date)
+    setAge(calculateAge(date))
+  }
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!fullName.trim()) {
+      newErrors.fullName = "Full name is required"
+    } else {
+      const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/
+      if (!nameRegex.test(fullName.trim())) {
+        newErrors.fullName = "Name should only contain letters (2-50 characters)"
+      }
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Email address is required"
+    } else {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!emailRegex.test(email)) {
+        newErrors.email = "Please enter a valid email address"
+      }
+    }
+
+    if (!birthDate) {
+      newErrors.birthDate = "Birth date is required"
+    } else {
+      const selectedDate = new Date(birthDate)
+      const today = new Date()
+      if (selectedDate > today) {
+        newErrors.birthDate = "Birth date cannot be in the future"
+      } else if (age !== null && age < 13) {
+        newErrors.birthDate = "You must be at least 13 years old"
+      }
+    }
+
+    if (!gender) {
+      newErrors.gender = "Please select your sex"
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required"
+    } else {
+      const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/
+      if (!passwordRegex.test(password)) {
+        newErrors.password = "Must be 8+ chars with a number and special char"
+      }
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password"
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match"
+    }
+
+    setErrors(newErrors)
+    if (Object.keys(newErrors).length > 0) {
+      const firstError = Object.keys(newErrors)[0]
+      setShakeField(firstError)
+      setTimeout(() => setShakeField(null), 500)
+    }
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validation des champs
-    if (!fullName.trim()) {
-      toast.error("Nom complet requis", {
-        description: "Veuillez entrer votre nom complet"
+    if (validateForm()) {
+      setShowConsentModal(true)
+    } else {
+      toast.error("Validation Error", {
+        description: "Please check the fields in red"
       })
-      return
     }
+  }
 
-    if (!email.trim()) {
-      toast.error("Email requis", {
-        description: "Veuillez entrer votre adresse email"
-      })
-      return
-    }
+  const confirmSignup = async () => {
+    setShowConsentModal(false)
+    setIsSubmitting(true)
 
-    if (!password.trim()) {
-      toast.error("Mot de passe requis", {
-        description: "Veuillez entrer un mot de passe"
-      })
-      return
-    }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
-    // Validation format email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      toast.error("Email invalide", {
-        description: "Veuillez entrer une adresse email valide"
-      })
-      return
-    }
-
-    // Validation mot de passe
-    if (password.length < 8) {
-      toast.error("Mot de passe trop court", {
-        description: "Le mot de passe doit contenir au moins 8 caractères"
-      })
-      return
-    }
-
-    // Handle sign up logic here
-    toast.success("Compte créé avec succès!", {
-      description: "Bienvenue dans DeepSkyN"
+    toast.success("Account created successfully!", {
+      description: "Welcome to DeepSkyN"
     })
-    console.log("Sign up with:", { fullName, email, password })
+
+    console.log("Sign up with:", { fullName, email, password, confirmPassword, birthDate, age, gender })
     router.push("/admin")
+    setIsSubmitting(false)
   }
 
   const handleGoogleSignUp = () => {
     // Handle Google sign up
     toast.info("Google Sign-In", {
-      description: "Cette fonctionnalité sera bientôt disponible"
+      description: "This feature will be available soon"
     })
     console.log("Sign up with Google")
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-8 relative overflow-hidden">
+      {/* Decorative Blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#156d95]/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#0d4a6b]/5 rounded-full blur-[120px]" />
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -155,7 +224,7 @@ export default function SignUp() {
               Create your account
             </h1>
             <p className="text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
-              Join thousands of users managing their workflow.
+              Join DeepSkyN and manage your workflow.
             </p>
           </motion.div>
 
@@ -215,43 +284,233 @@ export default function SignUp() {
             transition={{ delay: 0.6, duration: 0.5 }}
             onSubmit={handleSubmit}
             className="space-y-5"
+            noValidate
           >
             {/* Full Name */}
             <div>
               <label htmlFor="fullName" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
                 Full Name
               </label>
-              <div className="relative group">
+              <motion.div
+                className="relative group"
+                animate={shakeField === 'fullName' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
                 <input
                   id="fullName"
                   type="text"
+                  required
+                  maxLength={50}
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) => {
+                    setFullName(e.target.value)
+                    if (errors.fullName) setErrors({ ...errors, fullName: "" })
+                  }}
                   placeholder="John Doe"
-                  className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
+                  className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.fullName
+                    ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
+                    : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
+                    }`}
                   style={{ fontFamily: "Figtree" }}
                 />
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#999999] group-focus-within:text-[#156d95] transition-colors duration-300" />
-              </div>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <AnimatePresence>
+                    {errors.fullName && (
+                      <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}>
+                        <AlertCircle className="w-5 h-5 text-red-500 filter drop-shadow-[0_0_3px_rgba(239,68,68,0.4)]" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <User className={`w-5 h-5 transition-colors duration-300 ${errors.fullName ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
+                </div>
+              </motion.div>
+              <AnimatePresence mode="wait">
+                {errors.fullName && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.fullName}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
-                Email address
+                Email Address
               </label>
-              <div className="relative group">
+              <motion.div
+                className="relative group"
+                animate={shakeField === 'email' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
                 <input
                   id="email"
                   type="email"
+                  required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (errors.email) setErrors({ ...errors, email: "" })
+                  }}
                   placeholder="name@company.com"
-                  className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
+                  className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.email
+                    ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
+                    : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
+                    }`}
                   style={{ fontFamily: "Figtree" }}
                 />
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#999999] group-focus-within:text-[#156d95] transition-colors duration-300" />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <AnimatePresence>
+                    {errors.email && (
+                      <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}>
+                        <AlertCircle className="w-5 h-5 text-red-500 filter drop-shadow-[0_0_3px_rgba(239,68,68,0.4)]" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <Mail className={`w-5 h-5 transition-colors duration-300 ${errors.email ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
+                </div>
+              </motion.div>
+              <AnimatePresence mode="wait">
+                {errors.email && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.email}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="birthDate" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+                  Date of Birth
+                </label>
+                <motion.div
+                  className="relative group"
+                  animate={shakeField === 'birthDate' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                  transition={{ duration: 0.4 }}
+                >
+                  <input
+                    id="birthDate"
+                    type="date"
+                    required
+                    value={birthDate}
+                    onChange={(e) => {
+                      handleBirthDateChange(e)
+                      if (errors.birthDate) setErrors({ ...errors, birthDate: "" })
+                    }}
+                    className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white appearance-none ${errors.birthDate
+                      ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
+                      : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
+                      }`}
+                    style={{ fontFamily: "Figtree" }}
+                  />
+                  <Calendar className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${errors.birthDate ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
+                </motion.div>
               </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+                  Age
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={age !== null ? `${age} years` : "--"}
+                    readOnly
+                    className="w-full px-4 py-3.5 border-2 border-[#e0e0e0] rounded-xl bg-[#f0f0f0] text-[#666666] cursor-not-allowed"
+                    style={{ fontFamily: "Figtree" }}
+                  />
+                </div>
+              </div>
+              <AnimatePresence mode="wait">
+                {errors.birthDate && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="col-span-2 flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.birthDate}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Gender/Sexe */}
+            <div>
+              <label className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+                Sex
+              </label>
+              <motion.div
+                className="grid grid-cols-3 gap-3"
+                animate={shakeField === 'gender' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
+                {['Male', 'Female', 'Other'].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => {
+                      setGender(option)
+                      if (errors.gender) setErrors({ ...errors, gender: "" })
+                    }}
+                    className={`py-2 px-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${gender === option
+                      ? "border-[#156d95] bg-[#156d95]/5 text-[#156d95] shadow-sm"
+                      : errors.gender
+                        ? "border-red-500 text-red-500 bg-red-50/50 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
+                        : "border-[#e0e0e0] text-[#666666] hover:border-[#156d95]/30 hover:bg-[#fafafa]"
+                      }`}
+                    style={{ fontFamily: "Figtree" }}
+                  >
+                    {option === 'Male' ? 'Male' : option === 'Female' ? 'Female' : 'Other'}
+                  </button>
+                ))}
+              </motion.div>
+              <AnimatePresence mode="wait">
+                {errors.gender && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.gender}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Password */}
@@ -259,14 +518,26 @@ export default function SignUp() {
               <label htmlFor="password" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
                 Password
               </label>
-              <div className="relative group">
+              <motion.div
+                className="relative group"
+                animate={shakeField === 'password' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
+                  required
+                  minLength={8}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (errors.password) setErrors({ ...errors, password: "" })
+                  }}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
+                  className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.password
+                    ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
+                    : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
+                    }`}
                   style={{ fontFamily: "Figtree" }}
                 />
                 <motion.button
@@ -274,25 +545,112 @@ export default function SignUp() {
                   whileTap={{ scale: 0.95 }}
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#156d95] transition-colors duration-300"
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${errors.password ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </motion.button>
-              </div>
-              <p className="mt-2 text-xs text-[#999999]" style={{ fontFamily: "Figtree" }}>
-                Au moins 8 caractères
-              </p>
+              </motion.div>
+              <AnimatePresence mode="wait">
+                {errors.password ? (
+                  <motion.div
+                    key="error"
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.password}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <p className="mt-2 text-xs text-[#999999] ml-1" style={{ fontFamily: "Figtree" }}>
+                    Min. 8 characters with 1 number and 1 special character
+                  </p>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+                Confirm Password
+              </label>
+              <motion.div
+                className="relative group"
+                animate={shakeField === 'confirmPassword' ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value)
+                    if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: "" })
+                  }}
+                  placeholder="••••••••"
+                  className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.confirmPassword
+                    ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
+                    : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
+                    }`}
+                  style={{ fontFamily: "Figtree" }}
+                />
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${errors.confirmPassword ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </motion.button>
+              </motion.div>
+              <AnimatePresence mode="wait">
+                {errors.confirmPassword && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, y: -5 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -5 }}
+                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
+                    <p
+                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      {errors.confirmPassword}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Create Account Button */}
             <motion.button
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
+              disabled={isSubmitting}
               type="submit"
-              className="w-full bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white py-3.5 rounded-xl font-semibold hover:from-[#0d4a6b] hover:to-[#156d95] transition-all duration-300 shadow-lg hover:shadow-xl"
+              className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl ${isSubmitting
+                ? "bg-[#666666] cursor-not-allowed"
+                : "bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white hover:from-[#0d4a6b] hover:to-[#156d95]"
+                }`}
               style={{ fontFamily: "Figtree" }}
             >
-              Create account
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                "Create account"
+              )}
             </motion.button>
           </motion.form>
 
@@ -308,7 +666,7 @@ export default function SignUp() {
             <Link href="/terms" className="text-[#156d95] hover:text-[#0d4a6b] transition-colors duration-300 hover:underline underline-offset-2">
               Terms of Service
             </Link>{" "}
-            and{" "}
+            and our{" "}
             <Link href="/privacy" className="text-[#156d95] hover:text-[#0d4a6b] transition-colors duration-300 hover:underline underline-offset-2">
               Privacy Policy
             </Link>
@@ -332,6 +690,99 @@ export default function SignUp() {
         </motion.div>
 
       </motion.div>
+
+      {/* Consent Modal */}
+      <AnimatePresence>
+        {showConsentModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowConsentModal(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-md"
+            />
+
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-white/20"
+            >
+              <div className="p-8">
+                {/* Close Button */}
+                <button
+                  onClick={() => setShowConsentModal(false)}
+                  className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 transition-colors duration-300"
+                >
+                  <X className="w-5 h-5 text-[#666666]" />
+                </button>
+
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-[#156d95]/10 rounded-2xl flex items-center justify-center mb-6">
+                    <ShieldCheck className="w-8 h-8 text-[#156d95]" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-[#202020] mb-4" style={{ fontFamily: "Figtree" }}>
+                    Confidentiality & Security
+                  </h3>
+
+                  <p className="text-[#666666] leading-relaxed mb-8" style={{ fontFamily: "Figtree" }}>
+                    Before finalizing your account, please review and accept our data privacy policy and application usage contracts.
+                  </p>
+
+                  <div className="w-full space-y-4 mb-8">
+                    {/* Face Data Consent */}
+                    <div className="flex items-start gap-4 p-4 bg-[#fafafa] rounded-2xl border border-[#e0e0e0]/50 text-left">
+                      <div className="p-2 bg-white rounded-xl shadow-sm">
+                        <Camera className="w-5 h-5 text-[#156d95]" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#202020]" style={{ fontFamily: "Figtree" }}>Face Recognition Consent</h4>
+                        <p className="text-xs text-[#666666] mt-1">I agree to allow DeepSkyN to securely store my biometric/photo data for authentication purposes.</p>
+                      </div>
+                    </div>
+
+                    {/* App Logic Consent */}
+                    <div className="flex items-start gap-4 p-4 bg-[#fafafa] rounded-2xl border border-[#e0e0e0]/50 text-left">
+                      <div className="p-2 bg-white rounded-xl shadow-sm">
+                        <FileText className="w-5 h-5 text-[#156d95]" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#202020]" style={{ fontFamily: "Figtree" }}>Application Logic Contract</h4>
+                        <p className="text-xs text-[#666666] mt-1">I accept the terms regarding automated workflows and internal logic management of my workspace.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 w-full">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setShowConsentModal(false)}
+                      className="py-3.5 px-6 rounded-xl font-semibold border-2 border-[#e0e0e0] text-[#666666] hover:bg-gray-50 transition-all duration-300"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      Decline
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={confirmSignup}
+                      className="py-3.5 px-6 rounded-xl font-semibold bg-[#156d95] text-white shadow-lg shadow-blue-900/20 hover:bg-[#0d4a6b] transition-all duration-300"
+                      style={{ fontFamily: "Figtree" }}
+                    >
+                      Accept & Join
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
