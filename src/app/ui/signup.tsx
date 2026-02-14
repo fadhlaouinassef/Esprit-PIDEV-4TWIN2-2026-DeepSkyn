@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Mail, Lock, Eye, EyeOff, User, ArrowLeft, Calendar, UserCircle, AlertCircle, CheckCircle2, Loader2, ShieldCheck, Camera, FileText, X } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { Mail, Lock, Eye, EyeOff, User, ArrowLeft, Calendar, UserCircle, AlertCircle, CheckCircle2, Loader2, ShieldCheck, Camera, FileText, X, Sparkles } from "lucide-react"
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion"
 import { toast } from "sonner"
 
 export default function SignUp() {
@@ -22,6 +22,33 @@ export default function SignUp() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shakeField, setShakeField] = useState<string | null>(null)
   const [showConsentModal, setShowConsentModal] = useState(false)
+
+  // Mouse tracking for parallax effect
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  const springConfig = { damping: 25, stiffness: 150 }
+  const bounceX = useSpring(mouseX, springConfig)
+  const bounceY = useSpring(mouseY, springConfig)
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX - window.innerWidth / 2)
+      mouseY.set(e.clientY - window.innerHeight / 2)
+    }
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
+  }, [mouseX, mouseY])
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.2 } }
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  }
 
   const calculateAge = (date: string) => {
     if (!date) return null
@@ -139,93 +166,62 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f0f0f2] px-4 py-8 relative overflow-hidden">
-      {/* Decorative Blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#156d95]/5 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#0d4a6b]/5 rounded-full blur-[120px]" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc] px-4 py-12 relative overflow-hidden selection:bg-[#156d95]/10">
+      {/* Dynamic Background Mesh */}
+      <div className="absolute inset-0 z-0">
+        <motion.div
+          style={{ x: bounceX, y: bounceY, scale: 1.2 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70"
+        />
+        <motion.div
+          style={{ x: bounceX, y: bounceY, scale: 1.1 }}
+          className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#1a7aaa]/5 rounded-full blur-[100px]"
+        />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02] pointer-events-none" />
+      </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-md"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-lg z-10"
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-white/20"
+          whileHover={{ y: -5 }}
+          className="bg-white/70 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-8 md:p-10 border border-white/60 relative"
         >
-          {/* Back Button */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-[#666666] hover:text-[#202020] transition-all duration-300 mb-6 group"
-            style={{ fontFamily: "Figtree" }}
-          >
-            <motion.div
-              whileHover={{ x: -4 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </motion.div>
-            <span className="text-sm font-medium">Back to Home</span>
-          </Link>
+          {/* Top subtle glow */}
+          <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#156d95] to-transparent opacity-50" />
 
-          {/* Logo/Icon */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 260,
-              damping: 20,
-              delay: 0.2
-            }}
-            className="flex justify-center mb-6"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-[#156d95] via-[#1a7aaa] to-[#0d4a6b] rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="grid grid-cols-2 gap-1">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="w-2.5 h-2.5 bg-white rounded-sm"
-                />
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="w-2.5 h-2.5 bg-white rounded-sm"
-                />
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="w-2.5 h-2.5 bg-white rounded-sm"
-                />
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="w-2.5 h-2.5 bg-white rounded-sm"
-                />
+          {/* Back Button */}
+          <motion.div variants={itemVariants}>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-[#666666] hover:text-[#156d95] transition-all duration-300 mb-8 group no-underline"
+            >
+              <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl group-hover:bg-[#156d95]/10 transition-colors">
+                <ArrowLeft className="w-4 h-4" />
               </div>
-            </div>
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>Return to entry</span>
+            </Link>
           </motion.div>
 
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-center mb-8"
-          >
-            <h1 className="text-4xl font-bold text-[#202020] mb-3 bg-gradient-to-r from-[#202020] to-[#156d95] bg-clip-text text-transparent" style={{ fontFamily: "Figtree" }}>
-              Create your account
+          {/* Logo Section */}
+          <motion.div variants={itemVariants} className="flex flex-col items-center mb-10 text-center">
+            <div className="relative group mb-4">
+              <div className="absolute inset-0 bg-[#156d95] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+              <div className="relative w-16 h-16 bg-gradient-to-br from-[#156d95] to-[#0d4a6b] rounded-[1.5rem] flex items-center justify-center shadow-2xl">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div key={i} className="w-2.5 h-2.5 bg-white rounded-[3px]" />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white" style={{ fontFamily: "Figtree" }}>
+              Deep<span className="text-[#156d95]">SkyN</span> Registration
             </h1>
-            <p className="text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
-              Join DeepSkyN and manage your workflow.
-            </p>
+            <p className="text-[#666666] dark:text-gray-400 mt-1 font-medium text-sm">Join the next generation of workspace logic.</p>
           </motion.div>
 
           {/* Google Sign Up */}
@@ -278,17 +274,10 @@ export default function SignUp() {
           </motion.div>
 
           {/* Form */}
-          <motion.form
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            onSubmit={handleSubmit}
-            className="space-y-5"
-            noValidate
-          >
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             {/* Full Name */}
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+            <motion.div variants={itemVariants}>
+              <label htmlFor="fullName" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Full Name
               </label>
               <motion.div
@@ -324,29 +313,21 @@ export default function SignUp() {
                   <User className={`w-5 h-5 transition-colors duration-300 ${errors.fullName ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
                 </div>
               </motion.div>
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {errors.fullName && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: -5 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -5 }}
-                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                    className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2 ml-1"
                   >
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                    <p
-                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      {errors.fullName}
-                    </p>
-                  </motion.div>
+                    {errors.fullName}
+                  </motion.p>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
             {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+            <motion.div variants={itemVariants}>
+              <label htmlFor="email" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Email Address
               </label>
               <motion.div
@@ -381,29 +362,21 @@ export default function SignUp() {
                   <Mail className={`w-5 h-5 transition-colors duration-300 ${errors.email ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
                 </div>
               </motion.div>
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {errors.email && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: -5 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -5 }}
-                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                    className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2 ml-1"
                   >
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                    <p
-                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      {errors.email}
-                    </p>
-                  </motion.div>
+                    {errors.email}
+                  </motion.p>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="birthDate" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+                <label htmlFor="birthDate" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                   Date of Birth
                 </label>
                 <motion.div
@@ -430,7 +403,7 @@ export default function SignUp() {
                 </motion.div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                   Age
                 </label>
                 <div className="relative">
@@ -461,11 +434,11 @@ export default function SignUp() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
             {/* Gender/Sexe */}
-            <div>
-              <label className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+            <motion.div variants={itemVariants}>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Sex
               </label>
               <motion.div
@@ -493,29 +466,21 @@ export default function SignUp() {
                   </button>
                 ))}
               </motion.div>
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {errors.gender && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: -5 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -5 }}
-                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                    className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2 ml-1"
                   >
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                    <p
-                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      {errors.gender}
-                    </p>
-                  </motion.div>
+                    {errors.gender}
+                  </motion.p>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
             {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+            <motion.div variants={itemVariants}>
+              <label htmlFor="password" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Password
               </label>
               <motion.div
@@ -550,34 +515,25 @@ export default function SignUp() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </motion.button>
               </motion.div>
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {errors.password ? (
-                  <motion.div
-                    key="error"
-                    initial={{ opacity: 0, height: 0, y: -5 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -5 }}
-                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                    className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2 ml-1"
                   >
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                    <p
-                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      {errors.password}
-                    </p>
-                  </motion.div>
+                    {errors.password}
+                  </motion.p>
                 ) : (
-                  <p className="mt-2 text-xs text-[#999999] ml-1" style={{ fontFamily: "Figtree" }}>
-                    Min. 8 characters with 1 number and 1 special character
+                  <p className="mt-2 text-[10px] text-[#999999] font-bold uppercase tracking-widest ml-1" style={{ fontFamily: "Figtree" }}>
+                    Min. 8 chars (1 Num, 1 Spec)
                   </p>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
             {/* Confirm Password */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
+            <motion.div variants={itemVariants}>
+              <label htmlFor="confirmPassword" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Confirm Password
               </label>
               <motion.div
@@ -611,84 +567,69 @@ export default function SignUp() {
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </motion.button>
               </motion.div>
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {errors.confirmPassword && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: -5 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -5 }}
-                    className="flex items-center gap-1.5 mt-2 ml-1"
+                  <motion.p
+                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                    className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2 ml-1"
                   >
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                    <p
-                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      {errors.confirmPassword}
-                    </p>
-                  </motion.div>
+                    {errors.confirmPassword}
+                  </motion.p>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
 
             {/* Create Account Button */}
-            <motion.button
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={isSubmitting}
-              type="submit"
-              className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl ${isSubmitting
-                ? "bg-[#666666] cursor-not-allowed"
-                : "bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white hover:from-[#0d4a6b] hover:to-[#156d95]"
-                }`}
-              style={{ fontFamily: "Figtree" }}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                "Create account"
-              )}
-            </motion.button>
-          </motion.form>
+            <motion.div variants={itemVariants} className="pt-2">
+              <motion.button
+                whileHover={{ scale: 1.01, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={isSubmitting}
+                type="submit"
+                className="w-full relative group h-14 bg-gradient-to-r from-[#156d95] to-[#0d4a6b] rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 active:shadow-none"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                <span className="relative flex items-center justify-center gap-2 text-white font-black uppercase tracking-[0.2em] text-xs" style={{ fontFamily: "Figtree" }}>
+                  {isSubmitting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <>
+                      Create account
+                      <Sparkles className="w-4 h-4" />
+                    </>
+                  )}
+                </span>
+              </motion.button>
+            </motion.div>
+          </form>
 
-          {/* Terms */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-            className="mt-4 text-xs text-center text-[#999999]"
-            style={{ fontFamily: "Figtree" }}
-          >
-            By clicking "Create account", you agree to our{" "}
-            <Link href="/terms" className="text-[#156d95] hover:text-[#0d4a6b] transition-colors duration-300 hover:underline underline-offset-2">
-              Terms of Service
-            </Link>{" "}
-            and our{" "}
-            <Link href="/privacy" className="text-[#156d95] hover:text-[#0d4a6b] transition-colors duration-300 hover:underline underline-offset-2">
-              Privacy Policy
-            </Link>
-            .
-          </motion.p>
-
-          {/* Log In Link */}
+          {/* Footer */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="mt-6 text-center"
+            variants={itemVariants}
+            className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 text-center"
           >
-            <p className="text-sm text-[#666666]" style={{ fontFamily: "Figtree" }}>
-              Already have an account?{" "}
-              <Link href="/signin" className="text-[#156d95] font-semibold hover:text-[#0d4a6b] transition-colors duration-300 hover:underline underline-offset-2">
-                Log in
+            <p className="text-[10px] font-bold text-[#999999] uppercase tracking-[0.2em] mb-4" style={{ fontFamily: "Figtree" }}>
+              By creating an account, you accept our <br />
+              <Link href="/terms" className="text-[#156d95] hover:underline">Terms</Link> & <Link href="/privacy" className="text-[#156d95] hover:underline">Privacy</Link>
+            </p>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>
+              Already registered?{" "}
+              <Link href="/signin" className="text-[#156d95] hover:underline decoration-2 underline-offset-4">
+                Log Into Portal
               </Link>
             </p>
           </motion.div>
         </motion.div>
 
+        {/* Outer subtle info */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="mt-8 text-center text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]"
+        >
+          © 2026 DEEPSKYN LTD • ENCRYPTED SESSION
+        </motion.p>
       </motion.div>
 
       {/* Consent Modal */}
