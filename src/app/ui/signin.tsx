@@ -234,7 +234,7 @@ export default function SignIn() {
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider" style={{ fontFamily: "Figtree" }}>
                   Password
                 </label>
-                <Link href="/forgot" className="text-[10px] font-black text-[#156d95] uppercase tracking-widest hover:underline">
+                <Link href="/forgot-password" className="text-[10px] font-black text-[#156d95] uppercase tracking-widest hover:underline">
                   Forgot?
                 </Link>
               </div>
