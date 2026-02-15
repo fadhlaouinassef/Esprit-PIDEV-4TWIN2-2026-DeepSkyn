@@ -125,9 +125,8 @@ export default function SignIn() {
         className="w-full max-w-md z-10"
       >
         <motion.div
-          whileHover={{ y: -5 }}
-          className="bg-white/70 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-8 md:p-10 border border-white/60 relative"
-        >
+          whileHover={{ y: -5, borderColor: "rgba(21, 109, 149, 0.8)" }}
+          className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-8 md:p-12 border-2 border-[#156d95]/30 relative transition-colors duration-500">
           {/* Top subtle glow */}
           <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#156d95] to-transparent opacity-50" />
 
@@ -201,7 +200,7 @@ export default function SignIn() {
                     ? "border-red-500 bg-red-50/30 ring-4 ring-red-500/10"
                     : "border-transparent focus:border-[#156d95] focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#156d95]/10"
                     }`}
-                  placeholder="nassef@deepskyn.com"
+                  placeholder="Name@deepskyn.com"
                   style={{ fontFamily: "Figtree" }}
                 />
                 <AnimatePresence>

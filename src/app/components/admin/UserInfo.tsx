@@ -14,7 +14,7 @@ export function UserInfo() {
 
     const USER_DATA = {
         name: "Nassef Fadhlaoui",
-        email: "nassef@deepskyn.com",
+        email: "fouleene@deepskyn.com",
         img: "/avatar.png",
     };
 

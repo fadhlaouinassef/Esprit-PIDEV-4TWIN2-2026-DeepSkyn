@@ -22,6 +22,8 @@ export default function SignUp() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shakeField, setShakeField] = useState<string | null>(null)
   const [showConsentModal, setShowConsentModal] = useState(false)
+  const [showStatusPopup, setShowStatusPopup] = useState(false)
+  const [popupData, setPopupData] = useState({ title: "", description: "", type: "success" as "success" | "info" })
 
   // Mouse tracking for parallax effect
   const mouseX = useMotionValue(0)
@@ -143,18 +145,38 @@ export default function SignUp() {
 
   const confirmSignup = async () => {
     setShowConsentModal(false)
-    setIsSubmitting(true)
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    toast.success("Account created successfully!", {
-      description: "Welcome to DeepSkyN"
+    setPopupData({
+      title: "Welcome Abroad!",
+      description: "Your account is created with full security features and biometric storage enabled.",
+      type: "success"
     })
+    setShowStatusPopup(true)
 
-    console.log("Sign up with:", { fullName, email, password, confirmPassword, birthDate, age, gender })
-    router.push("/admin")
-    setIsSubmitting(false)
+    // Log the data (simulating DB save)
+    console.log("Sign up with consent:", { fullName, email, password, birthDate, age, gender })
+
+    // Auto-redirect after delay
+    setTimeout(() => {
+      router.push("/admin")
+    }, 2500)
+  }
+
+  const declineSignup = async () => {
+    setShowConsentModal(false)
+    setPopupData({
+      title: "Account Ready",
+      description: "Registration complete. Privacy noted: biometric data will NOT be stored.",
+      type: "info"
+    })
+    setShowStatusPopup(true)
+
+    // Log the data (simulating DB save without biometrics)
+    console.log("Sign up without biometric consent:", { fullName, email, birthDate })
+
+    // Auto-redirect after delay
+    setTimeout(() => {
+      router.push("/admin")
+    }, 2500)
   }
 
   const handleGoogleSignUp = () => {
@@ -187,8 +209,8 @@ export default function SignUp() {
         className="w-full max-w-lg z-10"
       >
         <motion.div
-          whileHover={{ y: -5 }}
-          className="bg-white/70 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-8 md:p-10 border border-white/60 relative"
+          whileHover={{ y: -5, borderColor: "rgba(21, 109, 149, 0.8)" }}
+          className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-8 md:p-12 border-2 border-[#156d95]/30 relative transition-colors duration-500"
         >
           {/* Top subtle glow */}
           <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#156d95] to-transparent opacity-50" />
@@ -344,7 +366,7 @@ export default function SignUp() {
                     setEmail(e.target.value)
                     if (errors.email) setErrors({ ...errors, email: "" })
                   }}
-                  placeholder="name@company.com"
+                  placeholder="Name@deepskyn.com"
                   className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.email
                     ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
                     : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
@@ -642,83 +664,121 @@ export default function SignUp() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowConsentModal(false)}
-              className="absolute inset-0 bg-black/40 backdrop-blur-md"
+              className="absolute inset-0 bg-black/60 backdrop-blur-xl"
             />
 
             {/* Modal Content */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-white/20"
+              initial={{ opacity: 0, scale: 0.9, y: 30, rotateX: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30, rotateX: -20 }}
+              className="relative w-full max-w-lg bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden border border-white/40"
             >
-              <div className="p-8">
+              <div className="p-10">
                 {/* Close Button */}
                 <button
                   onClick={() => setShowConsentModal(false)}
-                  className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 transition-colors duration-300"
+                  className="absolute top-8 right-8 p-3 rounded-full hover:bg-black/5 transition-colors duration-300"
                 >
                   <X className="w-5 h-5 text-[#666666]" />
                 </button>
 
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-[#156d95]/10 rounded-2xl flex items-center justify-center mb-6">
-                    <ShieldCheck className="w-8 h-8 text-[#156d95]" />
+                  <div className="w-20 h-20 bg-gradient-to-tr from-[#156d95]/20 to-[#2bc0ff]/20 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
+                    <ShieldCheck className="w-10 h-10 text-[#156d95]" />
                   </div>
 
-                  <h3 className="text-2xl font-bold text-[#202020] mb-4" style={{ fontFamily: "Figtree" }}>
-                    Confidentiality & Security
+                  <h3 className="text-3xl font-black text-[#202020] mb-6 tracking-tight" style={{ fontFamily: "Figtree" }}>
+                    Confidentiality Policy
                   </h3>
 
-                  <p className="text-[#666666] leading-relaxed mb-8" style={{ fontFamily: "Figtree" }}>
-                    Before finalizing your account, please review and accept our data privacy policy and application usage contracts.
-                  </p>
-
-                  <div className="w-full space-y-4 mb-8">
+                  <div className="w-full space-y-6 mb-10">
                     {/* Face Data Consent */}
-                    <div className="flex items-start gap-4 p-4 bg-[#fafafa] rounded-2xl border border-[#e0e0e0]/50 text-left">
-                      <div className="p-2 bg-white rounded-xl shadow-sm">
-                        <Camera className="w-5 h-5 text-[#156d95]" />
+                    <div className="flex items-start gap-5 p-5 bg-blue-50/50 rounded-2xl border border-blue-100/50 text-left">
+                      <div className="p-3 bg-white rounded-2xl shadow-sm border border-blue-50">
+                        <Camera className="w-6 h-6 text-[#156d95]" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#202020]" style={{ fontFamily: "Figtree" }}>Face Recognition Consent</h4>
-                        <p className="text-xs text-[#666666] mt-1">I agree to allow DeepSkyN to securely store my biometric/photo data for authentication purposes.</p>
+                        <h4 className="font-bold text-base text-[#202020]" style={{ fontFamily: "Figtree" }}>Biometric Data</h4>
+                        <p className="text-sm text-[#5a5a5a] mt-1 leading-relaxed">Storage of photo/facial data for instant AI-powered secure authentication.</p>
                       </div>
                     </div>
 
                     {/* App Logic Consent */}
-                    <div className="flex items-start gap-4 p-4 bg-[#fafafa] rounded-2xl border border-[#e0e0e0]/50 text-left">
-                      <div className="p-2 bg-white rounded-xl shadow-sm">
-                        <FileText className="w-5 h-5 text-[#156d95]" />
+                    <div className="flex items-start gap-5 p-5 bg-gray-50/50 rounded-2xl border border-gray-100 text-left">
+                      <div className="p-3 bg-white rounded-2xl shadow-sm border border-gray-50">
+                        <FileText className="w-6 h-6 text-[#156d95]" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm text-[#202020]" style={{ fontFamily: "Figtree" }}>Application Logic Contract</h4>
-                        <p className="text-xs text-[#666666] mt-1">I accept the terms regarding automated workflows and internal logic management of my workspace.</p>
+                        <h4 className="font-bold text-base text-[#202020]" style={{ fontFamily: "Figtree" }}>Usage Contract</h4>
+                        <p className="text-sm text-[#5a5a5a] mt-1 leading-relaxed">Acceptance of automated workspace logic and internal process management.</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 w-full">
+                  <div className="grid grid-cols-2 gap-5 w-full">
                     <motion.button
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.02, backgroundColor: "#fef2f2", borderColor: "#fecaca" }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setShowConsentModal(false)}
-                      className="py-3.5 px-6 rounded-xl font-semibold border-2 border-[#e0e0e0] text-[#666666] hover:bg-gray-50 transition-all duration-300"
+                      onClick={declineSignup}
+                      className="py-4 px-6 rounded-2xl font-black text-xs uppercase tracking-widest border-2 border-[#e0e0e0] text-[#666666] transition-all duration-300"
                       style={{ fontFamily: "Figtree" }}
                     >
                       Decline
                     </motion.button>
                     <motion.button
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.02, boxShadow: "0 20px 40px -10px rgba(21,109,149,0.3)" }}
                       whileTap={{ scale: 0.98 }}
                       onClick={confirmSignup}
-                      className="py-3.5 px-6 rounded-xl font-semibold bg-[#156d95] text-white shadow-lg shadow-blue-900/20 hover:bg-[#0d4a6b] transition-all duration-300"
+                      className="py-4 px-6 rounded-2xl font-black text-xs uppercase tracking-widest bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white shadow-xl shadow-blue-500/20"
                       style={{ fontFamily: "Figtree" }}
                     >
                       Accept & Join
                     </motion.button>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Final Status Popup */}
+        {showStatusPopup && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute inset-0 bg-[#050510]/80 backdrop-blur-3xl"
+            />
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              className="relative w-full max-w-sm bg-white rounded-[3rem] p-10 text-center shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/20"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", delay: 0.2 }}
+                className={`w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center ${popupData.type === "success" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
+                  }`}
+              >
+                {popupData.type === "success" ? (
+                  <CheckCircle2 className="w-12 h-12" />
+                ) : (
+                  <AlertCircle className="w-12 h-12" />
+                )}
+              </motion.div>
+              <h2 className="text-2xl font-black text-gray-900 mb-4" style={{ fontFamily: "Figtree" }}>
+                {popupData.title}
+              </h2>
+              <p className="text-gray-500 font-medium mb-8 leading-relaxed">
+                {popupData.description}
+              </p>
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-6 h-6 animate-spin text-[#156d95]" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
+                  Redirecting to Workspace
+                </span>
               </div>
             </motion.div>
           </div>
