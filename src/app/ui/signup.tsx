@@ -187,7 +187,7 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc] px-4 py-12 relative overflow-hidden selection:bg-[#156d95]/10">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc] px-4 py-8 relative overflow-hidden selection:bg-[#156d95]/10">
       {/* Dynamic Background Mesh */}
       <div className="absolute inset-0 z-0">
         <motion.div
@@ -205,11 +205,11 @@ export default function SignUp() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-lg z-10"
+        className="w-full max-w-3xl z-10"
       >
         <motion.div
           whileHover={{ y: -5, borderColor: "rgba(21, 109, 149, 0.8)" }}
-          className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-8 md:p-12 border-2 border-[#156d95]/30 relative transition-colors duration-500"
+          className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-6 md:p-10 border-2 border-[#156d95]/30 relative transition-colors duration-500"
         >
           {/* Top subtle glow */}
           <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#156d95] to-transparent opacity-50" />
@@ -218,7 +218,7 @@ export default function SignUp() {
           <motion.div variants={itemVariants}>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-[#666666] hover:text-[#156d95] transition-all duration-300 mb-8 group no-underline"
+              className="inline-flex items-center gap-2 text-[#666666] hover:text-[#156d95] transition-all duration-300 mb-4 group no-underline"
             >
               <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl group-hover:bg-[#156d95]/10 transition-colors">
                 <ArrowLeft className="w-4 h-4" />
@@ -228,7 +228,7 @@ export default function SignUp() {
           </motion.div>
 
           {/* Logo Section */}
-          <motion.div variants={itemVariants} className="flex flex-col items-center mb-10 text-center">
+          <motion.div variants={itemVariants} className="flex flex-col items-center mb-6 text-center">
             <div className="relative group mb-4">
               <div className="absolute inset-0 bg-[#156d95] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
               <div className="relative w-16 h-16 bg-gradient-to-br from-[#156d95] to-[#0d4a6b] rounded-[1.5rem] flex items-center justify-center shadow-2xl">
@@ -246,7 +246,7 @@ export default function SignUp() {
           </motion.div>
 
           {/* Google Sign Up */}
-          <div className="relative mb-6 flex flex-col items-center">
+          <div className="relative mb-4 flex flex-col items-center">
             <AnimatePresence>
               {showGoogleSoon && (
                 <motion.div
@@ -309,7 +309,7 @@ export default function SignUp() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="relative mb-6"
+            className="relative mb-4"
           >
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#e0e0e0]"></div>
@@ -322,9 +322,9 @@ export default function SignUp() {
           </motion.div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3" noValidate>
             {/* Full Name */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="fullName" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Full Name
               </label>
@@ -374,7 +374,7 @@ export default function SignUp() {
             </motion.div>
 
             {/* Email */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="email" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Email Address
               </label>
@@ -422,8 +422,9 @@ export default function SignUp() {
               </AnimatePresence>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
-              <div>
+            {/* Date of Birth & Age */}
+            <motion.div variants={itemVariants} className="md:col-span-1 flex gap-3">
+              <div className="flex-[2] relative">
                 <label htmlFor="birthDate" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                   Date of Birth
                 </label>
@@ -441,59 +442,48 @@ export default function SignUp() {
                       handleBirthDateChange(e)
                       if (errors.birthDate) setErrors({ ...errors, birthDate: "" })
                     }}
-                    className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white appearance-none ${errors.birthDate
+                    className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.birthDate
                       ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
                       : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
                       }`}
-                    style={{ fontFamily: "Figtree" }}
+                    style={{ fontFamily: "Figtree", colorScheme: "light" }}
                   />
-                  <Calendar className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${errors.birthDate ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
+                  <Calendar className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none transition-colors duration-300 ${errors.birthDate ? "text-red-500" : "text-[#999999] group-focus-within:text-[#156d95]"}`} />
                 </motion.div>
+                <AnimatePresence mode="wait">
+                  {errors.birthDate && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0, y: -5 }}
+                      animate={{ opacity: 1, height: "auto", y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: -5 }}
+                      className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2 ml-1"
+                    >
+                      {errors.birthDate}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
+              <div className="flex-1 text-center">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2" style={{ fontFamily: "Figtree" }}>
                   Age
                 </label>
                 <div className="relative">
-                  <input
-                    type="text"
-                    value={age !== null ? `${age} years` : "--"}
-                    readOnly
-                    className="w-full px-4 py-3.5 border-2 border-[#e0e0e0] rounded-xl bg-[#f0f0f0] text-[#666666] cursor-not-allowed"
+                  <div
+                    className="w-full h-[54px] flex items-center justify-center border-2 border-[#e0e0e0] rounded-xl bg-[#f0f0f0] text-[#156d95] font-black text-xs cursor-default"
                     style={{ fontFamily: "Figtree" }}
-                  />
+                  >
+                    {age !== null ? `${age} YRS` : "--"}
+                  </div>
                 </div>
               </div>
-              <AnimatePresence mode="wait">
-                {errors.birthDate && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: -5 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -5 }}
-                    className="col-span-2 flex items-center gap-1.5 mt-2 ml-1"
-                  >
-                    <div className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />
-                    <p
-                      className="text-xs text-red-500 font-bold tracking-wide uppercase"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      {errors.birthDate}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
 
             {/* Gender/Sexe */}
-            <motion.div variants={itemVariants}>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
-                Sex
+            <motion.div variants={itemVariants} className="md:col-span-1 text-center">
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2" style={{ fontFamily: "Figtree" }}>
+                GENDER
               </label>
-              <motion.div
-                className="grid grid-cols-3 gap-3"
-                animate={shakeField === 'gender' ? { x: [-10, 10, -10, 10, 0] } : {}}
-                transition={{ duration: 0.4 }}
-              >
+              <div className="grid grid-cols-3 gap-2">
                 {['Male', 'Female', 'Other'].map((option) => (
                   <button
                     key={option}
@@ -502,23 +492,23 @@ export default function SignUp() {
                       setGender(option)
                       if (errors.gender) setErrors({ ...errors, gender: "" })
                     }}
-                    className={`py-2 px-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${gender === option
-                      ? "border-[#156d95] bg-[#156d95]/5 text-[#156d95] shadow-sm"
+                    className={`h-[54px] rounded-xl border-2 transition-all duration-300 text-[10px] font-black uppercase tracking-widest ${gender === option
+                      ? "border-[#156d95] bg-[#156d95]/5 text-[#156d95] shadow-inner"
                       : errors.gender
-                        ? "border-red-500 text-red-500 bg-red-50/50 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
+                        ? "border-red-500 text-red-500 bg-red-50/50"
                         : "border-[#e0e0e0] text-[#666666] hover:border-[#156d95]/30 hover:bg-[#fafafa]"
                       }`}
                     style={{ fontFamily: "Figtree" }}
                   >
-                    {option === 'Male' ? 'Male' : option === 'Female' ? 'Female' : 'Other'}
+                    {option}
                   </button>
                 ))}
-              </motion.div>
+              </div>
               <AnimatePresence>
                 {errors.gender && (
                   <motion.p
                     initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
-                    className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2 ml-1"
+                    className="text-[10px] text-red-500 font-black uppercase tracking-widest mt-2"
                   >
                     {errors.gender}
                   </motion.p>
@@ -527,7 +517,7 @@ export default function SignUp() {
             </motion.div>
 
             {/* Password */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="password" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Password
               </label>
@@ -580,7 +570,7 @@ export default function SignUp() {
             </motion.div>
 
             {/* Confirm Password */}
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="confirmPassword" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
                 Confirm Password
               </label>
@@ -628,7 +618,7 @@ export default function SignUp() {
             </motion.div>
 
             {/* Create Account Button */}
-            <motion.div variants={itemVariants} className="pt-2">
+            <motion.div variants={itemVariants} className="md:col-span-2 pt-2">
               <motion.button
                 whileHover={{ scale: 1.01, y: -2 }}
                 whileTap={{ scale: 0.98 }}
@@ -654,7 +644,7 @@ export default function SignUp() {
           {/* Footer */}
           <motion.div
             variants={itemVariants}
-            className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 text-center"
+            className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 text-center md:col-span-2"
           >
             <p className="text-[10px] font-bold text-[#999999] uppercase tracking-[0.2em] mb-4" style={{ fontFamily: "Figtree" }}>
               By creating an account, you accept our <br />
@@ -674,7 +664,7 @@ export default function SignUp() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
-          className="mt-8 text-center text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]"
+          className="mt-6 text-center text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]"
         >
           © 2026 DEEPSKYN LTD • ENCRYPTED SESSION
         </motion.p>
