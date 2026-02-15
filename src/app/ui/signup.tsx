@@ -105,7 +105,7 @@ export default function SignUp() {
     }
 
     if (!gender) {
-      newErrors.gender = "Please select your sex"
+      newErrors.gender = "Please select your gender"
     }
 
     if (!password) {
