@@ -142,8 +142,8 @@ export default function BillingPage() {
                             key={s}
                             onClick={() => setSubscription({ ...MOCK_SUBSCRIPTION, status: s })}
                             className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${subscription.status === s
-                                    ? "bg-primary text-white shadow-lg scale-105"
-                                    : "hover:bg-white/10 text-muted-foreground hover:text-foreground"
+                                ? "bg-primary text-white shadow-lg scale-105"
+                                : "hover:bg-white/10 text-muted-foreground hover:text-foreground"
                                 }`}
                         >
                             {s}
@@ -180,7 +180,7 @@ export default function BillingPage() {
                                 className="group relative bg-card/60 backdrop-blur-sm border border-border/50 rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl transition-all duration-500 hover:border-primary/20"
                             >
                                 <div className={`h-2 w-full transition-colors duration-500 ${subscription.status === "active" ? "bg-green-500" :
-                                        subscription.status === "expiring" ? "bg-amber-500" : "bg-red-500"
+                                    subscription.status === "expiring" ? "bg-amber-500" : "bg-red-500"
                                     }`} />
 
                                 <div className="p-8 md:p-10">
@@ -204,11 +204,11 @@ export default function BillingPage() {
                                     </div>
 
                                     <div className={`p-6 rounded-[24px] flex items-center gap-5 border transition-all duration-500 ${subscription.status === "active" ? "bg-green-500/5 border-green-500/10 text-green-700 dark:text-green-400 shadow-[inset_0_0_20px_rgba(34,197,94,0.05)]" :
-                                            subscription.status === "expiring" ? "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]" :
-                                                "bg-red-500/5 border-red-500/10 text-red-700 dark:text-red-400 shadow-[inset_0_0_20px_rgba(239,68,68,0.05)]"
+                                        subscription.status === "expiring" ? "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]" :
+                                            "bg-red-500/5 border-red-500/10 text-red-700 dark:text-red-400 shadow-[inset_0_0_20px_rgba(239,68,68,0.05)]"
                                         }`}>
                                         <div className={`p-3 rounded-2xl flex-shrink-0 ${subscription.status === "active" ? "bg-green-500/10" :
-                                                subscription.status === "expiring" ? "bg-amber-500/10" : "bg-red-500/10"
+                                            subscription.status === "expiring" ? "bg-amber-500/10" : "bg-red-500/10"
                                             }`}>
                                             {subscription.status === "active" ? <CheckCircle2 className="w-6 h-6" /> :
                                                 subscription.status === "expiring" ? <AlertCircle className="w-6 h-6" /> :
@@ -345,8 +345,8 @@ export default function BillingPage() {
                                             disabled={isProcessing}
                                             onClick={handleAction}
                                             className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all relative overflow-hidden group ${subscription.status === "active"
-                                                    ? "bg-slate-800 dark:bg-muted text-white hover:bg-slate-700 dark:hover:bg-muted/80 shadow-inner"
-                                                    : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_40px_rgba(var(--primary),0.3)]"
+                                                ? "bg-slate-800 dark:bg-muted text-white hover:bg-slate-700 dark:hover:bg-muted/80 shadow-inner"
+                                                : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_40px_rgba(var(--primary),0.3)]"
                                                 } ${isProcessing ? "opacity-90 cursor-wait" : ""}`}
                                         >
                                             {isProcessing ? (

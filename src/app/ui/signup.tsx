@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Mail, Lock, Eye, EyeOff, User, ArrowLeft, Calendar, UserCircle, AlertCircle, CheckCircle2, Loader2, Sparkles } from "lucide-react"
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion"
+import { Mail, Eye, EyeOff, User, ArrowLeft, Calendar, AlertCircle, Loader2, Sparkles } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
 
@@ -22,23 +22,6 @@ export default function SignUp() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shakeField, setShakeField] = useState<string | null>(null)
-
-  // Mouse tracking for parallax effect
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const springConfig = { damping: 25, stiffness: 150 }
-  const bounceX = useSpring(mouseX, springConfig)
-  const bounceY = useSpring(mouseY, springConfig)
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX - window.innerWidth / 2)
-      mouseY.set(e.clientY - window.innerHeight / 2)
-    }
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [mouseX, mouseY])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -177,9 +160,10 @@ export default function SignUp() {
       setTimeout(() => {
         router.push('/verify-code');
       }, 1000);
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
       toast.error('Signup Failed', {
-        description: error.message || 'Something went wrong',
+        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false)
@@ -204,25 +188,19 @@ export default function SignUp() {
         router.push('/user');
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign up';
       toast.error('Google Sign-Up Failed', {
-        description: 'An error occurred during sign up',
+        description: errorMessage,
       });
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc] px-4 py-8 relative overflow-hidden selection:bg-[#156d95]/10">
-      {/* Dynamic Background Mesh */}
+      {/* Simplified Background */}
       <div className="absolute inset-0 z-0">
-        <motion.div
-          style={{ x: bounceX, y: bounceY, scale: 1.2 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70"
-        />
-        <motion.div
-          style={{ x: bounceX, y: bounceY, scale: 1.1 }}
-          className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#1a7aaa]/5 rounded-full blur-[100px]"
-        />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70" />
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#1a7aaa]/5 rounded-full blur-[100px]" />
       </div>
 
       <motion.div
@@ -231,10 +209,7 @@ export default function SignUp() {
         animate="visible"
         className="w-full max-w-3xl z-10"
       >
-        <motion.div
-          whileHover={{ y: -5, borderColor: "rgba(21, 109, 149, 0.8)" }}
-          className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-6 md:p-10 border-2 border-[#156d95]/30 relative transition-colors duration-500"
-        >
+        <div className="bg-white/80 dark:bg-black/40 backdrop-blur-md rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-6 md:p-10 border-2 border-[#156d95]/30 relative transition-all duration-300 hover:border-[#156d95]/60">
           {/* Top subtle glow */}
           <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#156d95] to-transparent opacity-50" />
 
@@ -262,10 +237,8 @@ export default function SignUp() {
                 <div className="absolute inset-0 bg-white/10 group-hover:translate-y-full transition-transform duration-700" />
                 <div className="grid grid-cols-2 gap-1 p-3">
                   {[0, 1, 2, 3].map((i) => (
-                    <motion.div
+                    <div
                       key={i}
-                      animate={{ opacity: [0.5, 1, 0.5], scale: [0.95, 1.05, 0.95] }}
-                      transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
                       className="w-3 h-3 bg-white rounded-[3px] shadow-sm"
                     />
                   ))}
@@ -282,35 +255,34 @@ export default function SignUp() {
           </motion.div>
 
           {/* Google Sign Up Button */}
-          <motion.button
-            variants={itemVariants}
-            whileHover={{ scale: 1.01, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleGoogleSignUp}
-            type="button"
-            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-[#e0e0e0] rounded-xl hover:bg-[#f9f9f9] hover:border-[#156d95]/30 transition-all duration-300 shadow-sm hover:shadow-md mb-4"
-            style={{ fontFamily: "Figtree" }}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.8789 15.7789 19.9895 13.221 19.9895 10.1871Z"
-                fill="#4285F4"
-              />
-              <path
-                d="M10.1993 19.9313C12.9527 19.9313 15.2643 19.0454 16.9527 17.5174L13.7346 15.0813C12.8734 15.6682 11.7176 16.0779 10.1993 16.0779C7.50243 16.0779 5.21352 14.3395 4.39759 11.9366L4.27799 11.9466L1.13003 14.3273L1.08887 14.4391C2.76588 17.6945 6.21061 19.9313 10.1993 19.9313Z"
-                fill="#34A853"
-              />
-              <path
-                d="M4.39748 11.9366C4.18219 11.3166 4.05759 10.6521 4.05759 9.96565C4.05759 9.27909 4.18219 8.61473 4.38615 7.99466L4.38045 7.8626L1.19304 5.44366L1.08875 5.49214C0.397576 6.84305 0.000976562 8.36008 0.000976562 9.96565C0.000976562 11.5712 0.397576 13.0882 1.08875 14.4391L4.39748 11.9366Z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M10.1993 3.85336C12.1142 3.85336 13.406 4.66168 14.1425 5.33718L17.0207 2.59107C15.253 0.985496 12.9527 0 10.1993 0C6.2106 0 2.76588 2.23672 1.08887 5.49214L4.38626 7.99466C5.21352 5.59183 7.50242 3.85336 10.1993 3.85336Z"
-                fill="#EB4335"
-              />
-            </svg>
-            <span className="text-[#202020] font-semibold">Sign up with Google</span>
-          </motion.button>
+          <motion.div variants={itemVariants}>
+            <button
+              onClick={handleGoogleSignUp}
+              type="button"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-[#e0e0e0] rounded-xl hover:bg-[#f9f9f9] hover:border-[#156d95]/30 transition-all duration-300 shadow-sm hover:shadow-md mb-4 hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.98]"
+              style={{ fontFamily: "Figtree" }}
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.8789 15.7789 19.9895 13.221 19.9895 10.1871Z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M10.1993 19.9313C12.9527 19.9313 15.2643 19.0454 16.9527 17.5174L13.7346 15.0813C12.8734 15.6682 11.7176 16.0779 10.1993 16.0779C7.50243 16.0779 5.21352 14.3395 4.39759 11.9366L4.27799 11.9466L1.13003 14.3273L1.08887 14.4391C2.76588 17.6945 6.21061 19.9313 10.1993 19.9313Z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M4.39748 11.9366C4.18219 11.3166 4.05759 10.6521 4.05759 9.96565C4.05759 9.27909 4.18219 8.61473 4.38615 7.99466L4.38045 7.8626L1.19304 5.44366L1.08875 5.49214C0.397576 6.84305 0.000976562 8.36008 0.000976562 9.96565C0.000976562 11.5712 0.397576 13.0882 1.08875 14.4391L4.39748 11.9366Z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M10.1993 3.85336C12.1142 3.85336 13.406 4.66168 14.1425 5.33718L17.0207 2.59107C15.253 0.985496 12.9527 0 10.1993 0C6.2106 0 2.76588 2.23672 1.08887 5.49214L4.38626 7.99466C5.21352 5.59183 7.50242 3.85336 10.1993 3.85336Z"
+                  fill="#EB4335"
+                />
+              </svg>
+              <span className="text-[#202020] font-semibold">Sign up with Google</span>
+            </button>
+          </motion.div>
 
           {/* Divider */}
           <motion.div
@@ -551,15 +523,13 @@ export default function SignUp() {
                     }`}
                   style={{ fontFamily: "Figtree" }}
                 />
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${errors.password ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 active:scale-95 ${errors.password ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </motion.button>
+                </button>
               </motion.div>
               <AnimatePresence>
                 {errors.password ? (
@@ -603,15 +573,13 @@ export default function SignUp() {
                     }`}
                   style={{ fontFamily: "Figtree" }}
                 />
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${errors.confirmPassword ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 active:scale-95 ${errors.confirmPassword ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </motion.button>
+                </button>
               </motion.div>
               <AnimatePresence>
                 {errors.confirmPassword && (
@@ -627,12 +595,10 @@ export default function SignUp() {
 
             {/* Create Account Button */}
             <motion.div variants={itemVariants} className="md:col-span-2 pt-2">
-              <motion.button
-                whileHover={{ scale: 1.01, y: -2 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 disabled={isSubmitting}
                 type="submit"
-                className="w-full relative group h-14 bg-gradient-to-r from-[#156d95] to-[#0d4a6b] rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 active:shadow-none"
+                className="w-full relative group h-14 bg-gradient-to-r from-[#156d95] to-[#0d4a6b] rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 active:shadow-none transition-all hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                 <span className="relative flex items-center justify-center gap-2 text-white font-black uppercase tracking-[0.2em] text-xs" style={{ fontFamily: "Figtree" }}>
@@ -645,7 +611,7 @@ export default function SignUp() {
                     </>
                   )}
                 </span>
-              </motion.button>
+              </button>
             </motion.div>
           </form>
 
@@ -665,7 +631,7 @@ export default function SignUp() {
               </Link>
             </p>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Outer subtle info */}
         <motion.p

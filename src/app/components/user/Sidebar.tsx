@@ -2,7 +2,7 @@
 
 import { Logo } from "@/app/components/logo";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { LoadingLink } from "../LoadingLink";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { USER_NAV_DATA } from "./data";
@@ -63,13 +63,13 @@ export function Sidebar({ userName, userPhoto }: SidebarProps) {
             >
                 <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
                     <div className="relative pr-4.5">
-                        <Link
+                        <LoadingLink
                             href={"/"}
                             onClick={() => isMobile && toggleSidebar()}
                             className="block mb-8 px-2"
                         >
                             <Logo />
-                        </Link>
+                        </LoadingLink>
 
                         {isMobile && (
                             <button

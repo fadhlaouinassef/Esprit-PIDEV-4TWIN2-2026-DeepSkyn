@@ -6,7 +6,7 @@ import "./css/lenis.css"
 import { NavigationProvider } from "./components/NavigationProvider";
 import SmoothScrollProvider from "./components/SmoothScrollProvider";
 import AuthProvider from "./components/AuthProvider";
-import { Toaster } from "sonner"
+import { ToastProvider } from "./components/ToastProvider";
 
 const figtree = Figtree({
   variable: "--font-sans",
@@ -45,8 +45,8 @@ export default function RootLayout({
         className={`${figtree.variable} ${inter.variable} ${geistMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
+        <ToastProvider />
         <AuthProvider>
-          <Toaster position="top-center" richColors closeButton />
           <SmoothScrollProvider>
             <NavigationProvider>
               {children}

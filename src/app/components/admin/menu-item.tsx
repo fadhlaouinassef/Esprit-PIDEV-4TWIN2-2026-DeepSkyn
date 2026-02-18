@@ -2,7 +2,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { LoadingLink } from "../LoadingLink";
 
 interface MenuItemProps {
     children: React.ReactNode;
@@ -21,7 +21,7 @@ export function MenuItem({
     as = "div",
     href,
 }: MenuItemProps) {
-    const Comp = as === "link" && href ? Link : (as === "button" ? "button" : "div");
+    const Comp = as === "link" && href ? LoadingLink : (as === "button" ? "button" : "div");
 
     const props = as === "link" && href ? { href } : {};
 

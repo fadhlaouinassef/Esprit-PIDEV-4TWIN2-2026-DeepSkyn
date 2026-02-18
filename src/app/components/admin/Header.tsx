@@ -3,7 +3,6 @@
 
 import { Search, Menu, Moon, Sun, ChevronDown } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useSidebarContext } from "../admin/sidebar-context";
 import { useState } from "react";
 import { Notification } from "./Notification";
