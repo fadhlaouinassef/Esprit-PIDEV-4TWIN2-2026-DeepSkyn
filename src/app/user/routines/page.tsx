@@ -26,7 +26,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { toast } from "sonner";
 
 // --- Types ---
-type RoutineType = "morning" | "evening" | "weekly";
+type RoutineType = "morning" | "night" | "weekly";
 
 interface Product {
     id: string;
@@ -107,7 +107,7 @@ const INITIAL_ROUTINES: Record<RoutineType, RoutineStep[]> = {
         { id: "s4", product: PRODUCTS.moisturizer, completed: false },
         { id: "s5", product: PRODUCTS.sunscreen, completed: false },
     ],
-    evening: [
+    night: [
         { id: "e1", product: PRODUCTS.cleanser, completed: false },
         { id: "e2", product: PRODUCTS.toner, completed: false },
         { id: "e3", product: PRODUCTS.moisturizer, completed: false },
@@ -227,7 +227,7 @@ export default function RoutinePage() {
                 <div className="flex p-1.5 bg-muted/30 backdrop-blur-md rounded-[24px] border border-border/50 mb-10 w-fit">
                     {[
                         { id: "morning", label: "Morning", icon: Sun },
-                        { id: "evening", label: "Evening", icon: Moon },
+                        { id: "night", label: "Night", icon: Moon },
                         { id: "weekly", label: "Weekly", icon: Calendar },
                     ].map((tab) => (
                         <button

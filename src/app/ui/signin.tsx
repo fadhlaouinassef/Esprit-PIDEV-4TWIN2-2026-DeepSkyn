@@ -4,11 +4,15 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, Sparkles } from "lucide-react"
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
+import { signIn } from "next-auth/react"
+import { useAppDispatch } from "@/store/hooks"
+import { setUser } from "@/store/slices/authSlice"
 
 export default function SignIn() {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
@@ -17,22 +21,14 @@ export default function SignIn() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shakeField, setShakeField] = useState<string | null>(null)
 
-  // Mouse tracking for parallax effect
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const springConfig = { damping: 25, stiffness: 150 }
-  const bounceX = useSpring(mouseX, springConfig)
-  const bounceY = useSpring(mouseY, springConfig)
-
+  // Test toast on mount to verify it works
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX - window.innerWidth / 2)
-      mouseY.set(e.clientY - window.innerHeight / 2)
-    }
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [mouseX, mouseY])
+    console.log('SignIn component mounted, toast available:', typeof toast);
+    toast.info('DeepSkyn System', {
+      description: 'Notifications are now configured for Top-Center.',
+      duration: 5000,
+    });
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -66,24 +62,122 @@ export default function SignIn() {
 
     if (validateForm()) {
       setIsSubmitting(true)
-      await new Promise(resolve => setTimeout(resolve, 1500))
 
-      toast.success("Login successful!", {
-        description: "You are being redirected..."
-      })
-      router.push("/admin")
-      setIsSubmitting(false)
+      try {
+        console.log('Attempting signin with:', { email });
+        const response = await fetch('/api/auth/signin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        const data = await response.json();
+        console.log('Signin response:', data, 'Status:', response.status);
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to sign in');
+        }
+
+        // Store user data in Redux store
+        dispatch(setUser({
+          id: data.user.id,
+          nom: data.user.nom,
+          prenom: data.user.prenom || '',
+          email: data.user.email,
+          photo: data.user.photo || '/avatar.png',
+          role: data.user.role || 'user'
+        }));
+
+        toast.success('Login successful!', {
+          description: 'You are being redirected...',
+          duration: 2000,
+        });
+
+        // Redirect to user page
+        setTimeout(() => {
+          router.push('/user');
+        }, 2000);
+      } catch (error) {
+        console.error('❌ Signin error caught:', error);
+        const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+        console.log('📢 Attempting to show toast with message:', errorMessage);
+
+        if (errorMessage.includes('verify your account')) {
+          const result = toast.error('Account Not Verified', {
+            description: errorMessage,
+            duration: 5000,
+          });
+          console.log('Toast result (verify):', result);
+        } else {
+          const result = toast.error('Login Failed', {
+            description: errorMessage || 'Invalid email or password',
+            duration: 5000,
+          });
+          console.log('Toast result (error):', result);
+        }
+      } finally {
+        setIsSubmitting(false)
+      }
     } else {
-      toast.error("Login Failed", {
-        description: "Please check the fields in red"
-      })
+      console.log('❌ Form validation failed');
+      const result = toast.error("Login Failed", {
+        description: "Please check the fields in red",
+        duration: 5000,
+      });
+      console.log('Toast result (validation):', result);
     }
   }
 
-  const handleGoogleSignIn = () => {
-    toast.info("Google Sign-In", {
-      description: "This feature will be available soon"
-    })
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signIn('google', {
+        callbackUrl: '/user',
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('Google Sign-In Failed', {
+          description: result.error,
+        });
+      } else if (result?.ok) {
+        // Fetch user data and store in Redux
+        try {
+          const response = await fetch('/api/auth/session');
+          const session = await response.json();
+          
+          if (session?.user) {
+            dispatch(setUser({
+              id: parseInt(session.user.id),
+              nom: session.user.name || '',
+              prenom: '',
+              email: session.user.email,
+              photo: session.user.image || '/avatar.png',
+              role: session.user.role || 'user'
+            }));
+          }
+        } catch (error) {
+          console.error('Error fetching session:', error);
+        }
+
+        toast.success('Login successful!', {
+          description: 'Redirecting...',
+          duration: 2000,
+        });
+        setTimeout(() => {
+          router.push('/user');
+        }, 2000);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
+      toast.error('Google Sign-In Failed', {
+        description: errorMessage,
+      });
+    }
   }
 
   const containerVariants = {
@@ -104,18 +198,10 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc] px-4 py-8 relative overflow-hidden selection:bg-[#156d95]/10">
-      {/* Dynamic Background Mesh */}
+      {/* Simplified Background */}
       <div className="absolute inset-0 z-0">
-        <motion.div
-          style={{ x: bounceX, y: bounceY, scale: 1.2 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70"
-        />
-        <motion.div
-          style={{ x: bounceX, y: bounceY, scale: 1.1 }}
-          transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#1a7aaa]/5 rounded-full blur-[100px]"
-        />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70" />
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#1a7aaa]/5 rounded-full blur-[100px]" />
       </div>
 
       <motion.div
@@ -124,9 +210,7 @@ export default function SignIn() {
         animate="visible"
         className="w-full max-w-md z-10"
       >
-        <motion.div
-          whileHover={{ y: -5, borderColor: "rgba(21, 109, 149, 0.8)" }}
-          className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-6 md:p-10 border-2 border-[#156d95]/30 relative transition-colors duration-500">
+        <div className="bg-white/80 dark:bg-black/40 backdrop-blur-md rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-6 md:p-10 border-2 border-[#156d95]/30 relative transition-all duration-300 hover:border-[#156d95]/60">
           {/* Top subtle glow */}
           <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#156d95] to-transparent opacity-50" />
 
@@ -154,10 +238,8 @@ export default function SignIn() {
                 <div className="absolute inset-0 bg-white/10 group-hover:translate-y-full transition-transform duration-700" />
                 <div className="grid grid-cols-2 gap-1 p-3">
                   {[0, 1, 2, 3].map((i) => (
-                    <motion.div
+                    <div
                       key={i}
-                      animate={{ opacity: [0.5, 1, 0.5], scale: [0.95, 1.05, 0.95] }}
-                      transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
                       className="w-3 h-3 bg-white rounded-[3px] shadow-sm"
                     />
                   ))}
@@ -302,12 +384,10 @@ export default function SignIn() {
 
             {/* Sign In Button */}
             <motion.div variants={itemVariants} className="pt-2">
-              <motion.button
-                whileHover={{ scale: 1.01, y: -2 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 disabled={isSubmitting}
                 type="submit"
-                className="w-full relative group h-12 bg-gradient-to-r from-[#156d95] to-[#0d4a6b] rounded-2xl overflow-hidden shadow-xl shadow-blue-500/10 active:shadow-none"
+                className="w-full relative group h-12 bg-gradient-to-r from-[#156d95] to-[#0d4a6b] rounded-2xl overflow-hidden shadow-xl shadow-blue-500/10 active:shadow-none transition-all hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                 <span className="relative flex items-center justify-center gap-2 text-white font-black uppercase tracking-[0.2em] text-[10px]" style={{ fontFamily: "Figtree" }}>
@@ -320,7 +400,47 @@ export default function SignIn() {
                     </>
                   )}
                 </span>
-              </motion.button>
+              </button>
+            </motion.div>
+
+            {/* Divider */}
+            <motion.div variants={itemVariants} className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 dark:border-gray-800" />
+              </div>
+              <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
+                <span className="px-3 bg-white dark:bg-black/40 text-gray-400">Or continue with</span>
+              </div>
+            </motion.div>
+
+            {/* Google Sign In Button */}
+            <motion.div variants={itemVariants}>
+              <button
+                onClick={handleGoogleSignIn}
+                type="button"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-900/50 hover:border-[#156d95]/30 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.98]"
+                style={{ fontFamily: "Figtree" }}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.8789 15.7789 19.9895 13.221 19.9895 10.1871Z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M10.1993 19.9313C12.9527 19.9313 15.2643 19.0454 16.9527 17.5174L13.7346 15.0813C12.8734 15.6682 11.7176 16.0779 10.1993 16.0779C7.50243 16.0779 5.21352 14.3395 4.39759 11.9366L4.27799 11.9466L1.13003 14.3273L1.08887 14.4391C2.76588 17.6945 6.21061 19.9313 10.1993 19.9313Z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M4.39748 11.9366C4.18219 11.3166 4.05759 10.6521 4.05759 9.96565C4.05759 9.27909 4.18219 8.61473 4.38615 7.99466L4.38045 7.8626L1.19304 5.44366L1.08875 5.49214C0.397576 6.84305 0.000976562 8.36008 0.000976562 9.96565C0.000976562 11.5712 0.397576 13.0882 1.08875 14.4391L4.39748 11.9366Z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M10.1993 3.85336C12.1142 3.85336 13.406 4.66168 14.1425 5.33718L17.0207 2.59107C15.253 0.985496 12.9527 0 10.1993 0C6.2106 0 2.76588 2.23672 1.08887 5.49214L4.38626 7.99466C5.21352 5.59183 7.50242 3.85336 10.1993 3.85336Z"
+                    fill="#EB4335"
+                  />
+                </svg>
+                <span className="text-gray-700 dark:text-gray-300 font-semibold text-sm">Sign in with Google</span>
+              </button>
             </motion.div>
           </form>
 
@@ -336,7 +456,7 @@ export default function SignIn() {
               </Link>
             </p>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Outer subtle info */}
         <motion.p
