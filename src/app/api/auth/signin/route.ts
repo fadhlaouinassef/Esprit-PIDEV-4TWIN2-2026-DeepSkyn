@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { signin } from '@/services/auth.service';
 
+export async function GET(request: NextRequest) {
+  // Handle GET requests by redirecting to signin page
+  // This is used when NextAuth redirects with errors
+  return NextResponse.redirect(new URL('/signin', request.url));
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

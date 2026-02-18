@@ -52,6 +52,11 @@ deepskyn/
 │  ├─ services/         # Backend logic
 │  ├─ entities/         # Data models
 │  ├─ modele/           # AI model (TypeScript)
+│  ├─ store/            # Redux store (state management)
+│  │  ├─ slices/        # Redux slices
+│  │  ├─ hooks.ts       # Custom Redux hooks
+│  │  ├─ index.ts       # Store configuration
+│  │  └─ Provider.tsx   # Redux Provider component
 │  └─ lib/              # Infrastructure & utilities
 ├─ prisma/              # Database schema & migrations
 └─ public/              # Static assets

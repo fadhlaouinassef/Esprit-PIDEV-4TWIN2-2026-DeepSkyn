@@ -7,6 +7,7 @@ export class User {
   role!: RoleType;
   created_at!: Date;
   nom?: string;
+  prenom?: string;
   sexe?: string;
   age?: number;
   skin_type?: SkinType;

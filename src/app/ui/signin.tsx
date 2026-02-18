@@ -7,9 +7,12 @@ import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, Sparkles } fr
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
+import { useAppDispatch } from "@/store/hooks"
+import { setUser } from "@/store/slices/authSlice"
 
 export default function SignIn() {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
@@ -80,8 +83,15 @@ export default function SignIn() {
           throw new Error(data.error || 'Failed to sign in');
         }
 
-        // Store user data in localStorage or sessionStorage
-        sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+        // Store user data in Redux store
+        dispatch(setUser({
+          id: data.user.id,
+          nom: data.user.nom,
+          prenom: data.user.prenom || '',
+          email: data.user.email,
+          photo: data.user.photo || '/avatar.png',
+          role: data.user.role || 'user'
+        }));
 
         toast.success('Login successful!', {
           description: 'You are being redirected...',
@@ -135,6 +145,25 @@ export default function SignIn() {
           description: result.error,
         });
       } else if (result?.ok) {
+        // Fetch user data and store in Redux
+        try {
+          const response = await fetch('/api/auth/session');
+          const session = await response.json();
+          
+          if (session?.user) {
+            dispatch(setUser({
+              id: parseInt(session.user.id),
+              nom: session.user.name || '',
+              prenom: '',
+              email: session.user.email,
+              photo: session.user.image || '/avatar.png',
+              role: session.user.role || 'user'
+            }));
+          }
+        } catch (error) {
+          console.error('Error fetching session:', error);
+        }
+
         toast.success('Login successful!', {
           description: 'Redirecting...',
           duration: 2000,

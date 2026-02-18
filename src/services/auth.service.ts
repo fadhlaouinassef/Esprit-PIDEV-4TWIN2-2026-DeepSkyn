@@ -80,6 +80,7 @@ export const verifyOtp = async (userId: number, otp: string) => {
         id: user.id,
         email: user.email,
         nom: user.nom,
+        prenom: user.prenom,
         role: user.role,
       },
     };
@@ -115,6 +116,7 @@ export const signin = async (data: SigninData) => {
         id: user.id,
         email: user.email,
         nom: user.nom,
+        prenom: user.prenom,
         role: user.role,
         image: user.image,
       },
