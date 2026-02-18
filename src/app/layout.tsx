@@ -45,7 +45,6 @@ export default function RootLayout({
         className={`${figtree.variable} ${inter.variable} ${geistMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <ToastProvider />
         <AuthProvider>
           <SmoothScrollProvider>
             <NavigationProvider>
@@ -53,6 +52,7 @@ export default function RootLayout({
             </NavigationProvider>
           </SmoothScrollProvider>
         </AuthProvider>
+        <ToastProvider />
       </body>
     </html>
   );

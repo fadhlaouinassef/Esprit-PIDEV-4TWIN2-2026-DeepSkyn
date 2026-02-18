@@ -43,18 +43,13 @@
 /* Ensure Sonner toasts are above all page content */
 [data-sonner-toaster] {
   z-index: 999999999 !important;
-  position: fixed !important;
-  inset: 0px !important;
-  pointer-events: none !important;
 }
 
 [data-sonner-toast] {
-  pointer-events: auto !important;
-  margin: 8px auto !important;
   min-width: 350px !important;
   max-width: 450px !important;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
-  animation: slideIn 0.3s ease-out !important;
+  border-radius: 12px !important;
 }
 
 @keyframes slideIn {
@@ -62,6 +57,7 @@
     transform: translateY(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
