@@ -52,6 +52,7 @@ model User {
   role       RoleType  @default(USER)
   created_at DateTime  @default(now())
   nom        String?
+  prenom     String?
   sexe       String?
   age        Int?
   skin_type  SkinType?
@@ -72,6 +73,7 @@ model User {
 model Badge {
   id          Int         @id @default(autoincrement())
   user_id     Int
+  titre       String
   date        DateTime    @default(now())
   description String?
   niveau      NiveauBadge
@@ -154,6 +156,7 @@ model Routine {
   id       Int     @id @default(autoincrement())
   user_id  Int
   type     String
+  envie    String?
   objectif String?
 
   user  User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -173,7 +176,7 @@ model RoutineStep {
 model Ingredient {
   id                 Int                  @id @default(autoincrement())
   routine_step_id    Int
-  nom                String
+  ingredient         String
   description        String?
 
   routineStep        RoutineStep          @relation(fields: [routine_step_id], references: [id], onDelete: Cascade)
@@ -184,6 +187,7 @@ model IngredientConflict {
   id            Int        @id @default(autoincrement())
   ingredient_id Int
   description   String
+  text          String?
 
   ingredient Ingredient @relation(fields: [ingredient_id], references: [id], onDelete: Cascade)
 }
@@ -191,9 +195,9 @@ model IngredientConflict {
 model SkinAnalyse {
   id            Int      @id @default(autoincrement())
   user_id       Int
-  score_peau    Float?
+  score_eau     Float?
   age_peau      Int?
-  date_analyse  DateTime @default(now())
+  date_creation DateTime @default(now())
   score         Float?
   description   String?
 
