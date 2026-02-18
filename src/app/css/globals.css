@@ -40,17 +40,9 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* Ensure Sonner toasts are above all page content */
-[data-sonner-toaster] {
-  z-index: 999999999 !important;
-}
 
-[data-sonner-toast] {
-  min-width: 350px !important;
-  max-width: 450px !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
-  border-radius: 12px !important;
-}
+
+
 
 @keyframes slideIn {
   from {
@@ -530,4 +522,24 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+}
+
+/* Force Sonner Toasts to Top Center */
+[data-sonner-toaster] {
+  z-index: 999999999 !important;
+}
+
+[data-sonner-toaster][data-y-position="top"] {
+  top: 10px !important;
+}
+
+[data-sonner-toast] {
+  font-family: var(--font-sans) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Custom indicator style if user mistakenly identifies Next.js Dev Indicator */
+.next-dev-indicator-warning {
+  display: none !important;
 }

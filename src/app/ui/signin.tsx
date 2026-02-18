@@ -21,6 +21,10 @@ export default function SignIn() {
   // Test toast on mount to verify it works
   useEffect(() => {
     console.log('SignIn component mounted, toast available:', typeof toast);
+    toast.info('DeepSkyn System', {
+      description: 'Notifications are now configured for Top-Center.',
+      duration: 5000,
+    });
   }, []);
 
   const validateForm = () => {

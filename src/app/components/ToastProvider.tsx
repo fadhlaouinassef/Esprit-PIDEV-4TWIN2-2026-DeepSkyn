@@ -15,7 +15,6 @@ export function ToastProvider() {
       closeButton
       expand={true}
       visibleToasts={5}
-      theme="light"
     />
   );
 }
