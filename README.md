@@ -38,6 +38,11 @@ npm run db:setup    # Create + migrate (all in one)
 npm run db:studio   # Open Prisma Studio
 ```
 
+```
+-- Régénérer le client Prisma`
+npx prisma generate
+```
+
 ## Project Structure
 
 ```
