@@ -55,6 +55,10 @@ model User {
   sexe       String?
   age        Int?
   skin_type  SkinType?
+  image      String?
+  verified   Boolean   @default(false)
+  otp_code   String?
+  otp_expiry DateTime?
 
   badges          Badge[]
   subscriptions   Subscription[]

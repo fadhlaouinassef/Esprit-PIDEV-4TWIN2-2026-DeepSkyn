@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, Sparkles } from "lucide-react"
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion"
 import { toast } from "sonner"
+import { signIn } from "next-auth/react"
 
 export default function SignIn() {
   const router = useRouter()
@@ -66,13 +67,49 @@ export default function SignIn() {
 
     if (validateForm()) {
       setIsSubmitting(true)
-      await new Promise(resolve => setTimeout(resolve, 1500))
 
-      toast.success("Login successful!", {
-        description: "You are being redirected..."
-      })
-      router.push("/admin")
-      setIsSubmitting(false)
+      try {
+        const response = await fetch('/api/auth/signin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to sign in');
+        }
+
+        // Store user data in localStorage or sessionStorage
+        sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+
+        toast.success('Login successful!', {
+          description: 'You are being redirected...',
+        });
+
+        // Redirect to user page
+        setTimeout(() => {
+          router.push('/user');
+        }, 1000);
+      } catch (error: any) {
+        if (error.message.includes('verify your account')) {
+          toast.error('Account Not Verified', {
+            description: error.message,
+          });
+        } else {
+          toast.error('Login Failed', {
+            description: error.message || 'Invalid email or password',
+          });
+        }
+      } finally {
+        setIsSubmitting(false)
+      }
     } else {
       toast.error("Login Failed", {
         description: "Please check the fields in red"
@@ -80,10 +117,28 @@ export default function SignIn() {
     }
   }
 
-  const handleGoogleSignIn = () => {
-    toast.info("Google Sign-In", {
-      description: "This feature will be available soon"
-    })
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signIn('google', {
+        callbackUrl: '/user',
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('Google Sign-In Failed', {
+          description: result.error,
+        });
+      } else if (result?.ok) {
+        toast.success('Login successful!', {
+          description: 'Redirecting...',
+        });
+        router.push('/user');
+      }
+    } catch (error) {
+      toast.error('Google Sign-In Failed', {
+        description: 'An error occurred during sign in',
+      });
+    }
   }
 
   const containerVariants = {
@@ -320,6 +375,48 @@ export default function SignIn() {
                     </>
                   )}
                 </span>
+              </motion.button>
+            </motion.div>
+
+            {/* Divider */}
+            <motion.div variants={itemVariants} className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 dark:border-gray-800" />
+              </div>
+              <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
+                <span className="px-3 bg-white dark:bg-black/40 text-gray-400">Or continue with</span>
+              </div>
+            </motion.div>
+
+            {/* Google Sign In Button */}
+            <motion.div variants={itemVariants}>
+              <motion.button
+                whileHover={{ scale: 1.01, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleGoogleSignIn}
+                type="button"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-900/50 hover:border-[#156d95]/30 transition-all duration-300 shadow-sm hover:shadow-md"
+                style={{ fontFamily: "Figtree" }}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.8789 15.7789 19.9895 13.221 19.9895 10.1871Z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M10.1993 19.9313C12.9527 19.9313 15.2643 19.0454 16.9527 17.5174L13.7346 15.0813C12.8734 15.6682 11.7176 16.0779 10.1993 16.0779C7.50243 16.0779 5.21352 14.3395 4.39759 11.9366L4.27799 11.9466L1.13003 14.3273L1.08887 14.4391C2.76588 17.6945 6.21061 19.9313 10.1993 19.9313Z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M4.39748 11.9366C4.18219 11.3166 4.05759 10.6521 4.05759 9.96565C4.05759 9.27909 4.18219 8.61473 4.38615 7.99466L4.38045 7.8626L1.19304 5.44366L1.08875 5.49214C0.397576 6.84305 0.000976562 8.36008 0.000976562 9.96565C0.000976562 11.5712 0.397576 13.0882 1.08875 14.4391L4.39748 11.9366Z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M10.1993 3.85336C12.1142 3.85336 13.406 4.66168 14.1425 5.33718L17.0207 2.59107C15.253 0.985496 12.9527 0 10.1993 0C6.2106 0 2.76588 2.23672 1.08887 5.49214L4.38626 7.99466C5.21352 5.59183 7.50242 3.85336 10.1993 3.85336Z"
+                    fill="#EB4335"
+                  />
+                </svg>
+                <span className="text-gray-700 dark:text-gray-300 font-semibold text-sm">Sign in with Google</span>
               </motion.button>
             </motion.div>
           </form>
