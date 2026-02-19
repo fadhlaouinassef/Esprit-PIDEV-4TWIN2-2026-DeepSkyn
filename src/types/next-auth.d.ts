@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth';
-import { RoleType } from '@/entities/Enums';
+import { RoleType } from '@prisma/client';
 
 declare module 'next-auth' {
   interface Session {

@@ -1,42 +1,25 @@
 import { prisma } from './prisma.config';
 
-const columnExists = async (table: string, column: string) => {
-  const result = await prisma.$queryRawUnsafe<{ exists: boolean }[]>(
-    `SELECT EXISTS (
-       SELECT 1
-       FROM information_schema.columns
-       WHERE table_schema = 'public'
-         AND table_name = $1
-         AND column_name = $2
-     ) AS "exists"`,
-    table,
-    column
-  );
-
-  return result[0]?.exists === true;
-};
-
-const addColumnIfMissing = async (table: string, ddl: string) => {
-  await prisma.$executeRawUnsafe(`ALTER TABLE "${table}" ADD COLUMN IF NOT EXISTS ${ddl};`);
-};
-
 async function migrate() {
   try {
     console.log('🔄 Démarrage de la migration...');
 
+    // Test de connexion
     await prisma.$connect();
     console.log('✅ Connexion à la base de données établie');
 
+    // Vérifier si les tables existent déjà
     const tables = await prisma.$queryRaw`
-      SELECT table_name
-      FROM information_schema.tables
+      SELECT table_name 
+      FROM information_schema.tables 
       WHERE table_schema = 'public'
     `;
-
+    
     console.log('📋 Tables existantes:', tables);
 
+    // Créer les enums
     console.log('📝 Création des types enum...');
-
+    
     await prisma.$executeRawUnsafe(`
       DO $$ BEGIN
         CREATE TYPE "RoleType" AS ENUM ('USER', 'PREMIUM_USER', 'ADMIN');
@@ -87,8 +70,10 @@ async function migrate() {
 
     console.log('✅ Types enum créés');
 
+    // Créer les tables
     console.log('📝 Création des tables...');
 
+    // Table User
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "User" (
         "id" SERIAL PRIMARY KEY,
@@ -97,22 +82,17 @@ async function migrate() {
         "role" "RoleType" DEFAULT 'USER' NOT NULL,
         "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         "nom" VARCHAR(255),
-        "prenom" VARCHAR(255),
         "sexe" VARCHAR(50),
         "age" INTEGER,
-        "skin_type" "SkinType",
-        "image" TEXT,
-        "verified" BOOLEAN DEFAULT false NOT NULL,
-        "otp_code" TEXT,
-        "otp_expiry" TIMESTAMP
+        "skin_type" "SkinType"
       );
     `);
 
+    // Table Badge
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Badge" (
         "id" SERIAL PRIMARY KEY,
         "user_id" INTEGER NOT NULL,
-        "titre" VARCHAR(255) NOT NULL DEFAULT 'Badge',
         "date" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         "description" TEXT,
         "niveau" "NiveauBadge" NOT NULL,
@@ -120,6 +100,7 @@ async function migrate() {
       );
     `);
 
+    // Table Subscription
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Subscription" (
         "id" SERIAL PRIMARY KEY,
@@ -131,6 +112,7 @@ async function migrate() {
       );
     `);
 
+    // Table ChatbotMessage
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "ChatbotMessage" (
         "id" SERIAL PRIMARY KEY,
@@ -143,6 +125,7 @@ async function migrate() {
       );
     `);
 
+    // Table Complaint
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Complaint" (
         "id" SERIAL PRIMARY KEY,
@@ -155,6 +138,7 @@ async function migrate() {
       );
     `);
 
+    // Table Feedback
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Feedback" (
         "id" SERIAL PRIMARY KEY,
@@ -165,6 +149,7 @@ async function migrate() {
       );
     `);
 
+    // Table Quiz
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Quiz" (
         "id" SERIAL PRIMARY KEY,
@@ -173,6 +158,7 @@ async function migrate() {
       );
     `);
 
+    // Table QuizQuestion
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "QuizQuestion" (
         "id" SERIAL PRIMARY KEY,
@@ -183,6 +169,7 @@ async function migrate() {
       );
     `);
 
+    // Table SurveyAnswer
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "SurveyAnswer" (
         "id" SERIAL PRIMARY KEY,
@@ -196,17 +183,18 @@ async function migrate() {
       );
     `);
 
+    // Table Routine
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Routine" (
         "id" SERIAL PRIMARY KEY,
         "user_id" INTEGER NOT NULL,
         "type" VARCHAR(100) NOT NULL,
-        "envie" TEXT,
         "objectif" TEXT,
         FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE
       );
     `);
 
+    // Table RoutineStep
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "RoutineStep" (
         "id" SERIAL PRIMARY KEY,
@@ -217,39 +205,42 @@ async function migrate() {
       );
     `);
 
+    // Table Ingredient
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Ingredient" (
         "id" SERIAL PRIMARY KEY,
         "routine_step_id" INTEGER NOT NULL,
-        "ingredient" VARCHAR(255) NOT NULL,
+        "nom" VARCHAR(255) NOT NULL,
         "description" TEXT,
         FOREIGN KEY ("routine_step_id") REFERENCES "RoutineStep"("id") ON DELETE CASCADE
       );
     `);
 
+    // Table IngredientConflict
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "IngredientConflict" (
         "id" SERIAL PRIMARY KEY,
         "ingredient_id" INTEGER NOT NULL,
         "description" TEXT NOT NULL,
-        "text" TEXT,
         FOREIGN KEY ("ingredient_id") REFERENCES "Ingredient"("id") ON DELETE CASCADE
       );
     `);
 
+    // Table SkinAnalyse
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "SkinAnalyse" (
         "id" SERIAL PRIMARY KEY,
         "user_id" INTEGER NOT NULL,
-        "score_eau" DOUBLE PRECISION,
+        "score_peau" DOUBLE PRECISION,
         "age_peau" INTEGER,
-        "date_creation" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "date_analyse" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         "score" DOUBLE PRECISION,
         "description" TEXT,
         FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE
       );
     `);
 
+    // Table SkinImage
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "SkinImage" (
         "id" SERIAL PRIMARY KEY,
@@ -259,6 +250,7 @@ async function migrate() {
       );
     `);
 
+    // Table SkinCondition
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "SkinCondition" (
         "id" SERIAL PRIMARY KEY,
@@ -268,7 +260,48 @@ async function migrate() {
       );
     `);
 
+    console.log('✅ Toutes les tables ont été créées avec succès!');
+
+    // Vérifier les tables créées
+    const finalTables = await prisma.$queryRaw`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      ORDER BY table_name
+    `;
+    
+    console.log('\n📊 Tables dans la base de données:');
+    console.log(finalTables);
+
+  } catch (error) {
+    console.error('❌ Erreur lors de la migration:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+    console.log('\n🔌 Déconnexion de la base de données');
+  }
+}
+
     console.log('🛠️ Synchronisation des colonnes manquantes/renommées...');
+
+    const columnExists = async (table: string, column: string) => {
+      const result = await prisma.$queryRawUnsafe<{ exists: boolean }[]>(
+        `SELECT EXISTS (
+           SELECT 1
+           FROM information_schema.columns
+           WHERE table_schema = 'public'
+             AND table_name = $1
+             AND column_name = $2
+         ) AS "exists"`,
+        table,
+        column
+      );
+      return result[0]?.exists === true;
+    };
+
+    const addColumnIfMissing = async (table: string, ddl: string) => {
+      await prisma.$executeRawUnsafe(`ALTER TABLE "${table}" ADD COLUMN IF NOT EXISTS ${ddl};`);
+    };
 
     await addColumnIfMissing('User', '"prenom" VARCHAR(255)');
     await addColumnIfMissing('User', '"image" TEXT');
@@ -305,26 +338,6 @@ async function migrate() {
     }
 
     console.log('✅ Synchronisation des colonnes terminée');
-    console.log('✅ Toutes les tables ont été créées avec succès!');
-
-    const finalTables = await prisma.$queryRaw`
-      SELECT table_name
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-      ORDER BY table_name
-    `;
-
-    console.log('\n📊 Tables dans la base de données:');
-    console.log(finalTables);
-  } catch (error) {
-    console.error('❌ Erreur lors de la migration:', error);
-    throw error;
-  } finally {
-    await prisma.$disconnect();
-    console.log('\n🔌 Déconnexion de la base de données');
-  }
-}
-
 migrate()
   .then(() => {
     console.log('\n✅ Migration terminée avec succès!');
