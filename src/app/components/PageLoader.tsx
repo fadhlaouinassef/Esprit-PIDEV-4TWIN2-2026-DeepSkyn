@@ -8,12 +8,12 @@ export function PageLoader() {
       <div className="container mx-auto px-4 py-8 h-full">
         {/* Header Skeleton */}
         <div className="mb-8 flex items-center justify-between">
-          <div className="h-10 w-32 bg-muted rounded-lg animate-pulse" />
+          <div className="h-10 w-32 bg-slate-200 rounded-lg animate-pulse" />
           <div className="flex gap-3">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-10 w-20 bg-muted rounded-lg animate-pulse"
+                className="h-10 w-20 bg-slate-200 rounded-lg animate-pulse"
                 style={{ animationDelay: `${i * 100}ms` }}
               />
             ))}
@@ -22,22 +22,22 @@ export function PageLoader() {
 
         {/* Hero Section Skeleton */}
         <div className="mb-16 text-center">
-          <div className="mx-auto mb-6 h-16 w-3/4 bg-muted rounded-lg animate-pulse" />
+          <div className="mx-auto mb-6 h-16 w-3/4 bg-slate-200 rounded-lg animate-pulse" />
           <div 
-            className="mx-auto mb-4 h-12 w-2/3 bg-muted rounded-lg animate-pulse"
+            className="mx-auto mb-4 h-12 w-2/3 bg-slate-200 rounded-lg animate-pulse"
             style={{ animationDelay: '100ms' }}
           />
           <div 
-            className="mx-auto mb-8 h-6 w-1/2 bg-muted rounded-lg animate-pulse"
+            className="mx-auto mb-8 h-6 w-1/2 bg-slate-200 rounded-lg animate-pulse"
             style={{ animationDelay: '200ms' }}
           />
           <div className="flex justify-center gap-4">
             <div 
-              className="h-12 w-32 bg-muted rounded-lg animate-pulse"
+              className="h-12 w-32 bg-slate-200 rounded-lg animate-pulse"
               style={{ animationDelay: '300ms' }}
             />
             <div 
-              className="h-12 w-32 bg-muted rounded-lg animate-pulse"
+              className="h-12 w-32 bg-slate-200 rounded-lg animate-pulse"
               style={{ animationDelay: '400ms' }}
             />
           </div>
@@ -53,17 +53,17 @@ export function PageLoader() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
             >
-              <div className="mb-4 h-40 w-full bg-muted rounded-lg animate-pulse" />
+              <div className="mb-4 h-40 w-full bg-slate-200 rounded-lg animate-pulse" />
               <div 
-                className="mb-2 h-6 w-3/4 bg-muted rounded animate-pulse"
+                className="mb-2 h-6 w-3/4 bg-slate-200 rounded animate-pulse"
                 style={{ animationDelay: '100ms' }}
               />
               <div 
-                className="mb-2 h-4 w-full bg-muted rounded animate-pulse"
+                className="mb-2 h-4 w-full bg-slate-200 rounded animate-pulse"
                 style={{ animationDelay: '200ms' }}
               />
               <div 
-                className="h-4 w-2/3 bg-muted rounded animate-pulse"
+                className="h-4 w-2/3 bg-slate-200 rounded animate-pulse"
                 style={{ animationDelay: '300ms' }}
               />
             </motion.div>
@@ -77,7 +77,7 @@ export function PageLoader() {
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={i}
-                  className="w-2 h-2 bg-primary rounded-full"
+                  className="w-2 h-2 bg-slate-400 rounded-full"
                   animate={{
                     scale: [1, 1.5, 1],
                     opacity: [0.5, 1, 0.5],
@@ -103,7 +103,7 @@ export function SimplePageLoader() {
     <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center">
       <div className="relative">
         <motion.div
-          className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full"
+          className="w-16 h-16 border-4 border-slate-200/30 border-t-slate-400 rounded-full"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1,
@@ -112,7 +112,7 @@ export function SimplePageLoader() {
           }}
         />
         <motion.div
-          className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-primary/40 rounded-full"
+          className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-slate-200/50 rounded-full"
           animate={{ rotate: -360 }}
           transition={{
             duration: 1.5,

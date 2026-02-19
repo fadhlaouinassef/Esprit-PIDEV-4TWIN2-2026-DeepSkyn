@@ -7,15 +7,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Settings, User, ChevronUp } from "lucide-react";
 import { Dropdown, DropdownContent, DropdownTrigger } from "./dropdown";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { clearUser } from "@/store/slices/authSlice";
 
 export function UserInfo() {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.auth.user);
 
     const USER_DATA = {
-        name: "Nassef Fadhlaoui",
-        email: "fouleene@deepskyn.com",
-        img: "/avatar.png",
+        name: user?.nom || "Admin User",
+        email: user?.email || "admin@deepskyn.com",
+        img: user?.photo || "/avatar.png",
     };
 
     const handleNavigation = (path: string) => {
@@ -25,7 +29,7 @@ export function UserInfo() {
 
     const handleLogout = () => {
         setIsOpen(false);
-        // Use a small delay to ensure the dropdown closes nicely before redirecting or just redirect
+        dispatch(clearUser());
         window.location.href = "/signin";
     };
 
