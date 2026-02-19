@@ -6,7 +6,7 @@ async function createDatabase() {
     user: 'postgres',
     host: 'localhost',
     database: 'postgres', // Base par défaut
-    password: 'nassef',
+    password: 'TonNouveauMotDePasseFort123!',
     port: 5432,
   });
 

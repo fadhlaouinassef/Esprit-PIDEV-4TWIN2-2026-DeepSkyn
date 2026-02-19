@@ -1,3 +1,4 @@
+
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
@@ -6,8 +7,8 @@ import { Pool } from 'pg'
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'deepskyn',
-  password: 'nassef',
+  database: 'souhirdb',
+  password: 'TonNouveauMotDePasseFort123!',
   port: 5432,
 })
 
