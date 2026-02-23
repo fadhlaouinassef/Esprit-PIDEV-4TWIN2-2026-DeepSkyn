@@ -41,6 +41,36 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image too large (max 5MB)");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            const base64String = reader.result as string;
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64String })
+                });
+
+                if (!response.ok) throw new Error('Failed to update photo');
+
+                setProfile(prev => prev ? { ...prev, image: base64String } : null);
+                toast.success("Photo updated successfully!");
+            } catch (error) {
+                toast.error("Error updating photo");
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -121,6 +151,13 @@ export default function ProfilePage() {
 
                         <div className="relative flex flex-col md:flex-row items-center gap-8 md:gap-12">
                             <div className="relative group">
+                                <input
+                                    type="file"
+                                    id="photo-upload"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handlePhotoChange}
+                                />
                                 <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:blur-2xl transition-all"></div>
                                 <div className="relative size-32 md:size-40 rounded-full border-4 border-white/30 overflow-hidden shadow-2xl bg-white/10 flex items-center justify-center">
                                     {profile?.image ? (
@@ -133,7 +170,10 @@ export default function ProfilePage() {
                                     ) : (
                                         <User size={80} className="text-white/50" />
                                     )}
-                                    <button className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => document.getElementById('photo-upload')?.click()}
+                                        className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
                                         <Camera className="text-white" size={24} />
                                     </button>
                                 </div>
