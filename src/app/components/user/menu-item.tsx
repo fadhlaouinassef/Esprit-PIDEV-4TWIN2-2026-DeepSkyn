@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { LoadingLink } from "../LoadingLink";
 import React from "react";
 
 interface MenuItemProps {
@@ -28,12 +28,12 @@ export function MenuItem({
 
     if (as === "link") {
         return (
-            <Link
+            <LoadingLink
                 href={href}
                 className={cn(baseStyles, activeStyles, className)}
             >
                 {children}
-            </Link>
+            </LoadingLink>
         );
     }
 

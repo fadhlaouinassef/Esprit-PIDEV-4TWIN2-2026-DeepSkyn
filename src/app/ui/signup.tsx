@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Mail, Lock, Eye, EyeOff, User, ArrowLeft, Calendar, UserCircle, AlertCircle, CheckCircle2, Loader2, ShieldCheck, Camera, FileText, X, Sparkles } from "lucide-react"
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion"
+import { Mail, Eye, EyeOff, User, ArrowLeft, Calendar, AlertCircle, Loader2, Sparkles } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
+import { signIn } from "next-auth/react"
 
 export default function SignUp() {
   const router = useRouter()
@@ -21,27 +22,6 @@ export default function SignUp() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shakeField, setShakeField] = useState<string | null>(null)
-  const [showConsentModal, setShowConsentModal] = useState(false)
-  const [showStatusPopup, setShowStatusPopup] = useState(false)
-  const [popupData, setPopupData] = useState({ title: "", description: "", type: "success" as "success" | "info" })
-  const [showGoogleSoon, setShowGoogleSoon] = useState(false)
-
-  // Mouse tracking for parallax effect
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const springConfig = { damping: 25, stiffness: 150 }
-  const bounceX = useSpring(mouseX, springConfig)
-  const bounceY = useSpring(mouseY, springConfig)
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX - window.innerWidth / 2)
-      mouseY.set(e.clientY - window.innerHeight / 2)
-    }
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [mouseX, mouseY])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -136,7 +116,7 @@ export default function SignUp() {
     e.preventDefault()
 
     if (validateForm()) {
-      setShowConsentModal(true)
+      confirmSignup()
     } else {
       toast.error("Validation Error", {
         description: "Please check the fields in red"
@@ -145,60 +125,82 @@ export default function SignUp() {
   }
 
   const confirmSignup = async () => {
-    setShowConsentModal(false)
-    setPopupData({
-      title: "Welcome Abroad!",
-      description: "Your account is created with full security features and biometric storage enabled.",
-      type: "success"
-    })
-    setShowStatusPopup(true)
+    setIsSubmitting(true)
 
-    // Log the data (simulating DB save)
-    console.log("Sign up with consent:", { fullName, email, password, birthDate, age, gender })
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          nom: fullName,
+          sexe: gender,
+          age,
+        }),
+      });
 
-    // Auto-redirect after delay
-    setTimeout(() => {
-      router.push("/admin")
-    }, 2500)
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create account');
+      }
+
+      // Store user ID in sessionStorage for OTP verification
+      sessionStorage.setItem('pendingUserId', data.userId.toString());
+      sessionStorage.setItem('pendingUserEmail', email);
+
+      toast.success('Account Created!', {
+        description: 'Please check your email for the verification code',
+      });
+
+      // Redirect to verify-code page
+      setTimeout(() => {
+        router.push('/verify-code');
+      }, 1000);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
+      toast.error('Signup Failed', {
+        description: errorMessage,
+      });
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  const declineSignup = async () => {
-    setShowConsentModal(false)
-    setPopupData({
-      title: "Account Ready",
-      description: "Registration complete. Privacy noted: biometric data will NOT be stored.",
-      type: "info"
-    })
-    setShowStatusPopup(true)
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signIn('google', {
+        callbackUrl: '/user',
+        redirect: false,
+      });
 
-    // Log the data (simulating DB save without biometrics)
-    console.log("Sign up without biometric consent:", { fullName, email, birthDate })
-
-    // Auto-redirect after delay
-    setTimeout(() => {
-      router.push("/admin")
-    }, 2500)
-  }
-
-  const handleGoogleSignUp = () => {
-    setShowGoogleSoon(true)
-    setTimeout(() => setShowGoogleSoon(false), 3000)
-    console.log("Sign up with Google")
-  }
+      if (result?.error) {
+        toast.error('Google Sign-Up Failed', {
+          description: result.error,
+        });
+      } else if (result?.ok) {
+        toast.success('Sign-up successful!', {
+          description: 'Welcome to DeepSkyn!',
+        });
+        router.push('/user');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign up';
+      toast.error('Google Sign-Up Failed', {
+        description: errorMessage,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc] px-4 py-8 relative overflow-hidden selection:bg-[#156d95]/10">
-      {/* Dynamic Background Mesh */}
+      {/* Simplified Background */}
       <div className="absolute inset-0 z-0">
-        <motion.div
-          style={{ x: bounceX, y: bounceY, scale: 1.2 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70"
-        />
-        <motion.div
-          style={{ x: bounceX, y: bounceY, scale: 1.1 }}
-          className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#1a7aaa]/5 rounded-full blur-[100px]"
-        />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70" />
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#1a7aaa]/5 rounded-full blur-[100px]" />
       </div>
 
       <motion.div
@@ -207,10 +209,7 @@ export default function SignUp() {
         animate="visible"
         className="w-full max-w-3xl z-10"
       >
-        <motion.div
-          whileHover={{ y: -5, borderColor: "rgba(21, 109, 149, 0.8)" }}
-          className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-6 md:p-10 border-2 border-[#156d95]/30 relative transition-colors duration-500"
-        >
+        <div className="bg-white/80 dark:bg-black/40 backdrop-blur-md rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6),0_0_20px_rgba(21,109,149,0.15)] p-6 md:p-10 border-2 border-[#156d95]/30 relative transition-all duration-300 hover:border-[#156d95]/60">
           {/* Top subtle glow */}
           <div className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-[#156d95] to-transparent opacity-50" />
 
@@ -228,58 +227,39 @@ export default function SignUp() {
           </motion.div>
 
           {/* Logo Section */}
-          <motion.div variants={itemVariants} className="flex flex-col items-center mb-6 text-center">
-            <div className="relative group mb-4">
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col items-center mb-6"
+          >
+            <div className="relative group">
               <div className="absolute inset-0 bg-[#156d95] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
-              <div className="relative w-16 h-16 bg-gradient-to-br from-[#156d95] to-[#0d4a6b] rounded-[1.5rem] flex items-center justify-center shadow-2xl">
-                <div className="grid grid-cols-2 gap-1.5">
+              <div className="relative w-16 h-16 bg-gradient-to-br from-[#156d95] to-[#0d4a6b] rounded-[1.25rem] flex items-center justify-center shadow-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-white/10 group-hover:translate-y-full transition-transform duration-700" />
+                <div className="grid grid-cols-2 gap-1 p-3">
                   {[0, 1, 2, 3].map((i) => (
-                    <div key={i} className="w-2.5 h-2.5 bg-white rounded-[3px]" />
+                    <div
+                      key={i}
+                      className="w-3 h-3 bg-white rounded-[3px] shadow-sm"
+                    />
                   ))}
                 </div>
               </div>
             </div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white" style={{ fontFamily: "Figtree" }}>
-              Deep<span className="text-[#156d95]">SkyN</span> Registration
+
+            <h1 className="mt-4 text-3xl font-black text-gray-900 dark:text-white tracking-tight" style={{ fontFamily: "Figtree" }}>
+              Deep<span className="text-[#156d95]">SkyN</span>
             </h1>
-            <p className="text-[#666666] dark:text-gray-400 mt-1 font-medium text-sm">Join the next generation of workspace logic.</p>
+            <p className="text-[#666666] dark:text-gray-400 mt-1 font-medium text-sm" style={{ fontFamily: "Figtree" }}>
+              Create your account
+            </p>
           </motion.div>
 
-          {/* Google Sign Up */}
-          <div className="relative mb-4 flex flex-col items-center">
-            <AnimatePresence>
-              {showGoogleSoon && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: -65, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute z-50 flex items-center gap-3 px-4 py-3 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl min-w-[280px]"
-                >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
-                    <AlertCircle className="w-5 h-5 text-blue-500" />
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-tight" style={{ fontFamily: "Figtree" }}>
-                      Information
-                    </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                      This feature will be available soon
-                    </p>
-                  </div>
-                  {/* Small arrow */}
-                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white dark:bg-[#0a0a0a] border-r border-b border-gray-200 dark:border-white/10 rotate-45" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-              whileHover={{ scale: 1.01, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+          {/* Google Sign Up Button */}
+          <motion.div variants={itemVariants}>
+            <button
               onClick={handleGoogleSignUp}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-[#e0e0e0] rounded-xl hover:bg-[#f9f9f9] hover:border-[#156d95]/30 transition-all duration-300 shadow-sm hover:shadow-md relative z-10"
+              type="button"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 border-2 border-[#e0e0e0] rounded-xl hover:bg-[#f9f9f9] hover:border-[#156d95]/30 transition-all duration-300 shadow-sm hover:shadow-md mb-4 hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.98]"
               style={{ fontFamily: "Figtree" }}
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -301,8 +281,8 @@ export default function SignUp() {
                 />
               </svg>
               <span className="text-[#202020] font-semibold">Sign up with Google</span>
-            </motion.button>
-          </div>
+            </button>
+          </motion.div>
 
           {/* Divider */}
           <motion.div
@@ -543,15 +523,13 @@ export default function SignUp() {
                     }`}
                   style={{ fontFamily: "Figtree" }}
                 />
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${errors.password ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 active:scale-95 ${errors.password ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </motion.button>
+                </button>
               </motion.div>
               <AnimatePresence>
                 {errors.password ? (
@@ -595,15 +573,13 @@ export default function SignUp() {
                     }`}
                   style={{ fontFamily: "Figtree" }}
                 />
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${errors.confirmPassword ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 active:scale-95 ${errors.confirmPassword ? "text-red-500" : "text-[#999999] hover:text-[#156d95]"}`}
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </motion.button>
+                </button>
               </motion.div>
               <AnimatePresence>
                 {errors.confirmPassword && (
@@ -619,12 +595,10 @@ export default function SignUp() {
 
             {/* Create Account Button */}
             <motion.div variants={itemVariants} className="md:col-span-2 pt-2">
-              <motion.button
-                whileHover={{ scale: 1.01, y: -2 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 disabled={isSubmitting}
                 type="submit"
-                className="w-full relative group h-14 bg-gradient-to-r from-[#156d95] to-[#0d4a6b] rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 active:shadow-none"
+                className="w-full relative group h-14 bg-gradient-to-r from-[#156d95] to-[#0d4a6b] rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 active:shadow-none transition-all hover:scale-[1.01] hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                 <span className="relative flex items-center justify-center gap-2 text-white font-black uppercase tracking-[0.2em] text-xs" style={{ fontFamily: "Figtree" }}>
@@ -637,7 +611,7 @@ export default function SignUp() {
                     </>
                   )}
                 </span>
-              </motion.button>
+              </button>
             </motion.div>
           </form>
 
@@ -657,7 +631,7 @@ export default function SignUp() {
               </Link>
             </p>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Outer subtle info */}
         <motion.p
@@ -669,137 +643,6 @@ export default function SignUp() {
           © 2026 DEEPSKYN LTD • ENCRYPTED SESSION
         </motion.p>
       </motion.div>
-
-      {/* Consent Modal */}
-      <AnimatePresence>
-        {showConsentModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowConsentModal(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-xl"
-            />
-
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30, rotateX: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30, rotateX: -20 }}
-              className="relative w-full max-w-lg bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden border border-white/40"
-            >
-              <div className="p-10">
-                {/* Close Button */}
-                <button
-                  onClick={() => setShowConsentModal(false)}
-                  className="absolute top-8 right-8 p-3 rounded-full hover:bg-black/5 transition-colors duration-300"
-                >
-                  <X className="w-5 h-5 text-[#666666]" />
-                </button>
-
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-20 h-20 bg-gradient-to-tr from-[#156d95]/20 to-[#2bc0ff]/20 rounded-3xl flex items-center justify-center mb-8 shadow-inner">
-                    <ShieldCheck className="w-10 h-10 text-[#156d95]" />
-                  </div>
-
-                  <h3 className="text-3xl font-black text-[#202020] mb-6 tracking-tight" style={{ fontFamily: "Figtree" }}>
-                    Confidentiality Policy
-                  </h3>
-
-                  <div className="w-full space-y-6 mb-10">
-                    {/* Face Data Consent */}
-                    <div className="flex items-start gap-5 p-5 bg-blue-50/50 rounded-2xl border border-blue-100/50 text-left">
-                      <div className="p-3 bg-white rounded-2xl shadow-sm border border-blue-50">
-                        <Camera className="w-6 h-6 text-[#156d95]" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-base text-[#202020]" style={{ fontFamily: "Figtree" }}>Biometric Data</h4>
-                        <p className="text-sm text-[#5a5a5a] mt-1 leading-relaxed">Storage of photo/facial data for instant AI-powered secure authentication.</p>
-                      </div>
-                    </div>
-
-                    {/* App Logic Consent */}
-                    <div className="flex items-start gap-5 p-5 bg-gray-50/50 rounded-2xl border border-gray-100 text-left">
-                      <div className="p-3 bg-white rounded-2xl shadow-sm border border-gray-50">
-                        <FileText className="w-6 h-6 text-[#156d95]" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-base text-[#202020]" style={{ fontFamily: "Figtree" }}>Usage Contract</h4>
-                        <p className="text-sm text-[#5a5a5a] mt-1 leading-relaxed">Acceptance of automated workspace logic and internal process management.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-5 w-full">
-                    <motion.button
-                      whileHover={{ scale: 1.02, backgroundColor: "#fef2f2", borderColor: "#fecaca" }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={declineSignup}
-                      className="py-4 px-6 rounded-2xl font-black text-xs uppercase tracking-widest border-2 border-[#e0e0e0] text-[#666666] transition-all duration-300"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      Decline
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02, boxShadow: "0 20px 40px -10px rgba(21,109,149,0.3)" }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={confirmSignup}
-                      className="py-4 px-6 rounded-2xl font-black text-xs uppercase tracking-widest bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white shadow-xl shadow-blue-500/20"
-                      style={{ fontFamily: "Figtree" }}
-                    >
-                      Accept & Join
-                    </motion.button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* Final Status Popup */}
-        {showStatusPopup && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute inset-0 bg-[#050510]/80 backdrop-blur-3xl"
-            />
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              className="relative w-full max-w-sm bg-white rounded-[3rem] p-10 text-center shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/20"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.2 }}
-                className={`w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center ${popupData.type === "success" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
-                  }`}
-              >
-                {popupData.type === "success" ? (
-                  <CheckCircle2 className="w-12 h-12" />
-                ) : (
-                  <AlertCircle className="w-12 h-12" />
-                )}
-              </motion.div>
-              <h2 className="text-2xl font-black text-gray-900 mb-4" style={{ fontFamily: "Figtree" }}>
-                {popupData.title}
-              </h2>
-              <p className="text-gray-500 font-medium mb-8 leading-relaxed">
-                {popupData.description}
-              </p>
-              <div className="flex flex-col items-center gap-4">
-                <Loader2 className="w-6 h-6 animate-spin text-[#156d95]" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
-                  Redirecting to Workspace
-                </span>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
-  )
+  );
 }

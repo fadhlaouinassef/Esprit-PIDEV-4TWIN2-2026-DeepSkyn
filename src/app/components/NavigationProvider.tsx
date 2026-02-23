@@ -23,15 +23,20 @@ function NavigationHandler({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const prevPathnameRef = useRef(pathname);
   const loadingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const manualLoadingRef = useRef(false);
 
   const startLoading = () => {
+    manualLoadingRef.current = true;
     setIsLoading(true);
   };
 
   useEffect(() => {
     // Détecte le changement de route
     if (pathname !== prevPathnameRef.current) {
-      setIsLoading(true);
+      // Si le loader n'est pas déjà actif manuellement, l'activer maintenant
+      if (!manualLoadingRef.current) {
+        setIsLoading(true);
+      }
 
       // Clear any existing timer
       if (loadingTimerRef.current) {
@@ -42,6 +47,7 @@ function NavigationHandler({ children }: { children: React.ReactNode }) {
       loadingTimerRef.current = setTimeout(() => {
         prevPathnameRef.current = pathname;
         setIsLoading(false);
+        manualLoadingRef.current = false;
       }, 500);
 
       return () => {
@@ -49,9 +55,12 @@ function NavigationHandler({ children }: { children: React.ReactNode }) {
           clearTimeout(loadingTimerRef.current);
         }
       };
-    } else {
-      // Si on est déjà sur la bonne page, arrêter le chargement
-      setIsLoading(false);
+    } else if (manualLoadingRef.current) {
+      // Si on est sur la même page mais le loading manuel est actif, on l'arrête après un délai
+      loadingTimerRef.current = setTimeout(() => {
+        setIsLoading(false);
+        manualLoadingRef.current = false;
+      }, 500);
     }
   }, [pathname, searchParams]);
 

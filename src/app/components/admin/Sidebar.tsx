@@ -1,20 +1,26 @@
 
 "use client";
 
-import { Logo } from "@/app/components/logo";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { LoadingLink } from "../LoadingLink";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_DATA } from "./data";
 import { ArrowLeft, ChevronUp } from "lucide-react";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
+import Image from "next/image";
+import { useAppSelector } from "@/store/hooks";
 
 export function Sidebar() {
     const pathname = usePathname();
     const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
+    const user = useAppSelector((state) => state.auth.user);
+
+    // Admin display name
+    const userName = user ? `${user.nom} ${user.prenom || ''}`.trim() : "Admin User";
+    const userPhoto = user?.photo || "/avatar.png";
 
     const toggleExpanded = (title: string) => {
         setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
@@ -58,13 +64,32 @@ export function Sidebar() {
             >
                 <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
                     <div className="relative pr-4.5">
-                        <Link
-                            href={"/"}
+                        {/* Admin Profile Header */}
+                        <LoadingLink
+                            href={"/admin/profile"}
                             onClick={() => isMobile && toggleSidebar()}
                             className="block mb-8 px-2"
                         >
-                            <Logo />
-                        </Link>
+                            <div className="flex items-center gap-3 group">
+                                <div className="size-12 rounded-full overflow-hidden shrink-0 border-2 border-gray-200 dark:border-gray-700 group-hover:border-[#156d95] transition-colors">
+                                    <Image
+                                        src={userPhoto}
+                                        width={48}
+                                        height={48}
+                                        alt={userName}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#156d95] transition-colors">
+                                        {userName}
+                                    </span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        {user?.role === 'admin' ? 'Administrator' : 'Admin Account'}
+                                    </span>
+                                </div>
+                            </div>
+                        </LoadingLink>
 
                         {isMobile && (
                             <button

@@ -6,15 +6,23 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LogOut, Settings, User, ChevronUp } from "lucide-react";
 import { Dropdown, DropdownContent, DropdownTrigger } from "./dropdown";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { clearUser } from "@/store/slices/authSlice";
 
 interface UserInfoProps {
     name?: string;
     photo?: string;
 }
 
-export function UserInfo({ name = "User Name", photo = "/avatar.png" }: UserInfoProps) {
+export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.auth.user);
+
+    // Use Redux state if available, otherwise fallback to props or defaults
+    const name = user?.nom || propName || "User Name";
+    const photo = user?.photo || propPhoto || "/avatar.png";
 
     const handleNavigation = (path: string) => {
         setIsOpen(false);
@@ -23,6 +31,7 @@ export function UserInfo({ name = "User Name", photo = "/avatar.png" }: UserInfo
 
     const handleLogout = () => {
         setIsOpen(false);
+        dispatch(clearUser());
         window.location.href = "/signin";
     };
 

@@ -11,49 +11,120 @@ export default function VerifyCode() {
     const router = useRouter()
     const [otp, setOtp] = useState(["", "", "", "", "", ""])
     const [isLoading, setIsLoading] = useState(false)
+    const [userEmail, setUserEmail] = useState("")
     const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
-    // Gérer le changement dans les cases
+    useEffect(() => {
+        // Get user email from session storage
+        const email = sessionStorage.getItem('pendingUserEmail')
+        if (email) {
+            setUserEmail(email)
+        } else {
+            // If no pending user, redirect to signup
+            toast.error('Session expired', {
+                description: 'Please sign up again',
+            })
+            router.push('/signup')
+        }
+    }, [router])
+
+    // Handle change in input boxes
     const handleChange = (index: number, value: string) => {
-        if (isNaN(Number(value))) return // Autoriser seulement les chiffres
+        if (isNaN(Number(value))) return // Only allow numbers
 
         const newOtp = [...otp]
         newOtp[index] = value.substring(value.length - 1)
         setOtp(newOtp)
 
-        // Déplacer le focus vers la case suivante
+        // Move focus to next box
         if (value && index < 5) {
             inputRefs.current[index + 1]?.focus()
         }
     }
 
-    // Gérer la touche "Retour arrière"
+    // Handle backspace key
     const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
         if (e.key === "Backspace" && !otp[index] && index > 0) {
             inputRefs.current[index - 1]?.focus()
         }
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         const code = otp.join("")
 
         if (code.length < 6) {
-            toast.error("Code incomplet", {
-                description: "Veuillez saisir les 6 chiffres du code."
+            toast.error("Incomplete code", {
+                description: "Please enter all 6 digits of the code."
             })
             return
         }
 
         setIsLoading(true)
-        // Simulation de vérification
-        setTimeout(() => {
-            setIsLoading(false)
-            toast.success("Code vérifié !", {
-                description: "Vous pouvez maintenant changer votre mot de passe."
+
+        try {
+            const userId = sessionStorage.getItem('pendingUserId')
+            if (!userId) {
+                throw new Error('Session expired. Please sign up again.')
+            }
+
+            const response = await fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: parseInt(userId),
+                    otp: code,
+                }),
             })
-            router.push("/reset-password")
-        }, 1500)
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Verification failed')
+            }
+
+            // Clear session storage
+            sessionStorage.removeItem('pendingUserId')
+            sessionStorage.removeItem('pendingUserEmail')
+
+            // Store user data
+            sessionStorage.setItem('currentUser', JSON.stringify(data.user))
+
+            toast.success("Account verified!", {
+                description: "Welcome to DeepSkyn! Check your email for more info."
+            })
+
+            // Redirect to user page
+            setTimeout(() => {
+                router.push("/user")
+            }, 1500)
+        } catch (error: any) {
+            toast.error("Verification failed", {
+                description: error.message || "Invalid or expired code"
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleResendCode = async () => {
+        try {
+            const userId = sessionStorage.getItem('pendingUserId')
+            if (!userId) {
+                throw new Error('Session expired. Please sign up again.')
+            }
+
+            // You can implement a resend OTP API endpoint here
+            toast.info("Code resent", {
+                description: "A new verification code has been sent to your email."
+            })
+        } catch (error: any) {
+            toast.error("Failed to resend", {
+                description: error.message
+            })
+        }
     }
 
     return (
@@ -72,14 +143,14 @@ export default function VerifyCode() {
                 >
                     {/* Back Button */}
                     <Link
-                        href="/forgot-password"
+                        href="/signup"
                         className="inline-flex items-center gap-2 text-[#666666] hover:text-[#202020] transition-all duration-300 mb-6 group"
                         style={{ fontFamily: "Figtree" }}
                     >
                         <motion.div whileHover={{ x: -4 }} transition={{ type: "spring", stiffness: 400 }}>
                             <ArrowLeft className="w-5 h-5" />
                         </motion.div>
-                        <span className="text-sm font-medium">Change email</span>
+                        <span className="text-sm font-medium">Back to signup</span>
                     </Link>
 
                     {/* Icon */}
@@ -105,7 +176,7 @@ export default function VerifyCode() {
                             Verify Code
                         </h1>
                         <p className="text-sm text-[#666666] leading-relaxed" style={{ fontFamily: "Figtree" }}>
-                            We've sent a 6-digit code to your email. Enter it below to continue.
+                            We've sent a 6-digit code to {userEmail ? <strong>{userEmail}</strong> : 'your email'}. Enter it below to continue.
                         </p>
                     </motion.div>
 
@@ -147,6 +218,7 @@ export default function VerifyCode() {
                         <div className="text-center">
                             <button
                                 type="button"
+                                onClick={handleResendCode}
                                 className="text-sm text-[#156d95] font-semibold hover:underline"
                             >
                                 Resend code
