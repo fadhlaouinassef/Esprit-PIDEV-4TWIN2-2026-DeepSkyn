@@ -100,13 +100,13 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
   const [form, setForm] = useState<ModalFormData>(
     user
       ? {
-          nom: user.nom || "",
-          email: user.email,
-          role: user.role,
-          verified: user.verified,
-          age: user.age?.toString() || "",
-          sexe: user.sexe || "",
-        }
+        nom: user.nom || "",
+        email: user.email,
+        role: user.role,
+        verified: user.verified,
+        age: user.age?.toString() || "",
+        sexe: user.sexe || "",
+      }
       : { ...EMPTY_FORM }
   );
   const [saving, setSaving] = useState(false);
@@ -129,30 +129,30 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
     const fetchOp =
       mode === "add"
         ? fetch("/api/users", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              nom: form.nom,
-              email: form.email,
-              role: form.role,
-              verified: form.verified,
-              age: form.age ? parseInt(form.age) : undefined,
-              sexe: form.sexe || undefined,
-              password: form.password,
-            }),
-          })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nom: form.nom,
+            email: form.email,
+            role: form.role,
+            verified: form.verified,
+            age: form.age ? parseInt(form.age) : undefined,
+            sexe: form.sexe || undefined,
+            password: form.password,
+          }),
+        })
         : fetch(`/api/users/${user!.id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              nom: form.nom,
-              email: form.email,
-              role: form.role,
-              verified: form.verified,
-              age: form.age ? parseInt(form.age) : undefined,
-              sexe: form.sexe || undefined,
-            }),
-          });
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nom: form.nom,
+            email: form.email,
+            role: form.role,
+            verified: form.verified,
+            age: form.age ? parseInt(form.age) : undefined,
+            sexe: form.sexe || undefined,
+          }),
+        });
 
     const promise = fetchOp
       .then(async (res) => {
@@ -160,7 +160,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
         if (!res.ok)
           throw new Error(
             data.error ||
-              (mode === "add" ? "Échec de la création" : "Échec de la mise à jour")
+            (mode === "add" ? "Échec de la création" : "Échec de la mise à jour")
           );
         onSaved();
         onClose();
@@ -325,8 +325,8 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
               {saving
                 ? "Saving..."
                 : mode === "add"
-                ? "Create User"
-                : "Save Changes"}
+                  ? "Create User"
+                  : "Save Changes"}
             </button>
           </div>
         </form>
@@ -829,13 +829,12 @@ export default function UsersPage() {
                     {/* Role badge */}
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                          user.role === "ADMIN"
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${user.role === "ADMIN"
                             ? "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300"
                             : user.role === "PREMIUM_USER"
-                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
-                            : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
-                        }`}
+                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
+                          }`}
                       >
                         {user.role}
                       </span>

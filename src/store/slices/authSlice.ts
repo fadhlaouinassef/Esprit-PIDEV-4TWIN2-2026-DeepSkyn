@@ -20,6 +20,15 @@ interface AuthState {
   isLoading: boolean;
 }
 
+// Helper to safely access localStorage
+const getStoredUser = () => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('deepskyn_user');
+    return stored ? JSON.parse(stored) : null;
+  }
+  return null;
+};
+
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
@@ -34,25 +43,29 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isAuthenticated = true;
       state.isLoading = false;
-      // Afficher toutes les données utilisateur dans la console
-      console.log('🔐 [Redux] Utilisateur connecté :', action.payload);
-      console.log('📋 [Redux] Détails :', {
-        id: action.payload.id,
-        nom: action.payload.nom,
-        prenom: action.payload.prenom,
-        email: action.payload.email,
-        role: action.payload.role,
-        photo: action.payload.photo,
-        age: action.payload.age,
-        sexe: action.payload.sexe,
-        skin_type: action.payload.skin_type,
-        verified: action.payload.verified,
-      });
+      
+      // Persist to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('deepskyn_user', JSON.stringify(action.payload));
+      }
+
+      // Afficher les données demandées dans la console
+      console.log('🔐 [Redux] Utilisateur connecté :');
+      console.log('� Nom :', action.payload.nom);
+      console.log('👤 Prénom :', action.payload.prenom || 'N/A');
+      console.log('🛡️ Rôle :', action.payload.role);
+      console.log('✅ Status (Vérifié) :', action.payload.verified ? 'Vérifié' : 'Non vérifié');
     },
     clearUser: (state) => {
       state.user = null;
       state.isAuthenticated = false;
       state.isLoading = false;
+      
+      // Clear localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('deepskyn_user');
+      }
+      
       console.log('🚪 [Redux] Utilisateur déconnecté');
     },
     setLoading: (state, action: PayloadAction<boolean>) => {

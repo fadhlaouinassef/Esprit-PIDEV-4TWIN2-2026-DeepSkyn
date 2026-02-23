@@ -142,7 +142,8 @@ export const sendWelcomeEmail = async (email: string, userName: string) => {
             <tr><td>
 
               <!-- Logo -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto 24px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" 
+              style="max-width:520px;margin:0 auto 24px;">
                 <tr>
                   <td style="text-align:center;">
                     <div style="display:inline-block;border-radius:14px;padding:10px 14px;margin-bottom:10px;">

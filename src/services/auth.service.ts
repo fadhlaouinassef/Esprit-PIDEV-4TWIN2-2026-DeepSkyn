@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { createUser, findUserByEmail, updateUserOtp, verifyUserOtp as verifyOtpInDb, markUserAsVerified } from './user.service';
+import { createUser, findUserByEmail, findUserById, updateUserOtp, verifyUserOtp as verifyOtpInDb, markUserAsVerified } from './user.service';
 import { sendOtpEmail, sendWelcomeEmail, generateOtp } from './email.service';
 import { RoleType } from '../entities/Enums';
 
@@ -95,23 +95,39 @@ export const signin = async (data: SigninData) => {
     // Find user by email
     const user = await findUserByEmail(data.email);
     if (!user) {
-      throw new Error('Invalid email or password');
-    }
-
-    // Check if user is verified
-    if (!user.verified) {
-      throw new Error('Please verify your account first. Check your email for the verification code.');
+      throw new Error('Email ou mot de passe invalide');
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
     if (!isPasswordValid) {
-      throw new Error('Invalid email or password');
+      throw new Error('Email ou mot de passe invalide');
+    }
+
+    // Check if user is verified AFTER password validation
+    if (!user.verified) {
+      // Generate new OTP
+      const otp = generateOtp();
+      const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      // Save OTP to database
+      await updateUserOtp(user.id, otp, otpExpiry);
+
+      // Send OTP email
+      await sendOtpEmail(user.email, otp, user.nom || 'User');
+
+      return {
+        success: false,
+        unverified: true,
+        userId: user.id,
+        email: user.email,
+        message: 'Compte non vérifié. Un nouveau code de vérification vous a été envoyé par e-mail.',
+      };
     }
 
     return {
       success: true,
-      message: 'Login successful',
+      message: 'Connexion réussie',
       user: {
         id: user.id,
         email: user.email,
@@ -133,9 +149,9 @@ export const signin = async (data: SigninData) => {
 
 export const resendOtp = async (userId: number) => {
   try {
-    const user = await findUserByEmail(''); // We need to modify this to find by ID
+    const user = await findUserById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('Utilisateur non trouvé');
     }
 
     if (user.verified) {

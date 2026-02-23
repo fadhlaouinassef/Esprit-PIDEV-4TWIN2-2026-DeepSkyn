@@ -6,6 +6,7 @@ export const createUser = async (data: {
   password: string;
   role?: 'USER' | 'PREMIUM_USER' | 'ADMIN';
   nom?: string;
+  prenom?: string;
   sexe?: string;
   age?: number;
   skin_type?: 'OILY' | 'DRY' | 'SENSITIVE' | 'NORMAL' | 'COMBINATION';
