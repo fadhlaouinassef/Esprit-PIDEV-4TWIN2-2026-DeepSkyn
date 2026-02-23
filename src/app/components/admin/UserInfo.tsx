@@ -30,7 +30,7 @@ export function UserInfo() {
     const handleLogout = () => {
         setIsOpen(false);
         dispatch(clearUser());
-        window.location.href = "/signin";
+        window.location.href = "/";
     };
 
     return (

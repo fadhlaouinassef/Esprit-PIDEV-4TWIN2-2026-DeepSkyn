@@ -119,6 +119,10 @@ export const signin = async (data: SigninData) => {
         prenom: user.prenom,
         role: user.role,
         image: user.image,
+        age: user.age,
+        sexe: user.sexe,
+        skin_type: user.skin_type,
+        verified: user.verified,
       },
     };
   } catch (error) {

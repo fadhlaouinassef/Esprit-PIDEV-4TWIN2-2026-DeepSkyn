@@ -1,0 +1,155 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║            DONNÉES UTILISATEUR STOCKÉES DANS REDUX                  ║
+║                  Store: state.auth.user                             ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+Ces données sont chargées dans Redux dès que l'utilisateur se connecte
+via la page /signin. Elles restent disponibles dans toute l'application
+jusqu'à ce que l'utilisateur se déconnecte (clearUser()).
+
+──────────────────────────────────────────────────────────────────────
+CHAMPS DISPONIBLES DANS state.auth
+──────────────────────────────────────────────────────────────────────
+
+state.auth.isAuthenticated  boolean   → true si connecté
+state.auth.isLoading        boolean   → true pendant chargement
+state.auth.user             object    → toutes les données utilisateur (voir ci-dessous)
+
+──────────────────────────────────────────────────────────────────────
+CHAMPS DE state.auth.user
+──────────────────────────────────────────────────────────────────────
+
+Champ         Type       Description
+──────────    ─────────  ────────────────────────────────────────────
+id            number     Identifiant unique de l'utilisateur
+nom           string     Nom de l'utilisateur (obligatoire)
+prenom        string?    Prénom (optionnel)
+email         string     Adresse email (obligatoire)
+photo         string?    URL de la photo de profil (ex: "/avatar.png")
+role          string?    Rôle : "USER" | "PREMIUM_USER" | "ADMIN"
+age           number?    Âge de l'utilisateur
+sexe          string?    Genre : "MALE" | "FEMALE"
+skin_type     string?    Type de peau : "OILY" | "DRY" | "NORMAL"
+                         | "SENSITIVE" | "COMBINATION"
+verified      boolean?   true si le compte est vérifié par email
+
+──────────────────────────────────────────────────────────────────────
+ACTIONS DISPONIBLES
+──────────────────────────────────────────────────────────────────────
+
+setUser(userData)         → Connecte l'utilisateur et stocke ses données
+clearUser()               → Vide tout (déconnexion)
+setLoading(true/false)    → Modifie l'état de chargement
+updateUserProfile(data)   → Met à jour partiellement le profil
+
+──────────────────────────────────────────────────────────────────────
+EXEMPLES D'UTILISATION DANS UN COMPOSANT
+──────────────────────────────────────────────────────────────────────
+
+─── 1. Lire les données utilisateur ───────────────────────────────────
+
+"use client";
+import { useAppSelector } from "@/store/hooks";
+
+export default function MonComposant() {
+  const user = useAppSelector((state) => state.auth.user);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  if (!isAuthenticated || !user) {
+    return <p>Vous n'êtes pas connecté.</p>;
+  }
+
+  return (
+    <div>
+      <p>Bonjour, {user.nom} {user.prenom}</p>
+      <p>Email : {user.email}</p>
+      <p>Rôle  : {user.role}</p>
+      <p>Âge   : {user.age ?? "Non renseigné"}</p>
+      <p>Genre : {user.sexe ?? "Non renseigné"}</p>
+      <p>Peau  : {user.skin_type ?? "Non renseigné"}</p>
+      <img src={user.photo ?? "/avatar.png"} alt="photo" />
+    </div>
+  );
+}
+
+─── 2. Déconnecter l'utilisateur ──────────────────────────────────────
+
+"use client";
+import { useAppDispatch } from "@/store/hooks";
+import { clearUser } from "@/store/slices/authSlice";
+
+export default function LogoutButton() {
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(clearUser());
+    window.location.href = "/"; // Redirige vers l'accueil
+  };
+
+  return <button onClick={handleLogout}>Se déconnecter</button>;
+}
+
+─── 3. Mettre à jour le profil après modification ─────────────────────
+
+"use client";
+import { useAppDispatch } from "@/store/hooks";
+import { updateUserProfile } from "@/store/slices/authSlice";
+
+export default function EditProfile() {
+  const dispatch = useAppDispatch();
+
+  const handleSave = () => {
+    dispatch(updateUserProfile({
+      nom: "NouveauNom",
+      photo: "/new-avatar.png",
+      age: 25,
+    }));
+  };
+
+  return <button onClick={handleSave}>Sauvegarder</button>;
+}
+
+─── 4. Vérifier le rôle (admin vs user) ──────────────────────────────
+
+"use client";
+import { useAppSelector } from "@/store/hooks";
+
+export default function AdminGuard() {
+  const user = useAppSelector((state) => state.auth.user);
+
+  if (user?.role !== "ADMIN") {
+    return <p>Accès refusé</p>;
+  }
+
+  return <div>Panneau Admin</div>;
+}
+
+──────────────────────────────────────────────────────────────────────
+FICHIERS CONCERNÉS
+──────────────────────────────────────────────────────────────────────
+
+src/store/slices/authSlice.ts       → Définition du slice et des actions
+src/store/index.ts                  → Configuration du store Redux
+src/store/hooks.ts                  → useAppSelector / useAppDispatch
+src/store/Provider.tsx              → ReduxProvider (wrappé dans layout.tsx)
+src/app/ui/signin.tsx               → dispatch(setUser(...)) après login
+src/app/components/admin/UserInfo.tsx  → Logout admin
+src/app/components/user/UserInfo.tsx   → Logout user
+src/app/components/admin/Sidebar.tsx   → Affiche nom+photo admin depuis Redux
+src/app/components/user/Sidebar.tsx    → Affiche nom+photo user depuis Redux
+src/app/ui/UserLayout.tsx              → Lit Redux pour passer à Sidebar+Header
+
+──────────────────────────────────────────────────────────────────────
+NOTE : Console.log automatique
+──────────────────────────────────────────────────────────────────────
+
+Dès la connexion, le store affiche automatiquement dans la console :
+
+  🔐 [Redux] Utilisateur connecté : { id, nom, prenom, email, ... }
+  📋 [Redux] Détails : { ... tous les champs ... }
+
+À la déconnexion :
+  🚪 [Redux] Utilisateur déconnecté
+
+Après une mise à jour de profil :
+  ✏️ [Redux] Profil mis à jour : { ... }

@@ -17,6 +17,7 @@ export function DonutChart({ data }: PropsType) {
     const chartOptions: ApexOptions = {
         chart: {
             type: "donut",
+            background: 'transparent',
             fontFamily: "inherit",
         },
         colors: ["#5750F1", "#5475E5", "#8099EC", "#ADBCF2"],

@@ -2,22 +2,25 @@
 
 import React from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
+import { useAppSelector } from "@/store/hooks";
 
 export default function UserDashboard() {
+    const user = useAppSelector((state) => state.auth.user);
+    const displayName = user ? `${user.nom || ''} ${user.prenom || ''}`.trim() || "there" : "there";
+
     return (
-        <UserLayout userName="Nassef" userPhoto="/avatar.png">
+        <UserLayout>
             <div className="mx-auto w-full max-w-[1200px]">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                        Welcome back, Nassef!
+                        Welcome back, {displayName}!
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400">
-                        Here is what's happening with your account today.
+                        Here is what&apos;s happening with your account today.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    {/* Placeholder cards for user dashboard */}
                     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Scans</h3>
                         <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">24</p>
@@ -39,7 +42,7 @@ export default function UserDashboard() {
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No activity yet</h3>
                         <p className="text-gray-500 dark:text-gray-400 max-w-sm">
-                            You haven't performed any skin scans yet. Start your first scan to see your results here.
+                            You haven&apos;t performed any skin scans yet. Start your first scan to see your results here.
                         </p>
                         <button className="mt-6 rounded-lg bg-primary px-6 py-3 text-white font-bold hover:bg-primary/90 transition-all">
                             Start New Scan
@@ -48,5 +51,7 @@ export default function UserDashboard() {
                 </div>
             </div>
         </UserLayout>
+    );
+}
     );
 }

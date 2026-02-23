@@ -86,11 +86,15 @@ export default function SignIn() {
         // Store user data in Redux store
         dispatch(setUser({
           id: data.user.id,
-          nom: data.user.nom,
+          nom: data.user.nom || '',
           prenom: data.user.prenom || '',
           email: data.user.email,
-          photo: data.user.photo || '/avatar.png',
-          role: data.user.role || 'user'
+          photo: data.user.image || data.user.photo || '/avatar.png',
+          role: data.user.role || 'user',
+          age: data.user.age,
+          sexe: data.user.sexe,
+          skin_type: data.user.skin_type,
+          verified: data.user.verified,
         }));
 
         toast.success('Login successful!', {

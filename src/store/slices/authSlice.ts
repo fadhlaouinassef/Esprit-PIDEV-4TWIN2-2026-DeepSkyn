@@ -1,12 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface UserData {
+export interface UserData {
   id: number;
   nom: string;
   prenom?: string;
   email: string;
   photo?: string;
   role?: string;
+  // Données supplémentaires de l'utilisateur
+  age?: number;
+  sexe?: string;
+  skin_type?: string;
+  verified?: boolean;
 }
 
 interface AuthState {
@@ -29,11 +34,26 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isAuthenticated = true;
       state.isLoading = false;
+      // Afficher toutes les données utilisateur dans la console
+      console.log('🔐 [Redux] Utilisateur connecté :', action.payload);
+      console.log('📋 [Redux] Détails :', {
+        id: action.payload.id,
+        nom: action.payload.nom,
+        prenom: action.payload.prenom,
+        email: action.payload.email,
+        role: action.payload.role,
+        photo: action.payload.photo,
+        age: action.payload.age,
+        sexe: action.payload.sexe,
+        skin_type: action.payload.skin_type,
+        verified: action.payload.verified,
+      });
     },
     clearUser: (state) => {
       state.user = null;
       state.isAuthenticated = false;
       state.isLoading = false;
+      console.log('🚪 [Redux] Utilisateur déconnecté');
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -41,6 +61,7 @@ const authSlice = createSlice({
     updateUserProfile: (state, action: PayloadAction<Partial<UserData>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
+        console.log('✏️ [Redux] Profil mis à jour :', state.user);
       }
     },
   },
