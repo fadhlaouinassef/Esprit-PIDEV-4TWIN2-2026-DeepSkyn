@@ -21,6 +21,10 @@ const navigationLinks = [
     name: "FAQ",
     href: "#faq",
   },
+  {
+  name: "Skin Journey",
+  href: "#healthy-steps",
+  },
 ] as any[]
 
 // @component: PortfolioNavbar
