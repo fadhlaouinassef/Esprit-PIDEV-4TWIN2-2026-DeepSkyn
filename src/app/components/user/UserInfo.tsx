@@ -32,7 +32,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
     const handleLogout = () => {
         setIsOpen(false);
         dispatch(clearUser());
-        window.location.href = "/signin";
+        window.location.href = "/";
     };
 
     return (

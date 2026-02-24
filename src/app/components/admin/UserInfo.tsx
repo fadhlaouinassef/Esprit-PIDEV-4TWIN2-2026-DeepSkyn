@@ -17,7 +17,7 @@ export function UserInfo() {
     const user = useAppSelector((state) => state.auth.user);
 
     const USER_DATA = {
-        name: user?.nom || "Admin User",
+        name: user ? `${user.nom} ${user.prenom || ''}`.trim() : "Admin User",
         email: user?.email || "admin@deepskyn.com",
         img: user?.photo || "/avatar.png",
     };
@@ -30,7 +30,7 @@ export function UserInfo() {
     const handleLogout = () => {
         setIsOpen(false);
         dispatch(clearUser());
-        window.location.href = "/signin";
+        window.location.href = "/";
     };
 
     return (

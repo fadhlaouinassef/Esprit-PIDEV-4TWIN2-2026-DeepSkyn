@@ -83,24 +83,52 @@ export default function SignIn() {
           throw new Error(data.error || 'Failed to sign in');
         }
 
+        if (data.unverified) {
+          console.log('⚠️ [SignIn] Compte non vérifié, redirection vers /verify-code');
+          // Store info for verification page
+          sessionStorage.setItem('pendingUserId', data.userId.toString());
+          sessionStorage.setItem('pendingUserEmail', data.email);
+
+          toast.info('Vérification requise', {
+            description: data.message,
+            duration: 5000,
+          });
+
+          setTimeout(() => {
+            router.push('/verify-code');
+          }, 2000);
+          return;
+        }
+
         // Store user data in Redux store
-        dispatch(setUser({
+        const userData = {
           id: data.user.id,
-          nom: data.user.nom,
+          nom: data.user.nom || '',
           prenom: data.user.prenom || '',
           email: data.user.email,
-          photo: data.user.photo || '/avatar.png',
-          role: data.user.role || 'user'
-        }));
+          photo: data.user.image || data.user.photo || '/avatar.png',
+          role: data.user.role || 'user',
+          age: data.user.age,
+          sexe: data.user.sexe,
+          skin_type: data.user.skin_type,
+          verified: data.user.verified,
+        };
 
-        toast.success('Login successful!', {
-          description: 'You are being redirected...',
+        dispatch(setUser(userData));
+
+        toast.success('Connexion réussie !', {
+          description: 'Vous allez être redirigé...',
           duration: 2000,
         });
 
-        // Redirect to user page
+        // Redirection basée sur le rôle
+        const isAdmin = data.user.role?.toUpperCase() === 'ADMIN';
+        const redirectPath = isAdmin ? '/admin' : '/user';
+
+        console.log(`🚀 [SignIn] Redirection vers ${redirectPath} (Role: ${data.user.role})`);
+
         setTimeout(() => {
-          router.push('/user');
+          router.push(redirectPath);
         }, 2000);
       } catch (error) {
         console.error('❌ Signin error caught:', error);
@@ -149,7 +177,7 @@ export default function SignIn() {
         try {
           const response = await fetch('/api/auth/session');
           const session = await response.json();
-          
+
           if (session?.user) {
             dispatch(setUser({
               id: parseInt(session.user.id),
