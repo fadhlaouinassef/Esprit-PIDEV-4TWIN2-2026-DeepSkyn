@@ -74,7 +74,7 @@ const authSlice = createSlice({
     updateUserProfile: (state, action: PayloadAction<Partial<UserData>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
-        console.log('✏️ [Redux] Profil mis à jour :', state.user);
+        console.log('[Redux] Profil mis à jour :', state.user);
       }
     },
   },
