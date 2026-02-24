@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { Pool } from 'pg';
 
 async function createDatabase() {

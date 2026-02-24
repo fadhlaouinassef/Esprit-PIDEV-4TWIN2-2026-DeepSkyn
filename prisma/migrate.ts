@@ -1,25 +1,30 @@
+import 'dotenv/config';
+
 import { prisma } from './prisma.config';
 
 async function migrate() {
   try {
     console.log('🔄 Démarrage de la migration...');
 
-    // Test de connexion
+    // Connexion
     await prisma.$connect();
     console.log('✅ Connexion à la base de données établie');
 
-    // Vérifier si les tables existent déjà
-    const tables = await prisma.$queryRaw`
-      SELECT table_name 
-      FROM information_schema.tables 
+    // Vérifier les tables existantes
+    const tables = await prisma.$queryRaw<
+      { table_name: string }[]
+    >`
+      SELECT table_name
+      FROM information_schema.tables
       WHERE table_schema = 'public'
     `;
-    
     console.log('📋 Tables existantes:', tables);
 
-    // Créer les enums
+    // =========================
+    // 1) Création des ENUMS
+    // =========================
     console.log('📝 Création des types enum...');
-    
+
     await prisma.$executeRawUnsafe(`
       DO $$ BEGIN
         CREATE TYPE "RoleType" AS ENUM ('USER', 'PREMIUM_USER', 'ADMIN');
@@ -70,7 +75,9 @@ async function migrate() {
 
     console.log('✅ Types enum créés');
 
-    // Créer les tables
+    // =========================
+    // 2) Création des TABLES
+    // =========================
     console.log('📝 Création des tables...');
 
     // Table User
@@ -205,7 +212,7 @@ async function migrate() {
       );
     `);
 
-    // Table Ingredient
+    // Table Ingredient (au début: "nom", on va sync/rename ensuite)
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Ingredient" (
         "id" SERIAL PRIMARY KEY,
@@ -226,7 +233,7 @@ async function migrate() {
       );
     `);
 
-    // Table SkinAnalyse
+    // Table SkinAnalyse (au début: score_peau + date_analyse, on sync/rename ensuite)
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "SkinAnalyse" (
         "id" SERIAL PRIMARY KEY,
@@ -262,14 +269,95 @@ async function migrate() {
 
     console.log('✅ Toutes les tables ont été créées avec succès!');
 
-    // Vérifier les tables créées
-    const finalTables = await prisma.$queryRaw`
-      SELECT table_name 
-      FROM information_schema.tables 
+    // =========================
+    // 3) Synchronisation colonnes (ADD / RENAME)
+    // =========================
+    console.log('🛠️ Synchronisation des colonnes manquantes/renommées...');
+
+    const columnExists = async (table: string, column: string) => {
+      const result = await prisma.$queryRawUnsafe<{ exists: boolean }[]>(
+        `SELECT EXISTS (
+           SELECT 1
+           FROM information_schema.columns
+           WHERE table_schema = 'public'
+             AND table_name = $1
+             AND column_name = $2
+         ) AS "exists"`,
+        table,
+        column
+      );
+      return result[0]?.exists === true;
+    };
+
+    const addColumnIfMissing = async (table: string, ddl: string) => {
+      await prisma.$executeRawUnsafe(
+        `ALTER TABLE "${table}" ADD COLUMN IF NOT EXISTS ${ddl};`
+      );
+    };
+
+    // User: colonnes manquantes
+    await addColumnIfMissing('User', '"prenom" VARCHAR(255)');
+    await addColumnIfMissing('User', '"image" TEXT');
+    await addColumnIfMissing('User', '"verified" BOOLEAN DEFAULT false NOT NULL');
+    await addColumnIfMissing('User', '"otp_code" TEXT');
+    await addColumnIfMissing('User', '"otp_expiry" TIMESTAMP');
+
+    // Badge: titre
+    await addColumnIfMissing('Badge', `"titre" VARCHAR(255) NOT NULL DEFAULT 'Badge'`);
+
+    // Routine: envie
+    await addColumnIfMissing('Routine', '"envie" TEXT');
+
+    // IngredientConflict: text
+    await addColumnIfMissing('IngredientConflict', '"text" TEXT');
+
+    // Ingredient: rename nom -> ingredient (ou add si absent)
+    const ingredientExists = await columnExists('Ingredient', 'ingredient');
+    const nomExists = await columnExists('Ingredient', 'nom');
+    if (!ingredientExists && nomExists) {
+      await prisma.$executeRawUnsafe(
+        'ALTER TABLE "Ingredient" RENAME COLUMN "nom" TO "ingredient";'
+      );
+    } else if (!ingredientExists) {
+      await addColumnIfMissing('Ingredient', `"ingredient" VARCHAR(255) NOT NULL DEFAULT 'unknown'`);
+    }
+
+    // SkinAnalyse: score_peau -> score_eau (ou add)
+    const scoreEauExists = await columnExists('SkinAnalyse', 'score_eau');
+    const scorePeauExists = await columnExists('SkinAnalyse', 'score_peau');
+    if (!scoreEauExists && scorePeauExists) {
+      await prisma.$executeRawUnsafe(
+        'ALTER TABLE "SkinAnalyse" RENAME COLUMN "score_peau" TO "score_eau";'
+      );
+    } else if (!scoreEauExists) {
+      await addColumnIfMissing('SkinAnalyse', '"score_eau" DOUBLE PRECISION');
+    }
+
+    // SkinAnalyse: date_analyse -> date_creation (ou add)
+    const dateCreationExists = await columnExists('SkinAnalyse', 'date_creation');
+    const dateAnalyseExists = await columnExists('SkinAnalyse', 'date_analyse');
+    if (!dateCreationExists && dateAnalyseExists) {
+      await prisma.$executeRawUnsafe(
+        'ALTER TABLE "SkinAnalyse" RENAME COLUMN "date_analyse" TO "date_creation";'
+      );
+    } else if (!dateCreationExists) {
+      await addColumnIfMissing(
+        'SkinAnalyse',
+        '"date_creation" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL'
+      );
+    }
+
+    console.log('✅ Synchronisation des colonnes terminée');
+
+    // Vérifier les tables finales
+    const finalTables = await prisma.$queryRaw<
+      { table_name: string }[]
+    >`
+      SELECT table_name
+      FROM information_schema.tables
       WHERE table_schema = 'public'
       ORDER BY table_name
     `;
-    
     console.log('\n📊 Tables dans la base de données:');
     console.log(finalTables);
 

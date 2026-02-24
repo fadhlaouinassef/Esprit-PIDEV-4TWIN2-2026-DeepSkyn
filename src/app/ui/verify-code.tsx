@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, CheckCircle2, ShieldCheck } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
+import { useAppDispatch } from "@/store/hooks"
+import { setUser } from "@/store/slices/authSlice"
 
 export default function VerifyCode() {
     const router = useRouter()
+    const dispatch = useAppDispatch()
     const [otp, setOtp] = useState(["", "", "", "", "", ""])
     const [isLoading, setIsLoading] = useState(false)
     const [userEmail, setUserEmail] = useState("")
@@ -89,16 +92,31 @@ export default function VerifyCode() {
             sessionStorage.removeItem('pendingUserId')
             sessionStorage.removeItem('pendingUserEmail')
 
-            // Store user data
-            sessionStorage.setItem('currentUser', JSON.stringify(data.user))
+            // Store user data in Redux (source of truth)
+            if (data.user) {
+                dispatch(setUser({
+                    id: data.user.id,
+                    nom: data.user.nom || '',
+                    prenom: data.user.prenom || '',
+                    email: data.user.email,
+                    photo: data.user.image || '/avatar.png',
+                    role: data.user.role || 'user',
+                    verified: true
+                }));
+            }
 
-            toast.success("Account verified!", {
-                description: "Welcome to DeepSkyn! Check your email for more info."
+            toast.success("Compte vérifié !", {
+                description: "Bienvenue sur DeepSkyn ! Redirection en cours..."
             })
 
-            // Redirect to user page
+            // Redirection basée sur le rôle
+            const isAdmin = data.user?.role?.toUpperCase() === 'ADMIN';
+            const redirectPath = isAdmin ? '/admin' : '/user';
+
+            console.log(`✅ [Verification] Redirection vers ${redirectPath} (Role: ${data.user?.role})`);
+
             setTimeout(() => {
-                router.push("/user")
+                router.push(redirectPath)
             }, 1500)
         } catch (error: any) {
             toast.error("Verification failed", {

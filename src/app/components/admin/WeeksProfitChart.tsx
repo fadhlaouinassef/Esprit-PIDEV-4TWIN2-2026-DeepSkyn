@@ -21,6 +21,7 @@ export function WeeksProfitChart({ data }: PropsType) {
         chart: {
             type: "bar",
             stacked: true,
+            background: 'transparent',
             toolbar: {
                 show: false,
             },
