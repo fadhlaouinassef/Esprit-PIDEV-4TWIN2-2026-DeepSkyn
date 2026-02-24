@@ -104,6 +104,7 @@ const ANALYTICS_DATA = {
 const lineChartOptions: ApexOptions = {
     chart: {
         type: "area",
+        background: 'transparent',
         toolbar: { show: false },
         fontFamily: "inherit",
         zoom: { enabled: false },
@@ -131,7 +132,7 @@ const lineChartOptions: ApexOptions = {
 };
 
 const donutOptions: ApexOptions = {
-    chart: { type: "donut", fontFamily: "inherit" },
+    chart: { type: "donut", background: 'transparent', fontFamily: "inherit" },
     labels: ["Free", "Pro Member", "Expert Plan"],
     colors: ["#94a3b8", "#6366f1", "#f59e0b"],
     plotOptions: {

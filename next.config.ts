@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
     remotePatterns: [
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'www.google.com' },
       { protocol: 'https', hostname: 'www.facebook.com' },
       { protocol: 'https', hostname: 'www.twitter.com' },

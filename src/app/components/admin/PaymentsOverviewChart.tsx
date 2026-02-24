@@ -27,6 +27,7 @@ export function PaymentsOverviewChart({ data }: PropsType) {
         chart: {
             height: 310,
             type: "area",
+            background: 'transparent',
             toolbar: {
                 show: false,
             },

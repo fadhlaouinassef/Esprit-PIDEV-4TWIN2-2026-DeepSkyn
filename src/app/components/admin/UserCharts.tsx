@@ -25,6 +25,7 @@ export function UserCharts({ users }: UserChartsProps) {
     const visitorOptions: ApexOptions = {
         chart: {
             type: "bar",
+            background: 'transparent',
             toolbar: { show: false },
             fontFamily: "inherit",
         },
@@ -55,6 +56,7 @@ export function UserCharts({ users }: UserChartsProps) {
     const revenueOptions: ApexOptions = {
         chart: {
             type: "donut",
+            background: 'transparent',
             fontFamily: "inherit",
         },
         colors: ["#5750F1", "#0ABEF9", "#FFA70B", "#259AE6", "#F095EE"],
