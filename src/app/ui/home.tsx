@@ -10,6 +10,9 @@ import { IntegrationCarousel } from "@/app/components/home_page/IntegrationCarou
 import { PricingSection } from "@/app/components/home_page/PricingSection"
 import { FAQSection } from "@/app/components/home_page/FAQSection"
 import { Footer } from "@/app/components/home_page/Footer"
+import HealthyStepsSection from "@/app/components/home_page/HealthyStepsSection"
+
+
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -52,6 +55,11 @@ export default function HomePage() {
       <motion.div variants={fadeInUp}>
         <IntegrationCarousel />
       </motion.div>
+
+      <motion.section id="healthy-steps" variants={fadeInUp}>
+      <HealthyStepsSection />
+      </motion.section>
+
       
       <motion.div variants={fadeInUp}>
         <PricingSection />
@@ -65,5 +73,6 @@ export default function HomePage() {
         <Footer />
       </motion.div>
     </motion.div>
+    
   )
 }
