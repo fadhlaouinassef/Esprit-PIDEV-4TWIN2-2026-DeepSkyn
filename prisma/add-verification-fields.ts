@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { prisma } from './prisma.config';
 
 async function addUserVerificationFields() {
