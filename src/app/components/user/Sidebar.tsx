@@ -70,7 +70,7 @@ export function Sidebar({ userName: propUserName, userPhoto: propUserPhoto }: Si
                     <div className="relative pr-4.5">
                         {/* User Profile Header */}
                         <LoadingLink
-                            href={"/user/settings/profile"}
+                            href={"/user/profile"}
                             onClick={() => isMobile && toggleSidebar()}
                             className="block mb-8 px-2"
                         >
