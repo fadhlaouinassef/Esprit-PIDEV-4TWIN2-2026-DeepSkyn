@@ -50,11 +50,12 @@ const authSlice = createSlice({
       }
 
       // Afficher les données demandées dans la console
-      console.log('🔐 [Redux] Utilisateur connecté :');
-      console.log('� Nom :', action.payload.nom);
-      console.log('👤 Prénom :', action.payload.prenom || 'N/A');
-      console.log('🛡️ Rôle :', action.payload.role);
-      console.log('✅ Status (Vérifié) :', action.payload.verified ? 'Vérifié' : 'Non vérifié');
+      console.log('[Redux] Utilisateur connecté :');
+      console.log('ID :', action.payload.id);
+      console.log('Nom :', action.payload.nom);
+      console.log('Prénom :', action.payload.prenom || 'N/A');
+      console.log('Rôle :', action.payload.role);
+      console.log('Status (Vérifié) :', action.payload.verified ? 'Vérifié' : 'Non vérifié');
     },
     clearUser: (state) => {
       state.user = null;
@@ -74,7 +75,7 @@ const authSlice = createSlice({
     updateUserProfile: (state, action: PayloadAction<Partial<UserData>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
-        console.log('✏️ [Redux] Profil mis à jour :', state.user);
+        console.log('[Redux] Profil mis à jour :', state.user);
       }
     },
   },
