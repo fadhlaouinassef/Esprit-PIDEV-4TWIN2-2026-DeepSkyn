@@ -60,29 +60,29 @@ export const updateUserOtp = async (userId: number, otp_code: string, otp_expiry
 
 export const verifyUserOtp = async (userId: number, otp_code: string): Promise<boolean> => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  
+
   if (!user || !user.otp_code || !user.otp_expiry) {
     return false;
   }
-  
+
   if (user.otp_code !== otp_code) {
     return false;
   }
-  
+
   if (new Date() > user.otp_expiry) {
     return false;
   }
-  
+
   return true;
 };
 
 export const markUserAsVerified = async (userId: number) => {
   return await prisma.user.update({
     where: { id: userId },
-    data: { 
-      verified: true, 
-      otp_code: null, 
-      otp_expiry: null 
+    data: {
+      verified: true,
+      otp_code: null,
+      otp_expiry: null
     },
   });
 };

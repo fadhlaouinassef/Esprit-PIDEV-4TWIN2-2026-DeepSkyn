@@ -43,7 +43,7 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isAuthenticated = true;
       state.isLoading = false;
-      
+
       // Persist to localStorage
       if (typeof window !== 'undefined') {
         localStorage.setItem('deepskyn_user', JSON.stringify(action.payload));
@@ -60,12 +60,12 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.isLoading = false;
-      
+
       // Clear localStorage
       if (typeof window !== 'undefined') {
         localStorage.removeItem('deepskyn_user');
       }
-      
+
       console.log('🚪 [Redux] Utilisateur déconnecté');
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
