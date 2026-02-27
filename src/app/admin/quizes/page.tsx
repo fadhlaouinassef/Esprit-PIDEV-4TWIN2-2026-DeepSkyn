@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminLayout } from "@/app/ui/AdminLayout";
 import {
     Plus,
@@ -24,9 +24,15 @@ import {
     Globe,
     Palette,
     Monitor,
-    CircleHelp
+    CircleHelp,
+    Droplets,
+    Sparkles,
+    FlaskConical,
+    HeartPulse,
+    UserCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 // Types
 interface Option {
@@ -38,7 +44,7 @@ interface Option {
 interface Question {
     id: string;
     text: string;
-    type: string; // Using string instead of union for easier state updates in this mock
+    type: string;
     options: Option[];
     correctAnswer?: string;
 }
@@ -49,102 +55,170 @@ interface Quiz {
     description: string;
     questionCount: number;
     status: string;
-    iconType: 'globe' | 'palette' | 'monitor' | 'help'; // Changed from string icon to iconType
+    iconType: string;
     questions: Question[];
 }
 
-// Mock Data
-const MOCK_QUIZZES: Quiz[] = [
-    {
-        id: "1",
-        title: "General Knowledge",
-        description: "A variety of fun questions about the world.",
-        questionCount: 12,
-        status: "active",
-        iconType: "globe",
-        questions: [
-            { id: "q1_1", text: "What is the capital of France?", type: "input", correctAnswer: "Paris", options: [] },
-            {
-                id: "q1_2", text: "Which planet is known as the Red Planet?", type: "choice", options: [
-                    { id: "o1", text: "Mars", isCorrect: true },
-                    { id: "o2", text: "Jupiter", isCorrect: false },
-                    { id: "o3", text: "Venus", isCorrect: false }
-                ]
-            }
-        ]
-    },
-    {
-        id: "2",
-        title: "Product Design 101",
-        description: "Master the fundamentals of user-centered design.",
-        questionCount: 8,
-        status: "active",
-        iconType: "palette",
-        questions: [
-            { id: "q2_1", text: "What does UX stand for?", type: "input", correctAnswer: "User Experience", options: [] },
-            {
-                id: "q2_2", text: "Which color is traditionally associated with 'Success' in UI?", type: "choice", options: [
-                    { id: "o1", text: "Green", isCorrect: true },
-                    { id: "o2", text: "Red", isCorrect: false },
-                    { id: "o3", text: "Blue", isCorrect: false }
-                ]
-            }
-        ]
-    },
-    {
-        id: "3",
-        title: "Frontend Fundamentals",
-        description: "HTML, CSS, and basic JavaScript principles.",
-        questionCount: 15,
-        status: "draft",
-        iconType: "monitor",
-        questions: [
-            { id: "q3_1", text: "What does HTML stand for?", type: "input", correctAnswer: "HyperText Markup Language", options: [] }
-        ]
-    }
-];
-
-const MOCK_QUESTIONS: Question[] = [
-    {
-        id: "q1",
-        text: "What is your favorite design principle?",
-        type: "input",
-        correctAnswer: "Minimalism",
-        options: []
-    },
-    {
-        id: "q2",
-        text: "Which of these are primary colors?",
-        type: "choice",
-        options: [
-            { id: "o1", text: "Red", isCorrect: true },
-            { id: "o2", text: "Blue", isCorrect: true },
-            { id: "o3", text: "Yellow", isCorrect: true },
-            { id: "o4", text: "Green", isCorrect: false }
-        ]
-    },
-    {
-        id: "q3",
-        text: "Select your hobbies",
-        type: "choice",
-        options: [
-            { id: "o5", text: "Gaming", isCorrect: false },
-            { id: "o6", text: "Reading", isCorrect: false },
-            { id: "o7", text: "Traveling", isCorrect: false }
-        ]
-    }
-];
-
 export default function QuizzesPage() {
     const [view, setView] = useState<"list" | "edit">("list");
+    const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
-    const [questions, setQuestions] = useState<Question[]>(MOCK_QUESTIONS);
-    const [isDeleting, setIsDeleting] = useState<string | null>(null);
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     const [expandedQuizId, setExpandedQuizId] = useState<string | null>(null);
+    const [deletedQuestionIds, setDeletedQuestionIds] = useState<string[]>([]);
+
+    const filteredQuizzes = quizzes.filter(q =>
+        q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.iconType.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    useEffect(() => {
+        fetchQuizzes();
+    }, []);
+
+    const fetchQuizzes = async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch(`/api/quiz?t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+            });
+            const data = await res.json();
+            // Transform backend data to match UI types if necessary
+            const formattedData = data.map((q: any) => ({
+                id: q.id.toString(),
+                title: q.titre,
+                description: q.description || "",
+                questionCount: q.questions?.length || 0,
+                status: "active",
+                iconType: q.type || "help",
+                questions: q.questions?.map((ques: any) => ({
+                    id: ques.id.toString(),
+                    text: ques.question,
+                    type: ques.type_reponse === 'multiple_choice' ? 'choice' : 'input',
+                    options: ques.reponse_options ? JSON.parse(ques.reponse_options) : [],
+                    correctAnswer: ""
+                })) || []
+            }));
+            setQuizzes(formattedData);
+        } catch (error) {
+            console.error('Failed to fetch quizzes:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSaveQuiz = async () => {
+        if (!selectedQuiz) return;
+        if (!selectedQuiz.title.trim()) {
+            toast.error("Veuillez saisir un titre pour le quiz");
+            return;
+        }
+
+        setIsSaving(true);
+        const toastId = toast.loading("Enregistrement en cours...");
+
+        try {
+            const isNew = selectedQuiz.id === "new";
+            const method = isNew ? 'POST' : 'PATCH';
+            const url = isNew ? '/api/quiz' : `/api/quiz/${selectedQuiz.id}`;
+
+            const quizBody = {
+                titre: selectedQuiz.title,
+                type: selectedQuiz.iconType,
+                description: selectedQuiz.description,
+            };
+
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(quizBody)
+            });
+
+            if (!res.ok) throw new Error("Erreur lors de la sauvegarde du quiz");
+
+            const savedQuiz = await res.json();
+            const quizId = savedQuiz.id;
+
+            // 1. Delete questions that were removed in UI
+            for (const id of deletedQuestionIds) {
+                if (!id.startsWith('q')) { // Only delete if it's a real database ID
+                    await fetch(`/api/quiz/questions/${id}`, { method: 'DELETE' });
+                }
+            }
+
+            // 2. Sync questions (Add or Update)
+            console.log(`Syncing ${questions.length} questions for quiz ${quizId}`);
+            let qCount = 0;
+
+            for (const q of questions) {
+                const idStr = q.id.toString();
+                const isNewQuestion = idStr.startsWith('q');
+                const qMethod = isNewQuestion ? 'POST' : 'PATCH';
+                const qUrl = isNewQuestion ? `/api/quiz/${quizId}/questions` : `/api/quiz/questions/${idStr}`;
+
+                const qBody = {
+                    question: q.text || "Sans titre",
+                    type_reponse: q.type === 'choice' ? 'multiple_choice' : 'input',
+                    options: q.type === 'choice' ? JSON.stringify(q.options) : null,
+                    quiz_id: Number(quizId)
+                };
+
+                console.log(`Syncing question: ${idStr} via ${qMethod} at ${qUrl}`);
+
+                const qRes = await fetch(qUrl, {
+                    method: qMethod,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(qBody),
+                    cache: 'no-store'
+                });
+
+                if (qRes.ok) {
+                    qCount++;
+                } else {
+                    const errorData = await qRes.json();
+                    console.error("Failed to sync question:", q.id, errorData);
+                    toast.error(`Erreur: ${q.text.substring(0, 10)}... ${errorData.error || ""}`);
+                }
+            }
+
+            toast.success(`Quiz et ${qCount} questions enregistrés`, { id: toastId });
+            await fetchQuizzes();
+            setDeletedQuestionIds([]);
+            setView("list");
+        } catch (error) {
+            console.error('Failed to save quiz:', error);
+            toast.error("Erreur d'enregistrement", { id: toastId });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeleteQuiz = async (id: string) => {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce quiz ?')) return;
+
+        const toastId = toast.loading("Suppression en cours...");
+        try {
+            const res = await fetch(`/api/quiz/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                toast.success("Quiz supprimé", { id: toastId });
+                fetchQuizzes();
+            } else {
+                throw new Error("Failed to delete");
+            }
+        } catch (error) {
+            console.error('Failed to delete quiz:', error);
+            toast.error("Erreur lors de la suppression", { id: toastId });
+        }
+    };
 
     const handleEditQuiz = (quiz: Quiz) => {
         setSelectedQuiz(quiz);
-        setQuestions(quiz.questions || MOCK_QUESTIONS); // Load the quiz's specific questions
+        setQuestions(quiz.questions || []);
+        setDeletedQuestionIds([]); // Reset deletions tracker
         setView("edit");
     };
 
@@ -162,6 +236,9 @@ export default function QuizzesPage() {
 
     const handleRemoveQuestion = (id: string) => {
         setQuestions(questions.filter(q => q.id !== id));
+        if (!id.startsWith('q')) {
+            setDeletedQuestionIds(prev => [...prev, id]);
+        }
     };
 
     const handleUpdateQuestion = (id: string, updates: any) => {
@@ -216,11 +293,26 @@ export default function QuizzesPage() {
         }));
     };
 
+    const getCategoryLabel = (type: string) => {
+        switch (type) {
+            case 'droplets': return 'Skin Type';
+            case 'sparkles': return 'Skin Glow';
+            case 'flask': return 'Ingredients';
+            case 'health': return 'Medical';
+            case 'user': return 'Personal';
+            case 'globe': return 'General';
+            default: return 'Other';
+        }
+    };
+
     const getQuizIcon = (type: string, className?: string) => {
         switch (type) {
+            case 'droplets': return <Droplets className={className} />;
+            case 'sparkles': return <Sparkles className={className} />;
+            case 'flask': return <FlaskConical className={className} />;
+            case 'health': return <HeartPulse className={className} />;
+            case 'user': return <UserCircle className={className} />;
             case 'globe': return <Globe className={className} />;
-            case 'palette': return <Palette className={className} />;
-            case 'monitor': return <Monitor className={className} />;
             default: return <CircleHelp className={className} />;
         }
     };
@@ -247,7 +339,7 @@ export default function QuizzesPage() {
                                     <p className="text-gray-500 dark:text-gray-400 mt-1 ml-11">Create and manage assessment quizzes for your users.</p>
                                 </div>
                                 <button
-                                    onClick={() => { setSelectedQuiz({ id: "new", title: "New Quiz", description: "", questionCount: 0, status: "draft", iconType: "help", questions: [] }); setView("edit"); }}
+                                    onClick={() => { setSelectedQuiz({ id: "new", title: "New Quiz", description: "", questionCount: 0, status: "draft", iconType: "help", questions: [] }); setQuestions([]); setDeletedQuestionIds([]); setView("edit"); }}
                                     className="flex items-center justify-center gap-2 bg-gray-900 border border-gray-900 dark:bg-white dark:border-white text-white dark:text-gray-900 px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-sm"
                                 >
                                     <Plus className="size-5" />
@@ -261,133 +353,148 @@ export default function QuizzesPage() {
                                     <Search className="size-5 text-gray-400 mr-3" />
                                     <input
                                         type="text"
-                                        placeholder="Search quizzes by title or category..."
+                                        placeholder="Search by title or category (droplets, sparkles...)"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                         className="flex-1 bg-transparent border-none outline-none text-gray-700 dark:text-gray-200"
                                     />
                                 </div>
                                 <div className="bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center px-4 shadow-sm border border-gray-100 dark:border-gray-700/50 font-bold text-gray-600 dark:text-gray-300">
-                                    {MOCK_QUIZZES.length} Total Quizzes
+                                    {quizzes.length} Total Quizzes
                                 </div>
                             </div>
 
-                            {/* Quiz Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-                                {MOCK_QUIZZES.map((quiz) => (
-                                    <motion.div
-                                        key={quiz.id}
-                                        layout
-                                        className="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 relative overflow-hidden transition-all duration-300"
-                                    >
-                                        <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl">
-                                                <MoreHorizontal className="size-5 text-gray-400" />
-                                            </button>
-                                        </div>
-
-                                        <div className="flex items-start gap-4">
-                                            <div className="size-14 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center shadow-inner">
-                                                {getQuizIcon(quiz.iconType, "size-8 text-blue-600 dark:text-blue-400")}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate">{quiz.title}</h3>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1 leading-relaxed">
-                                                    {quiz.description}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-8 flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <span className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300">
-                                                    <ListChecks className="size-3.5 text-blue-500" />
-                                                    {quiz.questionCount} Questions
-                                                </span>
-                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${quiz.status === 'active'
-                                                    ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
-                                                    : 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                                    }`}>
-                                                    {quiz.status.charAt(0).toUpperCase() + quiz.status.slice(1)}
-                                                </span>
+                            {isLoading ? (
+                                <div className="flex justify-center py-20">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+                                    {filteredQuizzes.map((quiz) => (
+                                        <motion.div
+                                            key={quiz.id}
+                                            layout
+                                            className="group bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 relative overflow-hidden transition-all duration-300"
+                                        >
+                                            <div className="flex items-start gap-4">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <div className="size-14 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center shadow-inner">
+                                                        {getQuizIcon(quiz.iconType, "size-8 text-blue-600 dark:text-blue-400")}
+                                                    </div>
+                                                    <div className="px-2 py-1 bg-blue-50 dark:bg-blue-900/40 rounded-lg border border-blue-100 dark:border-blue-800">
+                                                        <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-tighter">
+                                                            Catégorie: {getCategoryLabel(quiz.iconType)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate leading-tight">{quiz.title}</h3>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1 leading-relaxed">
+                                                        {quiz.description}
+                                                    </p>
+                                                </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => setExpandedQuizId(expandedQuizId === quiz.id ? null : quiz.id)}
-                                                    className={`p-3 bg-gray-50 dark:bg-gray-700/50 text-gray-500 rounded-2xl transition-all ${expandedQuizId === quiz.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600' : ''}`}
-                                                >
-                                                    <ChevronDown className={`size-5 transition-transform duration-300 ${expandedQuizId === quiz.id ? 'rotate-180' : ''}`} />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleEditQuiz(quiz)}
-                                                    className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-sm"
-                                                >
-                                                    <SquarePen className="size-5" />
-                                                </button>
+                                            <div className="mt-8 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300">
+                                                        <ListChecks className="size-3.5 text-blue-500" />
+                                                        {quiz.questionCount} Questions
+                                                    </span>
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${quiz.status === 'active'
+                                                        ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
+                                                        : 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                                        }`}>
+                                                        {quiz.status.charAt(0).toUpperCase() + quiz.status.slice(1)}
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => setExpandedQuizId(expandedQuizId === quiz.id ? null : quiz.id)}
+                                                        className={`p-3 bg-gray-50 dark:bg-gray-700/50 text-gray-500 rounded-2xl transition-all ${expandedQuizId === quiz.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600' : ''}`}
+                                                    >
+                                                        <ChevronDown className={`size-5 transition-transform duration-300 ${expandedQuizId === quiz.id ? 'rotate-180' : ''}`} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteQuiz(quiz.id)}
+                                                        className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm"
+                                                        title="Supprimer le quiz"
+                                                    >
+                                                        <Trash2 className="size-5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleEditQuiz(quiz)}
+                                                        className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-sm"
+                                                        title="Modifier le quiz"
+                                                    >
+                                                        <SquarePen className="size-5" />
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        {/* Expandable Question Preview */}
-                                        <AnimatePresence>
-                                            {expandedQuizId === quiz.id && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: "auto", opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    className="overflow-hidden"
-                                                >
-                                                    <div className="pt-6 mt-6 border-t border-gray-100 dark:border-gray-700/50 space-y-4">
-                                                        <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Questions Preview</h4>
-                                                        {quiz.questions.map((q, idx) => (
-                                                            <div key={q.id} className="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-700/30">
-                                                                <div className="flex items-start gap-3">
-                                                                    <span className="shrink-0 size-6 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center text-[10px] font-bold text-gray-400 shadow-sm border border-gray-100 dark:border-gray-700">
-                                                                        {idx + 1}
-                                                                    </span>
-                                                                    <div className="space-y-3 flex-1">
-                                                                        <p className="text-sm font-bold text-gray-700 dark:text-gray-300 leading-snug">{q.text}</p>
+                                            {/* Expandable Question Preview */}
+                                            <AnimatePresence>
+                                                {expandedQuizId === quiz.id && (
+                                                    <motion.div
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: "auto", opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        className="overflow-hidden"
+                                                    >
+                                                        <div className="pt-6 mt-6 border-t border-gray-100 dark:border-gray-700/50 space-y-4">
+                                                            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Questions Preview</h4>
+                                                            {quiz.questions.map((q, idx) => (
+                                                                <div key={q.id} className="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-700/30">
+                                                                    <div className="flex items-start gap-3">
+                                                                        <span className="shrink-0 size-6 bg-white dark:bg-gray-800 rounded-lg flex items-center justify-center text-[10px] font-bold text-gray-400 shadow-sm border border-gray-100 dark:border-gray-700">
+                                                                            {idx + 1}
+                                                                        </span>
+                                                                        <div className="space-y-3 flex-1">
+                                                                            <p className="text-sm font-bold text-gray-700 dark:text-gray-300 leading-snug">{q.text}</p>
 
-                                                                        {q.type === 'choice' ? (
-                                                                            <div className="grid grid-cols-1 gap-2">
-                                                                                {q.options.map(opt => (
-                                                                                    <div key={opt.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs border ${opt.isCorrect ? 'bg-green-50 border-green-100 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400' : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500'}`}>
-                                                                                        <div className={`size-2 rounded-full ${opt.isCorrect ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
-                                                                                        {opt.text}
-                                                                                    </div>
-                                                                                ))}
-                                                                            </div>
-                                                                        ) : (
-                                                                            <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 rounded-xl px-3 py-2">
-                                                                                <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">Text Answer Preview</p>
-                                                                                <p className="text-xs text-blue-500 dark:text-blue-300 italic">" {q.correctAnswer || "Awaited user input..."} "</p>
-                                                                            </div>
-                                                                        )}
+                                                                            {q.type === 'choice' ? (
+                                                                                <div className="grid grid-cols-1 gap-2">
+                                                                                    {q.options.map(opt => (
+                                                                                        <div key={opt.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs border ${opt.isCorrect ? 'bg-green-50 border-green-100 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400' : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500'}`}>
+                                                                                            <div className={`size-2 rounded-full ${opt.isCorrect ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                                                                            {opt.text}
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 rounded-xl px-3 py-2">
+                                                                                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">Text Answer Preview</p>
+                                                                                    <p className="text-xs text-blue-500 dark:text-blue-300 italic">" {q.correctAnswer || "Awaited user input..."} "</p>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        ))}
-                                                        {quiz.questions.length === 0 && (
-                                                            <p className="text-center py-4 text-xs text-gray-400 italic">No questions added yet.</p>
-                                                        )}
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </motion.div>
-                                ))}
+                                                            ))}
+                                                            {quiz.questions.length === 0 && (
+                                                                <p className="text-center py-4 text-xs text-gray-400 italic">No questions added yet.</p>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </motion.div>
+                                    ))}
 
-                                {/* Add New Card */}
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => { setSelectedQuiz({ id: "new", title: "New Quiz", description: "", questionCount: 0, status: "draft", iconType: "help", questions: [] }); setView("edit"); }}
-                                    className="flex flex-col items-center justify-center gap-4 bg-gray-50 dark:bg-gray-800/40 rounded-3xl p-6 border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-400 transition-colors h-full min-h-[220px]"
-                                >
-                                    <div className="size-16 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md">
-                                        <Plus className="size-8 text-blue-500" />
-                                    </div>
-                                    <span className="font-bold text-gray-500 dark:text-gray-400">Add New Quiz</span>
-                                </motion.button>
-                            </div>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => { setSelectedQuiz({ id: "new", title: "New Quiz", description: "", questionCount: 0, status: "draft", iconType: "help", questions: [] }); setQuestions([]); setDeletedQuestionIds([]); setView("edit"); }}
+                                        className="flex flex-col items-center justify-center gap-4 bg-gray-50 dark:bg-gray-800/40 rounded-3xl p-6 border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-400 transition-colors h-full min-h-[220px]"
+                                    >
+                                        <div className="size-16 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md">
+                                            <Plus className="size-8 text-blue-500" />
+                                        </div>
+                                        <span className="font-bold text-gray-500 dark:text-gray-400">Add New Quiz</span>
+                                    </motion.button>
+                                </div>
+                            )}
                         </motion.div>
                     ) : (
                         <motion.div
@@ -416,8 +523,12 @@ export default function QuizzesPage() {
                                         <Eye className="size-4" />
                                         Preview
                                     </button>
-                                    <button className="bg-gray-900 border border-gray-900 dark:bg-white dark:border-white text-white dark:text-gray-900 px-6 py-2.5 rounded-2xl font-bold transition-all active:scale-95 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-sm">
-                                        Save Changes
+                                    <button
+                                        onClick={handleSaveQuiz}
+                                        disabled={isSaving}
+                                        className="bg-gray-900 border border-gray-900 dark:bg-white dark:border-white text-white dark:text-gray-900 px-6 py-2.5 rounded-2xl font-bold transition-all active:scale-95 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-sm disabled:opacity-50"
+                                    >
+                                        {isSaving ? "Saving..." : "Save Changes"}
                                     </button>
                                 </div>
                             </div>
@@ -436,25 +547,33 @@ export default function QuizzesPage() {
                                                 <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Title</label>
                                                 <input
                                                     type="text"
-                                                    defaultValue={selectedQuiz?.title}
-                                                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                                    value={selectedQuiz?.title || ""}
+                                                    onChange={(e) => setSelectedQuiz(prev => prev ? { ...prev, title: e.target.value } : null)}
+                                                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold"
                                                 />
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Description</label>
                                                 <textarea
                                                     rows={4}
-                                                    defaultValue={selectedQuiz?.description}
+                                                    value={selectedQuiz?.description || ""}
+                                                    onChange={(e) => setSelectedQuiz(prev => prev ? { ...prev, description: e.target.value } : null)}
                                                     className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
                                                 />
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Category</label>
-                                                <select className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none">
-                                                    <option>General Knowledge</option>
-                                                    <option>Design</option>
-                                                    <option>Development</option>
-                                                    <option>Personal Finance</option>
+                                                <select
+                                                    value={selectedQuiz?.iconType}
+                                                    onChange={(e) => setSelectedQuiz(prev => prev ? { ...prev, iconType: e.target.value as any } : null)}
+                                                    className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                                                >
+                                                    <option value="droplets">Skin Type (Droplets)</option>
+                                                    <option value="sparkles">Skin Glow (Sparkles)</option>
+                                                    <option value="flask">Ingredients (Flask)</option>
+                                                    <option value="health">Medical (Health)</option>
+                                                    <option value="user">Personal (User)</option>
+                                                    <option value="globe">General (Globe)</option>
                                                 </select>
                                             </div>
                                         </div>

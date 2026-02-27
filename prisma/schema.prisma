@@ -122,9 +122,10 @@ model Feedback {
 }
 
 model Quiz {
-  id     Int    @id @default(autoincrement())
-  titre  String
-  type   String
+  id          Int      @id @default(autoincrement())
+  titre       String
+  type        String
+  description String?
 
   questions     QuizQuestion[]
   surveyAnswers SurveyAnswer[]
@@ -135,6 +136,7 @@ model QuizQuestion {
   quiz_id       Int
   question      String
   type_reponse  String
+  reponse_options  String? // JSON string for options
 
   quiz          Quiz            @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
   surveyAnswers SurveyAnswer[]
