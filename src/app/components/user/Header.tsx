@@ -28,7 +28,7 @@ export function Header({ userName, userPhoto }: HeaderProps) {
 
                 <div className="max-sm:hidden">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        User Dashboard
+                        Welcome!
                     </h1>
                 </div>
             </div>
