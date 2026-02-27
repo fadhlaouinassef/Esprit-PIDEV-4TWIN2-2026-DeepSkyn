@@ -63,6 +63,12 @@ export const NAV_DATA: NavSection[] = [
                 ],
             },
             {
+                title: "Quizzes",
+                url: "/admin/quizes",
+                icon: ClipboardList,
+                items: [],
+            },
+            {
                 title: "Products",
                 url: "/admin/products",
                 icon: Package,
