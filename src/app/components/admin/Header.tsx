@@ -27,11 +27,8 @@ export function Header() {
 
                 <div className="max-sm:hidden">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        Dashboard
+                        Welcome Admin!
                     </h1>
-                    <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mt-1">
-                        Next.js Admin Dashboard Solution
-                    </p>
                 </div>
             </div>
 
