@@ -13,7 +13,7 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (password.length < 6) {
@@ -31,14 +31,41 @@ export default function ResetPassword() {
     }
 
     setIsLoading(true)
-    // Simulation du changement
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      const userId = sessionStorage.getItem('pendingUserId')
+      if (!userId) {
+        throw new Error('Session expirée. Veuillez recommencer le processus.')
+      }
+
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur lors de la réinitialisation')
+      }
+
       toast.success("Mot de passe modifié !", {
         description: "Votre nouveau mot de passe a été enregistré avec succès."
       })
-      router.push("/signin") // Retour à la connexion
-    }, 1500)
+
+      // Nettoyage final
+      sessionStorage.clear()
+
+      router.push("/signin")
+    } catch (error: any) {
+      toast.error("Erreur", {
+        description: error.message || "Une erreur est survenue"
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

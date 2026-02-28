@@ -369,63 +369,6 @@ async function migrate() {
     console.log('\n🔌 Déconnexion de la base de données');
   }
 }
-
-    console.log('🛠️ Synchronisation des colonnes manquantes/renommées...');
-
-    const columnExists = async (table: string, column: string) => {
-      const result = await prisma.$queryRawUnsafe<{ exists: boolean }[]>(
-        `SELECT EXISTS (
-           SELECT 1
-           FROM information_schema.columns
-           WHERE table_schema = 'public'
-             AND table_name = $1
-             AND column_name = $2
-         ) AS "exists"`,
-        table,
-        column
-      );
-      return result[0]?.exists === true;
-    };
-
-    const addColumnIfMissing = async (table: string, ddl: string) => {
-      await prisma.$executeRawUnsafe(`ALTER TABLE "${table}" ADD COLUMN IF NOT EXISTS ${ddl};`);
-    };
-
-    await addColumnIfMissing('User', '"prenom" VARCHAR(255)');
-    await addColumnIfMissing('User', '"image" TEXT');
-    await addColumnIfMissing('User', '"verified" BOOLEAN DEFAULT false NOT NULL');
-    await addColumnIfMissing('User', '"otp_code" TEXT');
-    await addColumnIfMissing('User', '"otp_expiry" TIMESTAMP');
-
-    await addColumnIfMissing('Badge', '"titre" VARCHAR(255) NOT NULL DEFAULT ''Badge''');
-    await addColumnIfMissing('Routine', '"envie" TEXT');
-    await addColumnIfMissing('IngredientConflict', '"text" TEXT');
-
-    const ingredientExists = await columnExists('Ingredient', 'ingredient');
-    const nomExists = await columnExists('Ingredient', 'nom');
-    if (!ingredientExists && nomExists) {
-      await prisma.$executeRawUnsafe('ALTER TABLE "Ingredient" RENAME COLUMN "nom" TO "ingredient";');
-    } else if (!ingredientExists) {
-      await addColumnIfMissing('Ingredient', '"ingredient" VARCHAR(255) NOT NULL DEFAULT ''unknown''');
-    }
-
-    const scoreEauExists = await columnExists('SkinAnalyse', 'score_eau');
-    const scorePeauExists = await columnExists('SkinAnalyse', 'score_peau');
-    if (!scoreEauExists && scorePeauExists) {
-      await prisma.$executeRawUnsafe('ALTER TABLE "SkinAnalyse" RENAME COLUMN "score_peau" TO "score_eau";');
-    } else if (!scoreEauExists) {
-      await addColumnIfMissing('SkinAnalyse', '"score_eau" DOUBLE PRECISION');
-    }
-
-    const dateCreationExists = await columnExists('SkinAnalyse', 'date_creation');
-    const dateAnalyseExists = await columnExists('SkinAnalyse', 'date_analyse');
-    if (!dateCreationExists && dateAnalyseExists) {
-      await prisma.$executeRawUnsafe('ALTER TABLE "SkinAnalyse" RENAME COLUMN "date_analyse" TO "date_creation";');
-    } else if (!dateCreationExists) {
-      await addColumnIfMissing('SkinAnalyse', '"date_creation" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL');
-    }
-
-    console.log('✅ Synchronisation des colonnes terminée');
 migrate()
   .then(() => {
     console.log('\n✅ Migration terminée avec succès!');

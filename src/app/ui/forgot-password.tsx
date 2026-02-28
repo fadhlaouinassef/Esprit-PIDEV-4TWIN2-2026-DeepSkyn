@@ -12,7 +12,7 @@ export default function ForgotPassword() {
     const [email, setEmail] = useState("")
     const [isLoading, setIsLoading] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
         if (!email.trim()) {
@@ -23,13 +23,36 @@ export default function ForgotPassword() {
         }
 
         setIsLoading(true)
-        setTimeout(() => {
-            setIsLoading(false)
-            toast.success("Lien envoyé !", {
-                description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe."
+        try {
+            const response = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
             })
-            router.push("/verify-code") // Cela fonctionnera maintenant
-        }, 1500)
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Erreur lors de l\'envoi')
+            }
+
+            // Stocker les infos pour l'écran de vérification
+            sessionStorage.setItem('pendingUserEmail', email)
+            sessionStorage.setItem('pendingUserId', data.userId.toString())
+            sessionStorage.setItem('verificationType', 'reset-password')
+
+            toast.success("Code envoyé !", {
+                description: "Vérifiez votre boîte mail pour le code de réinitialisation."
+            })
+
+            router.push("/verify-code")
+        } catch (error: any) {
+            toast.error("Erreur", {
+                description: error.message || "Une erreur est survenue"
+            })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (

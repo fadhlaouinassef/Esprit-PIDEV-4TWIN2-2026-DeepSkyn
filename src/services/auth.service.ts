@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { createUser, findUserByEmail, findUserById, updateUserOtp, verifyUserOtp as verifyOtpInDb, markUserAsVerified } from './user.service';
+import { createUser, findUserByEmail, findUserById, updateUserOtp, verifyUserOtp as verifyOtpInDb, markUserAsVerified, updateUser } from './user.service';
 import { sendOtpEmail, sendWelcomeEmail, generateOtp } from './email.service';
 import { RoleType } from '../entities/Enums';
 
@@ -143,6 +143,62 @@ export const signin = async (data: SigninData) => {
     };
   } catch (error) {
     console.error('Signin error:', error);
+    throw error;
+  }
+};
+
+export const forgotPassword = async (email: string) => {
+  try {
+    const user = await findUserByEmail(email);
+    if (!user) {
+      throw new Error('Aucun utilisateur trouvé avec cet e-mail');
+    }
+
+    // Generate OTP
+    const otp = generateOtp();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Save OTP to database
+    await updateUserOtp(user.id, otp, otpExpiry);
+
+    // Send OTP email (using a generic OTP template or dedicated one if exists)
+    await sendOtpEmail(user.email, otp, user.nom || 'User');
+
+    return {
+      success: true,
+      userId: user.id,
+      email: user.email,
+      message: 'Un code de réinitialisation a été envoyé à votre e-mail.',
+    };
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (userId: number, password: string) => {
+  try {
+    const user = await findUserById(userId);
+    if (!user) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user password and clear OTP
+    await updateUser(userId, {
+      password: hashedPassword,
+      otp_code: null,
+      otp_expiry: null,
+    });
+
+    return {
+      success: true,
+      message: 'Mot de passe réinitialisé avec succès',
+    };
+  } catch (error) {
+    console.error('Reset password error:', error);
     throw error;
   }
 };

@@ -15,21 +15,16 @@ export default function VerifyCode() {
     const [otp, setOtp] = useState(["", "", "", "", "", ""])
     const [isLoading, setIsLoading] = useState(false)
     const [userEmail, setUserEmail] = useState("")
+    const [verificationType, setVerificationType] = useState<string | null>(null)
     const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
     useEffect(() => {
-        // Get user email from session storage
+        // Get user email and verification type from session storage
         const email = sessionStorage.getItem('pendingUserEmail')
-        if (email) {
-            setUserEmail(email)
-        } else {
-            // If no pending user, redirect to signup
-            toast.error('Session expired', {
-                description: 'Please sign up again',
-            })
-            router.push('/signup')
-        }
-    }, [router])
+        const type = sessionStorage.getItem('verificationType')
+        if (email) setUserEmail(email)
+        if (type) setVerificationType(type)
+    }, [])
 
     // Handle change in input boxes
     const handleChange = (index: number, value: string) => {
@@ -57,8 +52,8 @@ export default function VerifyCode() {
         const code = otp.join("")
 
         if (code.length < 6) {
-            toast.error("Incomplete code", {
-                description: "Please enter all 6 digits of the code."
+            toast.error("Code incomplet", {
+                description: "Veuillez entrer les 6 chiffres du code."
             })
             return
         }
@@ -68,7 +63,7 @@ export default function VerifyCode() {
         try {
             const userId = sessionStorage.getItem('pendingUserId')
             if (!userId) {
-                throw new Error('Session expired. Please sign up again.')
+                throw new Error('Session expirée. Veuillez recommencer.')
             }
 
             const response = await fetch('/api/auth/verify-otp', {
@@ -85,42 +80,48 @@ export default function VerifyCode() {
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.error || 'Verification failed')
+                throw new Error(data.error || 'Vérification échouée')
             }
 
-            // Clear session storage
-            sessionStorage.removeItem('pendingUserId')
-            sessionStorage.removeItem('pendingUserEmail')
+            if (verificationType === 'reset-password') {
+                toast.success("Code validé !", {
+                    description: "Vous pouvez maintenant changer votre mot de passe."
+                })
+                setTimeout(() => {
+                    router.push('/reset-password')
+                }, 1000)
+            } else {
+                // Clear session storage
+                sessionStorage.removeItem('pendingUserId')
+                sessionStorage.removeItem('pendingUserEmail')
 
-            // Store user data in Redux (source of truth)
-            if (data.user) {
-                dispatch(setUser({
-                    id: data.user.id,
-                    nom: data.user.nom || '',
-                    prenom: data.user.prenom || '',
-                    email: data.user.email,
-                    photo: data.user.image || '/avatar.png',
-                    role: data.user.role || 'user',
-                    verified: true
-                }));
+                // Store user data in Redux (source of truth)
+                if (data.user) {
+                    dispatch(setUser({
+                        id: data.user.id,
+                        nom: data.user.nom || '',
+                        prenom: data.user.prenom || '',
+                        email: data.user.email,
+                        photo: data.user.image || '/avatar.png',
+                        role: data.user.role || 'user',
+                        verified: true
+                    }));
+                }
+
+                toast.success("Compte vérifié !", {
+                    description: "Bienvenue sur DeepSkyn ! Redirection en cours..."
+                })
+
+                const isAdmin = data.user?.role?.toUpperCase() === 'ADMIN';
+                const redirectPath = isAdmin ? '/admin' : '/user';
+
+                setTimeout(() => {
+                    router.push(redirectPath)
+                }, 1500)
             }
-
-            toast.success("Compte vérifié !", {
-                description: "Bienvenue sur DeepSkyn ! Redirection en cours..."
-            })
-
-            // Redirection basée sur le rôle
-            const isAdmin = data.user?.role?.toUpperCase() === 'ADMIN';
-            const redirectPath = isAdmin ? '/admin' : '/user';
-
-            console.log(`✅ [Verification] Redirection vers ${redirectPath} (Role: ${data.user?.role})`);
-
-            setTimeout(() => {
-                router.push(redirectPath)
-            }, 1500)
         } catch (error: any) {
-            toast.error("Verification failed", {
-                description: error.message || "Invalid or expired code"
+            toast.error("Erreur de vérification", {
+                description: error.message || "Code invalide ou expiré"
             })
         } finally {
             setIsLoading(false)
@@ -131,15 +132,15 @@ export default function VerifyCode() {
         try {
             const userId = sessionStorage.getItem('pendingUserId')
             if (!userId) {
-                throw new Error('Session expired. Please sign up again.')
+                throw new Error('Session expirée. Veuillez recommencer.')
             }
 
             // You can implement a resend OTP API endpoint here
-            toast.info("Code resent", {
-                description: "A new verification code has been sent to your email."
+            toast.info("Code renvoyé", {
+                description: "Un nouveau code de vérification a été envoyé à votre e-mail."
             })
         } catch (error: any) {
-            toast.error("Failed to resend", {
+            toast.error("Échec de l'envoi", {
                 description: error.message
             })
         }
@@ -161,14 +162,14 @@ export default function VerifyCode() {
                 >
                     {/* Back Button */}
                     <Link
-                        href="/signup"
+                        href={verificationType === 'reset-password' ? "/forgot-password" : "/signup"}
                         className="inline-flex items-center gap-2 text-[#666666] hover:text-[#202020] transition-all duration-300 mb-6 group"
                         style={{ fontFamily: "Figtree" }}
                     >
                         <motion.div whileHover={{ x: -4 }} transition={{ type: "spring", stiffness: 400 }}>
                             <ArrowLeft className="w-5 h-5" />
                         </motion.div>
-                        <span className="text-sm font-medium">Back to signup</span>
+                        <span className="text-sm font-medium">Retour {verificationType === 'reset-password' ? 'au reset' : 'à l\'inscription'}</span>
                     </Link>
 
                     {/* Icon */}
@@ -191,10 +192,13 @@ export default function VerifyCode() {
                         className="text-center mb-8"
                     >
                         <h1 className="text-3xl font-bold text-[#202020] mb-3 bg-gradient-to-r from-[#202020] to-[#156d95] bg-clip-text text-transparent" style={{ fontFamily: "Figtree" }}>
-                            Verify Code
+                            {verificationType === 'reset-password' ? "Vérification" : "Vérifier Code"}
                         </h1>
                         <p className="text-sm text-[#666666] leading-relaxed" style={{ fontFamily: "Figtree" }}>
-                            We've sent a 6-digit code to {userEmail ? <strong>{userEmail}</strong> : 'your email'}. Enter it below to continue.
+                            {verificationType === 'reset-password'
+                                ? "Entrez le code envoyé pour réinitialiser votre mot de passe."
+                                : `Nous avons envoyé un code à 6 chiffres à ${userEmail ? <strong>{userEmail}</strong> : 'votre email'}.`
+                            }
                         </p>
                     </motion.div>
 
