@@ -73,6 +73,14 @@ async function migrate() {
       END $$;
     `);
 
+    await prisma.$executeRawUnsafe(`
+      DO $$ BEGIN
+        CREATE TYPE "UserStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
+
     console.log('✅ Types enum créés');
 
     // =========================
@@ -161,7 +169,8 @@ async function migrate() {
       CREATE TABLE IF NOT EXISTS "Quiz" (
         "id" SERIAL PRIMARY KEY,
         "titre" VARCHAR(255) NOT NULL,
-        "type" VARCHAR(100) NOT NULL
+        "type" VARCHAR(100) NOT NULL,
+        "description" TEXT
       );
     `);
 
@@ -172,6 +181,7 @@ async function migrate() {
         "quiz_id" INTEGER NOT NULL,
         "question" TEXT NOT NULL,
         "type_reponse" VARCHAR(100) NOT NULL,
+        "reponse_options" TEXT,
         FOREIGN KEY ("quiz_id") REFERENCES "Quiz"("id") ON DELETE CASCADE
       );
     `);
@@ -299,6 +309,7 @@ async function migrate() {
     await addColumnIfMissing('User', '"prenom" VARCHAR(255)');
     await addColumnIfMissing('User', '"image" TEXT');
     await addColumnIfMissing('User', '"verified" BOOLEAN DEFAULT false NOT NULL');
+    await addColumnIfMissing('User', '"status" "UserStatus" DEFAULT \'PENDING\' NOT NULL');
     await addColumnIfMissing('User', '"otp_code" TEXT');
     await addColumnIfMissing('User', '"otp_expiry" TIMESTAMP');
 
@@ -307,6 +318,12 @@ async function migrate() {
 
     // Routine: envie
     await addColumnIfMissing('Routine', '"envie" TEXT');
+
+    // Quiz: description
+    await addColumnIfMissing('Quiz', '"description" TEXT');
+
+    // QuizQuestion: reponse_options
+    await addColumnIfMissing('QuizQuestion', '"reponse_options" TEXT');
 
     // IngredientConflict: text
     await addColumnIfMissing('IngredientConflict', '"text" TEXT');

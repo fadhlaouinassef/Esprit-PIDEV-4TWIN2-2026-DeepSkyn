@@ -12,6 +12,7 @@ export const createUser = async (data: {
   skin_type?: 'OILY' | 'DRY' | 'SENSITIVE' | 'NORMAL' | 'COMBINATION';
   image?: string;
   verified?: boolean;
+  status?: 'PENDING' | 'ACCEPTED' | 'REJECTED';
 }) => {
   return await prisma.user.create({ data });
 };
@@ -25,7 +26,26 @@ export const findUserByEmail = async (email: string): Promise<PrismaUser | null>
 };
 
 export const findAllUsers = async (): Promise<PrismaUser[]> => {
-  return await prisma.user.findMany();
+  return await prisma.user.findMany({
+    where: {
+      verified: true,
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+  });
+};
+
+export const findPendingUsers = async (): Promise<PrismaUser[]> => {
+  return await prisma.user.findMany({
+    where: {
+      role: 'USER',
+      verified: false,
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+  });
 };
 
 export const updateUser = async (id: number, data: Partial<Omit<PrismaUser, 'id' | 'created_at'>>) => {
@@ -85,4 +105,17 @@ export const markUserAsVerified = async (userId: number) => {
       otp_expiry: null
     },
   });
+};
+
+export const updateUserStatus = async (userId: number, status: 'PENDING' | 'ACCEPTED' | 'REJECTED') => {
+  // Use raw query to bypass Prisma Client sync issues if they persist
+  const isAccepted = status === 'ACCEPTED';
+
+  // Note: status is an ENUM in SQL, so we explicitly cast it.
+  return await prisma.$executeRawUnsafe(
+    'UPDATE "User" SET "status" = CAST($1 AS "UserStatus"), "verified" = $2 WHERE "id" = $3',
+    status,
+    isAccepted,
+    userId
+  );
 };

@@ -20,6 +20,12 @@ enum NiveauBadge {
   RUBY_MASTER
 }
 
+enum UserStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 enum SkinType {
   OILY
   DRY
@@ -58,6 +64,7 @@ model User {
   skin_type  SkinType?
   image      String?
   verified   Boolean   @default(false)
+  status     UserStatus @default(PENDING)
   otp_code   String?
   otp_expiry DateTime?
 

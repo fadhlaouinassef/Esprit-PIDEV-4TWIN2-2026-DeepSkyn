@@ -15,9 +15,9 @@ if (connectionString) {
   const pool = new Pool({
     connectionString,
   })
-  
+
   const adapter = new PrismaPg(pool)
-  
+
   prisma = new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
@@ -31,9 +31,9 @@ if (connectionString) {
     password: process.env.MDP_DB || 'nassef',
     port: parseInt(process.env.DB_PORT || '5432'),
   })
-  
+
   const adapter = new PrismaPg(pool)
-  
+
   prisma = new PrismaClient({
     adapter,
     log: ['error', 'warn'],
