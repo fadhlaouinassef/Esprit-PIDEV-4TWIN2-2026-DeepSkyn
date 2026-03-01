@@ -1,4 +1,4 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 import { User as PrismaUser } from '@prisma/client';
 
 export const createUser = async (data: {

@@ -222,6 +222,18 @@ async function migrate() {
       );
     `);
 
+    // Table RoutineStepCompletion (step complété par jour)
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "RoutineStepCompletion" (
+        "id" SERIAL PRIMARY KEY,
+        "routine_step_id" INTEGER NOT NULL,
+        "day" VARCHAR(10) NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY ("routine_step_id") REFERENCES "RoutineStep"("id") ON DELETE CASCADE,
+        UNIQUE ("routine_step_id", "day")
+      );
+    `);
+
     // Table Ingredient (au début: "nom", on va sync/rename ensuite)
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Ingredient" (

@@ -1,4 +1,4 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 
 export const createRoutineStep = async (data: {
   routine_id: number;

@@ -1,9 +1,10 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 
 export class Routine {
   id!: number;
   user_id!: number;
   type!: string;
+  envie?: string;
   objectif?: string;
 }
 
@@ -11,6 +12,7 @@ export class Routine {
 export const createRoutine = async (data: {
   user_id: number;
   type: string;
+  envie?: string;
   objectif?: string;
 }) => {
   return await prisma.routine.create({ data });

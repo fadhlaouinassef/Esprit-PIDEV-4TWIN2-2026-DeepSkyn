@@ -1,4 +1,4 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 import { Quiz, QuizQuestion, SurveyAnswer } from '@prisma/client';
 
 /**

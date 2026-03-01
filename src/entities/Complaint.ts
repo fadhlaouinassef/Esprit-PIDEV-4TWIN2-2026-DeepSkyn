@@ -1,5 +1,5 @@
 import { EtatComplaint } from './Enums';
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 
 export class Complaint {
   id!: number;
