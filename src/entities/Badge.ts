@@ -1,9 +1,10 @@
-import { NiveauBadge } from './Enums';
-import { prisma } from '../../prisma/prisma.config';
+import { NiveauBadge } from '@prisma/client';
+import prisma from '@/lib/prisma';
 
 export class Badge {
   id!: number;
   user_id!: number;
+  titre!: string;
   date!: Date;
   description?: string;
   niveau!: NiveauBadge;
@@ -12,10 +13,16 @@ export class Badge {
 // Fonctions utilitaires pour Badge
 export const createBadge = async (data: {
   user_id: number;
+  titre?: string;
   niveau: NiveauBadge;
   description?: string;
 }) => {
-  return await prisma.badge.create({ data });
+  return await prisma.badge.create({
+    data: {
+      ...data,
+      titre: data.titre ?? 'Badge',
+    },
+  });
 };
 
 export const findBadgeById = async (id: number) => {

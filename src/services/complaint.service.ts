@@ -1,4 +1,4 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 import { EtatComplaint } from '../entities/Enums';
 
 export const createComplaint = async (data: {

@@ -1,0 +1,93 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../../../../../auth/[...nextauth]/route';
+import { findRoutineById } from '@/entities/Routine';
+import { findRoutineStepById, updateRoutineStep } from '@/entities/RoutineStep';
+import { deleteRoutineStepCompletion, findCompletionForStepAndDay, upsertRoutineStepCompletion } from '@/entities/RoutineStepCompletion';
+import prisma from '@/lib/prisma';
+
+const toDayStringUTC = (date: Date) => date.toISOString().slice(0, 10);
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string; stepId: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user || !session.user.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const resolvedParams = await params;
+    const routineId = parseInt(resolvedParams.id);
+    const stepId = parseInt(resolvedParams.stepId);
+
+    const routine = await findRoutineById(routineId);
+    const step = await findRoutineStepById(stepId);
+
+    if (!routine || !step) {
+      return NextResponse.json({ error: 'Routine or step not found' }, { status: 404 });
+    }
+
+    if (step.routine_id !== routineId) {
+      return NextResponse.json({ error: 'Step does not belong to this routine' }, { status: 400 });
+    }
+
+    // Verify ownership
+    const dbUser = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!dbUser || dbUser.id !== routine.user_id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { ordre, action, completed } = body as {
+      ordre?: number;
+      action?: string;
+      completed?: boolean;
+    };
+
+    const day = toDayStringUTC(new Date());
+
+    if (typeof completed === 'boolean') {
+      if (completed) {
+        await upsertRoutineStepCompletion({ routine_step_id: stepId, day });
+      } else {
+        try {
+          await deleteRoutineStepCompletion({ routine_step_id: stepId, day });
+        } catch {
+          // ignore if already deleted
+        }
+      }
+    }
+
+    // Allow editing order/action if provided
+    const updatedStep = await updateRoutineStep(stepId, {
+      ...(typeof ordre === 'number' ? { ordre } : {}),
+      ...(typeof action === 'string' ? { action } : {}),
+    });
+
+    const completion = await findCompletionForStepAndDay({ routine_step_id: stepId, day });
+
+    return NextResponse.json(
+      {
+        step: {
+          ...updatedStep,
+          completed: Boolean(completion),
+          completedAt: completion?.created_at?.toISOString(),
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error: unknown) {
+    console.error('PUT Step error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ 
+      error: 'Internal Server Error',
+      details: errorMessage
+    }, { status: 500 });
+  }
+}

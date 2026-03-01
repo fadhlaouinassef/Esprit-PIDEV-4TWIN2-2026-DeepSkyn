@@ -173,6 +173,20 @@ model RoutineStep {
 
   routine     Routine      @relation(fields: [routine_id], references: [id], onDelete: Cascade)
   ingredients Ingredient[]
+  completions RoutineStepCompletion[]
+}
+
+// Stores if a step was completed for a given day (YYYY-MM-DD).
+// This enables: persist completion for today, and auto-reset next day.
+model RoutineStepCompletion {
+  id             Int      @id @default(autoincrement())
+  routine_step_id Int
+  day            String
+  created_at     DateTime @default(now())
+
+  routineStep RoutineStep @relation(fields: [routine_step_id], references: [id], onDelete: Cascade)
+
+  @@unique([routine_step_id, day])
 }
 
 model Ingredient {

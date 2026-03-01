@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { getUserWithRelations, updateUser } from '@/services/user.service';
-import { prisma } from '../../../../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
     try {

@@ -1,11 +1,11 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 
 export class SkinAnalyse {
   id!: number;
   user_id!: number;
-  score_peau?: number;
+  score_eau?: number;
   age_peau?: number;
-  date_analyse!: Date;
+  date_creation!: Date;
   score?: number;
   description?: string;
 }
@@ -13,7 +13,7 @@ export class SkinAnalyse {
 // Fonctions utilitaires pour SkinAnalyse
 export const createSkinAnalyse = async (data: {
   user_id: number;
-  score_peau?: number;
+  score_eau?: number;
   age_peau?: number;
   score?: number;
   description?: string;
@@ -32,7 +32,7 @@ export const findSkinAnalysesByUserId = async (user_id: number) => {
   return await prisma.skinAnalyse.findMany({ 
     where: { user_id },
     include: { images: true },
-    orderBy: { date_analyse: 'desc' }
+    orderBy: { date_creation: 'desc' }
   });
 };
 
@@ -40,7 +40,7 @@ export const findAllSkinAnalyses = async () => {
   return await prisma.skinAnalyse.findMany({ include: { images: true } });
 };
 
-export const updateSkinAnalyse = async (id: number, data: Partial<Omit<SkinAnalyse, 'id' | 'date_analyse'>>) => {
+export const updateSkinAnalyse = async (id: number, data: Partial<Omit<SkinAnalyse, 'id' | 'date_creation'>>) => {
   return await prisma.skinAnalyse.update({ where: { id }, data });
 };
 

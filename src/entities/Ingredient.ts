@@ -1,16 +1,16 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 
 export class Ingredient {
   id!: number;
   routine_step_id!: number;
-  nom!: string;
+  ingredient!: string;
   description?: string;
 }
 
 // Fonctions utilitaires pour Ingredient
 export const createIngredient = async (data: {
   routine_step_id: number;
-  nom: string;
+  ingredient: string;
   description?: string;
 }) => {
   return await prisma.ingredient.create({ data });
