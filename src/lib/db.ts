@@ -4,7 +4,7 @@ const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'deepskyn',
-  password: process.env.MDP_DB || 'nassef',
+  password: process.env.MDP_DB || 'admin',
   port: 5432,
 });
 

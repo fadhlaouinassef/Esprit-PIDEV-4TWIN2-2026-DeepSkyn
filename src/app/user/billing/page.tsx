@@ -10,14 +10,15 @@ import {
     Lock,
     ShieldCheck,
     ChevronRight,
-    HelpCircle,
     ArrowRight,
     Plus,
     Shield,
     Zap
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAppSelector } from "@/store/hooks";
 import { UserLayout } from "@/app/ui/UserLayout";
+import type { PlanKey } from "@/lib/stripe";
 
 // --- Types ---
 type SubscriptionStatus = "active" | "expiring" | "expired";
@@ -74,62 +75,78 @@ const StatusBadge = ({ status }: { status: SubscriptionStatus }) => {
     );
 };
 
-const InputField = ({ label, placeholder, type = "text", icon: Icon }: { label: string, placeholder: string, type?: string, icon?: any }) => {
-    const [focused, setFocused] = useState(false);
-    const [value, setValue] = useState("");
-
-    return (
-        <div className="relative group">
-            <label
-                className={`absolute left-4 transition-all duration-300 pointer-events-none z-10 ${focused || value ? "-top-2.5 text-[10px] bg-card px-2 text-primary font-black uppercase tracking-widest" : "top-3.5 text-sm text-muted-foreground font-medium"
-                    }`}
-            >
-                {label}
-            </label>
-            <div className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl border transition-all duration-300 ${focused ? "border-primary ring-4 ring-primary/5 bg-card shadow-sm" : "border-border hover:border-muted-foreground/30 bg-background/50"
-                }`}>
-                {Icon && <Icon className="w-4 h-4 text-muted-foreground transition-colors group-focus-within:text-primary" />}
-                <input
-                    type={type}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                    placeholder={focused ? placeholder : ""}
-                    className="bg-transparent border-none outline-none w-full text-foreground text-sm font-bold placeholder:text-muted-foreground/30"
-                />
-            </div>
-        </div>
-    );
-};
-
 export default function BillingPage() {
+    const user = useAppSelector((state) => state.auth.user);
     const [subscription, setSubscription] = useState<SubscriptionInfo>(MOCK_SUBSCRIPTION);
     const [isProcessing, setIsProcessing] = useState(false);
-
-    // Mock user for layout
-    const user = {
-        name: "Nassef",
-        photo: "/avatar.png",
-    };
+    const [selectedPlan, setSelectedPlan] = useState<PlanKey>("pro_yearly");
 
     const isRenewalRequired = subscription.status === "expiring" || subscription.status === "expired";
 
+    // Calculer le prix selon le plan sélectionné
+    const getPlanPrice = () => {
+        const prices = {
+            basic_monthly: 9.99,
+            pro_monthly: 19.99,
+            pro_yearly: 199.00,
+        };
+        return prices[selectedPlan];
+    };
+
+    const getPlanLabel = () => {
+        const labels = {
+            basic_monthly: "Basic Monthly",
+            pro_monthly: "Pro Monthly", 
+            pro_yearly: "Pro Yearly",
+        };
+        return labels[selectedPlan];
+    };
+
+    const discount = selectedPlan === "pro_yearly" ? 40 : 0;
+
+    // Fonction pour démarrer le checkout Stripe
+    const startStripeCheckout = async () => {
+        // Vérifier que l'utilisateur est connecté
+        if (!user?.id) {
+            toast.error("Vous devez être connecté pour effectuer un paiement");
+            return;
+        }
+
+        try {
+            setIsProcessing(true);
+            const res = await fetch("/api/stripe/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    plan: selectedPlan,
+                    userId: user.id.toString() // Envoyer l'ID de l'utilisateur depuis Redux
+                }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || "Échec du checkout");
+            if (!data?.url) throw new Error("URL de checkout manquante");
+
+            // Redirection vers Stripe
+            window.location.href = data.url;
+        } catch (e: unknown) {
+            toast.error(e instanceof Error ? e.message : "Erreur lors du paiement");
+            setIsProcessing(false);
+        }
+    };
+
     const handleAction = () => {
         if (subscription.status === "active") {
-            toast.info("Redirecting to subscription management...");
+            // Si actif, on peut proposer de changer de plan ou gérer l'abonnement
+            toast.info("Fonctionnalité de gestion d'abonnement à venir...");
         } else {
-            setIsProcessing(true);
-            setTimeout(() => {
-                setIsProcessing(false);
-                toast.success("Subscription updated successfully!");
-                setSubscription(prev => ({ ...prev, status: "active" }));
-            }, 2000);
+            // Si expiré ou en expiration, on lance le paiement
+            startStripeCheckout();
         }
     };
 
     return (
-        <UserLayout userName={user.name} userPhoto={user.photo}>
+        <UserLayout>
             <div className="min-h-full py-6 relative overflow-hidden">
                 {/* Subtle Background Elements for Premium Feel */}
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
@@ -234,6 +251,85 @@ export default function BillingPage() {
                                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
                                         className="relative bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl"
                                     >
+                                        {/* Plan Selection Section */}
+                                        <div className="p-8 md:p-10 space-y-6">
+                                            <h3 className="text-2xl font-black text-foreground mb-6">Choisir un Plan</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                {/* Basic Monthly */}
+                                                <button
+                                                    onClick={() => setSelectedPlan("basic_monthly")}
+                                                    className={`p-6 rounded-2xl border-2 transition-all text-left ${
+                                                        selectedPlan === "basic_monthly"
+                                                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                                                            : "border-border hover:border-muted-foreground/30 bg-background/50"
+                                                    }`}
+                                                >
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <h4 className="text-lg font-black text-foreground">Basic</h4>
+                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                                            selectedPlan === "basic_monthly" ? "border-primary bg-primary" : "border-border"
+                                                        }`}>
+                                                            {selectedPlan === "basic_monthly" && (
+                                                                <CheckCircle2 className="w-3 h-3 text-white" />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-3xl font-black text-foreground mb-2">$9.99</p>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Par Mois</p>
+                                                </button>
+
+                                                {/* Pro Monthly */}
+                                                <button
+                                                    onClick={() => setSelectedPlan("pro_monthly")}
+                                                    className={`p-6 rounded-2xl border-2 transition-all text-left ${
+                                                        selectedPlan === "pro_monthly"
+                                                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                                                            : "border-border hover:border-muted-foreground/30 bg-background/50"
+                                                    }`}
+                                                >
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <h4 className="text-lg font-black text-foreground">Pro</h4>
+                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                                            selectedPlan === "pro_monthly" ? "border-primary bg-primary" : "border-border"
+                                                        }`}>
+                                                            {selectedPlan === "pro_monthly" && (
+                                                                <CheckCircle2 className="w-3 h-3 text-white" />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-3xl font-black text-foreground mb-2">$19.99</p>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Par Mois</p>
+                                                </button>
+
+                                                {/* Pro Yearly */}
+                                                <button
+                                                    onClick={() => setSelectedPlan("pro_yearly")}
+                                                    className={`p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${
+                                                        selectedPlan === "pro_yearly"
+                                                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                                                            : "border-border hover:border-muted-foreground/30 bg-background/50"
+                                                    }`}
+                                                >
+                                                    <div className="absolute top-2 right-2 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-wide">
+                                                        Économie
+                                                    </div>
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <h4 className="text-lg font-black text-foreground">Pro</h4>
+                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                                            selectedPlan === "pro_yearly" ? "border-primary bg-primary" : "border-border"
+                                                        }`}>
+                                                            {selectedPlan === "pro_yearly" && (
+                                                                <CheckCircle2 className="w-3 h-3 text-white" />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-3xl font-black text-foreground mb-2">$199.00</p>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Par An</p>
+                                                    <p className="text-[10px] text-green-600 dark:text-green-400 font-bold mt-2">Économise $40/an</p>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {/* Stripe Checkout Info */}
                                         <div className="p-8 md:p-10 border-b border-border/50 bg-muted/20 flex items-center justify-between">
                                             <div className="flex items-center gap-4">
                                                 <div className="p-3 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20">
@@ -251,26 +347,29 @@ export default function BillingPage() {
                                         </div>
 
                                         <div className="p-8 md:p-10 space-y-8">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                                <InputField label="Cardholder Name" placeholder="Johnathan Doe" icon={ShieldCheck} />
-                                                <InputField label="Email Address" placeholder="john@example.com" type="email" />
-                                            </div>
-
-                                            <div className="relative group">
-                                                <label className="absolute -top-2.5 left-4 text-[10px] bg-card px-2 text-primary font-black uppercase tracking-wider z-10">Card Number</label>
-                                                <div className="relative flex items-center gap-4 px-5 py-3.5 md:py-4.5 rounded-2xl border border-border/80 bg-background/50 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300">
-                                                    <CreditCard className="w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="0000 0000 0000 0000"
-                                                        className="bg-transparent border-none outline-none w-full text-foreground text-sm md:text-base font-bold tracking-widest"
-                                                    />
+                                            {/* Information sur le paiement */}
+                                            <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="p-2 bg-primary/10 rounded-lg">
+                                                        <Lock className="w-5 h-5 text-primary" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-black text-foreground text-sm mb-2">Paiement Sécurisé avec Stripe</h4>
+                                                        <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                                                            En cliquant sur le bouton ci-dessous, vous serez redirigé vers la page de paiement sécurisée Stripe.
+                                                        </p>
+                                                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 space-y-2">
+                                                            <p className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                                                                📝 Mode Test - Cartes de test acceptées
+                                                            </p>
+                                                            <div className="text-[10px] text-muted-foreground space-y-1 font-mono">
+                                                                <p>✅ Succès: <span className="font-bold">4242 4242 4242 4242</span></p>
+                                                                <p>❌ Échec: <span className="font-bold">4000 0000 0000 0002</span></p>
+                                                                <p className="text-[9px] mt-2 font-sans">Date: n&apos;importe quelle date future (ex: 12/34) • CVC: 123</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-8">
-                                                <InputField label="Expiry" placeholder="MM / YY" />
-                                                <InputField label="CVV" placeholder="123" icon={Lock} />
                                             </div>
 
                                             <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border/50">
@@ -317,28 +416,34 @@ export default function BillingPage() {
 
                                     <div className="space-y-6">
                                         <div className="flex justify-between items-center text-sm font-bold">
-                                            <span className="text-slate-400 dark:text-muted-foreground">{subscription.planName}</span>
-                                            <span>${subscription.price.toFixed(2)}</span>
+                                            <span className="text-slate-400 dark:text-muted-foreground">{isRenewalRequired ? getPlanLabel() : subscription.planName}</span>
+                                            <span>${isRenewalRequired ? getPlanPrice().toFixed(2) : subscription.price.toFixed(2)}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm font-bold opacity-50">
                                             <span>Sales Tax</span>
                                             <span>$0.00</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-sm font-black text-green-400">
-                                            <span className="flex items-center gap-2 uppercase tracking-tighter italic">
-                                                <Zap className="w-4 h-4" /> Yearly Member Discount
-                                            </span>
-                                            <span>-$20.00</span>
-                                        </div>
+                                        {discount > 0 && (
+                                            <div className="flex justify-between items-center text-sm font-black text-green-400">
+                                                <span className="flex items-center gap-2 uppercase tracking-tighter italic">
+                                                    <Zap className="w-4 h-4" /> Yearly Member Discount
+                                                </span>
+                                                <span>-${discount.toFixed(2)}</span>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="mt-10 border-t border-dashed border-slate-800 dark:border-border pt-10">
                                         <div className="flex justify-between items-end mb-10">
                                             <div className="space-y-1">
                                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-muted-foreground/60">Grand Total</span>
-                                                <p className="text-[10px] text-slate-600 dark:text-muted-foreground/40 font-bold uppercase">Billed annually</p>
+                                                <p className="text-[10px] text-slate-600 dark:text-muted-foreground/40 font-bold uppercase">
+                                                    {isRenewalRequired ? (selectedPlan.includes("yearly") ? "Billed annually" : "Billed monthly") : "Billed annually"}
+                                                </p>
                                             </div>
-                                            <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">${(subscription.price - 20).toFixed(2)}</span>
+                                            <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">
+                                                ${isRenewalRequired ? (getPlanPrice() - discount).toFixed(2) : (subscription.price - 20).toFixed(2)}
+                                            </span>
                                         </div>
 
                                         <button
