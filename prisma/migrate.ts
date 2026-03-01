@@ -312,6 +312,7 @@ async function migrate() {
     await addColumnIfMissing('User', '"status" "UserStatus" DEFAULT \'PENDING\' NOT NULL');
     await addColumnIfMissing('User', '"otp_code" TEXT');
     await addColumnIfMissing('User', '"otp_expiry" TIMESTAMP');
+    await addColumnIfMissing('User', '"admin_notes" TEXT');
 
     // Badge: titre
     await addColumnIfMissing('Badge', `"titre" VARCHAR(255) NOT NULL DEFAULT 'Badge'`);
