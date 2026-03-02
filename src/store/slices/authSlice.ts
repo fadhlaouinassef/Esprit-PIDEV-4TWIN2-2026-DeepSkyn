@@ -67,7 +67,7 @@ const authSlice = createSlice({
         localStorage.removeItem('deepskyn_user');
       }
       
-      console.log('🚪 [Redux] Utilisateur déconnecté');
+      console.log('[Redux] Utilisateur déconnecté');
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;

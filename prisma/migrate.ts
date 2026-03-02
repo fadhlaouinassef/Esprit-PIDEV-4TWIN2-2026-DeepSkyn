@@ -308,6 +308,12 @@ async function migrate() {
     // Routine: envie
     await addColumnIfMissing('Routine', '"envie" TEXT');
 
+    // Quiz: description
+    await addColumnIfMissing('Quiz', '"description" TEXT');
+
+    // QuizQuestion: reponse_options
+    await addColumnIfMissing('QuizQuestion', '"reponse_options" TEXT');
+
     // IngredientConflict: text
     await addColumnIfMissing('IngredientConflict', '"text" TEXT');
 
