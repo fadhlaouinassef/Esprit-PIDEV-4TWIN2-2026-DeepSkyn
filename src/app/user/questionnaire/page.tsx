@@ -125,8 +125,8 @@ export default function QuestionnairePage() {
                                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                             >
                                 <div className={`max-w-[85%] rounded-3xl p-5 shadow-sm relative ${msg.role === "user"
-                                        ? "bg-primary text-white rounded-tr-none shadow-primary/20"
-                                        : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white rounded-tl-none shadow-gray-200/50 dark:shadow-none"
+                                    ? "bg-primary text-white rounded-tr-none shadow-primary/20"
+                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white rounded-tl-none shadow-gray-200/50 dark:shadow-none"
                                     }`}>
                                     {msg.image && (
                                         <div className="mb-4 rounded-xl overflow-hidden border border-white/10 shadow-inner">

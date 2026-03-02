@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAppSelector } from "@/store/hooks";
 import {
     CheckCircle2,
     AlertCircle,
@@ -16,7 +17,6 @@ import {
     Zap
 } from "lucide-react";
 import { toast } from "sonner";
-import { useAppSelector } from "@/store/hooks";
 import { UserLayout } from "@/app/ui/UserLayout";
 import type { PlanKey } from "@/lib/stripe";
 
@@ -33,20 +33,41 @@ interface SubscriptionInfo {
     remainingDays?: number;
 }
 
+// --- Helpers ---
+const getSubscriptionStatus = (expiryDate: string): { status: SubscriptionStatus, days: number } => {
+    if (!expiryDate || expiryDate === "N/A") return { status: "expired", days: 0 };
+
+    // On compare les dates pures (année-mois-jour) en ignorant l'heure
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const expiry = new Date(expiryDate);
+    if (isNaN(expiry.getTime())) return { status: "expired", days: 0 };
+
+    const expiryNormalized = new Date(expiry);
+    expiryNormalized.setHours(0, 0, 0, 0);
+
+    const diffTime = expiryNormalized.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return { status: "expired", days: 0 };
+    if (diffDays <= 7) return { status: "expiring", days: diffDays };
+    return { status: "active", days: diffDays };
+};
+
 // --- Mock Data ---
-const MOCK_SUBSCRIPTION: SubscriptionInfo = {
-    status: "active",
-    planName: "Pro Plan",
-    billingCycle: "yearly",
-    price: 199.00,
-    startDate: "January 01, 2024",
-    expiryDate: "January 01, 2025",
-    remainingDays: 12,
+const DEFAULT_SUBSCRIPTION: SubscriptionInfo = {
+    status: "expired",
+    planName: "Free Plan",
+    billingCycle: "monthly",
+    price: 0,
+    startDate: "N/A",
+    expiryDate: "N/A",
 };
 
 // --- Components ---
 
-const StatusBadge = ({ status }: { status: SubscriptionStatus }) => {
+const StatusBadge = ({ status, remainingDays }: { status: SubscriptionStatus, remainingDays?: number }) => {
     const configs = {
         active: {
             color: "bg-green-500/10 text-green-500 border-green-500/20",
@@ -56,12 +77,12 @@ const StatusBadge = ({ status }: { status: SubscriptionStatus }) => {
         expiring: {
             color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
             icon: <AlertCircle className="w-4 h-4" />,
-            label: "Expiring Soon"
+            label: remainingDays ? `${remainingDays} ${remainingDays > 1 ? 'jours' : 'jour'} restants` : "Expiring Soon"
         },
         expired: {
             color: "bg-red-500/10 text-red-500 border-red-500/20",
             icon: <XCircle className="w-4 h-4" />,
-            label: "Expired"
+            label: "Expiré"
         }
     };
 
@@ -77,11 +98,65 @@ const StatusBadge = ({ status }: { status: SubscriptionStatus }) => {
 
 export default function BillingPage() {
     const user = useAppSelector((state) => state.auth.user);
-    const [subscription, setSubscription] = useState<SubscriptionInfo>(MOCK_SUBSCRIPTION);
+    const [subscription, setSubscription] = useState<SubscriptionInfo>(DEFAULT_SUBSCRIPTION);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isLoadingData, setIsLoadingData] = useState(true);
     const [selectedPlan, setSelectedPlan] = useState<PlanKey>("pro_yearly");
 
-    const isRenewalRequired = subscription.status === "expiring" || subscription.status === "expired";
+    useEffect(() => {
+        const fetchSubscription = async () => {
+            if (!user?.id) {
+                setIsLoadingData(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/user/subscription?userId=${user.id}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.subscription) {
+                    const expiryDate = new Date(data.subscription.date_fin);
+                    const startDate = new Date(data.subscription.date_debut);
+
+                    const formatDate = (date: Date) => {
+                        // Utiliser UTC pour éviter les décalages de timezone sur l'affichage
+                        return date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: '2-digit',
+                            timeZone: 'UTC' // On force l'affichage selon l'heure stockée
+                        });
+                    };
+
+                    setSubscription({
+                        status: "active",
+                        planName: data.subscription.plan,
+                        billingCycle: "yearly",
+                        price: data.subscription.plan === "Pro Plan" ? 199.00 : 0,
+                        startDate: formatDate(startDate),
+                        expiryDate: formatDate(expiryDate),
+                    });
+                } else if (data.status === 'none') {
+                    setSubscription({
+                        ...DEFAULT_SUBSCRIPTION,
+                        planName: "Free Plan",
+                        status: "expired"
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to fetch subscription:", error);
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+
+        fetchSubscription();
+    }, [user?.id]);
+
+    // Calculate status dynamically based on expiryDate
+    const { status: currentStatus, days: remainingDays } = getSubscriptionStatus(subscription.expiryDate);
+
+    const isRenewalRequired = currentStatus === "expiring" || currentStatus === "expired";
 
     // Calculer le prix selon le plan sélectionné
     const getPlanPrice = () => {
@@ -136,37 +211,28 @@ export default function BillingPage() {
     };
 
     const handleAction = () => {
-        if (subscription.status === "active") {
-            // Si actif, on peut proposer de changer de plan ou gérer l'abonnement
-            toast.info("Fonctionnalité de gestion d'abonnement à venir...");
+        if (currentStatus === "active") {
+            toast.info("Redirection vers la gestion de l'abonnement...");
         } else {
-            // Si expiré ou en expiration, on lance le paiement
             startStripeCheckout();
         }
     };
 
+    if (isLoadingData) {
+        return (
+            <UserLayout>
+                <div className="min-h-screen flex items-center justify-center">
+                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+            </UserLayout>
+        );
+    }
+
     return (
         <UserLayout>
             <div className="min-h-full py-6 relative overflow-hidden">
-                {/* Subtle Background Elements for Premium Feel */}
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
                 <div className="absolute bottom-1/4 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-
-                {/* State Switcher for Demo */}
-                <div className="fixed bottom-6 right-6 z-50 flex gap-2 p-1.5 bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-full shadow-2xl ring-1 ring-black/5 dark:ring-white/10">
-                    {(["active", "expiring", "expired"] as SubscriptionStatus[]).map((s) => (
-                        <button
-                            key={s}
-                            onClick={() => setSubscription({ ...MOCK_SUBSCRIPTION, status: s })}
-                            className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${subscription.status === s
-                                ? "bg-primary text-white shadow-lg scale-105"
-                                : "hover:bg-white/10 text-muted-foreground hover:text-foreground"
-                                }`}
-                        >
-                            {s}
-                        </button>
-                    ))}
-                </div>
 
                 <div className="max-w-[1100px] mx-auto relative z-10 px-4">
                     <header className="mb-12">
@@ -196,14 +262,14 @@ export default function BillingPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="group relative bg-card/60 backdrop-blur-sm border border-border/50 rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl transition-all duration-500 hover:border-primary/20"
                             >
-                                <div className={`h-2 w-full transition-colors duration-500 ${subscription.status === "active" ? "bg-green-500" :
-                                    subscription.status === "expiring" ? "bg-amber-500" : "bg-red-500"
+                                <div className={`h-2 w-full transition-colors duration-500 ${currentStatus === "active" ? "bg-green-500" :
+                                    currentStatus === "expiring" ? "bg-amber-500" : "bg-red-500"
                                     }`} />
 
                                 <div className="p-8 md:p-10">
                                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-10">
                                         <div className="space-y-4">
-                                            <StatusBadge status={subscription.status} />
+                                            <StatusBadge status={currentStatus} remainingDays={remainingDays} />
                                             <h2 className="text-3xl md:text-4xl font-black text-foreground">{subscription.planName}</h2>
                                             <div className="flex items-center gap-3 text-muted-foreground font-bold">
                                                 <span className="bg-muted px-3 py-1 rounded-lg text-[10px] uppercase tracking-widest">{subscription.billingCycle}</span>
@@ -220,21 +286,21 @@ export default function BillingPage() {
                                         </div>
                                     </div>
 
-                                    <div className={`p-6 rounded-[24px] flex items-center gap-5 border transition-all duration-500 ${subscription.status === "active" ? "bg-green-500/5 border-green-500/10 text-green-700 dark:text-green-400 shadow-[inset_0_0_20px_rgba(34,197,94,0.05)]" :
-                                        subscription.status === "expiring" ? "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]" :
+                                    <div className={`p-6 rounded-[24px] flex items-center gap-5 border transition-all duration-500 ${currentStatus === "active" ? "bg-green-500/5 border-green-500/10 text-green-700 dark:text-green-400 shadow-[inset_0_0_20px_rgba(34,197,94,0.05)]" :
+                                        currentStatus === "expiring" ? "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]" :
                                             "bg-red-500/5 border-red-500/10 text-red-700 dark:text-red-400 shadow-[inset_0_0_20px_rgba(239,68,68,0.05)]"
                                         }`}>
-                                        <div className={`p-3 rounded-2xl flex-shrink-0 ${subscription.status === "active" ? "bg-green-500/10" :
-                                            subscription.status === "expiring" ? "bg-amber-500/10" : "bg-red-500/10"
+                                        <div className={`p-3 rounded-2xl flex-shrink-0 ${currentStatus === "active" ? "bg-green-500/10" :
+                                            currentStatus === "expiring" ? "bg-amber-500/10" : "bg-red-500/10"
                                             }`}>
-                                            {subscription.status === "active" ? <CheckCircle2 className="w-6 h-6" /> :
-                                                subscription.status === "expiring" ? <AlertCircle className="w-6 h-6" /> :
+                                            {currentStatus === "active" ? <CheckCircle2 className="w-6 h-6" /> :
+                                                currentStatus === "expiring" ? <AlertCircle className="w-6 h-6" /> :
                                                     <XCircle className="w-6 h-6" />}
                                         </div>
                                         <p className="text-sm font-bold leading-relaxed">
-                                            {subscription.status === "active" ? `Your subscription is active until ${subscription.expiryDate}.` :
-                                                subscription.status === "expiring" ? `Action Required: Your subscription expires in ${subscription.remainingDays} days.` :
-                                                    "Your subscription has ended. Renew soon to recover access."}
+                                            {currentStatus === "active" ? `Votre abonnement est actif jusqu'au ${subscription.expiryDate}.` :
+                                                currentStatus === "expiring" ? `Action Requise : Votre abonnement expire dans ${remainingDays} jours.` :
+                                                    "Votre abonnement est expiré. Renouvelez-le pour retrouver l'accès."}
                                         </p>
                                     </div>
                                 </div>
@@ -488,33 +554,7 @@ export default function BillingPage() {
                             </div>
 
                         </div>
-
                     </div>
-
-                    {/* Footer info */}
-                    <footer className="mt-20 text-center space-y-8 pb-10">
-                        <div className="flex justify-center gap-8 opacity-20 hover:opacity-100 transition-opacity duration-700 cursor-default">
-                            <img src="https://img.icons8.com/color/48/000000/visa.png" className="h-8" alt="Visa" />
-                            <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="h-8" alt="MC" />
-                            <img src="https://img.icons8.com/color/48/000000/google-pay.png" className="h-8" alt="GPay" />
-                            <img src="https://img.icons8.com/color/48/000000/apple-pay.png" className="h-8" alt="APay" />
-                        </div>
-
-                        <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed font-medium">
-                            Payment info is encrypted and never stored. PCI-DSS compliant.
-                        </p>
-
-                        <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                            <a href="#" className="hover:text-primary transition-colors">Help</a>
-                            <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-                            <a href="#" className="hover:text-primary transition-colors">Safety</a>
-                            <a href="#" className="hover:text-primary transition-colors">Support</a>
-                        </div>
-
-                        <p className="text-[10px] text-muted-foreground/30 font-black uppercase tracking-[0.2em]">
-                            DeepSkyn Premium Security Architecture
-                        </p>
-                    </footer>
                 </div>
             </div>
         </UserLayout>

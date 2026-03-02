@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AdminLayout } from "@/app/ui/AdminLayout";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   PieChart,
@@ -418,12 +419,14 @@ export default function UsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
-  const [addModal, setAddModal] = useState(false);
-  const [editUser, setEditUser] = useState<User | null>(null);
-  const [deleteUserModal, setDeleteUserModal] = useState<User | null>(null);
+  const router = useRouter();
 
   const pieChartRef = useRef<HTMLDivElement>(null);
   const barChartRef = useRef<HTMLDivElement>(null);
+
+  const [addModal, setAddModal] = useState(false);
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [deleteUserModal, setDeleteUserModal] = useState<User | null>(null);
 
   const [verifyingId, setVerifyingId] = useState<number | null>(null);
 
@@ -460,27 +463,8 @@ export default function UsersPage() {
 
   // ── Vérifier un utilisateur ──
   const handleVerify = (user: User) => {
-    if (verifyingId === user.id) return;
-    setVerifyingId(user.id);
-
-    const promise = fetch(`/api/users/${user.id}/verify`, { method: "PATCH" })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Échec de la vérification");
-        // Mise à jour locale — pas de rechargement de page
-        setUsers((prev) =>
-          prev.map((u) => (u.id === user.id ? { ...u, verified: true } : u))
-        );
-        return data;
-      })
-      .finally(() => setVerifyingId(null));
-
-    toast.promise(promise, {
-      loading: `Vérification de ${user.nom || user.email} en cours…`,
-      success: `✅ Compte vérifié — email de confirmation envoyé à ${user.email}`,
-      error: (err: unknown) =>
-        err instanceof Error ? err.message : "Une erreur est survenue",
-    });
+    // Redirige vers la page de vérification dédiée
+    router.push('/admin/users/verify');
   };
 
   // ── Export CSV ──
@@ -830,10 +814,10 @@ export default function UsersPage() {
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${user.role === "ADMIN"
-                            ? "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300"
-                            : user.role === "PREMIUM_USER"
-                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
-                              : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
+                          ? "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300"
+                          : user.role === "PREMIUM_USER"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
+                            : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
                           }`}
                       >
                         {user.role}

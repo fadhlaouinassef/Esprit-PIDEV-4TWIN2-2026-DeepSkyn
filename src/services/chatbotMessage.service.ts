@@ -1,4 +1,4 @@
-import { prisma } from '../../prisma/prisma.config';
+import prisma from '@/lib/prisma';
 import { MsgType } from '../entities/Enums';
 
 export const createChatbotMessage = async (data: {

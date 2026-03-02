@@ -20,7 +20,7 @@ export default function BadgePage() {
                     <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
                         Your Achievement Badge
                     </h2>
-                    
+
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center gap-12 bg-white dark:bg-gray-800/50 p-8 rounded-[32px] border border-gray-100 dark:border-gray-700 shadow-xl dark:shadow-2xl">

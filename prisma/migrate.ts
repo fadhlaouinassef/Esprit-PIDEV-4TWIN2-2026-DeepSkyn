@@ -73,6 +73,14 @@ async function migrate() {
       END $$;
     `);
 
+    await prisma.$executeRawUnsafe(`
+      DO $$ BEGIN
+        CREATE TYPE "UserStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
+
     console.log('✅ Types enum créés');
 
     // =========================
@@ -161,7 +169,8 @@ async function migrate() {
       CREATE TABLE IF NOT EXISTS "Quiz" (
         "id" SERIAL PRIMARY KEY,
         "titre" VARCHAR(255) NOT NULL,
-        "type" VARCHAR(100) NOT NULL
+        "type" VARCHAR(100) NOT NULL,
+        "description" TEXT
       );
     `);
 
@@ -172,6 +181,7 @@ async function migrate() {
         "quiz_id" INTEGER NOT NULL,
         "question" TEXT NOT NULL,
         "type_reponse" VARCHAR(100) NOT NULL,
+        "reponse_options" TEXT,
         FOREIGN KEY ("quiz_id") REFERENCES "Quiz"("id") ON DELETE CASCADE
       );
     `);
@@ -209,6 +219,18 @@ async function migrate() {
         "ordre" INTEGER NOT NULL,
         "action" TEXT NOT NULL,
         FOREIGN KEY ("routine_id") REFERENCES "Routine"("id") ON DELETE CASCADE
+      );
+    `);
+
+    // Table RoutineStepCompletion (step complété par jour)
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "RoutineStepCompletion" (
+        "id" SERIAL PRIMARY KEY,
+        "routine_step_id" INTEGER NOT NULL,
+        "day" VARCHAR(10) NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY ("routine_step_id") REFERENCES "RoutineStep"("id") ON DELETE CASCADE,
+        UNIQUE ("routine_step_id", "day")
       );
     `);
 
@@ -299,8 +321,10 @@ async function migrate() {
     await addColumnIfMissing('User', '"prenom" VARCHAR(255)');
     await addColumnIfMissing('User', '"image" TEXT');
     await addColumnIfMissing('User', '"verified" BOOLEAN DEFAULT false NOT NULL');
+    await addColumnIfMissing('User', '"status" "UserStatus" DEFAULT \'PENDING\' NOT NULL');
     await addColumnIfMissing('User', '"otp_code" TEXT');
     await addColumnIfMissing('User', '"otp_expiry" TIMESTAMP');
+    await addColumnIfMissing('User', '"admin_notes" TEXT');
 
     // Badge: titre
     await addColumnIfMissing('Badge', `"titre" VARCHAR(255) NOT NULL DEFAULT 'Badge'`);
@@ -375,7 +399,6 @@ async function migrate() {
     console.log('\n🔌 Déconnexion de la base de données');
   }
 }
-
 migrate()
   .then(() => {
     console.log('\n✅ Migration terminée avec succès!');
