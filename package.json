@@ -10,6 +10,7 @@
     "postinstall": "prisma generate",
     "db:create": "tsx prisma/create-db.ts",
     "db:migrate": "tsx prisma/migrate.ts",
+    "db:add-activated": "tsx prisma/add-activated-field.ts",
     "db:setup": "npm run db:create && npm run db:migrate",
     "db:studio": "npx prisma studio"
   },

@@ -230,6 +230,144 @@ export const sendWelcomeEmail = async (email: string, userName: string) => {
   }
 };
 
+export const sendAccountActivationEmail = async (email: string, nom: string, prenom?: string | null) => {
+  const fullName = [nom, prenom].filter(Boolean).join(' ');
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Your DeepSkyn account has been activated',
+    html: `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Account Activated – DeepSkyn</title>
+        </head>
+        <body style="margin:0;padding:0;background-color:#f0f2f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f2f5;padding:40px 16px;">
+            <tr><td>
+
+              <!-- Logo -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto 24px;">
+                <tr>
+                  <td style="text-align:center;">
+                    <div style="display:inline-block;">
+                      <img src="cid:logo" alt="DeepSkyn Logo" width="120" style="display:block;width:120px;height:auto;" />
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Card -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
+                <!-- Body -->
+                <tr>
+                  <td style="padding:36px 40px;">
+
+                    <p style="margin:0 0 20px;font-size:15px;color:#5a6a7e;line-height:1.7;">
+                      Your <strong style="color:#1a1a2e;">DeepSkyn</strong> account has been reviewed and 
+                      <strong style="color:#10b981;">activated</strong> by our administration team.
+                      You can now sign in and enjoy all the features of your personalized skincare journey.
+                    </p>
+
+                    <!-- What's available -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="background:#f6fafd;border:1px solid #dde8f0;border-radius:12px;padding:20px 22px;">
+                          <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#156d95;text-transform:uppercase;letter-spacing:0.08em;">What you can do now</p>
+                          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            ${[
+                              ['🧴', 'Access your personalized skincare routine'],
+                              ['📊', 'Track your skin health progress'],
+                              ['💬', 'Chat with our AI skincare assistant'],
+                              ['🏆', 'Earn badges and rewards'],
+                            ].map(([icon, text]) => `
+                              <tr>
+                                <td style="padding:5px 0;width:26px;font-size:15px;vertical-align:middle;">${icon}</td>
+                                <td style="padding:5px 0;font-size:13px;color:#374151;vertical-align:middle;">${text}</td>
+                              </tr>
+                            `).join('')}
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- CTA -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="text-align:center;">
+                          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/signin"
+                             style="display:inline-block;padding:14px 44px;background:#156d95;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:10px;letter-spacing:0.02em;">
+                            Sign In Now &rarr;
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Info note -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;">
+                          <table role="presentation" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="width:22px;vertical-align:top;padding-top:1px;font-size:15px;">💡</td>
+                              <td style="padding-left:10px;font-size:13px;color:#92400e;line-height:1.6;">
+                                If you believe this was done in error, or if you have any questions, please contact us at
+                                <a href="mailto:support@deepskyn.com" style="color:#156d95;text-decoration:none;"> support@deepskyn.com</a>.
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+
+                <!-- Divider -->
+                <tr><td style="height:1px;background:#f0f2f5;"></td></tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="padding:24px 40px;text-align:center;">
+                    <p style="margin:0 0 6px;font-size:13px;color:#8a96a3;">
+                      <a href="mailto:support@deepskyn.com" style="color:#156d95;text-decoration:none;">Support</a>
+                      &nbsp;&middot;&nbsp;
+                      <a href="#" style="color:#8a96a3;text-decoration:none;">Privacy Policy</a>
+                      &nbsp;&middot;&nbsp;
+                      <a href="#" style="color:#8a96a3;text-decoration:none;">Terms of Service</a>
+                    </p>
+                    <p style="margin:0;font-size:12px;color:#b0bac4;">© ${new Date().getFullYear()} DeepSkyn. All rights reserved.</p>
+                    <p style="margin:6px 0 0;font-size:11px;color:#c8d0da;">The DeepSkyn Team</p>
+                  </td>
+                </tr>
+
+              </table>
+            </td></tr>
+          </table>
+        </body>
+      </html>
+    `,
+    attachments: [{
+      filename: 'logo.png',
+      path: path.join(process.cwd(), 'public/logo.png'),
+      cid: 'logo'
+    }]
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Account activation email sent successfully to:', email);
+    return true;
+  } catch (error) {
+    console.error('Error sending activation email:', error);
+    throw error;
+  }
+};
+
 export const generateOtp = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };

@@ -104,6 +104,15 @@ export const signin = async (data: SigninData) => {
       throw new Error('Email ou mot de passe invalide');
     }
 
+    // Check if the account is activated (admin-controlled)
+    if (user.activated === false) {
+      return {
+        success: false,
+        deactivated: true,
+        message: 'Votre compte a été désactivé. Veuillez contacter l\'administration de l\'application.',
+      };
+    }
+
     // Check if user is verified AFTER password validation
     if (!user.verified) {
       // Generate new OTP
