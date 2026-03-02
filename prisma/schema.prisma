@@ -64,6 +64,7 @@ model User {
   skin_type  SkinType?
   image      String?
   verified   Boolean   @default(false)
+  activated  Boolean   @default(true)
   status     UserStatus @default(PENDING)
   otp_code   String?
   otp_expiry DateTime?

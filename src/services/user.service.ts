@@ -12,6 +12,7 @@ export const createUser = async (data: {
   skin_type?: 'OILY' | 'DRY' | 'SENSITIVE' | 'NORMAL' | 'COMBINATION';
   image?: string;
   verified?: boolean;
+  activated?: boolean;
   status?: 'PENDING' | 'ACCEPTED' | 'REJECTED';
 }) => {
   return await prisma.user.create({ data });
@@ -116,6 +117,18 @@ export const updateUserStatus = async (userId: number, status: 'PENDING' | 'ACCE
     'UPDATE "User" SET "status" = CAST($1 AS "UserStatus"), "verified" = $2 WHERE "id" = $3',
     status,
     isAccepted,
+    userId
+  );
+};
+
+export const updateActivatedStatus = async (userId: number, activated: boolean) => {
+  // Ensure the column exists (idempotent — safe to run on every call)
+  await prisma.$executeRawUnsafe(
+    'ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "activated" BOOLEAN NOT NULL DEFAULT true'
+  );
+  return await prisma.$executeRawUnsafe(
+    'UPDATE "User" SET "activated" = $1 WHERE "id" = $2',
+    activated,
     userId
   );
 };

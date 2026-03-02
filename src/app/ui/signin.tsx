@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, Sparkles } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, Sparkles, ShieldOff, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
@@ -20,6 +20,7 @@ export default function SignIn() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shakeField, setShakeField] = useState<string | null>(null)
+  const [showBlockedModal, setShowBlockedModal] = useState(false)
 
   // Test toast on mount to verify it works
   useEffect(() => {
@@ -97,6 +98,12 @@ export default function SignIn() {
           setTimeout(() => {
             router.push('/verify-code');
           }, 2000);
+          return;
+        }
+
+        if (data.deactivated) {
+          console.log('🚫 [SignIn] Compte désactivé');
+          setShowBlockedModal(true);
           return;
         }
 
@@ -226,6 +233,63 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc] px-4 py-8 relative overflow-hidden selection:bg-[#156d95]/10">
+      {/* ── Popup compte désactivé ── */}
+      <AnimatePresence>
+        {showBlockedModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.85, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="w-full max-w-sm rounded-3xl bg-white shadow-2xl p-8 relative overflow-hidden"
+            >
+              {/* background glow */}
+              <div className="absolute -top-16 -right-16 w-40 h-40 bg-red-500/10 rounded-full blur-3xl" />
+              <button
+                onClick={() => setShowBlockedModal(false)}
+                className="absolute top-4 right-4 p-1.5 rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100">
+                  <ShieldOff className="w-8 h-8 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-gray-900 tracking-tight" style={{ fontFamily: "Figtree" }}>
+                    Compte désactivé
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-500 leading-relaxed" style={{ fontFamily: "Figtree" }}>
+                    Votre compte a été désactivé par l&#39;administration.
+                    <br />
+                    <strong className="text-gray-700">Veuillez contacter l&apos;administration de l&apos;application</strong> pour plus d&#39;informations.
+                  </p>
+                </div>
+                <a
+                  href="mailto:support@deepskyn.com"
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#156d95] to-[#0d4a6b] px-4 py-3 text-sm font-black uppercase tracking-widest text-white shadow-lg hover:opacity-90 transition-opacity"
+                  style={{ fontFamily: "Figtree" }}
+                >
+                  Contacter l&apos;administration
+                </a>
+                <button
+                  onClick={() => setShowBlockedModal(false)}
+                  className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors"
+                  style={{ fontFamily: "Figtree" }}
+                >
+                  Fermer
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Simplified Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-[#156d95]/10 via-[#0d4a6b]/5 to-transparent rounded-full blur-[120px] opacity-70" />

@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
       nom: user.nom,
       role: user.role,
       verified: user.verified,
+      activated: user.activated,
       created_at: user.created_at,
       age: user.age,
       sexe: user.sexe,
@@ -49,7 +50,10 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       nom,
       role: role || 'USER',
-      verified: verified ?? false,
+      // Admin-created users are immediately active and visible
+      verified: true,
+      activated: true,
+      status: 'ACCEPTED',
       age: age ?? undefined,
       sexe: sexe ?? undefined,
       skin_type: skin_type ?? undefined,
@@ -63,6 +67,7 @@ export async function POST(request: NextRequest) {
         nom: user.nom,
         role: user.role,
         verified: user.verified,
+        activated: user.activated,
       },
     }, { status: 201 });
   } catch (error: any) {

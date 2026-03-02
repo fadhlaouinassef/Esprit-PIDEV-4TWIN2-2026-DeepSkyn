@@ -16,16 +16,19 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
+  Area,
+  AreaChart,
 } from "recharts";
 import {
   Pencil,
-  Trash2,
   CheckCircle,
   Download,
   UserPlus,
   X,
   Search,
   ImageDown,
+  PowerOff,
+  Power,
 } from "lucide-react";
 
 interface User {
@@ -34,6 +37,7 @@ interface User {
   nom?: string | null;
   role: string;
   verified: boolean;
+  activated: boolean;
   created_at: Date;
   age?: number | null;
   sexe?: string | null;
@@ -161,7 +165,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
         if (!res.ok)
           throw new Error(
             data.error ||
-            (mode === "add" ? "Échec de la création" : "Échec de la mise à jour")
+            (mode === "add" ? "Failed to create user" : "Failed to update user")
           );
         onSaved();
         onClose();
@@ -172,14 +176,14 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
     toast.promise(promise, {
       loading:
         mode === "add"
-          ? "Création de l'utilisateur…"
-          : `Mise à jour de ${form.nom || form.email}…`,
+          ? "Creating user…"
+          : `Updating ${form.nom || form.email}…`,
       success:
         mode === "add"
-          ? "✅ Utilisateur créé avec succès"
-          : `✅ ${form.nom || form.email} mis à jour`,
+          ? "✅ User created successfully"
+          : `✅ ${form.nom || form.email} updated`,
       error: (err: unknown) =>
-        err instanceof Error ? err.message : "Une erreur est survenue",
+        err instanceof Error ? err.message : "An error occurred",
     });
   };
 
@@ -337,60 +341,85 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
 }
 
 // ──────────────────────────────────────────
-// Modal confirmation de suppression
+// Activate / Deactivate confirmation modal
 // ──────────────────────────────────────────
-interface DeleteModalProps {
+interface ToggleActivationModalProps {
   user: User;
+  targetState: boolean; // true = activate, false = deactivate
   onClose: () => void;
-  onDeleted: () => void;
+  onConfirm: () => void;
+  loading: boolean;
 }
 
-function DeleteModal({ user, onClose, onDeleted }: DeleteModalProps) {
-  const [deleting, setDeleting] = useState(false);
-
-  const handleDelete = async () => {
-    setDeleting(true);
-    try {
-      const res = await fetch(`/api/users/${user.id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete");
-      }
-      onDeleted();
-      onClose();
-    } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setDeleting(false);
-    }
-  };
-
+function ToggleActivationModal({
+  user,
+  targetState,
+  onClose,
+  onConfirm,
+  loading,
+}: ToggleActivationModalProps) {
+  const isDeactivating = !targetState;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-gray-800 shadow-2xl p-6">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-          Delete User
-        </h3>
+        <div className="flex items-center gap-3 mb-3">
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-full ${
+              isDeactivating
+                ? "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400"
+                : "bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400"
+            }`}
+          >
+            {isDeactivating ? <PowerOff size={20} /> : <Power size={20} />}
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            {isDeactivating ? "Deactivate Account" : "Activate Account"}
+          </h3>
+        </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          Are you sure you want to delete{" "}
-          <strong className="text-gray-900 dark:text-white">
-            {user.nom || user.email}
-          </strong>
-          ? This action cannot be undone.
+          {isDeactivating ? (
+            <>
+              Are you sure you want to{" "}
+              <strong className="text-red-600">deactivate</strong> the account of{" "}
+              <strong className="text-gray-900 dark:text-white">
+                {user.nom || user.email}
+              </strong>
+              ? The user will no longer be able to sign in.
+            </>
+          ) : (
+            <>
+              Activate the account of{" "}
+              <strong className="text-gray-900 dark:text-white">
+                {user.nom || user.email}
+              </strong>
+              ? The user will be able to sign in again.
+            </>
+          )}
         </p>
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            disabled={loading}
+            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-60"
           >
             Cancel
           </button>
           <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60 transition-colors"
+            onClick={onConfirm}
+            disabled={loading}
+            className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-60 flex items-center justify-center gap-2 ${
+              isDeactivating
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
           >
-            {deleting ? "Deleting..." : "Delete"}
+            {loading ? (
+              <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : isDeactivating ? (
+              "Deactivate"
+            ) : (
+              "Activate"
+            )}
           </button>
         </div>
       </div>
@@ -423,12 +452,19 @@ export default function UsersPage() {
 
   const pieChartRef = useRef<HTMLDivElement>(null);
   const barChartRef = useRef<HTMLDivElement>(null);
+  const accountStatusChartRef = useRef<HTMLDivElement>(null);
+  const genderChartRef = useRef<HTMLDivElement>(null);
+  const ageChartRef = useRef<HTMLDivElement>(null);
+  const monthlyChartRef = useRef<HTMLDivElement>(null);
 
   const [addModal, setAddModal] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
-  const [deleteUserModal, setDeleteUserModal] = useState<User | null>(null);
+  const [toggleActivationUser, setToggleActivationUser] = useState<{
+    user: User;
+    targetState: boolean;
+  } | null>(null);
+  const [activatingId, setActivatingId] = useState<number | null>(null);
 
-  const [verifyingId, setVerifyingId] = useState<number | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -461,10 +497,38 @@ export default function UsersPage() {
     );
   }, [search, users]);
 
-  // ── Vérifier un utilisateur ──
-  const handleVerify = (user: User) => {
-    // Redirige vers la page de vérification dédiée
+  // ── Verify a user ──
+  const handleVerify = () => {
     router.push('/admin/users/verify');
+  };
+
+  // ── Toggle account activation ──
+  const doToggleActivation = async (user: User, activated: boolean) => {
+    setActivatingId(user.id);
+    try {
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activated }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update");
+      await fetchUsers();
+      toast.success(
+        activated
+          ? `✅ ${user.nom || user.email}’s account activated`
+          : `🚫 ${user.nom || user.email}’s account deactivated`
+      );
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setActivatingId(null);
+      setToggleActivationUser(null);
+    }
+  };
+
+  const handleToggleActivation = (user: User) => {
+    setToggleActivationUser({ user, targetState: !user.activated });
   };
 
   // ── Export CSV ──
@@ -566,6 +630,38 @@ export default function UsersPage() {
     { name: "Verified", value: users.filter((u) => u.verified).length },
     { name: "Unverified", value: users.filter((u) => !u.verified).length },
   ];
+
+  const accountStatusData = [
+    { name: "Active", value: users.filter((u) => u.activated).length },
+    { name: "Inactive", value: users.filter((u) => !u.activated).length },
+  ];
+
+  const genderData = [
+    { name: "Male", value: users.filter((u) => u.sexe === "MALE").length },
+    { name: "Female", value: users.filter((u) => u.sexe === "FEMALE").length },
+    { name: "N/A", value: users.filter((u) => !u.sexe).length },
+  ].filter((d) => d.value > 0);
+
+  const ageGroupData = [
+    { range: "<18", count: users.filter((u) => u.age !== null && u.age !== undefined && u.age < 18).length },
+    { range: "18–25", count: users.filter((u) => u.age !== null && u.age !== undefined && u.age >= 18 && u.age <= 25).length },
+    { range: "26–35", count: users.filter((u) => u.age !== null && u.age !== undefined && u.age >= 26 && u.age <= 35).length },
+    { range: "36–50", count: users.filter((u) => u.age !== null && u.age !== undefined && u.age >= 36 && u.age <= 50).length },
+    { range: "50+", count: users.filter((u) => u.age !== null && u.age !== undefined && u.age > 50).length },
+  ];
+
+  const monthlyData = (() => {
+    const counts: Record<string, number> = {};
+    users.forEach((u) => {
+      const d = new Date(u.created_at);
+      const key = d.toLocaleDateString("en", { year: "2-digit", month: "short" });
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort((a, b) => new Date(`01 ${a[0]}`).getTime() - new Date(`01 ${b[0]}`).getTime())
+      .slice(-8)
+      .map(([month, count]) => ({ month, count }));
+  })();
 
   // ──────────────────────────────────────────
   if (loading) {
@@ -718,6 +814,147 @@ export default function UsersPage() {
             </div>
           </div>
 
+          {/* Donut Account Status */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 dark:text-white">Account Status</h3>
+              <button
+                onClick={() => downloadChart(accountStatusChartRef, "account_status_chart")}
+                title="Download chart as PNG"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
+              >
+                <ImageDown className="w-4 h-4" />
+              </button>
+            </div>
+            <div ref={accountStatusChartRef} className="bg-white">
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={accountStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    <Cell fill="#10b981" />
+                    <Cell fill="#ef4444" />
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ── Row 2 Charts ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          {/* Gender Distribution */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 dark:text-white">Gender Distribution</h3>
+              <button
+                onClick={() => downloadChart(genderChartRef, "gender_chart")}
+                title="Download chart as PNG"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
+              >
+                <ImageDown className="w-4 h-4" />
+              </button>
+            </div>
+            <div ref={genderChartRef} className="bg-white">
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={genderData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    paddingAngle={3}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                    labelLine={false}
+                  >
+                    {genderData.map((entry, index) => (
+                      <Cell key={entry.name} fill={["#156d95", "#f472b6", "#94a3b8"][index % 3]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Age Groups */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 dark:text-white">Age Groups</h3>
+              <button
+                onClick={() => downloadChart(ageChartRef, "age_chart")}
+                title="Download chart as PNG"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
+              >
+                <ImageDown className="w-4 h-4" />
+              </button>
+            </div>
+            <div ref={ageChartRef} className="bg-white">
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={ageGroupData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="range" tick={{ fontSize: 11 }} />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                    {ageGroupData.map((entry, index) => (
+                      <Cell key={entry.range} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Monthly Registrations */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 dark:text-white">Monthly Registrations</h3>
+              <button
+                onClick={() => downloadChart(monthlyChartRef, "monthly_chart")}
+                title="Download chart as PNG"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
+              >
+                <ImageDown className="w-4 h-4" />
+              </button>
+            </div>
+            <div ref={monthlyChartRef} className="bg-white">
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={monthlyData}>
+                  <defs>
+                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#156d95" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#156d95" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#156d95"
+                    strokeWidth={2}
+                    fill="url(#colorCount)"
+                    dot={{ fill: "#156d95", r: 4 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
         </div>
 
         {/* ── Table ── */}
@@ -763,6 +1000,7 @@ export default function UsersPage() {
                     "Email",
                     "Role",
                     "Status",
+                    "Account",
                     "Age",
                     "Gender",
                     "Joined",
@@ -833,19 +1071,41 @@ export default function UsersPage() {
                         </span>
                       ) : (
                         <button
-                          onClick={() => handleVerify(user)}
-                          disabled={verifyingId === user.id}
+                          onClick={() => handleVerify()}
                           title="Cliquer pour vérifier ce compte"
-                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-800/50 transition-colors cursor-pointer border border-orange-200 dark:border-orange-700 disabled:opacity-60 disabled:cursor-wait"
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-800/50 transition-colors cursor-pointer border border-orange-200 dark:border-orange-700"
                         >
-                          {verifyingId === user.id ? (
-                            <span className="inline-block w-3 h-3 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <CheckCircle className="w-3 h-3" />
-                          )}
-                          {verifyingId === user.id ? "Envoi…" : "Unverified – Verify"}
+                          <CheckCircle className="w-3 h-3" />
+                          Unverified – Verify
                         </button>
                       )}
+                    </td>
+
+                    {/* Activation compte */}
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => handleToggleActivation(user)}
+                        disabled={activatingId === user.id}
+                        title={user.activated ? "Click to deactivate" : "Click to activate"}
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors cursor-pointer border disabled:opacity-60 disabled:cursor-wait ${
+                          user.activated
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-800/50 border-emerald-200 dark:border-emerald-700"
+                            : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/50 border-red-200 dark:border-red-700"
+                        }`}
+                      >
+                        {activatingId === user.id ? (
+                          <span className="inline-block w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : user.activated ? (
+                          <Power className="w-3 h-3" />
+                        ) : (
+                          <PowerOff className="w-3 h-3" />
+                        )}
+                        {activatingId === user.id
+                          ? "Updating…"
+                          : user.activated
+                          ? "Active"
+                          : "Inactive"}
+                      </button>
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
@@ -871,11 +1131,22 @@ export default function UsersPage() {
                           <Pencil size={15} />
                         </button>
                         <button
-                          onClick={() => setDeleteUserModal(user)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/30 transition-all"
-                          title="Delete"
+                          onClick={() => handleToggleActivation(user)}
+                          disabled={activatingId === user.id}
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all disabled:opacity-60 ${
+                            user.activated
+                              ? "text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/30"
+                              : "text-gray-400 hover:bg-green-50 hover:text-green-500 dark:hover:bg-green-900/30"
+                          }`}
+                          title={user.activated ? "Deactivate account" : "Activate account"}
                         >
-                          <Trash2 size={15} />
+                          {activatingId === user.id ? (
+                            <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          ) : user.activated ? (
+                            <PowerOff size={15} />
+                          ) : (
+                            <Power size={15} />
+                          )}
                         </button>
                       </div>
                     </td>
@@ -920,11 +1191,18 @@ export default function UsersPage() {
           onSaved={fetchUsers}
         />
       )}
-      {deleteUserModal && (
-        <DeleteModal
-          user={deleteUserModal}
-          onClose={() => setDeleteUserModal(null)}
-          onDeleted={fetchUsers}
+      {toggleActivationUser && (
+        <ToggleActivationModal
+          user={toggleActivationUser.user}
+          targetState={toggleActivationUser.targetState}
+          loading={activatingId === toggleActivationUser.user.id}
+          onClose={() => setToggleActivationUser(null)}
+          onConfirm={() =>
+            doToggleActivation(
+              toggleActivationUser.user,
+              toggleActivationUser.targetState
+            )
+          }
         />
       )}
     </AdminLayout>

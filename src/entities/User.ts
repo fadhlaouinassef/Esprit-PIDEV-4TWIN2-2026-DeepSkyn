@@ -13,6 +13,7 @@ export class User {
   skin_type?: SkinType;
   image?: string;
   verified!: boolean;
+  activated!: boolean;
   otp_code?: string;
   otp_expiry?: Date;
 }
