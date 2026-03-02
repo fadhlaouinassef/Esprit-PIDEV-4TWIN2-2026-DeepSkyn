@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum RoleType {
@@ -68,6 +69,7 @@ model User {
   status     UserStatus @default(PENDING)
   otp_code   String?
   otp_expiry DateTime?
+  admin_notes String?
 
   badges          Badge[]
   subscriptions   Subscription[]
