@@ -5,20 +5,36 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 
-// Créer un pool de connexion PostgreSQL avec options explicites
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'deepskyn',
-  password: 'douaa',
-  port: 5432,
-})
+const connectionString = process.env.DATABASE_URL
 
-// Créer l'adapter Prisma pour PostgreSQL
-const adapter = new PrismaPg(pool)
+let prisma: PrismaClient
 
-// Créer le client Prisma avec l'adapter
-export const prisma = new PrismaClient({
-  adapter,
-  log: ['error', 'warn'],
-})
+if (connectionString) {
+  const pool = new Pool({
+    connectionString,
+  })
+
+  const adapter = new PrismaPg(pool)
+
+  prisma = new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  })
+} else {
+  const pool = new Pool({
+    user: process.env.DB_USER || 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    database: process.env.DB_NAME || 'deepskyn',
+    password: process.env.MDP_DB || process.env.DB_PASSWORD || 'admin',
+    port: parseInt(process.env.DB_PORT || '5432'),
+  })
+
+  const adapter = new PrismaPg(pool)
+
+  prisma = new PrismaClient({
+    adapter,
+    log: ['error', 'warn'],
+  })
+}
+
+export { prisma }

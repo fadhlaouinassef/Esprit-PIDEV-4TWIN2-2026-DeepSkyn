@@ -69,11 +69,14 @@ export default function QuizzesPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [expandedQuizId, setExpandedQuizId] = useState<string | null>(null);
     const [deletedQuestionIds, setDeletedQuestionIds] = useState<string[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-    const filteredQuizzes = quizzes.filter(q =>
-        q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        q.iconType.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredQuizzes = quizzes.filter(q => {
+        const matchesSearch = q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            q.iconType.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === "all" || q.iconType === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
 
     useEffect(() => {
         fetchQuizzes();
@@ -348,19 +351,35 @@ export default function QuizzesPage() {
                             </div>
 
                             {/* Stats & Search */}
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div className="md:col-span-3 h-14 bg-white dark:bg-gray-800 rounded-2xl flex items-center px-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                <div className="md:col-span-5 h-14 bg-white dark:bg-gray-800 rounded-2xl flex items-center px-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
                                     <Search className="size-5 text-gray-400 mr-3" />
                                     <input
                                         type="text"
-                                        placeholder="Search by title or category (droplets, sparkles...)"
+                                        placeholder="Search by title..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="flex-1 bg-transparent border-none outline-none text-gray-700 dark:text-gray-200"
                                     />
                                 </div>
-                                <div className="bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center px-4 shadow-sm border border-gray-100 dark:border-gray-700/50 font-bold text-gray-600 dark:text-gray-300">
-                                    {quizzes.length} Total Quizzes
+                                <div className="md:col-span-4 h-14 bg-white dark:bg-gray-800 rounded-2xl flex items-center px-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
+                                    <SlidersHorizontal className="size-5 text-gray-400 mr-3" />
+                                    <select
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                        className="flex-1 bg-transparent border-none outline-none text-gray-700 dark:text-gray-200 font-medium cursor-pointer"
+                                    >
+                                        <option value="all" className="bg-white dark:bg-gray-800">All Categories</option>
+                                        <option value="droplets" className="bg-white dark:bg-gray-800">Skin Type</option>
+                                        <option value="sparkles" className="bg-white dark:bg-gray-800">Skin Glow</option>
+                                        <option value="flask" className="bg-white dark:bg-gray-800">Ingredients</option>
+                                        <option value="health" className="bg-white dark:bg-gray-800">Medical</option>
+                                        <option value="user" className="bg-white dark:bg-gray-800">Personal</option>
+                                        <option value="globe" className="bg-white dark:bg-gray-800">General</option>
+                                    </select>
+                                </div>
+                                <div className="md:col-span-3 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center px-4 shadow-sm border border-gray-100 dark:border-gray-700/50 font-bold text-gray-600 dark:text-gray-300 h-14">
+                                    {filteredQuizzes.length === quizzes.length ? `${quizzes.length} Total Quizzes` : `${filteredQuizzes.length}/${quizzes.length} Found`}
                                 </div>
                             </div>
 

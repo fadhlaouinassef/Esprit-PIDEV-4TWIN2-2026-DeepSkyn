@@ -249,6 +249,6 @@ export default function VerifyCode() {
                     </motion.form>
                 </motion.div>
             </motion.div>
-        </div>
+        </div >
     )
 }

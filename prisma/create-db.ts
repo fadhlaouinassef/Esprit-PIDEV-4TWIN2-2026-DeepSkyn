@@ -8,7 +8,7 @@ async function createDatabase() {
     user: 'postgres',
     host: 'localhost',
     database: 'postgres', // Base par défaut
-    password: process.env.MDP_DB || 'douaa',
+    password: process.env.MDP_DB || process.env.DB_PASSWORD || 'admin',
     port: 5432,
   });
 
