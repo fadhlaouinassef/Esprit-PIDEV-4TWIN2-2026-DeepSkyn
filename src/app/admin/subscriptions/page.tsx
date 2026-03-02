@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import Image from "next/image";
 import { AdminLayout } from "@/app/ui/AdminLayout";
 import {
   CreditCard,
@@ -16,7 +17,6 @@ import {
   CheckCircle,
   AlertCircle,
   Clock,
-  XCircle,
   Calendar,
   DollarSign,
   RefreshCw,
@@ -31,30 +31,51 @@ import {
 // ─────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────
-type SubscriptionStatus = "Active" | "Expired" | "Cancelled" | "Pending";
-type PlanType = "Basic" | "Pro" | "Premium";
-type PaymentStatus = "Paid" | "Unpaid";
+type PaymentStatus = "Paid" | "Expiring" | "Expired";
 
-interface Subscription {
+interface SubscriptionRow {
   id: number;
+  userId: number;
   userName: string;
   email: string;
-  avatar: string;
-  plan: PlanType;
-  status: SubscriptionStatus;
-  startDate: string;
-  endDate: string;
+  image: string | null;
+  initials: string;
+  plan: string;
+  date_debut: string;
+  date_fin: string;
   paymentStatus: PaymentStatus;
   amount: number;
-  renewalType: "Monthly" | "Yearly";
-  history: { date: string; event: string; amount?: number }[];
-  payments: { date: string; amount: number; method: string; status: string }[];
 }
 
 // ─────────────────────────────────────────────
-// Static Sample Data
+// Helpers
 // ─────────────────────────────────────────────
-const SAMPLE_SUBSCRIPTIONS: Subscription[] = [
+function formatDate(iso: string) {
+  return new Date(iso).toISOString().slice(0, 10);
+}
+
+function planColor(plan: string): string {
+  switch (plan.toUpperCase()) {
+    case "BASIC":   return "bg-slate-100 text-slate-600";
+    case "PRO":     return "bg-blue-50 text-blue-700";
+    case "PREMIUM": return "bg-violet-50 text-violet-700";
+    default:        return "bg-gray-100 text-gray-600";
+  }
+}
+
+function avatarBg(plan: string): string {
+  switch (plan.toUpperCase()) {
+    case "BASIC":   return "bg-slate-200 text-slate-700";
+    case "PRO":     return "bg-blue-100 text-blue-700";
+    case "PREMIUM": return "bg-violet-100 text-violet-700";
+    default:        return "bg-gray-200 text-gray-600";
+  }
+}
+
+
+
+/* --- old static data removed ---
+_REMOVED_ARRAY = [
   {
     id: 1,
     userName: "Sarah Johnson",
@@ -290,73 +311,50 @@ const SAMPLE_SUBSCRIPTIONS: Subscription[] = [
     payments: [],
   },
 ];
+--- */ 
 
 const ITEMS_PER_PAGE = 8;
 
 // ─────────────────────────────────────────────
-// Badge helpers
+// Badge components
 // ─────────────────────────────────────────────
-function StatusBadge({ status }: { status: SubscriptionStatus }) {
-  const map: Record<SubscriptionStatus, { color: string; icon: React.ReactNode }> = {
-    Active: {
-      color: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-      icon: <CheckCircle size={12} />,
-    },
-    Expired: {
-      color: "bg-orange-50 text-orange-700 ring-1 ring-orange-200",
-      icon: <AlertCircle size={12} />,
-    },
-    Cancelled: {
-      color: "bg-red-50 text-red-700 ring-1 ring-red-200",
-      icon: <XCircle size={12} />,
-    },
-    Pending: {
-      color: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
-      icon: <Clock size={12} />,
-    },
+function PaymentBadge({ status }: { status: PaymentStatus }) {
+  const map: Record<PaymentStatus, { cls: string; icon: React.ReactNode }> = {
+    Paid:     { cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200", icon: <CheckCircle size={12} /> },
+    Expiring: { cls: "bg-amber-50  text-amber-700  ring-1 ring-amber-200",    icon: <Clock size={12} /> },
+    Expired:  { cls: "bg-orange-50 text-orange-700 ring-1 ring-orange-200",   icon: <AlertCircle size={12} /> },
   };
-  const { color, icon } = map[status];
+  const { cls, icon } = map[status];
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${color}`}>
+    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${cls}`}>
       {icon} {status}
     </span>
   );
 }
 
-function PaymentBadge({ status }: { status: PaymentStatus }) {
-  const map: Record<PaymentStatus, string> = {
-    Paid: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-    Unpaid: "bg-red-50 text-red-700 ring-1 ring-red-200",
-  };
+function PlanBadge({ plan }: { plan: string }) {
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${map[status]}`}>
-      {status}
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold capitalize ${planColor(plan)}`}>
+      {plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase()}
     </span>
   );
 }
 
-function PlanBadge({ plan }: { plan: PlanType }) {
-  const map: Record<PlanType, string> = {
-    Basic: "bg-slate-100 text-slate-600",
-    Pro: "bg-blue-50 text-blue-700",
-    Premium: "bg-violet-50 text-violet-700",
-  };
+function AvatarCircle({ sub }: { sub: SubscriptionRow }) {
+  if (sub.image) {
+    return (
+      <Image
+        src={sub.image}
+        alt={sub.userName}
+        width={36}
+        height={36}
+        className="size-9 rounded-full object-cover shrink-0"
+      />
+    );
+  }
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${map[plan]}`}>
-      {plan}
-    </span>
-  );
-}
-
-function AvatarCircle({ initials, plan }: { initials: string; plan: PlanType }) {
-  const colors: Record<PlanType, string> = {
-    Basic: "bg-slate-200 text-slate-700",
-    Pro: "bg-blue-100 text-blue-700",
-    Premium: "bg-violet-100 text-violet-700",
-  };
-  return (
-    <div className={`size-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${colors[plan]}`}>
-      {initials}
+    <div className={`size-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${avatarBg(sub.plan)}`}>
+      {sub.initials}
     </div>
   );
 }
@@ -398,7 +396,7 @@ function DetailModal({
   sub,
   onClose,
 }: {
-  sub: Subscription;
+  sub: SubscriptionRow;
   onClose: () => void;
 }) {
   const [tab, setTab] = useState<"info" | "history">("info");
@@ -416,7 +414,7 @@ function DetailModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <AvatarCircle initials={sub.avatar} plan={sub.plan} />
+            <AvatarCircle sub={sub} />
             <div>
               <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight">
                 {sub.userName}
@@ -462,26 +460,18 @@ function DetailModal({
           {tab === "info" && (
             <div className="grid grid-cols-2 gap-4">
               {[
-                { label: "Full Name", value: sub.userName, icon: <User size={14} /> },
-                { label: "Email", value: sub.email, icon: <Mail size={14} /> },
-                { label: "Plan", value: <PlanBadge plan={sub.plan} />, icon: <Package size={14} /> },
-                { label: "Start Date", value: sub.startDate, icon: <Calendar size={14} /> },
-                { label: "End Date", value: sub.endDate, icon: <Calendar size={14} /> },
+                { label: "Full Name",       value: sub.userName,                          icon: <User       size={14} /> },
+                { label: "Email",           value: sub.email,                             icon: <Mail       size={14} /> },
+                { label: "Plan",            value: <PlanBadge plan={sub.plan} />,         icon: <Package    size={14} /> },
+                { label: "Start Date",      value: formatDate(sub.date_debut),            icon: <Calendar   size={14} /> },
+                { label: "End Date",        value: formatDate(sub.date_fin),              icon: <Calendar   size={14} /> },
                 {
                   label: "Payment Status",
                   value: <PaymentBadge status={sub.paymentStatus} />,
                   icon: <CreditCard size={14} />,
                 },
-                {
-                  label: "Renewal",
-                  value: sub.renewalType,
-                  icon: <RefreshCw size={14} />,
-                },
-                {
-                  label: "Amount",
-                  value: `$${sub.amount.toFixed(2)}`,
-                  icon: <DollarSign size={14} />,
-                },
+                { label: "Renewal", value: "Yearly",                                     icon: <RefreshCw  size={14} /> },
+                { label: "Amount",  value: `$${sub.amount.toFixed(2)}`,                   icon: <DollarSign size={14} /> },
               ].map(({ label, value, icon }) => (
                 <div
                   key={label}
@@ -499,20 +489,18 @@ function DetailModal({
             </div>
           )}
 
-          {/* ── History Tab ── */}
+          {/* ── History Tab (static placeholder) ── */}
           {tab === "history" && (
             <div className="relative pl-4">
               <div className="absolute left-4 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-600" />
               <ul className="space-y-5">
-                {sub.history.map((h, i) => (
-                  <li key={i} className="relative pl-6">
-                    <div className="absolute -left-1 top-1.5 size-2.5 rounded-full bg-[#156d95] ring-2 ring-white dark:ring-gray-800" />
-                    <p className="text-xs text-gray-400 font-medium">{h.date}</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-200 font-medium mt-0.5">
-                      {h.event}
-                    </p>
-                  </li>
-                ))}
+                <li className="relative pl-6">
+                  <div className="absolute -left-1 top-1.5 size-2.5 rounded-full bg-[#156d95] ring-2 ring-white dark:ring-gray-800" />
+                  <p className="text-xs text-gray-400 font-medium">{formatDate(sub.date_debut)}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-200 font-medium mt-0.5">
+                    Subscription started – {sub.plan} Plan
+                  </p>
+                </li>
               </ul>
             </div>
           )}
@@ -544,38 +532,54 @@ function DetailModal({
 // Main Page
 // ─────────────────────────────────────────────
 export default function SubscriptionsPage() {
+  const [subscriptions, setSubscriptions] = useState<SubscriptionRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<SubscriptionStatus | "All">("All");
-  const [planFilter, setPlanFilter] = useState<PlanType | "All">("All");
+  const [paymentFilter, setPaymentFilter] = useState<PaymentStatus | "All">("All");
+  const [planFilter, setPlanFilter] = useState<string>("All");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [page, setPage] = useState(1);
-  const [selectedSub, setSelectedSub] = useState<Subscription | null>(null);
+  const [selectedSub, setSelectedSub] = useState<SubscriptionRow | null>(null);
+
+  // ── Fetch data from DB ──
+  useEffect(() => {
+    fetch("/api/admin/subscriptions")
+      .then((r) => r.json())
+      .then((d) => setSubscriptions(d.subscriptions ?? []))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
   const [showFilters, setShowFilters] = useState(false);
 
-  // ── Computed stats ──
-  const total = SAMPLE_SUBSCRIPTIONS.length;
-  const active = SAMPLE_SUBSCRIPTIONS.filter((s) => s.status === "Active").length;
-  const expired = SAMPLE_SUBSCRIPTIONS.filter((s) => s.status === "Expired").length;
-  const monthlyRevenue = SAMPLE_SUBSCRIPTIONS.filter(
-    (s) => s.status === "Active"
-  )
-    .reduce((acc, s) => acc + (s.renewalType === "Monthly" ? s.amount : s.amount / 12), 0)
+  // ── Stats ──
+  const total   = subscriptions.length;
+  const active  = subscriptions.filter((s) => s.paymentStatus === "Paid").length;
+  const expired = subscriptions.filter((s) => s.paymentStatus === "Expired").length;
+  const monthlyRevenue = subscriptions
+    .filter((s) => s.paymentStatus === "Paid")
+    .reduce((acc, s) => acc + s.amount / 12, 0)
     .toFixed(2);
+
+  // ── Unique plans for dropdown ──
+  const uniquePlans = useMemo(
+    () => [...new Set(subscriptions.map((s) => s.plan))],
+    [subscriptions]
+  );
 
   // ── Filtering ──
   const filtered = useMemo(() => {
-    return SAMPLE_SUBSCRIPTIONS.filter((s) => {
+    return subscriptions.filter((s) => {
       const q = search.toLowerCase();
-      const matchSearch =
-        !q || s.userName.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
-      const matchStatus = statusFilter === "All" || s.status === statusFilter;
-      const matchPlan = planFilter === "All" || s.plan === planFilter;
-      const matchFrom = !dateFrom || s.startDate >= dateFrom;
-      const matchTo = !dateTo || s.endDate <= dateTo;
-      return matchSearch && matchStatus && matchPlan && matchFrom && matchTo;
+      const matchSearch = !q || s.userName.toLowerCase().includes(q) || s.email.toLowerCase().includes(q);
+      const matchPayment = paymentFilter === "All" || s.paymentStatus === paymentFilter;
+      const matchPlan    = planFilter === "All" || s.plan === planFilter;
+      const matchFrom    = !dateFrom || s.date_debut.slice(0, 10) >= dateFrom;
+      const matchTo      = !dateTo   || s.date_fin.slice(0, 10)   <= dateTo;
+      return matchSearch && matchPayment && matchPlan && matchFrom && matchTo;
     });
-  }, [search, statusFilter, planFilter, dateFrom, dateTo]);
+  }, [subscriptions, search, paymentFilter, planFilter, dateFrom, dateTo]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -583,17 +587,15 @@ export default function SubscriptionsPage() {
   const handleFilterChange = () => setPage(1);
 
   const exportToCSV = () => {
-    const headers = ["User Name", "Email", "Plan", "Subscription Status", "Start Date", "End Date", "Payment Status", "Amount", "Renewal"];
+    const headers = ["User Name", "Email", "Plan", "Start Date", "End Date", "Payment Status", "Amount"];
     const rows = filtered.map((s) => [
       s.userName,
       s.email,
       s.plan,
-      s.status,
-      s.startDate,
-      s.endDate,
+      formatDate(s.date_debut),
+      formatDate(s.date_fin),
       s.paymentStatus,
       `$${s.amount.toFixed(2)}`,
-      s.renewalType,
     ]);
     const csv = [headers, ...rows]
       .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
@@ -645,7 +647,7 @@ export default function SubscriptionsPage() {
           <SummaryCard
             title="Active Subscriptions"
             value={active}
-            sub={`${((active / total) * 100).toFixed(0)}% of all subscriptions`}
+            sub={total > 0 ? `${((active / total) * 100).toFixed(0)}% of all subscriptions` : "–"}
             icon={<CheckCircle size={22} className="text-emerald-600" />}
             accent="bg-emerald-50 dark:bg-emerald-900/20"
           />
@@ -717,21 +719,20 @@ export default function SubscriptionsPage() {
             {/* Expanded Filters */}
             {showFilters && (
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
-                {/* Status */}
+                {/* Payment Status */}
                 <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 block">
-                    Status
+                    Payment Status
                   </label>
                   <select
-                    value={statusFilter}
-                    onChange={(e) => { setStatusFilter(e.target.value as any); handleFilterChange(); }}
+                    value={paymentFilter}
+                    onChange={(e) => { setPaymentFilter(e.target.value as PaymentStatus | "All"); handleFilterChange(); }}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#156d95]/30 focus:border-[#156d95] transition"
                   >
                     <option value="All">All Statuses</option>
-                    <option value="Active">Active</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Expiring">Expiring</option>
                     <option value="Expired">Expired</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Pending">Pending</option>
                   </select>
                 </div>
 
@@ -742,14 +743,15 @@ export default function SubscriptionsPage() {
                   </label>
                   <select
                     value={planFilter}
-                    onChange={(e) => { setPlanFilter(e.target.value as any); handleFilterChange(); }}
+                    onChange={(e) => { setPlanFilter(e.target.value); handleFilterChange(); }}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#156d95]/30 focus:border-[#156d95] transition"
                   >
                     <option value="All">All Plans</option>
-                    <option value="Basic">Basic</option>
-                    <option value="Pro">Pro</option>
-                    <option value="Premium">Premium</option>
-
+                    {uniquePlans.map((p) => (
+                      <option key={p} value={p}>
+                        {p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -808,7 +810,14 @@ export default function SubscriptionsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
-                {paginated.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-16 text-gray-400">
+                      <RefreshCw size={28} className="mx-auto mb-3 opacity-30 animate-spin" />
+                      <p className="text-sm font-medium">Loading subscriptions…</p>
+                    </td>
+                  </tr>
+                ) : paginated.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-16 text-gray-400 dark:text-gray-500">
                       <Search size={36} className="mx-auto mb-3 opacity-25" />
@@ -824,7 +833,7 @@ export default function SubscriptionsPage() {
                       {/* User */}
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
-                          <AvatarCircle initials={sub.avatar} plan={sub.plan} />
+                          <AvatarCircle sub={sub} />
                           <div className="min-w-0">
                             <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">
                               {sub.userName}
@@ -841,12 +850,12 @@ export default function SubscriptionsPage() {
 
                       {/* Start Date */}
                       <td className="px-4 py-3.5 text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                        {sub.startDate}
+                        {formatDate(sub.date_debut)}
                       </td>
 
                       {/* End Date */}
                       <td className="px-4 py-3.5 text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                        {sub.endDate}
+                        {formatDate(sub.date_fin)}
                       </td>
 
                       {/* Payment */}
@@ -857,9 +866,7 @@ export default function SubscriptionsPage() {
                       {/* Amount */}
                       <td className="px-4 py-3.5 font-semibold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                         ${sub.amount.toFixed(2)}
-                        <span className="ml-1 text-xs text-gray-400 font-normal">
-                          /{sub.renewalType === "Monthly" ? "mo" : "yr"}
-                        </span>
+                        <span className="ml-1 text-xs text-gray-400 font-normal">/yr</span>
                       </td>
 
                       {/* Actions */}
