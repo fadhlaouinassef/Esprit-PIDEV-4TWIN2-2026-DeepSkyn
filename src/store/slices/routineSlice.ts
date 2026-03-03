@@ -132,6 +132,47 @@ export const addRoutineStep = createAsyncThunk(
   }
 );
 
+export const updateRoutineStep = createAsyncThunk(
+  'routine/updateRoutineStep',
+  async (
+    { routineId, stepId, updates }: { routineId: number; stepId: number; updates: Partial<RoutineStep> },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(`/api/user/routines/${routineId}/steps/${stepId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error('Failed to update step');
+      const data = await response.json();
+      return { routineId, step: data.step };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred';
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const deleteRoutineStep = createAsyncThunk(
+  'routine/deleteRoutineStep',
+  async (
+    { routineId, stepId }: { routineId: number; stepId: number },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(`/api/user/routines/${routineId}/steps/${stepId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete step');
+      return { routineId, stepId };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An error occurred';
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const markStepCompleted = createAsyncThunk(
   'routine/markStepCompleted',
   async (
@@ -235,6 +276,25 @@ const routineSlice = createSlice({
         if (stepIndex !== -1) {
           routine.steps[stepIndex] = action.payload.step;
         }
+      }
+    });
+
+    // Update Routine Step
+    builder.addCase(updateRoutineStep.fulfilled, (state, action) => {
+      const routine = state.routines.find(r => r.id === action.payload.routineId);
+      if (routine?.steps) {
+        const stepIndex = routine.steps.findIndex(s => s.id === action.payload.step.id);
+        if (stepIndex !== -1) {
+          routine.steps[stepIndex] = action.payload.step;
+        }
+      }
+    });
+
+    // Delete Routine Step
+    builder.addCase(deleteRoutineStep.fulfilled, (state, action) => {
+      const routine = state.routines.find(r => r.id === action.payload.routineId);
+      if (routine?.steps) {
+        routine.steps = routine.steps.filter(s => s.id !== action.payload.stepId);
       }
     });
   },

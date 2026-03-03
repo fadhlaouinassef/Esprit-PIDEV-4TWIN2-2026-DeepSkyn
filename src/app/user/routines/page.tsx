@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteRoutine, fetchUserRoutines, markStepCompleted, toggleStepCompletedLocally } from "@/store/slices/routineSlice";
 import { AddRoutineModal } from "@/app/components/user/AddRoutineModal";
+import { DeleteRoutineModal } from "@/app/components/user/DeleteRoutineModal";
 
 // --- Types ---
 type RoutineType = "morning" | "night" | "weekly";
@@ -92,6 +93,9 @@ export default function RoutinePage() {
     const [userId, setUserId] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [routineToEdit, setRoutineToEdit] = useState<any>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [routineToDelete, setRoutineToDelete] = useState<any>(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const [consistency, setConsistency] = useState<ConsistencyResponse | null>(null);
     const [consistencyLoading, setConsistencyLoading] = useState(false);
 
@@ -185,14 +189,22 @@ export default function RoutinePage() {
         setIsModalOpen(true);
     };
 
-    const handleDeleteRoutine = async (routineId: number) => {
-        const ok = window.confirm("Delete this routine? This action cannot be undone.");
-        if (!ok) return;
+    const handleDeleteRoutine = (routine: any) => {
+        setRoutineToDelete(routine);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDeleteRoutine = async () => {
+        if (!routineToDelete) return;
+        setDeleteLoading(true);
         try {
-            await dispatch(deleteRoutine(routineId)).unwrap();
-            toast.success("Routine deleted", { position: "bottom-right" });
+            await dispatch(deleteRoutine(routineToDelete.id)).unwrap();
+            toast.success("Routine deleted ✨", { position: "bottom-right" });
+            setIsDeleteModalOpen(false);
         } catch {
             toast.error("Failed to delete routine", { position: "bottom-right" });
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -312,7 +324,7 @@ export default function RoutinePage() {
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleDeleteRoutine(routine.id)}
+                                                    onClick={() => handleDeleteRoutine(routine)}
                                                     className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-muted/30 border border-border/50 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -508,6 +520,14 @@ export default function RoutinePage() {
                         routineToEdit={routineToEdit}
                     />
                 )}
+
+                <DeleteRoutineModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onConfirm={confirmDeleteRoutine}
+                    routineName={routineToDelete?.objectif || routineToDelete?.envie || "Routine"}
+                    loading={deleteLoading}
+                />
             </div>
         </UserLayout>
     );

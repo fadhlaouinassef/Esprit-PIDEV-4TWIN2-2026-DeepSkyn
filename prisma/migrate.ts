@@ -99,7 +99,8 @@ async function migrate() {
         "nom" VARCHAR(255),
         "sexe" VARCHAR(50),
         "age" INTEGER,
-        "skin_type" "SkinType"
+        "skin_type" "SkinType",
+        "activated" BOOLEAN DEFAULT true NOT NULL
       );
     `);
 
@@ -321,6 +322,7 @@ async function migrate() {
     await addColumnIfMissing('User', '"prenom" VARCHAR(255)');
     await addColumnIfMissing('User', '"image" TEXT');
     await addColumnIfMissing('User', '"verified" BOOLEAN DEFAULT false NOT NULL');
+    await addColumnIfMissing('User', '"activated" BOOLEAN DEFAULT true NOT NULL');
     await addColumnIfMissing('User', '"status" "UserStatus" DEFAULT \'PENDING\' NOT NULL');
     await addColumnIfMissing('User', '"otp_code" TEXT');
     await addColumnIfMissing('User', '"otp_expiry" TIMESTAMP');

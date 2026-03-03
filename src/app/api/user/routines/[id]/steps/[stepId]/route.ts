@@ -85,7 +85,57 @@ export async function PUT(
   } catch (error: unknown) {
     console.error('PUT Step error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ 
+    return NextResponse.json({
+      error: 'Internal Server Error',
+      details: errorMessage
+    }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string; stepId: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user || !session.user.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const resolvedParams = await params;
+    const routineId = parseInt(resolvedParams.id);
+    const stepId = parseInt(resolvedParams.stepId);
+
+    const routine = await findRoutineById(routineId);
+    const step = await findRoutineStepById(stepId);
+
+    if (!routine || !step) {
+      return NextResponse.json({ error: 'Routine or step not found' }, { status: 404 });
+    }
+
+    if (step.routine_id !== routineId) {
+      return NextResponse.json({ error: 'Step does not belong to this routine' }, { status: 400 });
+    }
+
+    // Verify ownership
+    const dbUser = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!dbUser || dbUser.id !== routine.user_id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    await prisma.routineStep.delete({
+      where: { id: stepId }
+    });
+
+    return NextResponse.json({ message: 'Step deleted successfully' }, { status: 200 });
+  } catch (error: unknown) {
+    console.error('DELETE Step error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({
       error: 'Internal Server Error',
       details: errorMessage
     }, { status: 500 });

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Sun, Moon, Calendar, Sparkles } from "lucide-react";
 import { useAppDispatch } from "@/store/hooks";
-import { createRoutine, addRoutineStep, updateRoutine } from "@/store/slices/routineSlice";
+import { createRoutine, addRoutineStep, updateRoutine, updateRoutineStep, deleteRoutineStep, fetchUserRoutines } from "@/store/slices/routineSlice";
 import { toast } from "sonner";
 
 interface AddRoutineModalProps {
@@ -104,8 +104,36 @@ export const AddRoutineModal: React.FC<AddRoutineModalProps> = ({
           })
         ).unwrap();
 
-        // Note: Full step sync (add/edit/remove) would require more backend logic.
-        // For now, we update the main routine info as requested.
+        // Sync steps
+        const originalSteps = routineToEdit.steps || [];
+        const currentStepIds = steps.map(s => s.id).filter(id => id !== undefined);
+
+        // 1. Delete steps that were removed
+        const stepsToDelete = originalSteps.filter((os: any) => !currentStepIds.includes(os.id));
+        for (const stepToDel of stepsToDelete) {
+          await dispatch(deleteRoutineStep({ routineId: routineToEdit.id, stepId: stepToDel.id }));
+        }
+
+        // 2. Add or Update steps
+        for (const step of steps) {
+          if (step.action.trim() === "") continue;
+
+          if (step.id) {
+            // Update existing step
+            await dispatch(updateRoutineStep({
+              routineId: routineToEdit.id,
+              stepId: step.id,
+              updates: { ordre: step.ordre, action: step.action }
+            }));
+          } else {
+            // Add new step
+            await dispatch(addRoutineStep({
+              routine_id: routineToEdit.id,
+              ordre: step.ordre,
+              action: step.action
+            }));
+          }
+        }
 
         toast.success("Routine mise à jour! ✨");
       } else {
@@ -131,6 +159,9 @@ export const AddRoutineModal: React.FC<AddRoutineModalProps> = ({
         }
         toast.success("Routine créée avec succès! ✨");
       }
+
+      // Refresh everything
+      await dispatch(fetchUserRoutines(userId));
 
       onClose();
     } catch (error) {
@@ -171,7 +202,7 @@ export const AddRoutineModal: React.FC<AddRoutineModalProps> = ({
               </div>
               <div>
                 <h2 className="text-2xl font-black text-foreground">
-                  Create a Routine
+                  {routineToEdit ? "Update Routine" : "Create a Routine"}
                 </h2>
                 <p className="text-sm text-muted-foreground font-medium">
                   Personalize your skincare routine
@@ -300,7 +331,9 @@ export const AddRoutineModal: React.FC<AddRoutineModalProps> = ({
                 disabled={loading}
                 className="flex-1 py-4 bg-primary text-primary-foreground rounded-3xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Creating..." : "Create Routine"}
+                {loading
+                  ? (routineToEdit ? "Updating..." : "Creating...")
+                  : (routineToEdit ? "Update Routine" : "Create Routine")}
               </button>
             </div>
           </form>
