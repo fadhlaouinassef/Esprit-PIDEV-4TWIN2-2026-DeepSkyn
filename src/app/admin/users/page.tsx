@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AdminLayout } from "@/app/ui/AdminLayout";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { MonthlyRegistrationsChart } from "@/app/components/admin/MonthlyRegistrationsChart";
 import {
   PieChart,
   Pie,
@@ -16,8 +17,6 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  Area,
-  AreaChart,
 } from "recharts";
 import {
   Pencil,
@@ -451,9 +450,7 @@ export default function UsersPage() {
   const router = useRouter();
 
   const pieChartRef = useRef<HTMLDivElement>(null);
-  const barChartRef = useRef<HTMLDivElement>(null);
   const accountStatusChartRef = useRef<HTMLDivElement>(null);
-  const genderChartRef = useRef<HTMLDivElement>(null);
   const ageChartRef = useRef<HTMLDivElement>(null);
   const monthlyChartRef = useRef<HTMLDivElement>(null);
 
@@ -626,21 +623,10 @@ export default function UsersPage() {
     }, {} as Record<string, number>)
   ).map(([name, value]) => ({ name, value }));
 
-  const statusData = [
-    { name: "Verified", value: users.filter((u) => u.verified).length },
-    { name: "Unverified", value: users.filter((u) => !u.verified).length },
-  ];
-
   const accountStatusData = [
     { name: "Active", value: users.filter((u) => u.activated).length },
     { name: "Inactive", value: users.filter((u) => !u.activated).length },
   ];
-
-  const genderData = [
-    { name: "Male", value: users.filter((u) => u.sexe === "MALE").length },
-    { name: "Female", value: users.filter((u) => u.sexe === "FEMALE").length },
-    { name: "N/A", value: users.filter((u) => !u.sexe).length },
-  ].filter((d) => d.value > 0);
 
   const ageGroupData = [
     { range: "<18", count: users.filter((u) => u.age !== null && u.age !== undefined && u.age < 18).length },
@@ -735,14 +721,37 @@ export default function UsersPage() {
           ))}
         </div>
 
-        {/* ── Charts ── */}
+        {/* ── Ligne 1 : Monthly Registrations (2/3) + Users by Role (1/3) ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Donut Rôles */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+
+          {/* Monthly Registrations – 2/3 */}
+          <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">
-                Users by Role
-              </h3>
+              <div>
+                <h3 className="font-bold text-gray-900 dark:text-white">Monthly Registrations</h3>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                  Updated {new Date().toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" })}
+                </p>
+              </div>
+              <button
+                onClick={() => downloadChart(monthlyChartRef, "monthly_chart")}
+                title="Download chart as PNG"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
+              >
+                <ImageDown className="w-4 h-4" />
+              </button>
+            </div>
+            <div ref={monthlyChartRef}>
+              <MonthlyRegistrationsChart
+                data={monthlyData.map((d) => ({ x: d.month, y: d.count }))}
+              />
+            </div>
+          </div>
+
+          {/* Users by Role – 1/3 */}
+          <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 dark:text-white">Users by Role</h3>
               <button
                 onClick={() => downloadChart(pieChartRef, "roles_chart")}
                 title="Download chart as PNG"
@@ -752,7 +761,7 @@ export default function UsersPage() {
               </button>
             </div>
             <div ref={pieChartRef} className="bg-white">
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={310}>
                 <PieChart>
                   <Pie
                     data={roleData}
@@ -780,116 +789,13 @@ export default function UsersPage() {
             </div>
           </div>
 
-          {/* Barre Status */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">
-                Verification Status
-              </h3>
-              <button
-                onClick={() => downloadChart(barChartRef, "status_chart")}
-                title="Download chart as PNG"
-                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
-              >
-                <ImageDown className="w-4 h-4" />
-              </button>
-            </div>
-            <div ref={barChartRef} className="bg-white">
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={statusData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                    {statusData.map((entry, index) => (
-                      <Cell
-                        key={entry.name}
-                        fill={index === 0 ? "#10b981" : "#f59e0b"}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Donut Account Status */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Account Status</h3>
-              <button
-                onClick={() => downloadChart(accountStatusChartRef, "account_status_chart")}
-                title="Download chart as PNG"
-                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
-              >
-                <ImageDown className="w-4 h-4" />
-              </button>
-            </div>
-            <div ref={accountStatusChartRef} className="bg-white">
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={accountStatusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    <Cell fill="#10b981" />
-                    <Cell fill="#ef4444" />
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
         </div>
 
-        {/* ── Row 2 Charts ── */}
+        {/* ── Ligne 2 : Age Groups (1/3) + Account Status (2/3) ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-          {/* Gender Distribution */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Gender Distribution</h3>
-              <button
-                onClick={() => downloadChart(genderChartRef, "gender_chart")}
-                title="Download chart as PNG"
-                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
-              >
-                <ImageDown className="w-4 h-4" />
-              </button>
-            </div>
-            <div ref={genderChartRef} className="bg-white">
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={genderData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    paddingAngle={3}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {genderData.map((entry, index) => (
-                      <Cell key={entry.name} fill={["#156d95", "#f472b6", "#94a3b8"][index % 3]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Age Groups */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          {/* Age Groups – 1/3 */}
+          <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-gray-900 dark:text-white">Age Groups</h3>
               <button
@@ -901,7 +807,7 @@ export default function UsersPage() {
               </button>
             </div>
             <div ref={ageChartRef} className="bg-white">
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={ageGroupData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="range" tick={{ fontSize: 11 }} />
@@ -917,40 +823,36 @@ export default function UsersPage() {
             </div>
           </div>
 
-          {/* Monthly Registrations */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          {/* Account Status – 2/3 */}
+          <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Monthly Registrations</h3>
+              <h3 className="font-bold text-gray-900 dark:text-white">Account Status</h3>
               <button
-                onClick={() => downloadChart(monthlyChartRef, "monthly_chart")}
+                onClick={() => downloadChart(accountStatusChartRef, "account_status_chart")}
                 title="Download chart as PNG"
                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
               >
                 <ImageDown className="w-4 h-4" />
               </button>
             </div>
-            <div ref={monthlyChartRef} className="bg-white">
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={monthlyData}>
-                  <defs>
-                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#156d95" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#156d95" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-                  <YAxis allowDecimals={false} />
+            <div ref={accountStatusChartRef} className="bg-white">
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={accountStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    <Cell fill="#10b981" />
+                    <Cell fill="#ef4444" />
+                  </Pie>
                   <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="count"
-                    stroke="#156d95"
-                    strokeWidth={2}
-                    fill="url(#colorCount)"
-                    dot={{ fill: "#156d95", r: 4 }}
-                  />
-                </AreaChart>
+                  <Legend />
+                </PieChart>
               </ResponsiveContainer>
             </div>
           </div>

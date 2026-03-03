@@ -71,7 +71,10 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* 2/3 width - Payments Overview */}
                     <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-                        <h2 className="text-xl font-bold mb-4">Payments Overview</h2>
+                        <h2 className="text-xl font-bold mb-1">Payments Overview</h2>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
+                            Updated {new Date().toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" })}
+                        </p>
                         <PaymentsOverviewChart data={paymentsData} />
                     </div>
 
