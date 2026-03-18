@@ -4,8 +4,26 @@ import { saveUserAnswer } from '@/services/quiz.service';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const payload = body?.body && typeof body.body === 'object' ? body.body : body;
+    const rawBody = await request.text();
+    if (!rawBody) {
+      return NextResponse.json(
+        {
+          skipped: true,
+          reason: 'Empty request body.',
+        },
+        { status: 200 }
+      );
+    }
+
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
+    }
+    const bodyRecord = (body && typeof body === 'object') ? (body as Record<string, unknown>) : {};
+    const nestedBody = bodyRecord.body;
+    const payload = (nestedBody && typeof nestedBody === 'object') ? (nestedBody as Record<string, unknown>) : bodyRecord;
 
     const userId = Number(payload.userId);
     const questionId = Number(payload.questionId ?? payload.lastQuestionId);
