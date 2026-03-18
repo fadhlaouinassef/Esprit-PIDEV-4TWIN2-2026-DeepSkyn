@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { LoadingLink } from "../LoadingLink"
+import LanguageSwitcher from "../LanguageSwitcher"
+
 const navigationLinks = [
   {
     name: "Products",
@@ -22,8 +24,8 @@ const navigationLinks = [
     href: "#faq",
   },
   {
-  name: "Skin Journey",
-  href: "#healthy-steps",
+    name: "Skin Journey",
+    href: "#healthy-steps",
   },
 ] as any[]
 
@@ -99,7 +101,8 @@ export const PortfolioNavbar = () => {
             </div>
           </div>
 
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center space-x-6">
+            <LanguageSwitcher />
             <LoadingLink
               href="/signin"
               className="bg-[#156d95] text-white px-[18px] rounded-full text-base font-semibold hover:bg-[#156d95]/90 transition-all duration-200 hover:rounded-2xl shadow-sm hover:shadow-md whitespace-nowrap leading-4 py-[15px] inline-block"
@@ -118,7 +121,8 @@ export const PortfolioNavbar = () => {
             </LoadingLink>
           </div>
 
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-3">
+            <LanguageSwitcher />
             <button
               onClick={toggleMobileMenu}
               className="text-foreground hover:text-primary p-2 rounded-md transition-colors duration-200"
@@ -183,5 +187,3 @@ export const PortfolioNavbar = () => {
     </nav>
   )
 }
-
-

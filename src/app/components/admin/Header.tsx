@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Notification } from "./Notification";
 import { UserInfo } from "./UserInfo";
 import { cn } from "@/lib/utils";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 export function Header() {
     const { toggleSidebar, isMobile } = useSidebarContext();
@@ -34,6 +35,7 @@ export function Header() {
 
             {/* Right side: Search, Toggle, Notifications, User */}
             <div className="flex items-center gap-3 sm:gap-6">
+                <LanguageSwitcher />
                 {/* Search Bar */}
                 <div className="relative hidden md:block w-70">
                     <input
