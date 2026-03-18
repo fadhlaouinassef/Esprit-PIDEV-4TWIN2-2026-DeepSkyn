@@ -6,7 +6,10 @@
       "name": "Quiz Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [240, 300],
+      "position": [
+        240,
+        300
+      ],
       "parameters": {
         "httpMethod": "POST",
         "path": "skincare-quiz",
@@ -19,16 +22,16 @@
       "name": "Sauvegarder Réponse (à adapter)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [460, 300],
+      "position": [
+        460,
+        300
+      ],
       "parameters": {
         "method": "POST",
-        "url": "={{ ($env.NEXT_API_BASE_URL || 'http://localhost:3000') + '/api/quiz/save-answer' }}",
+        "url": "http://localhost:3000/api/quiz/save-answer",
         "sendBody": true,
-        "jsonParameters": true,
-        "options": {
-          "bodyContentType": "json"
-        },
-        "bodyParametersJson": "={{ {\n  \"userId\": ($json.body?.userId ?? $json.userId),\n  \"questionId\": ($json.body?.lastQuestionId ?? $json.lastQuestionId),\n  \"answer\": ($json.body?.lastAnswer ?? $json.lastAnswer),\n  \"quizId\": ($json.body?.quizId ?? $json.quizId)\n} }}"
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"userId\": ($json.body?.userId ?? $json.userId),\n  \"questionId\": ($json.body?.lastQuestionId ?? $json.lastQuestionId),\n  \"answer\": ($json.body?.lastAnswer ?? $json.lastAnswer),\n  \"quizId\": ($json.body?.quizId ?? $json.quizId)\n} }}"
       }
     },
     {
@@ -36,10 +39,13 @@
       "name": "Récupérer Toutes les Questions",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [680, 300],
+      "position": [
+        680,
+        300
+      ],
       "parameters": {
         "method": "GET",
-        "url": "={{ ($env.NEXT_API_BASE_URL || 'http://localhost:3000') + '/api/quiz/questions' }}",
+        "url": "http://localhost:3000/api/quiz/questions",
         "options": {}
       }
     },
@@ -48,7 +54,10 @@
       "name": "Préparer Données Gemini",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [900, 300],
+      "position": [
+        900,
+        300
+      ],
       "parameters": {
         "values": {
           "string": [
@@ -70,13 +79,16 @@
       "name": "Gemini - Choisir Question ou Analyser Peau",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [1120, 300],
+      "position": [
+        1120,
+        300
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=AIzaSyAKUJaj7-6_2kALSVxc9PK7sFetZjg3vGI",
         "sendBody": true,
-        "jsonParameters": true,
-        "body": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": `Tu es un expert en analyse de peau et quiz skincare. Voici la liste complète des questions (JSON) : {{ $json.questionsJSON }}\n\nRéponses utilisateur jusqu'à maintenant (JSON) : {{ $json.answersJSON }}\n\nRègles :\n- Si tu as assez d'infos (minimum 6 réponses couvrant type de peau, âge, problèmes, routine actuelle, etc.), retourne UNIQUEMENT ce JSON :\n{\\\"status\\\": \\\"complete\\\", \\\"skinAnalysis\\\": \\\"Rapport complet en français : type de peau, préoccupations principales, routine skincare recommandée matin/soir, produits suggérés, conseils.\\\"}\n- Sinon, choisis la MEILLEURE question suivante pour mieux analyser la peau et retourne UNIQUEMENT ce JSON (copie EXACTE de l'objet question de la liste) :\n{\\\"status\\\": \\\"continue\\\", \\\"nextQuestion\\\": {id, text, options, type, ...}}\n\nRéponds UNIQUEMENT avec le JSON valide, rien d'autre.`\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.3\n  }\n} }}"
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"Tu es un expert en analyse de peau et quiz skincare. Questions JSON: \" + $json.questionsJSON + \"\\n\\nReponses utilisateur JSON: \" + $json.answersJSON + \"\\n\\nRetourne uniquement du JSON valide. Soit status=complete avec skinAnalysis (string), soit status=continue avec nextQuestion (object). Sans markdown, sans texte supplementaire.\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.3\n  }\n} }}"
       }
     },
     {
@@ -84,7 +96,10 @@
       "name": "Parser Réponse Gemini",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [1340, 300],
+      "position": [
+        1340,
+        300
+      ],
       "parameters": {
         "values": {
           "object": [
@@ -102,7 +117,10 @@
       "name": "IF - Quiz Complet ?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [1560, 300],
+      "position": [
+        1560,
+        300
+      ],
       "parameters": {
         "conditions": {
           "boolean": [
@@ -119,7 +137,10 @@
       "name": "Réponse Finale - Analyse",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [1780, 200],
+      "position": [
+        1780,
+        200
+      ],
       "parameters": {
         "values": {
           "string": [
@@ -141,7 +162,10 @@
       "name": "Réponse Continue - Prochaine Question",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [1780, 400],
+      "position": [
+        1780,
+        400
+      ],
       "parameters": {
         "values": {
           "string": [
@@ -163,7 +187,10 @@
       "name": "Merge Réponses",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
-      "position": [2000, 300],
+      "position": [
+        2000,
+        300
+      ],
       "parameters": {
         "mode": "append"
       }
