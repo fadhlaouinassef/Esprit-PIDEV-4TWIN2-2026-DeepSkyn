@@ -5,6 +5,7 @@ import { useSidebarContext } from "./sidebar-context";
 import { useState } from "react";
 import { UserInfo } from "./UserInfo";
 import { cn } from "@/lib/utils";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 interface HeaderProps {
     userName?: string;
@@ -34,6 +35,7 @@ export function Header({ userName, userPhoto }: HeaderProps) {
             </div>
 
             <div className="flex items-center gap-3 sm:gap-6">
+                <LanguageSwitcher />
                 <div className="relative hidden md:block w-70">
                     <input
                         type="search"
