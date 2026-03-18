@@ -23,9 +23,12 @@
       "parameters": {
         "method": "POST",
         "url": "={{ ($env.NEXT_API_BASE_URL || 'http://localhost:3000') + '/api/quiz/save-answer' }}",
+        "sendBody": true,
         "jsonParameters": true,
-        "options": {},
-        "body": "={{ {\n  \"userId\": $json.body.userId,\n  \"questionId\": $json.body.lastQuestionId,\n  \"answer\": $json.body.lastAnswer\n} }}"
+        "options": {
+          "bodyContentType": "json"
+        },
+        "bodyParametersJson": "={{ {\n  \"userId\": ($json.body?.userId ?? $json.userId),\n  \"questionId\": ($json.body?.lastQuestionId ?? $json.lastQuestionId),\n  \"answer\": ($json.body?.lastAnswer ?? $json.lastAnswer),\n  \"quizId\": ($json.body?.quizId ?? $json.quizId)\n} }}"
       }
     },
     {
