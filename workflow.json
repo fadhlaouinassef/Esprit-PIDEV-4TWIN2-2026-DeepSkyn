@@ -1,0 +1,317 @@
+{
+  "name": "Skincare Quiz - AI Dynamic + Gemini Analysis",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Quiz Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "skincare-quiz",
+        "responseMode": "lastNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "2",
+      "name": "Sauvegarder Réponse (à adapter)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        460,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/quiz/save-answer",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"userId\": ($json.body?.userId ?? $json.userId),\n  \"questionId\": ($json.body?.lastQuestionId ?? $json.lastQuestionId),\n  \"answer\": ($json.body?.lastAnswer ?? $json.lastAnswer),\n  \"quizId\": ($json.body?.quizId ?? $json.quizId)\n} }}"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Récupérer Toutes les Questions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        680,
+        300
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/quiz/questions",
+        "options": {}
+      }
+    },
+    {
+      "id": "4",
+      "name": "Préparer Données Gemini",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "questionsJSON",
+              "value": "={{ JSON.stringify($node[\"Récupérer Toutes les Questions\"].json) }}"
+            },
+            {
+              "name": "answersJSON",
+              "value": "={{ JSON.stringify($json.body.answersSoFar || []) }}"
+            }
+          ]
+        },
+        "keepOnlySet": true
+      }
+    },
+    {
+      "id": "5",
+      "name": "Gemini - Choisir Question ou Analyser Peau",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1120,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=AIzaSyAKUJaj7-6_2kALSVxc9PK7sFetZjg3vGI",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"Tu es un expert en analyse de peau et quiz skincare. Questions JSON: \" + $json.questionsJSON + \"\\n\\nReponses utilisateur JSON: \" + $json.answersJSON + \"\\n\\nRetourne uniquement du JSON valide. Soit status=complete avec skinAnalysis (string), soit status=continue avec nextQuestion (object). Sans markdown, sans texte supplementaire.\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.3\n  }\n} }}"
+      }
+    },
+    {
+      "id": "6",
+      "name": "Parser Réponse Gemini",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        1340,
+        300
+      ],
+      "parameters": {
+        "values": {
+          "object": [
+            {
+              "name": "geminiResponse",
+              "value": "={{ JSON.parse($node[\"Gemini - Choisir Question ou Analyser Peau\"].json.candidates[0].content.parts[0].text) }}"
+            }
+          ]
+        },
+        "keepOnlySet": true
+      }
+    },
+    {
+      "id": "7",
+      "name": "IF - Quiz Complet ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.geminiResponse.status }}",
+              "value2": "complete"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "8",
+      "name": "Réponse Finale - Analyse",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        1780,
+        200
+      ],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "complete"
+            },
+            {
+              "name": "analysis",
+              "value": "={{ $json.geminiResponse.skinAnalysis }}"
+            }
+          ]
+        },
+        "keepOnlySet": true
+      }
+    },
+    {
+      "id": "9",
+      "name": "Réponse Continue - Prochaine Question",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        1780,
+        400
+      ],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "continue"
+            },
+            {
+              "name": "nextQuestion",
+              "value": "={{ $json.geminiResponse.nextQuestion }}"
+            }
+          ]
+        },
+        "keepOnlySet": true
+      }
+    },
+    {
+      "id": "10",
+      "name": "Merge Réponses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        300
+      ],
+      "parameters": {
+        "mode": "append"
+      }
+    }
+  ],
+  "connections": {
+    "Quiz Webhook": {
+      "main": [
+        [
+          {
+            "node": "Sauvegarder Réponse (à adapter)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sauvegarder Réponse (à adapter)": {
+      "main": [
+        [
+          {
+            "node": "Récupérer Toutes les Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Récupérer Toutes les Questions": {
+      "main": [
+        [
+          {
+            "node": "Préparer Données Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer Données Gemini": {
+      "main": [
+        [
+          {
+            "node": "Gemini - Choisir Question ou Analyser Peau",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Choisir Question ou Analyser Peau": {
+      "main": [
+        [
+          {
+            "node": "Parser Réponse Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Réponse Gemini": {
+      "main": [
+        [
+          {
+            "node": "IF - Quiz Complet ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Quiz Complet ?": {
+      "main": [
+        [
+          {
+            "node": "Réponse Finale - Analyse",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Réponse Continue - Prochaine Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Réponse Finale - Analyse": {
+      "main": [
+        [
+          {
+            "node": "Merge Réponses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Réponse Continue - Prochaine Question": {
+      "main": [
+        [
+          {
+            "node": "Merge Réponses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "id": "skincare-quiz-workflow",
+  "meta": {
+    "instanceId": "1"
+  },
+  "tags": []
+}
