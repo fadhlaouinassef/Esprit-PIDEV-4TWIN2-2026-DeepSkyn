@@ -108,8 +108,8 @@ export function PersonalInfoForm() {
                         type="text"
                         name="fullName"
                         label="Full Name"
-                        placeholder="Nassef"
-                        defaultValue="Nassef"
+                        placeholder="Souhir"
+                        defaultValue="Souhir"
                         icon={<User size={20} />}
                     />
 
@@ -117,8 +117,8 @@ export function PersonalInfoForm() {
                         type="email"
                         name="email"
                         label="Email Address"
-                        placeholder="nassef@example.com"
-                        defaultValue="nassef@example.com"
+                        placeholder="souhir@example.com"
+                        defaultValue="souhir@example.com"
                         icon={<Mail size={20} />}
                     />
                 </div>
@@ -159,8 +159,8 @@ export function PersonalInfoForm() {
                         type="text"
                         name="username"
                         label="Username"
-                        placeholder="nassef_dev"
-                        defaultValue="nassef_dev"
+                        placeholder="souhir_dev"
+                        defaultValue="souhir_dev"
                         icon={<User size={20} />}
                     />
                     <div />
