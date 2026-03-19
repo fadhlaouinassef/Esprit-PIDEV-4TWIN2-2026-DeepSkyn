@@ -1,5 +1,5 @@
 {
-  "name": "Skincare Quiz - AI Dynamic + Gemini Analysis",
+  "name": "Skincare Quiz - Robust Looping Flow",
   "nodes": [
     {
       "id": "1",
@@ -7,7 +7,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        240,
+        200,
         300
       ],
       "parameters": {
@@ -19,11 +19,11 @@
     },
     {
       "id": "2",
-      "name": "Sauvegarder Réponse (à adapter)",
+      "name": "Sauvegarder Réponse",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        460,
+        400,
         300
       ],
       "parameters": {
@@ -40,7 +40,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        680,
+        600,
         300
       ],
       "parameters": {
@@ -51,81 +51,31 @@
     },
     {
       "id": "4",
-      "name": "Préparer Données Gemini",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3,
+      "name": "Déterminer Prochaine Étape",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        900,
+        800,
         300
       ],
       "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "questionsJSON",
-              "value": "={{ JSON.stringify($node[\"Récupérer Toutes les Questions\"].json) }}"
-            },
-            {
-              "name": "answersJSON",
-              "value": "={{ JSON.stringify($json.body.answersSoFar || []) }}"
-            }
-          ]
-        },
-        "keepOnlySet": true
+        "jsCode": "const questionsData = $node[\"Récupérer Toutes les Questions\"].json;\nlet allQuestions = Array.isArray(questionsData) ? questionsData : (questionsData.questions || []);\n\n// Limit the pool to exactly 10 questions maximum\nconst quizQuestions = allQuestions.slice(0, 10);\n\nconst webhookBody = $node[\"Quiz Webhook\"].json.body || {};\nconst answersSoFar = webhookBody.answersSoFar || [];\n\nconst answeredIds = answersSoFar.map(a => Number(a.questionId));\nconst nextQuestion = quizQuestions.find(q => !answeredIds.includes(Number(q.id)));\n\nif (nextQuestion && answersSoFar.length < 10) {\n  return { status: \"continue\", nextQuestion };\n} else {\n  return { status: \"complete\", answersJSON: JSON.stringify(answersSoFar), questionsJSON: JSON.stringify(quizQuestions) };\n}"
       }
     },
     {
       "id": "5",
-      "name": "Gemini - Choisir Question ou Analyser Peau",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [
-        1120,
-        300
-      ],
-      "parameters": {
-        "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=AIzaSyAKUJaj7-6_2kALSVxc9PK7sFetZjg3vGI",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"Tu es un expert en analyse de peau et quiz skincare. Questions JSON: \" + $json.questionsJSON + \"\\n\\nReponses utilisateur JSON: \" + $json.answersJSON + \"\\n\\nRetourne uniquement du JSON valide. Soit status=complete avec skinAnalysis (string), soit status=continue avec nextQuestion (object). Sans markdown, sans texte supplementaire.\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.3\n  }\n} }}"
-      }
-    },
-    {
-      "id": "6",
-      "name": "Parser Réponse Gemini",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3,
-      "position": [
-        1340,
-        300
-      ],
-      "parameters": {
-        "values": {
-          "object": [
-            {
-              "name": "geminiResponse",
-              "value": "={{ JSON.parse($node[\"Gemini - Choisir Question ou Analyser Peau\"].json.candidates[0].content.parts[0].text) }}"
-            }
-          ]
-        },
-        "keepOnlySet": true
-      }
-    },
-    {
-      "id": "7",
       "name": "IF - Quiz Complet ?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        1560,
+        1000,
         300
       ],
       "parameters": {
         "conditions": {
           "boolean": [
             {
-              "value1": "={{ $json.geminiResponse.status }}",
+              "value1": "={{ $json.status }}",
               "value2": "complete"
             }
           ]
@@ -133,37 +83,42 @@
       }
     },
     {
-      "id": "8",
-      "name": "Réponse Finale - Analyse",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3,
+      "id": "6",
+      "name": "Gemini - Analyse Finale",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
       "position": [
-        1780,
+        1250,
         200
       ],
       "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "status",
-              "value": "complete"
-            },
-            {
-              "name": "analysis",
-              "value": "={{ $json.geminiResponse.skinAnalysis }}"
-            }
-          ]
-        },
-        "keepOnlySet": true
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyAKUJaj7-6_2kALSVxc9PK7sFetZjg3vGI",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"Tu es un expert en peau. Questions: \" + $json.questionsJSON + \"\\n\\nRéponses: \" + $json.answersJSON + \"\\n\\nAnalyse l'état de la peau et propose une routine. Retourne un JSON avec skinAnalysis (string) et score (number)/100. Sans markdown.\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.3\n  }\n} }}"
       }
     },
     {
-      "id": "9",
-      "name": "Réponse Continue - Prochaine Question",
+      "id": "7",
+      "name": "Parser Analyse Gemini",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        200
+      ],
+      "parameters": {
+        "jsCode": "const text = $node[\"Gemini - Analyse Finale\"].json.candidates[0].content.parts[0].text;\ntry {\n  const jsonMatch = text.match(/\\{.*\\}/s);\n  const cleanText = jsonMatch ? jsonMatch[0] : text;\n  const parsed = JSON.parse(cleanText);\n  return { status: \"complete\", analysis: parsed.skinAnalysis, score: parsed.score };\n} catch (e) {\n  return { status: \"complete\", analysis: text, score: 75 };\n}"
+      }
+    },
+    {
+      "id": "8",
+      "name": "Réponse Continue",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        1780,
+        1250,
         400
       ],
       "parameters": {
@@ -172,10 +127,12 @@
             {
               "name": "status",
               "value": "continue"
-            },
+            }
+          ],
+          "object": [
             {
               "name": "nextQuestion",
-              "value": "={{ $json.geminiResponse.nextQuestion }}"
+              "value": "={{ $json.nextQuestion }}"
             }
           ]
         },
@@ -183,12 +140,12 @@
       }
     },
     {
-      "id": "10",
+      "id": "9",
       "name": "Merge Réponses",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
       "position": [
-        2000,
+        1700,
         300
       ],
       "parameters": {
@@ -201,14 +158,14 @@
       "main": [
         [
           {
-            "node": "Sauvegarder Réponse (à adapter)",
+            "node": "Sauvegarder Réponse",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Sauvegarder Réponse (à adapter)": {
+    "Sauvegarder Réponse": {
       "main": [
         [
           {
@@ -223,36 +180,14 @@
       "main": [
         [
           {
-            "node": "Préparer Données Gemini",
+            "node": "Déterminer Prochaine Étape",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Préparer Données Gemini": {
-      "main": [
-        [
-          {
-            "node": "Gemini - Choisir Question ou Analyser Peau",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemini - Choisir Question ou Analyser Peau": {
-      "main": [
-        [
-          {
-            "node": "Parser Réponse Gemini",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parser Réponse Gemini": {
+    "Déterminer Prochaine Étape": {
       "main": [
         [
           {
@@ -267,21 +202,32 @@
       "main": [
         [
           {
-            "node": "Réponse Finale - Analyse",
+            "node": "Gemini - Analyse Finale",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Réponse Continue - Prochaine Question",
+            "node": "Réponse Continue",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Réponse Finale - Analyse": {
+    "Gemini - Analyse Finale": {
+      "main": [
+        [
+          {
+            "node": "Parser Analyse Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Analyse Gemini": {
       "main": [
         [
           {
@@ -292,7 +238,7 @@
         ]
       ]
     },
-    "Réponse Continue - Prochaine Question": {
+    "Réponse Continue": {
       "main": [
         [
           {
@@ -308,7 +254,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1",
+  "versionId": "robust-loop-v1",
   "id": "skincare-quiz-workflow",
   "meta": {
     "instanceId": "1"
