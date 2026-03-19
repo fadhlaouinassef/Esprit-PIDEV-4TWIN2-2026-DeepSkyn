@@ -1,8 +1,16 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  turbopack: {
+    root: process.cwd(),
+    resolveAlias: {
+      tailwindcss: path.resolve(process.cwd(), 'node_modules/tailwindcss'),
+      'tw-animate-css': path.resolve(process.cwd(), 'node_modules/tw-animate-css'),
+    },
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
