@@ -1,4 +1,4 @@
-<h1 align="center">DeepSkyN</h1>
+<h1 align="center">DeepSkyn</h1>
 
 <p align="center">
 	Plateforme skincare intelligente pour l'analyse de peau, les questionnaires utilisateurs et l'automatisation de workflows.
