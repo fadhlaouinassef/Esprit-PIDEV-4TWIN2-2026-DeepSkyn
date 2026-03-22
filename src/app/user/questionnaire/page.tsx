@@ -11,7 +11,7 @@ interface Question {
     id: number;
     text: string;
     type: "choice" | "text" | string;
-    options?: string[];
+    options?: Array<{ id: string; text: string }>;
     quizId?: number;
 }
 
@@ -22,6 +22,40 @@ interface AnalysisResult {
 
 // N8N Webhook Proxy URL
 const N8N_WEBHOOK_URL = "/api/quiz/n8n";
+
+const normalizeQuestionType = (rawType: unknown): "choice" | "text" => {
+    const normalized = String(rawType || "").toLowerCase();
+    return ["choice", "multiple_choice", "mcq"].includes(normalized) ? "choice" : "text";
+};
+
+const normalizeOptions = (rawOptions: unknown): Array<{ id: string; text: string }> => {
+    const list = Array.isArray(rawOptions)
+        ? rawOptions
+        : rawOptions && typeof rawOptions === "object"
+            ? Object.values(rawOptions as Record<string, unknown>)
+            : [];
+
+    return list
+        .map((opt, index) => {
+            if (typeof opt === "string") {
+                return { id: `opt-${index}-${opt}`, text: opt };
+            }
+
+            if (opt && typeof opt === "object") {
+                const optionObj = opt as { id?: string; text?: string; label?: string };
+                const text = optionObj.text || optionObj.label || "";
+                if (!text.trim()) return null;
+
+                return {
+                    id: optionObj.id || `opt-${index}-${text}`,
+                    text,
+                };
+            }
+
+            return null;
+        })
+        .filter((opt): opt is { id: string; text: string } => Boolean(opt));
+};
 
 export default function QuestionnairePage() {
     const { data: session, status: sessionStatus } = useSession();
@@ -35,6 +69,7 @@ export default function QuestionnairePage() {
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
     const [answersSoFar, setAnswersSoFar] = useState<{ questionId: number; answer: string }[]>([]);
     const [quizId, setQuizId] = useState<number>(1);
+    const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -62,6 +97,7 @@ export default function QuestionnairePage() {
             const payload = {
                 userId: userId || 0,
                 quizId,
+                sessionId: questionnaireSessionIdRef.current,
                 answersSoFar: currentAnswers,
                 lastQuestionId: lastAnswerData?.questionId,
                 lastAnswer: lastAnswerData?.answer
@@ -95,8 +131,8 @@ export default function QuestionnairePage() {
                 setCurrentQuestion({
                     id: nextQ.id,
                     text: nextQ.text,
-                    type: String(nextQ.type).toUpperCase() === "CHOICE" ? "choice" : "text",
-                    options: nextQ.options,
+                    type: normalizeQuestionType(nextQ.type),
+                    options: normalizeOptions(nextQ.options),
                     quizId: nextQ.quizId
                 });
                 if (nextQ.quizId) setQuizId(nextQ.quizId);
@@ -125,7 +161,7 @@ export default function QuestionnairePage() {
         }
     };
 
-    const handleUserResponse = (content: string, imageData?: string) => {
+    const handleUserResponse = async (content: string, imageData?: string) => {
         console.log("📝 handleUserResponse triggered with:", content);
         
         if (isStreaming) {
@@ -149,6 +185,8 @@ export default function QuestionnairePage() {
         
         console.log("✅ State updated with new answer. Calling fetchNextStep...");
         setAnswersSoFar(updatedAnswers);
+        setIsStreaming(true);
+
         fetchNextStep(updatedAnswers, newAnswer);
     };
 
@@ -306,12 +344,12 @@ export default function QuestionnairePage() {
                                 >
                                     {currentQuestion.options?.map((opt) => (
                                         <button
-                                            key={opt}
-                                            onClick={() => handleUserResponse(opt)}
+                                            key={opt.id}
+                                            onClick={() => handleUserResponse(opt.text)}
                                             className="px-8 py-4 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white font-bold hover:border-primary hover:text-primary hover:shadow-2xl transition-all shadow-xl active:scale-95 flex items-center gap-3 group"
                                         >
                                             <div className="size-2.5 bg-gray-200 dark:bg-gray-700 rounded-full group-hover:bg-primary transition-colors"></div>
-                                            {opt}
+                                            {opt.text}
                                         </button>
                                     ))}
                                 </motion.div>
