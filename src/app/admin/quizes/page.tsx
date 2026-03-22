@@ -14,7 +14,6 @@ import {
     FileText,
     PlusCircle,
     X,
-    Check,
     GripVertical,
     ArrowLeft,
     SlidersHorizontal,
@@ -38,7 +37,6 @@ import { toast } from "sonner";
 interface Option {
     id: string;
     text: string;
-    isCorrect: boolean;
 }
 
 interface Question {
@@ -102,7 +100,10 @@ export default function QuizzesPage() {
                     id: ques.id.toString(),
                     text: ques.question,
                     type: ques.type_reponse === 'multiple_choice' ? 'choice' : 'input',
-                    options: ques.reponse_options ? JSON.parse(ques.reponse_options) : [],
+                    options: (ques.reponse_options ? JSON.parse(ques.reponse_options) : []).map((opt: any, idx: number) => ({
+                        id: typeof opt === 'string' ? `o-${idx}-${opt}` : (opt?.id || `o-${idx}`),
+                        text: typeof opt === 'string' ? opt : (opt?.text || "")
+                    })),
                     correctAnswer: ""
                 })) || []
             }));
@@ -231,7 +232,7 @@ export default function QuizzesPage() {
             text: "",
             type: "choice",
             options: [
-                { id: `o${Date.now()}-1`, text: "Option 1", isCorrect: false }
+                { id: `o${Date.now()}-1`, text: "Option 1" }
             ]
         };
         setQuestions([...questions, newQuestion]);
@@ -253,7 +254,7 @@ export default function QuizzesPage() {
             if (q.id === questionId) {
                 return {
                     ...q,
-                    options: [...q.options, { id: `o${Date.now()}`, text: "", isCorrect: false }]
+                    options: [...q.options, { id: `o${Date.now()}`, text: "" }]
                 };
             }
             return q;
@@ -278,18 +279,6 @@ export default function QuizzesPage() {
                 return {
                     ...q,
                     options: q.options.map(o => o.id === optionId ? { ...o, text } : o)
-                };
-            }
-            return q;
-        }));
-    };
-
-    const toggleCorrectOption = (questionId: string, optionId: string) => {
-        setQuestions(questions.map(q => {
-            if (q.id === questionId) {
-                return {
-                    ...q,
-                    options: q.options.map(o => o.id === optionId ? { ...o, isCorrect: !o.isCorrect } : o)
                 };
             }
             return q;
@@ -475,8 +464,7 @@ export default function QuizzesPage() {
                                                                             {q.type === 'choice' ? (
                                                                                 <div className="grid grid-cols-1 gap-2">
                                                                                     {q.options.map(opt => (
-                                                                                        <div key={opt.id} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs border ${opt.isCorrect ? 'bg-green-50 border-green-100 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400' : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500'}`}>
-                                                                                            <div className={`size-2 rounded-full ${opt.isCorrect ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                                                                        <div key={opt.id} className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs border bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-500">
                                                                                             {opt.text}
                                                                                         </div>
                                                                                     ))}
@@ -684,15 +672,6 @@ export default function QuizzesPage() {
                                                             <div className="space-y-3 pl-2">
                                                                 {q.options.map((opt, optIndex) => (
                                                                     <div key={opt.id} className="flex items-center gap-3 group">
-                                                                        <button
-                                                                            onClick={() => toggleCorrectOption(q.id, opt.id)}
-                                                                            className={`size-6 rounded-full flex items-center justify-center transition-all ${opt.isCorrect
-                                                                                ? 'bg-green-500 text-white'
-                                                                                : 'border-2 border-gray-200 dark:border-gray-600'
-                                                                                }`}
-                                                                        >
-                                                                            {opt.isCorrect && <Check className="size-4" />}
-                                                                        </button>
                                                                         <input
                                                                             type="text"
                                                                             value={opt.text}
@@ -710,7 +689,7 @@ export default function QuizzesPage() {
                                                                 ))}
                                                                 <button
                                                                     onClick={() => handleAddOption(q.id)}
-                                                                    className="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 ml-9 mt-2 transition-all"
+                                                                    className="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 mt-2 transition-all"
                                                                 >
                                                                     <Plus className="size-4" />
                                                                     Add Choice
