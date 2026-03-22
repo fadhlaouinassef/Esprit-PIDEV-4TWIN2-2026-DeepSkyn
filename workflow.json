@@ -1,15 +1,12 @@
 {
-  "name": "Skincare Quiz - Robust Looping Flow",
+  "name": "Skincare Quiz - Adaptive Looping Flow",
   "nodes": [
     {
       "id": "1",
       "name": "Quiz Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [
-        200,
-        300
-      ],
+      "position": [200, 300],
       "parameters": {
         "httpMethod": "POST",
         "path": "skincare-quiz",
@@ -19,30 +16,24 @@
     },
     {
       "id": "2",
-      "name": "Sauvegarder Réponse",
+      "name": "Sauvegarder Reponse",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [
-        400,
-        300
-      ],
+      "position": [400, 300],
       "parameters": {
         "method": "POST",
         "url": "http://localhost:3000/api/quiz/save-answer",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ {\n  \"userId\": ($json.body?.userId ?? $json.userId),\n  \"questionId\": ($json.body?.lastQuestionId ?? $json.lastQuestionId),\n  \"answer\": ($json.body?.lastAnswer ?? $json.lastAnswer),\n  \"quizId\": ($json.body?.quizId ?? $json.quizId)\n} }}"
+        "jsonBody": "={{ {\n  \"userId\": ($json.body?.userId ?? $json.userId),\n  \"questionId\": ($json.body?.lastQuestionId ?? $json.lastQuestionId),\n  \"answer\": ($json.body?.lastAnswer ?? $json.lastAnswer)\n} }}"
       }
     },
     {
       "id": "3",
-      "name": "Récupérer Toutes les Questions",
+      "name": "Recuperer Toutes les Questions",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [
-        600,
-        300
-      ],
+      "position": [600, 300],
       "parameters": {
         "method": "GET",
         "url": "http://localhost:3000/api/quiz/questions",
@@ -51,31 +42,26 @@
     },
     {
       "id": "4",
-      "name": "Déterminer Prochaine Étape",
+      "name": "Determiner Prochaine Etape",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        800,
-        300
-      ],
+      "position": [820, 300],
       "parameters": {
-        "jsCode": "const questionsData = $node[\"Récupérer Toutes les Questions\"].json;\nlet allQuestions = Array.isArray(questionsData) ? questionsData : (questionsData.questions || []);\n\n// Limit the pool to exactly 10 questions maximum\nconst quizQuestions = allQuestions.slice(0, 10);\n\nconst webhookBody = $node[\"Quiz Webhook\"].json.body || {};\nconst answersSoFar = webhookBody.answersSoFar || [];\n\nconst answeredIds = answersSoFar.map(a => Number(a.questionId));\nconst nextQuestion = quizQuestions.find(q => !answeredIds.includes(Number(q.id)));\n\nif (nextQuestion && answersSoFar.length < 10) {\n  return { status: \"continue\", nextQuestion };\n} else {\n  return { status: \"complete\", answersJSON: JSON.stringify(answersSoFar), questionsJSON: JSON.stringify(quizQuestions) };\n}"
+        "jsCode": "const questionsData = $node[\"Recuperer Toutes les Questions\"].json;\nconst allQuestions = Array.isArray(questionsData) ? questionsData : (questionsData.questions || []);\n\nconst webhookRaw = $node[\"Quiz Webhook\"].json || {};\nconst body = webhookRaw.body && typeof webhookRaw.body === 'object' ? webhookRaw.body : webhookRaw;\nconst answersSoFar = Array.isArray(body.answersSoFar) ? body.answersSoFar : [];\nconst sessionId = String(body.sessionId || `session-${body.userId || 0}`);\n\nconst hashString = (str) => {\n  let h = 2166136261;\n  for (let i = 0; i < str.length; i++) {\n    h ^= str.charCodeAt(i);\n    h = Math.imul(h, 16777619);\n  }\n  return h >>> 0;\n};\n\nconst mulberry32 = (a) => () => {\n  let t = (a += 0x6D2B79F5);\n  t = Math.imul(t ^ (t >>> 15), t | 1);\n  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);\n  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;\n};\n\nconst shuffle = (arr, rng) => {\n  const out = [...arr];\n  for (let i = out.length - 1; i > 0; i--) {\n    const j = Math.floor(rng() * (i + 1));\n    [out[i], out[j]] = [out[j], out[i]];\n  }\n  return out;\n};\n\nconst rng = mulberry32(hashString(sessionId));\n\nconst byQuiz = allQuestions.reduce((acc, q) => {\n  const quizId = String(q.quizId ?? q.quiz_id ?? 'unknown');\n  if (!acc[quizId]) acc[quizId] = [];\n  acc[quizId].push(q);\n  return acc;\n}, {});\n\nObject.keys(byQuiz).forEach((key) => {\n  const sorted = [...byQuiz[key]].sort((a, b) => Number(a.id) - Number(b.id));\n  byQuiz[key] = shuffle(sorted, rng);\n});\n\nconst quizIds = shuffle(Object.keys(byQuiz).sort((a, b) => Number(a) - Number(b)), rng);\nconst mixedQuestions = [];\nlet keepGoing = true;\nlet offset = 0;\n\nwhile (keepGoing) {\n  keepGoing = false;\n  for (const qid of quizIds) {\n    const list = byQuiz[qid];\n    if (offset < list.length) {\n      mixedQuestions.push(list[offset]);\n      keepGoing = true;\n    }\n  }\n  offset += 1;\n}\n\nconst quizQuestions = mixedQuestions;\nconst maxQuestions = Number(body.maxQuestions || Math.min(12, quizQuestions.length || 10));\n\nif (quizQuestions.length === 0) {\n  return { status: \"complete\", analysis: \"Aucune question trouvee dans la base de donnees.\", score: 0, answersJSON: JSON.stringify(answersSoFar), questionsJSON: JSON.stringify([]), sessionId };\n}\n\nconst answeredIds = answersSoFar.map((a) => Number(a.questionId)).filter((id) => !Number.isNaN(id));\nconst remainingQuestions = quizQuestions.filter((q) => !answeredIds.includes(Number(q.id)));\n\nif (answersSoFar.length === 0) {\n  return {\n    status: \"continue\",\n    mode: \"opening\",\n    nextQuestion: quizQuestions[0],\n    answersJSON: JSON.stringify([]),\n    questionsJSON: JSON.stringify(quizQuestions),\n    remainingQuestionsJSON: JSON.stringify(quizQuestions.slice(1)),\n    sessionId\n  };\n}\n\nif (remainingQuestions.length === 0 || answersSoFar.length >= maxQuestions) {\n  return {\n    status: \"complete\",\n    answersJSON: JSON.stringify(answersSoFar),\n    questionsJSON: JSON.stringify(quizQuestions),\n    sessionId\n  };\n}\n\nreturn {\n  status: \"continue\",\n  mode: \"adaptive\",\n  answersJSON: JSON.stringify(answersSoFar),\n  questionsJSON: JSON.stringify(quizQuestions),\n  remainingQuestionsJSON: JSON.stringify(remainingQuestions),\n  sessionId\n};"
       }
     },
     {
       "id": "5",
-      "name": "IF - Quiz Complet ?",
+      "name": "IF - Quiz Complet",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [
-        1000,
-        300
-      ],
+      "position": [1020, 300],
       "parameters": {
         "conditions": {
-          "boolean": [
+          "string": [
             {
               "value1": "={{ $json.status }}",
+              "operation": "equal",
               "value2": "complete"
             }
           ]
@@ -83,56 +69,53 @@
       }
     },
     {
-      "id": "6",
-      "name": "Gemini - Analyse Finale",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [
-        1250,
-        200
-      ],
-      "parameters": {
-        "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=AIzaSyAKUJaj7-6_2kALSVxc9PK7sFetZjg3vGI",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ {\n  \"contents\": [{\n    \"parts\": [{\n      \"text\": \"Tu es un expert en peau. Questions: \" + $json.questionsJSON + \"\\n\\nRéponses: \" + $json.answersJSON + \"\\n\\nAnalyse l'état de la peau et propose une routine. Retourne un JSON avec skinAnalysis (string) et score (number)/100. Sans markdown.\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.3\n  }\n} }}"
-      }
-    },
-    {
-      "id": "7",
-      "name": "Parser Analyse Gemini",
+      "id": "8",
+      "name": "Decision Adaptative Locale",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1450,
-        200
-      ],
+      "position": [1240, 400],
       "parameters": {
-        "jsCode": "const text = $node[\"Gemini - Analyse Finale\"].json.candidates[0].content.parts[0].text;\ntry {\n  const jsonMatch = text.match(/\\{.*\\}/s);\n  const cleanText = jsonMatch ? jsonMatch[0] : text;\n  const parsed = JSON.parse(cleanText);\n  return { status: \"complete\", analysis: parsed.skinAnalysis, score: parsed.score };\n} catch (e) {\n  return { status: \"complete\", analysis: text, score: 75 };\n}"
+        "jsCode": "const base = $node[\"Determiner Prochaine Etape\"].json;\n\nif (base.mode === 'opening' && base.nextQuestion) {\n  return { status: 'continue', nextQuestion: base.nextQuestion };\n}\n\nconst answers = JSON.parse(base.answersJSON || '[]');\nconst remainingQuestions = JSON.parse(base.remainingQuestionsJSON || '[]');\n\nif (!remainingQuestions.length) {\n  const summary = answers.slice(-3).map((a) => `Q${a.questionId}: ${a.answer}`).join(' | ');\n  return {\n    status: 'complete',\n    analysis: `Questionnaire termine: plus de questions pertinentes. Resume final: ${summary || 'reponses enregistrees'}.`,\n    score: 82\n  };\n}\n\nconst allAnswerText = answers.map((a) => String(a.answer || '')).join(' ').toLowerCase();\nconst lastAnswer = String(answers[answers.length - 1]?.answer || '').toLowerCase();\n\nconst tokenize = (txt) => String(txt || '').toLowerCase().replace(/[^a-z0-9_\\s]/g, ' ').split(/\\s+/).filter((t) => t.length > 2);\nconst answerTokens = new Set(tokenize(`${lastAnswer} ${allAnswerText}`));\n\nconst questionScore = (q) => {\n  const optionText = Array.isArray(q.options) ? q.options.map((o) => o?.text || o).join(' ') : '';\n  const qTokens = tokenize(`${q.text || ''} ${optionText}`);\n  let overlap = 0;\n  for (const t of qTokens) {\n    if (answerTokens.has(t)) overlap += 1;\n  }\n  const typeBonus = String(q.type || '').toLowerCase().includes('multiple') ? 0.5 : 0;\n  const diversityBonus = (q.quizId || q.quiz_id) ? 0.2 : 0;\n  return overlap + typeBonus + diversityBonus;\n};\n\nconst ranked = [...remainingQuestions].sort((a, b) => questionScore(b) - questionScore(a) || Number(a.id) - Number(b.id));\n\nconst categories = [\n  /(oily|dry|combination|normal|sensitive|skin type|tight|shiny|flaky)/i,\n  /(acne|pores|redness|pigmentation|aging|dehydration|dullness|blackheads)/i,\n  /(sunscreen|sun exposure|uv|spf)/i,\n  /(sleep|stress|diet|water|climate|pollution|smoke)/i,\n  /(cleanser|exfoliate|routine|moisturizer|product|texture)/i\n];\n\nlet covered = 0;\nfor (const re of categories) {\n  if (re.test(allAnswerText)) covered += 1;\n}\n\nconst informativeAnswers = answers.filter((a) => {\n  const txt = String(a.answer || '').trim().toLowerCase();\n  return txt.length > 2 && !['idk', 'unknown', 'none', 'n/a', 'not sure'].includes(txt);\n}).length;\n\nconst informativeRatio = answers.length ? informativeAnswers / answers.length : 0;\nconst minQuestions = 3;\nconst maxQuestions = 12;\nconst shouldStop = answers.length >= minQuestions && (covered >= 4 || (answers.length >= 5 && informativeRatio >= 0.75) || answers.length >= maxQuestions);\n\nif (shouldStop) {\n  const reasons = [];\n  if (covered >= 4) reasons.push('profil peau suffisamment couvert');\n  if (informativeRatio >= 0.75) reasons.push('reponses detaillees et coherentes');\n  if (answers.length >= maxQuestions) reasons.push('nombre maximal de questions atteint');\n\n  return {\n    status: 'complete',\n    analysis: `Arret dynamique du questionnaire (${reasons.join(', ')}). Nous avons assez d'informations pour proposer une analyse personnalisee.`,\n    score: Math.min(95, 68 + covered * 5 + Math.round(informativeRatio * 10))\n  };\n}\n\nreturn { status: 'continue', nextQuestion: ranked[0] || remainingQuestions[0] };"
       }
     },
     {
-      "id": "8",
-      "name": "Réponse Continue",
+      "id": "10",
+      "name": "Parser Prochaine Question",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 400],
+      "parameters": {
+        "jsCode": "const src = $node[\"Decision Adaptative Locale\"].json || {};\nif (src.status === 'complete') {\n  return { status: 'complete', analysis: src.analysis || 'Analyse terminee.', score: Number(src.score || 80) };\n}\nif (!src.nextQuestion) {\n  return { status: 'complete', analysis: 'Questionnaire termine: aucune question suivante.', score: 80 };\n}\nreturn { status: 'continue', nextQuestion: src.nextQuestion };"
+      }
+    },
+    {
+      "id": "11",
+      "name": "Reponse Continue",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [
-        1250,
-        400
-      ],
+      "position": [1660, 400],
       "parameters": {
         "values": {
           "string": [
             {
               "name": "status",
-              "value": "continue"
+              "value": "={{ $json.status || \"continue\" }}"
+            },
+            {
+              "name": "analysis",
+              "value": "={{ $json.analysis || \"\" }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "score",
+              "value": "={{ Number($json.score || 0) }}"
             }
           ],
           "object": [
             {
               "name": "nextQuestion",
-              "value": "={{ $json.nextQuestion }}"
+              "value": "={{ $json.nextQuestion || null }}"
             }
           ]
         },
@@ -140,14 +123,31 @@
       }
     },
     {
+      "id": "6",
+      "name": "Analyse Finale Locale",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1240, 200],
+      "parameters": {
+        "jsCode": "const base = $node[\"Determiner Prochaine Etape\"].json;\nconst answers = JSON.parse(base.answersJSON || '[]');\nconst all = answers.map((a) => String(a.answer || '')).join(' ').toLowerCase();\n\nconst signals = {\n  oily: /(oily|shiny|oiliness)/i.test(all),\n  dry: /(dry|tight|flaky|dry_patches|dehydration)/i.test(all),\n  sensitive: /(sensitive|redness|irritat)/i.test(all),\n  acne: /(acne|breakouts|blackheads|pores)/i.test(all),\n  aging: /(aging|fine_lines|wrinkle)/i.test(all)\n};\n\nconst profile = [];\nif (signals.oily) profile.push('tendance grasse');\nif (signals.dry) profile.push('tendance deshydratee/seche');\nif (signals.sensitive) profile.push('sensibilite cutanee');\nif (signals.acne) profile.push('imperfections/pores');\nif (signals.aging) profile.push('preoccupations anti-age');\n\nconst summary = profile.length ? profile.join(', ') : 'profil globalement equilibre';\nconst analysis = `Analyse finale dynamique: ${summary}. Routine recommandee: nettoyant doux, hydratation adaptee, SPF quotidien, et actifs cibles selon la priorite principale.`;\nconst score = Math.min(95, 70 + profile.length * 5);\n\nreturn { status: 'complete', analysis, score };"
+      }
+    },
+    {
+      "id": "7",
+      "name": "Parser Analyse Finale",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 200],
+      "parameters": {
+        "jsCode": "const src = $node[\"Analyse Finale Locale\"].json || {};\nreturn { status: 'complete', analysis: src.analysis || 'Analyse terminee.', score: Number(src.score || 80) };"
+      }
+    },
+    {
       "id": "9",
-      "name": "Merge Réponses",
+      "name": "Merge Reponses",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
-      "position": [
-        1700,
-        300
-      ],
+      "position": [1860, 300],
       "parameters": {
         "mode": "append"
       }
@@ -158,91 +158,113 @@
       "main": [
         [
           {
-            "node": "Sauvegarder Réponse",
+            "node": "Sauvegarder Reponse",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Sauvegarder Réponse": {
+    "Sauvegarder Reponse": {
       "main": [
         [
           {
-            "node": "Récupérer Toutes les Questions",
+            "node": "Recuperer Toutes les Questions",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Récupérer Toutes les Questions": {
+    "Recuperer Toutes les Questions": {
       "main": [
         [
           {
-            "node": "Déterminer Prochaine Étape",
+            "node": "Determiner Prochaine Etape",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Déterminer Prochaine Étape": {
+    "Determiner Prochaine Etape": {
       "main": [
         [
           {
-            "node": "IF - Quiz Complet ?",
+            "node": "IF - Quiz Complet",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "IF - Quiz Complet ?": {
+    "IF - Quiz Complet": {
       "main": [
         [
           {
-            "node": "Gemini - Analyse Finale",
+            "node": "Analyse Finale Locale",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Réponse Continue",
+            "node": "Decision Adaptative Locale",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Gemini - Analyse Finale": {
+    "Decision Adaptative Locale": {
       "main": [
         [
           {
-            "node": "Parser Analyse Gemini",
+            "node": "Parser Prochaine Question",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parser Analyse Gemini": {
+    "Parser Prochaine Question": {
       "main": [
         [
           {
-            "node": "Merge Réponses",
+            "node": "Reponse Continue",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Réponse Continue": {
+    "Reponse Continue": {
       "main": [
         [
           {
-            "node": "Merge Réponses",
+            "node": "Merge Reponses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyse Finale Locale": {
+      "main": [
+        [
+          {
+            "node": "Parser Analyse Finale",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Analyse Finale": {
+      "main": [
+        [
+          {
+            "node": "Merge Reponses",
             "type": "main",
             "index": 0
           }
@@ -254,7 +276,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "robust-loop-v1",
+  "versionId": "adaptive-loop-v3",
   "id": "skincare-quiz-workflow",
   "meta": {
     "instanceId": "1"

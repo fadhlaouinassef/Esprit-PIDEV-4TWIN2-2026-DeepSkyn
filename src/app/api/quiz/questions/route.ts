@@ -23,21 +23,17 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Fallback if DB is empty to provide a complete 10-question experience
-    if (questions.length === 0) {
-      return NextResponse.json({
-        questions: [
-          { id: 101, quizId: 1, text: "What is your main skin concern?", type: "CHOICE", options: ["Acne", "Aging", "Dryness", "Sensitivity"] },
-          { id: 102, quizId: 1, text: "What is your skin type?", type: "CHOICE", options: ["Oily", "Dry", "Combination", "Normal"] },
-          { id: 103, quizId: 1, text: "Do you use sunscreen daily?", type: "CHOICE", options: ["Yes", "No", "Sometimes"] },
-          { id: 104, quizId: 1, text: "How often do you exfoliate?", type: "CHOICE", options: ["Daily", "Weekly", "Monthly", "Never"] },
-          { id: 105, quizId: 1, text: "Do you have any known allergies to skincare ingredients?", type: "TEXT", options: [] },
-          { id: 106, quizId: 1, text: "How many liters of water do you drink daily?", type: "CHOICE", options: ["Less than 1L", "1-2L", "More than 2L"] },
-          { id: 107, quizId: 1, text: "Rate your current stress level (1-10)", type: "CHOICE", options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"] },
-          { id: 108, quizId: 1, text: "Do you smoke or spend time in highly polluted areas?", type: "CHOICE", options: ["Yes", "No"] },
-          { id: 109, quizId: 1, text: "Describe your current evening routine.", type: "TEXT", options: [] },
-          { id: 110, quizId: 1, text: "What are your goals for your skin?", type: "TEXT", options: [] }
-        ]
+    // If a specific quizId has no questions, fallback to DB questions globally.
+    if (quizId && questions.length === 0) {
+      questions = await prisma.quizQuestion.findMany({
+        orderBy: { id: 'asc' },
+        select: {
+          id: true,
+          quiz_id: true,
+          question: true,
+          type_reponse: true,
+          reponse_options: true,
+        },
       });
     }
 
