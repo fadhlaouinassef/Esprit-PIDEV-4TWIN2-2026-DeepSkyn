@@ -5,7 +5,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, CheckCircle2, Award, Zap } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight } from "lucide-react";
 
 interface Question {
     id: number;
@@ -18,6 +18,21 @@ interface Question {
 interface AnalysisResult {
     analysis: string;
     score: number;
+    scoreEau?: number;
+    agePeau?: number;
+    skinType?: string;
+    strengths?: string[];
+    concerns?: string[];
+    recommendations?: {
+        immediate?: string[];
+        weekly?: string[];
+        avoid?: string[];
+    };
+    routine?: {
+        morning?: string[];
+        evening?: string[];
+    };
+    confidence?: number;
 }
 
 // N8N Webhook Proxy URL
@@ -72,6 +87,72 @@ export default function QuestionnairePage() {
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     
     const scrollRef = useRef<HTMLDivElement>(null);
+    const analysisRef = useRef<HTMLDivElement>(null);
+
+    const finalizeAndSaveAnalysis = async (result: Record<string, unknown>) => {
+        setCurrentQuestion(null);
+        setIsAnalyzing(true);
+
+        const startedAt = Date.now();
+
+        try {
+            let computed: Partial<AnalysisResult> | null = null;
+
+            if (userId) {
+                const response = await fetch('/api/quiz/skin-score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, quizId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    computed = {
+                        analysis: String(data.analysis || ''),
+                        score: Number(data.score),
+                        scoreEau: Number(data.scoreEau),
+                        agePeau: Number(data.agePeau),
+                        skinType: String(data.skinType || ''),
+                        strengths: Array.isArray(data.strengths) ? data.strengths : [],
+                        concerns: Array.isArray(data.concerns) ? data.concerns : [],
+                        recommendations: data.recommendations,
+                        routine: data.routine,
+                        confidence: Number(data.confidence || 0),
+                    };
+                }
+            }
+
+            const fallbackAnalysis = String(result.analysis || 'Analysis complete.');
+            const fallbackScore = Number(result.score || 85);
+
+            const elapsed = Date.now() - startedAt;
+            const minLoaderDuration = 1200;
+            if (elapsed < minLoaderDuration) {
+                await new Promise((resolve) => setTimeout(resolve, minLoaderDuration - elapsed));
+            }
+
+            setAnalysisResult({
+                analysis: computed?.analysis || fallbackAnalysis,
+                score: Number.isFinite(computed?.score) ? Number(computed?.score) : fallbackScore,
+                scoreEau: computed?.scoreEau,
+                agePeau: computed?.agePeau,
+                skinType: computed?.skinType,
+                strengths: computed?.strengths,
+                concerns: computed?.concerns,
+                recommendations: computed?.recommendations,
+                routine: computed?.routine,
+                confidence: computed?.confidence,
+            });
+        } catch (error) {
+            console.error('❌ Finalize analysis error:', error);
+            setAnalysisResult({
+                analysis: String(result.analysis || 'Analysis complete.'),
+                score: Number(result.score || 85)
+            });
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     // Initial call to get the first question
     useEffect(() => {
@@ -79,24 +160,49 @@ export default function QuestionnairePage() {
             console.log("🚀 Starting initial questionnaire fetch...");
             fetchNextStep([]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sessionStatus, userId]);
 
-    // Scroll to bottom when messages change
+    // Scroll to bottom during chat — but NOT once the analysis result is shown
     useEffect(() => {
+        if (analysisResult) return; // let the user scroll freely
         if (scrollRef.current) {
             scrollRef.current.scrollTo({
                 top: scrollRef.current.scrollHeight,
                 behavior: "smooth"
             });
         }
-    }, [messages, isStreaming, isAnalyzing]);
+    }, [messages, isStreaming, isAnalyzing, analysisResult]);
+
+    // When analysis first appears, scroll to the analysis section
+    useEffect(() => {
+        if (analysisResult && analysisRef.current) {
+            setTimeout(() => {
+                analysisRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 100);
+        }
+    }, [analysisResult]);
 
     const fetchNextStep = async (currentAnswers: { questionId: number; answer: string }[], lastAnswerData?: { questionId: number; answer: string }) => {
         setIsStreaming(true);
         try {
+            if (lastAnswerData && userId) {
+                await fetch('/api/quiz/save-answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        quizId,
+                        questionId: lastAnswerData.questionId,
+                        answer: lastAnswerData.answer,
+                    })
+                });
+            }
+
             const payload = {
                 userId: userId || 0,
                 quizId,
+                model: selectedModel,
                 sessionId: questionnaireSessionIdRef.current,
                 answersSoFar: currentAnswers,
                 lastQuestionId: lastAnswerData?.questionId,
@@ -138,24 +244,17 @@ export default function QuestionnairePage() {
                 if (nextQ.quizId) setQuizId(nextQ.quizId);
                 setMessages(prev => [...prev, { role: "assistant", content: nextQ.text }]);
             } else if (result && result.status === "complete") {
-                setCurrentQuestion(null);
-                setIsAnalyzing(true);
-                setTimeout(() => {
-                    setAnalysisResult({
-                        analysis: result.analysis || "Analysis complete.",
-                        score: result.score || 85
-                    });
-                    setIsAnalyzing(false);
-                }, 3000);
+                await finalizeAndSaveAnalysis(result as Record<string, unknown>);
             } else {
                 console.warn("⚠️ Unexpected n8n format or empty response", result);
                 if (messages.length === 0) {
                    setMessages(prev => [...prev, { role: "assistant", content: "I'm ready when you are. If you see this, n8n might be returning an empty response." }]);
                 }
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const err = error as { message?: string };
             console.error("❌ Fetch next step error:", error);
-            setMessages(prev => [...prev, { role: "assistant", content: `Connection Error: ${error.message}. Please check if n8n is running and its webhook is active.` }]);
+            setMessages(prev => [...prev, { role: "assistant", content: `Connection Error: ${err.message || 'Unexpected error'}. Please check if n8n is running and its webhook is active.` }]);
         } finally {
             setIsStreaming(false);
         }
@@ -192,7 +291,9 @@ export default function QuestionnairePage() {
 
     return (
         <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
-            <div className="mx-auto w-full max-w-[800px] flex flex-col h-[calc(100vh-180px)] relative">
+            <div className={`mx-auto w-full max-w-[800px] flex flex-col relative ${
+                analysisResult ? "" : "h-[calc(100vh-180px)]"
+            }`}>
                 {/* Header with Progress */}
                 <div className="mb-6 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
@@ -217,10 +318,14 @@ export default function QuestionnairePage() {
                     )}
                 </div>
 
-                {/* Chat Area */}
+                {/* Chat Area / Analysis Area */}
                 <div
                     ref={scrollRef}
-                    className="flex-1 overflow-y-auto space-y-6 pb-64 custom-scrollbar pr-2 scroll-smooth"
+                    className={`space-y-6 pr-2 ${
+                        analysisResult
+                            ? "" // let <main> scroll naturally with mouse wheel
+                            : "flex-1 overflow-y-auto pb-64 custom-scrollbar scroll-smooth" // chat mode: inner scroll
+                    }`}
                 >
                     <AnimatePresence initial={false}>
                         {messages.map((msg, i) => (
@@ -286,44 +391,236 @@ export default function QuestionnairePage() {
 
                     {analysisResult && (
                         <motion.div
+                            ref={analysisRef}
                             initial={{ opacity: 0, y: 40 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="space-y-6 mt-8 pb-10"
+                            transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                            className="space-y-5 mt-4 pb-10"
                         >
-                            {/* Score Card */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-gradient-to-br from-primary to-purple-600 rounded-3xl p-6 text-white shadow-lg shadow-primary/20 flex flex-col items-center justify-center text-center">
-                                    <Award className="size-10 mb-2 opacity-80" />
-                                    <span className="text-sm font-bold uppercase tracking-wider opacity-80">Skin Score</span>
-                                    <div className="text-5xl font-black mt-1">{analysisResult.score}<span className="text-xl opacity-60">/100</span></div>
-                                </div>
-                                
-                                <div className="md:col-span-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-6 shadow-sm flex flex-col justify-center">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <CheckCircle2 className="size-5 text-green-500" />
-                                        <h4 className="font-bold text-gray-900 dark:text-white">Analysis Complete</h4>
+                            {/* ── Hero Score Banner ── */}
+                            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-6 shadow-2xl shadow-purple-500/30">
+                                {/* decorative blobs */}
+                                <div className="pointer-events-none absolute -top-10 -right-10 size-48 rounded-full bg-white/10 blur-3xl" />
+                                <div className="pointer-events-none absolute -bottom-10 -left-10 size-40 rounded-full bg-white/10 blur-2xl" />
+
+                                <div className="relative flex items-center gap-6">
+                                    {/* Score Ring */}
+                                    <div className="flex-shrink-0 relative size-24">
+                                        <svg className="size-24 -rotate-90" viewBox="0 0 88 88">
+                                            <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8" />
+                                            <motion.circle
+                                                cx="44" cy="44" r="36"
+                                                fill="none"
+                                                stroke="white"
+                                                strokeWidth="8"
+                                                strokeLinecap="round"
+                                                strokeDasharray={`${2 * Math.PI * 36}`}
+                                                initial={{ strokeDashoffset: 2 * Math.PI * 36 }}
+                                                animate={{ strokeDashoffset: 2 * Math.PI * 36 * (1 - analysisResult.score / 100) }}
+                                                transition={{ duration: 1.4, ease: "easeOut", delay: 0.3 }}
+                                            />
+                                        </svg>
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                            <span className="text-2xl font-black text-white leading-none">{analysisResult.score}</span>
+                                            <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider">/100</span>
+                                        </div>
                                     </div>
-                                    <p className="text-gray-600 dark:text-gray-300">
-                                        Based on your data, we've identified the key areas for your skincare journey.
-                                    </p>
+                                    {/* Title */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Sparkles className="size-4 text-yellow-300" />
+                                            <span className="text-xs font-bold text-white/60 uppercase tracking-widest">Analysis Complete</span>
+                                        </div>
+                                        <h3 className="text-xl font-black text-white leading-tight">Your Skin Score</h3>
+                                        <p className="mt-1 text-sm text-white/70">
+                                            {analysisResult.score >= 80 ? "Excellent skin health! Keep it up." :
+                                             analysisResult.score >= 60 ? "Good health with room to improve." :
+                                             "Your skin needs some extra care."}
+                                        </p>
+                                        {/* Stat pills */}
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            {analysisResult.skinType && (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur text-white text-xs font-bold">
+                                                    <Star className="size-3" /> {analysisResult.skinType}
+                                                </span>
+                                            )}
+                                            {analysisResult.agePeau !== undefined && (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur text-white text-xs font-bold">
+                                                    <TrendingUp className="size-3" /> Age {analysisResult.agePeau}
+                                                </span>
+                                            )}
+                                            {analysisResult.scoreEau !== undefined && (
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur text-white text-xs font-bold">
+                                                    <Droplets className="size-3" /> {analysisResult.scoreEau}/100
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
+
+                                {/* Confidence Bar */}
+                                {analysisResult.confidence ? (
+                                    <div className="mt-5">
+                                        <div className="flex justify-between text-xs text-white/60 mb-1 font-semibold">
+                                            <span>Analysis Confidence</span>
+                                            <span>{analysisResult.confidence}%</span>
+                                        </div>
+                                        <div className="h-1.5 w-full rounded-full bg-white/20 overflow-hidden">
+                                            <motion.div
+                                                className="h-full rounded-full bg-white"
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${analysisResult.confidence}%` }}
+                                                transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                                            />
+                                        </div>
+                                    </div>
+                                ) : null}
                             </div>
 
-                            {/* Detailed Analysis */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-8 shadow-sm">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Your Personalized Analysis</h3>
-                                <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    {analysisResult.analysis.split('\n').map((line, i) => (
-                                        <p key={i} className="mb-4">{line}</p>
-                                    ))}
+                            {/* ── Personalized Analysis Text ── */}
+                            {analysisResult.analysis && (
+                                <div className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Award className="size-5 text-primary" />
+                                        <h4 className="font-bold text-gray-900 dark:text-white text-base">Your Personalized Analysis</h4>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {analysisResult.analysis.split('\n').filter(l => l.trim()).map((line, i) => (
+                                            <p key={i} className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{line}</p>
+                                        ))}
+                                    </div>
                                 </div>
-                                <button 
-                                    onClick={() => window.location.href = "/user/routines"}
-                                    className="mt-6 w-full py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98]"
+                            )}
+
+                            {/* ── Strengths & Concerns Row ── */}
+                            {(!!analysisResult.strengths?.length || !!analysisResult.concerns?.length) && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {!!analysisResult.strengths?.length && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.2 }}
+                                            className="rounded-3xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/40 p-5"
+                                        >
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
+                                                <h4 className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">Strong Points</h4>
+                                            </div>
+                                            <ul className="space-y-2">
+                                                {analysisResult.strengths.map((item, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2">
+                                                        <ChevronRight className="size-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                                        <span className="text-xs text-emerald-900 dark:text-emerald-200">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </motion.div>
+                                    )}
+                                    {!!analysisResult.concerns?.length && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.25 }}
+                                            className="rounded-3xl bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800/40 p-5"
+                                        >
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <AlertTriangle className="size-5 text-rose-600 dark:text-rose-400" />
+                                                <h4 className="font-bold text-rose-800 dark:text-rose-300 text-sm">Priority Concerns</h4>
+                                            </div>
+                                            <ul className="space-y-2">
+                                                {analysisResult.concerns.map((item, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2">
+                                                        <ChevronRight className="size-3.5 text-rose-500 mt-0.5 flex-shrink-0" />
+                                                        <span className="text-xs text-rose-900 dark:text-rose-200">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </motion.div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* ── Immediate Recommendations ── */}
+                            {!!analysisResult.recommendations?.immediate?.length && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 shadow-sm"
                                 >
-                                    View My New Routine
-                                </button>
-                            </div>
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Zap className="size-5 text-amber-500" />
+                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm">Immediate Recommendations</h4>
+                                    </div>
+                                    <ul className="space-y-2.5">
+                                        {analysisResult.recommendations.immediate.map((item, idx) => (
+                                            <li key={idx} className="flex items-start gap-3 p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30">
+                                                <div className="flex-shrink-0 size-5 rounded-full bg-amber-400 text-white text-[10px] font-black flex items-center justify-center mt-0.5">{idx + 1}</div>
+                                                <span className="text-xs text-gray-700 dark:text-gray-300">{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </motion.div>
+                            )}
+
+                            {/* ── Morning / Evening Routines ── */}
+                            {(!!analysisResult.routine?.morning?.length || !!analysisResult.routine?.evening?.length) && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.35 }}
+                                    className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                >
+                                    {!!analysisResult.routine?.morning?.length && (
+                                        <div className="rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800/40 p-5">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div className="size-8 rounded-full bg-amber-400 flex items-center justify-center">
+                                                    <Sun className="size-4 text-white" />
+                                                </div>
+                                                <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">Morning Routine</h4>
+                                            </div>
+                                            <ol className="space-y-2">
+                                                {analysisResult.routine.morning.map((item, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2">
+                                                        <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                        <span className="text-xs text-amber-900 dark:text-amber-100">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ol>
+                                        </div>
+                                    )}
+                                    {!!analysisResult.routine?.evening?.length && (
+                                        <div className="rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-800/40 p-5">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div className="size-8 rounded-full bg-indigo-500 flex items-center justify-center">
+                                                    <Moon className="size-4 text-white" />
+                                                </div>
+                                                <h4 className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">Evening Routine</h4>
+                                            </div>
+                                            <ol className="space-y-2">
+                                                {analysisResult.routine.evening.map((item, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2">
+                                                        <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                        <span className="text-xs text-indigo-900 dark:text-indigo-100">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ol>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+
+                            {/* ── CTA ── */}
+                            <motion.button
+                                onClick={() => window.location.href = "/user/routines"}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="w-full flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-purple-500/30 text-base"
+                            >
+                                <Sparkles className="size-5" />
+                                View My Personalized Routine
+                                <ArrowRight className="size-5" />
+                            </motion.button>
                         </motion.div>
                     )}
                 </div>
