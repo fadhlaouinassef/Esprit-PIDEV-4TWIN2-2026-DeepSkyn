@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { saveUserAnswer } from '@/services/quiz.service';
+import { computeAndStoreSkinScoreAnalysis } from '@/services/skinScoreAnalysis.service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,14 +68,43 @@ export async function POST(request: NextRequest) {
       quizId = question.quiz_id;
     }
 
-    const saved = await saveUserAnswer({
-      user_id: userId,
-      question_id: questionId,
-      reponse: answer,
-      quiz_id: quizId,
+    const existing = await prisma.surveyAnswer.findFirst({
+      where: {
+        user_id: userId,
+        question_id: questionId,
+        quiz_id: quizId,
+      },
+      select: { id: true },
     });
 
-    return NextResponse.json(saved, { status: 201 });
+    const saved = existing
+      ? await prisma.surveyAnswer.update({
+          where: { id: existing.id },
+          data: { reponse: answer },
+        })
+      : await saveUserAnswer({
+          user_id: userId,
+          question_id: questionId,
+          reponse: answer,
+          quiz_id: quizId,
+        });
+
+    let scoreSnapshot: unknown = null;
+    try {
+      scoreSnapshot = await computeAndStoreSkinScoreAnalysis({
+        userId,
+        quizId,
+        trigger: 'progress',
+        saveLegacySkinAnalyse: false,
+      });
+    } catch (analysisError) {
+      console.warn('Progressive skin analysis skipped:', analysisError);
+    }
+
+    return NextResponse.json({
+      answer: saved,
+      analysis: scoreSnapshot,
+    }, { status: 201 });
   } catch (error: unknown) {
     console.error('Save quiz answer error:', error);
     return NextResponse.json({ error: 'Failed to save quiz answer' }, { status: 500 });

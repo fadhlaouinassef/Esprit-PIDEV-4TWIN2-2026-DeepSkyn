@@ -76,6 +76,7 @@ model User {
   complaints      Complaint[]
   routines        Routine[]
   skinAnalyses    SkinAnalyse[]
+  skinScoreAnalyses SkinScoreAnalysis[]
   surveyAnswers   SurveyAnswer[]
 }
 
@@ -138,6 +139,7 @@ model Quiz {
 
   questions     QuizQuestion[]
   surveyAnswers SurveyAnswer[]
+  skinScoreAnalyses SkinScoreAnalysis[]
 }
 
 model QuizQuestion {
@@ -243,4 +245,33 @@ model SkinCondition {
   nom         String
   description String?
   type        String?
+}
+
+model SkinScoreAnalysis {
+  id             Int       @id @default(autoincrement())
+  user_id        Int
+  quiz_id        Int?
+  score          Float
+  score_eau      Float?
+  age_peau       Int?
+  skin_type      SkinType?
+  hydration      Float
+  barrier        Float
+  calmness       Float
+  clarity        Float
+  protection     Float
+  lifestyle      Float
+  strengths      Json?
+  concerns       Json?
+  recommendations Json?
+  routine        Json?
+  summary        String?
+  trigger        String    @default("progress")
+  created_at     DateTime  @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  quiz Quiz? @relation(fields: [quiz_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id, created_at])
+  @@index([quiz_id])
 }
