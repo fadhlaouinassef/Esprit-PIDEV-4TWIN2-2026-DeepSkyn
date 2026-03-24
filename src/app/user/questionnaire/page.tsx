@@ -5,7 +5,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X } from "lucide-react";
 
 interface Question {
     id: number;
@@ -33,6 +33,12 @@ interface AnalysisResult {
         evening?: string[];
     };
     confidence?: number;
+}
+
+interface UploadedSurveyImage {
+    dataUrl: string;
+    mimeType: string;
+    base64: string;
 }
 
 // N8N Webhook Proxy URL
@@ -72,6 +78,61 @@ const normalizeOptions = (rawOptions: unknown): Array<{ id: string; text: string
         .filter((opt): opt is { id: string; text: string } => Boolean(opt));
 };
 
+const dataUrlToInlinePart = (dataUrl: string): UploadedSurveyImage | null => {
+    const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(dataUrl);
+    if (!match) return null;
+
+    return {
+        dataUrl,
+        mimeType: match[1],
+        base64: match[2],
+    };
+};
+
+const fileToCompressedDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const source = new Image();
+            source.onload = () => {
+                const maxSide = 1280;
+                const ratio = Math.min(1, maxSide / Math.max(source.width, source.height));
+                const width = Math.max(1, Math.round(source.width * ratio));
+                const height = Math.max(1, Math.round(source.height * ratio));
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    reject(new Error('Canvas not supported in this browser.'));
+                    return;
+                }
+
+                ctx.drawImage(source, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.82));
+            };
+            source.onerror = () => reject(new Error('Failed to decode selected image.'));
+            source.src = reader.result as string;
+        };
+        reader.onerror = () => reject(new Error('Failed to read selected image.'));
+        reader.readAsDataURL(file);
+    });
+
+const parseN8nResult = (raw: unknown): any => {
+    let result = Array.isArray(raw) ? raw[0] : raw;
+
+    if (result && typeof result === 'object' && 'json' in (result as Record<string, unknown>)) {
+        result = (result as Record<string, unknown>).json;
+    }
+    if (result && typeof result === 'object' && 'body' in (result as Record<string, unknown>)) {
+        result = (result as Record<string, unknown>).body;
+    }
+
+    return result;
+};
+
 export default function QuestionnairePage() {
     const { data: session, status: sessionStatus } = useSession();
     const userId = session?.user?.id ? parseInt(session.user.id) : null;
@@ -81,10 +142,18 @@ export default function QuestionnairePage() {
     const [messages, setMessages] = useState<{ role: "assistant" | "user"; content: string; image?: string }[]>([]);
     const [isStreaming, setIsStreaming] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [isImageStep, setIsImageStep] = useState(false);
+    const [isSubmittingImages, setIsSubmittingImages] = useState(false);
+    const [pendingFinalResult, setPendingFinalResult] = useState<Record<string, unknown> | null>(null);
+    const [uploadedSurveyImages, setUploadedSurveyImages] = useState<UploadedSurveyImage[]>([]);
+    const [isDraggingImages, setIsDraggingImages] = useState(false);
+    const [latestProgressAnalysisId, setLatestProgressAnalysisId] = useState<number | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
     const [answersSoFar, setAnswersSoFar] = useState<{ questionId: number; answer: string }[]>([]);
     const [quizId, setQuizId] = useState<number>(1);
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
+    const imageInputRef = useRef<HTMLInputElement>(null);
+    const cameraInputRef = useRef<HTMLInputElement>(null);
     
     const scrollRef = useRef<HTMLDivElement>(null);
     const analysisRef = useRef<HTMLDivElement>(null);
@@ -187,7 +256,7 @@ export default function QuestionnairePage() {
         setIsStreaming(true);
         try {
             if (lastAnswerData && userId) {
-                await fetch('/api/quiz/save-answer', {
+                const saveResponse = await fetch('/api/quiz/save-answer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -197,6 +266,14 @@ export default function QuestionnairePage() {
                         answer: lastAnswerData.answer,
                     })
                 });
+
+                if (saveResponse.ok) {
+                    const saveData = await saveResponse.json().catch(() => null);
+                    const analysisId = Number(saveData?.analysis?.analysisId);
+                    if (Number.isFinite(analysisId)) {
+                        setLatestProgressAnalysisId(analysisId);
+                    }
+                }
             }
 
             const payload = {
@@ -222,13 +299,7 @@ export default function QuestionnairePage() {
 
             const data = await response.json();
             console.log("📥 Received from n8n:", JSON.stringify(data, null, 2));
-            
-            // Robust parsing for various n8n response formats
-            let result = Array.isArray(data) ? data[0] : data;
-            
-            // Unpack if result is { json: ... } or { body: ... }
-            if (result && result.json) result = result.json;
-            if (result && result.body) result = result.body;
+            const result = parseN8nResult(data);
 
             console.log("🔍 Parsed final result:", result);
 
@@ -244,7 +315,17 @@ export default function QuestionnairePage() {
                 if (nextQ.quizId) setQuizId(nextQ.quizId);
                 setMessages(prev => [...prev, { role: "assistant", content: nextQ.text }]);
             } else if (result && result.status === "complete") {
-                await finalizeAndSaveAnalysis(result as Record<string, unknown>);
+                setPendingFinalResult(result as Record<string, unknown>);
+                setIsImageStep(true);
+                setCurrentQuestion(null);
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        role: "assistant",
+                        content:
+                            "Quiz complete. Add up to 5 images (drag and drop, gallery, or camera) to enrich the Gemini analysis.",
+                    },
+                ]);
             } else {
                 console.warn("⚠️ Unexpected n8n format or empty response", result);
                 if (messages.length === 0) {
@@ -258,6 +339,144 @@ export default function QuestionnairePage() {
         } finally {
             setIsStreaming(false);
         }
+    };
+
+    const appendFiles = async (incomingFiles: FileList | File[]) => {
+        const files = Array.from(incomingFiles).filter((f) => f.type.startsWith('image/'));
+        if (files.length === 0) return;
+
+        const remaining = 5 - uploadedSurveyImages.length;
+        if (remaining <= 0) return;
+
+        const selected = files.slice(0, remaining);
+        const converted: UploadedSurveyImage[] = [];
+
+        for (const file of selected) {
+            const dataUrl = await fileToCompressedDataUrl(file);
+            const parsed = dataUrlToInlinePart(dataUrl);
+            if (parsed) converted.push(parsed);
+        }
+
+        setUploadedSurveyImages((prev) => [...prev, ...converted].slice(0, 5));
+    };
+
+    const onImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            await appendFiles(files);
+        }
+        event.target.value = '';
+    };
+
+    const submitImageStep = async () => {
+        if (!pendingFinalResult) {
+            return;
+        }
+
+        if (!userId) {
+            setMessages((prev) => [
+                ...prev,
+                { role: 'assistant', content: 'User session not found. Please sign in again and restart the questionnaire.' },
+            ]);
+            return;
+        }
+
+        setIsSubmittingImages(true);
+        try {
+            let analysisId = latestProgressAnalysisId;
+
+            // If no progressive analysis snapshot exists yet, create one now so images
+            // are always linked to a real analysis record.
+            if (!analysisId && uploadedSurveyImages.length > 0) {
+                const analysisResponse = await fetch('/api/quiz/skin-score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, quizId }),
+                });
+
+                if (!analysisResponse.ok) {
+                    const analysisError = await analysisResponse.json().catch(() => ({}));
+                    throw new Error(analysisError.error || 'Unable to create an analysis to attach images.');
+                }
+
+                const analysisData = await analysisResponse.json().catch(() => ({}));
+                const createdAnalysisId = Number(analysisData?.analysisId);
+                if (!Number.isFinite(createdAnalysisId)) {
+                    throw new Error('analysisId is missing after analysis creation.');
+                }
+
+                analysisId = createdAnalysisId;
+                setLatestProgressAnalysisId(createdAnalysisId);
+            }
+
+            if (uploadedSurveyImages.length > 0) {
+                if (!analysisId) {
+                    throw new Error('analysisId is required to save images.');
+                }
+
+                const storeResponse = await fetch('/api/quiz/image-survey', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        analysisId,
+                        images: uploadedSurveyImages.map((item) => item.dataUrl),
+                    }),
+                });
+
+                if (!storeResponse.ok) {
+                    const storeError = await storeResponse.json().catch(() => ({}));
+                    throw new Error(storeError.error || 'Unable to store images in the database.');
+                }
+            }
+
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId,
+                    quizId,
+                    model: selectedModel,
+                    sessionId: questionnaireSessionIdRef.current,
+                    answersSoFar,
+                    imageParts: uploadedSurveyImages.map((img) => ({
+                        inline_data: {
+                            mime_type: img.mimeType,
+                            data: img.base64,
+                        },
+                    })),
+                }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.detail || errData.error || 'Image analysis request failed');
+            }
+
+            const result = parseN8nResult(await response.json());
+
+            setIsImageStep(false);
+            setPendingFinalResult(null);
+            await finalizeAndSaveAnalysis((result && result.status === 'complete') ? result : pendingFinalResult);
+        } catch (error: unknown) {
+            const err = error as { message?: string };
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: 'assistant',
+                    content: `Unable to finalize analysis with images: ${err.message || 'unknown error'}.`,
+                },
+            ]);
+        } finally {
+            setIsSubmittingImages(false);
+        }
+    };
+
+    const skipImageStep = async () => {
+        if (!pendingFinalResult) return;
+        setIsImageStep(false);
+        setPendingFinalResult(null);
+        await finalizeAndSaveAnalysis(pendingFinalResult);
     };
 
     const handleUserResponse = async (content: string, imageData?: string) => {
@@ -630,8 +849,132 @@ export default function QuestionnairePage() {
                 <div className="absolute bottom-0 left-0 right-0 py-10 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent dark:from-[#0b0b0f] dark:via-[#0b0b0f]/95 z-20 pointer-events-none">
                     <div className="max-w-2xl mx-auto flex flex-col items-center gap-6 pointer-events-none">
                         <AnimatePresence mode="wait">
+                            {isImageStep && (
+                                <motion.div
+                                    key="image-step"
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 20 }}
+                                    className="w-full pointer-events-auto"
+                                >
+                                    <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xl space-y-4">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <div>
+                                                <h4 className="text-sm font-black text-gray-900 dark:text-white">Add images for Gemini</h4>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">Maximum 5 images. Gallery, camera, or drag and drop.</p>
+                                            </div>
+                                            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+                                                {uploadedSurveyImages.length}/5
+                                            </span>
+                                        </div>
+
+                                        <input
+                                            ref={imageInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            className="hidden"
+                                            onChange={onImageFileChange}
+                                        />
+
+                                        <input
+                                            ref={cameraInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            capture="environment"
+                                            className="hidden"
+                                            onChange={onImageFileChange}
+                                        />
+
+                                        <div
+                                            onDragOver={(e) => {
+                                                e.preventDefault();
+                                                setIsDraggingImages(true);
+                                            }}
+                                            onDragLeave={() => setIsDraggingImages(false)}
+                                            onDrop={async (e) => {
+                                                e.preventDefault();
+                                                setIsDraggingImages(false);
+                                                if (e.dataTransfer.files?.length) {
+                                                    await appendFiles(e.dataTransfer.files);
+                                                }
+                                            }}
+                                            className={`rounded-2xl border-2 border-dashed p-5 transition-colors ${
+                                                isDraggingImages
+                                                    ? 'border-primary bg-primary/5'
+                                                    : 'border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30'
+                                            }`}
+                                        >
+                                            <div className="flex flex-col items-center text-center gap-2">
+                                                <Upload className="size-6 text-primary" />
+                                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Drag your images here</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">or use the buttons below</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => imageInputRef.current?.click()}
+                                                disabled={uploadedSurveyImages.length >= 5}
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
+                                            >
+                                                <Upload className="size-3.5" />
+                                                Add from gallery
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => cameraInputRef.current?.click()}
+                                                disabled={uploadedSurveyImages.length >= 5}
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
+                                            >
+                                                <Camera className="size-3.5" />
+                                                Take a photo
+                                            </button>
+                                        </div>
+
+                                        {uploadedSurveyImages.length > 0 && (
+                                            <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+                                                {uploadedSurveyImages.map((img, index) => (
+                                                    <div key={`${img.base64.slice(0, 12)}-${index}`} className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                                                        <img src={img.dataUrl} alt={`survey-${index}`} className="h-20 w-full object-cover" />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setUploadedSurveyImages((prev) => prev.filter((_, i) => i !== index))}
+                                                            className="absolute top-1 right-1 size-6 rounded-full bg-black/70 text-white flex items-center justify-center"
+                                                            aria-label="Remove"
+                                                        >
+                                                            <X className="size-3" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <div className="flex flex-wrap gap-2 justify-end">
+                                            <button
+                                                type="button"
+                                                onClick={skipImageStep}
+                                                disabled={isSubmittingImages}
+                                                className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200"
+                                            >
+                                                Continue without images
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={submitImageStep}
+                                                disabled={isSubmittingImages}
+                                                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold disabled:opacity-60"
+                                            >
+                                                {isSubmittingImages ? 'Analyzing...' : 'Analyze with Gemini'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
                             {/* Choice UI */}
-                            {!isStreaming && currentQuestion?.type === "choice" && messages[messages.length - 1]?.role === "assistant" && (
+                            {!isImageStep && !isStreaming && currentQuestion?.type === "choice" && messages[messages.length - 1]?.role === "assistant" && (
                                 <motion.div
                                     key="choices"
                                     initial={{ opacity: 0, y: 30 }}
@@ -653,7 +996,7 @@ export default function QuestionnairePage() {
                             )}
 
                             {/* Text Input UI */}
-                            {!isStreaming && (currentQuestion?.type === "text" || !currentQuestion) && (messages[messages.length - 1]?.role === "assistant") && (
+                            {!isImageStep && !isStreaming && (currentQuestion?.type === "text" || !currentQuestion) && (messages[messages.length - 1]?.role === "assistant") && (
                                 <motion.div
                                     key="composer"
                                     initial={{ opacity: 0, y: 30 }}

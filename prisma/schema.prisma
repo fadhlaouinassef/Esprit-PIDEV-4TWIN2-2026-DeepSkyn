@@ -77,6 +77,7 @@ model User {
   routines        Routine[]
   skinAnalyses    SkinAnalyse[]
   skinScoreAnalyses SkinScoreAnalysis[]
+  imageSurveys    ImageSurvey[]
   surveyAnswers   SurveyAnswer[]
 }
 
@@ -271,7 +272,22 @@ model SkinScoreAnalysis {
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   quiz Quiz? @relation(fields: [quiz_id], references: [id], onDelete: SetNull)
+  surveyImages ImageSurvey[]
 
   @@index([user_id, created_at])
   @@index([quiz_id])
+}
+
+model ImageSurvey {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  analyse_id Int
+  image      String   @db.Text
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  analysis SkinScoreAnalysis @relation(fields: [analyse_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([analyse_id])
 }
