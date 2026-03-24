@@ -326,6 +326,27 @@ async function migrate() {
       'CREATE INDEX IF NOT EXISTS "SkinScoreAnalysis_quiz_id_idx" ON "SkinScoreAnalysis"("quiz_id");'
     );
 
+    // Table ImageSurvey (images envoyees en fin de quiz)
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "ImageSurvey" (
+        "id" SERIAL PRIMARY KEY,
+        "user_id" INTEGER NOT NULL,
+        "analyse_id" INTEGER NOT NULL,
+        "image" TEXT NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE,
+        FOREIGN KEY ("analyse_id") REFERENCES "SkinScoreAnalysis"("id") ON DELETE CASCADE
+      );
+    `);
+
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "ImageSurvey_user_id_idx" ON "ImageSurvey"("user_id");'
+    );
+
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "ImageSurvey_analyse_id_idx" ON "ImageSurvey"("analyse_id");'
+    );
+
     console.log('✅ Toutes les tables ont été créées avec succès!');
 
     // =========================
