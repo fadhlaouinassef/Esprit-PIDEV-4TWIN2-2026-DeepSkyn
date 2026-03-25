@@ -3,6 +3,7 @@
 import React from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { UserBadgeCard } from "@/app/components/user/UserBadgeCard";
+import { ChevronRight } from "lucide-react";
 
 export default function BadgePage() {
     const user = {
@@ -15,7 +16,16 @@ export default function BadgePage() {
 
     return (
         <UserLayout userName={user.name} userPhoto={user.photo}>
-            <div className="mx-auto w-full max-w-[1000px] flex flex-col items-center py-10">
+            <div className="mx-auto w-full max-w-[1000px] flex flex-col items-center space-y-6 py-10">
+
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-muted-foreground/60 w-full mb-4">
+                    <span>User</span>
+                    <ChevronRight size={14} />
+                    <span className="text-foreground font-medium">My Badge</span>
+                </nav>
+
+
                 <div className="text-center">
                     <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
                         Your Achievement Badge

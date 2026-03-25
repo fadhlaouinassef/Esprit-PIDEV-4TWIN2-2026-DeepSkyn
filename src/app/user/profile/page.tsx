@@ -137,8 +137,16 @@ export default function ProfilePage() {
 
     return (
         <UserLayout userName={profile?.nom} userPhoto={profile?.image}>
-            <div className="mx-auto w-full max-w-[1200px] pb-20">
+            <div className="mx-auto w-full max-w-[1200px] pb-20 space-y-6">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
+                    <span>User</span>
+                    <ChevronRight size={14} />
+                    <span className="text-foreground font-medium">My Profile</span>
+                </nav>
+
                 <motion.div
+
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"

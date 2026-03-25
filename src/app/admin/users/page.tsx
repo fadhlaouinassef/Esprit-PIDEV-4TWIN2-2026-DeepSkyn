@@ -28,7 +28,10 @@ import {
   ImageDown,
   PowerOff,
   Power,
+  ChevronRight,
 } from "lucide-react";
+
+
 
 interface User {
   id: number;
@@ -49,26 +52,14 @@ interface User {
 // ──────────────────────────────────────────
 function Breadcrumb({ pageName }: { pageName: string }) {
   return (
-    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-        {pageName}
-      </h2>
-      <nav>
-        <ol className="flex items-center gap-2">
-          <li>
-            <a
-              className="font-medium text-gray-500 hover:text-[#156d95]"
-              href="/admin"
-            >
-              Dashboard /
-            </a>
-          </li>
-          <li className="font-medium text-[#156d95]">{pageName}</li>
-        </ol>
-      </nav>
-    </div>
+    <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <span>Admin</span>
+      <ChevronRight size={14} />
+      <span className="text-gray-700 dark:text-gray-200 font-medium">{pageName}</span>
+    </nav>
   );
 }
+
 
 // ──────────────────────────────────────────
 // Modal Ajout / Édition
