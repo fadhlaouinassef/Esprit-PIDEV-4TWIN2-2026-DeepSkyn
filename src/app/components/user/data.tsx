@@ -10,7 +10,8 @@ import {
     CreditCard,
     CircleHelp,
     Sparkles,
-    ClipboardList
+    ClipboardList,
+    BarChart2
 } from "lucide-react";
 
 export const USER_NAV_DATA = [
@@ -33,6 +34,12 @@ export const USER_NAV_DATA = [
                 title: "Questionnaire",
                 icon: ClipboardList,
                 url: "/user/questionnaire",
+                items: []
+            },
+            {
+                title: "Analyzes",
+                icon: BarChart2,
+                url: "/user/Analyzes",
                 items: []
             },
             {
