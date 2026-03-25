@@ -510,9 +510,16 @@ export default function QuestionnairePage() {
 
     return (
         <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
-            <div className={`mx-auto w-full max-w-[800px] flex flex-col relative ${
+            <div className={`mx-auto w-full max-w-[800px] flex flex-col relative space-y-6 ${
                 analysisResult ? "" : "h-[calc(100vh-180px)]"
             }`}>
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
+                    <span>User</span>
+                    <ChevronRight size={14} />
+                    <span className="text-foreground font-medium">Skin Analysis</span>
+                </nav>
+
                 {/* Header with Progress */}
                 <div className="mb-6 flex flex-col gap-2">
                     <div className="flex items-center justify-between">

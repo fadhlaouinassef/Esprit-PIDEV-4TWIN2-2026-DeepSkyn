@@ -8,7 +8,8 @@ import { WeeksProfitChart } from "@/app/components/admin/WeeksProfitChart";
 import { DonutChart } from "@/app/components/admin/DonutChart";
 import { RegionLabels } from "@/app/components/admin/RegionLabels";
 
-import { Users, CreditCard, TrendingUp, DollarSign } from "lucide-react";
+
+import { Users, CreditCard, TrendingUp, DollarSign, ChevronRight } from "lucide-react";
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState<any>(null);
@@ -78,6 +79,13 @@ export default function AdminDashboard() {
     return (
         <AdminLayout>
             <div className="space-y-8">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-400">
+                    <span>Admin</span>
+                    <ChevronRight size={14} />
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">Dashboard</span>
+                </nav>
+
                 {/* Header */}
                 <div className="bg-white dark:bg-gray-800 rounded-[32px] shadow-sm p-8 border border-gray-100 dark:border-gray-700">
                     <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Admin Dashboard</h1>
@@ -140,5 +148,6 @@ export default function AdminDashboard() {
         </AdminLayout>
     );
 }
+
 
 

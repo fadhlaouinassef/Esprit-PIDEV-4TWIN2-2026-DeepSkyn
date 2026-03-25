@@ -234,8 +234,16 @@ export default function BillingPage() {
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
                 <div className="absolute bottom-1/4 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
-                <div className="max-w-[1100px] mx-auto relative z-10 px-4">
+                <div className="max-w-[1100px] mx-auto relative z-10 px-4 space-y-6">
+                    {/* Breadcrumb */}
+                    <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
+                        <span>User</span>
+                        <ChevronRight size={14} />
+                        <span className="text-foreground font-medium">Billing & Subscription</span>
+                    </nav>
+
                     <header className="mb-12">
+
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}

@@ -17,8 +17,10 @@ import {
     ArrowRight,
     Droplets,
     Plus,
-    Trash2
+    Trash2,
+    ChevronRight,
 } from "lucide-react";
+
 import { UserLayout } from "@/app/ui/UserLayout";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -210,7 +212,15 @@ export default function RoutinePage() {
 
     return (
         <UserLayout userName={userName} userPhoto="/avatar.png">
-            <div className="min-h-full py-6 px-4 md:px-8 max-w-[1200px] mx-auto relative">
+            <div className="min-h-full py-6 px-4 md:px-8 max-w-[1200px] mx-auto relative space-y-6">
+
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
+                    <span>User</span>
+                    <ChevronRight size={14} />
+                    <span className="text-foreground font-medium">Routines</span>
+                </nav>
+
 
                 {/* Header Section */}
                 <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">

@@ -77,27 +77,19 @@ export async function GET() {
       due: monthlyStats.slice(-9).map(m => ({ x: m.month, y: m.due }))
     };
 
-    // If no real data, add mock data to avoid zero-charts for empty DB (just for visual representation)
-    if (paymentsData.received.every(p => p.y === 0)) {
-        paymentsData.received = paymentsData.received.map((p, i) => ({ ...p, y: 1500 + i * 500 + Math.random() * 300 }));
-        paymentsData.due = paymentsData.due.map((p, i) => ({ ...p, y: 200 + i * 100 + Math.random() * 100 }));
-    }
-
     const userGrowthSeries = [
       {
         name: "New Users",
-        data: monthlyStats.map(m => m.users || Math.floor(10 + Math.random() * 50)), // fallback if empty
+        data: monthlyStats.map(m => m.users),
       },
       {
         name: "Total Users",
         data: monthlyStats.map((m, i) => {
-            const upToNow = monthlyStats.slice(0, i + 1).reduce((acc, curr) => acc + curr.users, 0);
-            return upToNow || Math.floor(100 + i * 20); // fallback
+            return monthlyStats.slice(0, i + 1).reduce((acc, curr) => acc + curr.users, 0);
         }),
       },
     ];
 
-    // Visitors Mock (Not in DB)
     const donutData = [
       { name: "France", amount: 4500 },
       { name: "USA", amount: 3500 },
@@ -105,7 +97,7 @@ export async function GET() {
       { name: "Others", amount: 500 },
     ];
 
-    // Calculate plan distribution for Donut Chart
+    // 5. SUBSCRIPTION DISTRIBUTION
     const planCounts = { starter: 0, pro: 0, luxury: 0 };
     subscriptions.forEach(sub => {
       const p = sub.plan.toLowerCase().trim();
@@ -114,11 +106,39 @@ export async function GET() {
       else if (p.includes('luxury') || p.includes('enterprise')) planCounts.luxury++;
     });
 
-    // Subscriptions Distribution fallback for UI if empty
-    const totalSubCount = planCounts.starter + planCounts.pro + planCounts.luxury;
-    const subscriptionDistribution = totalSubCount > 0 
-      ? [planCounts.starter, planCounts.pro, planCounts.luxury]
-      : [45 + Math.floor(Math.random() * 10), 25 + Math.floor(Math.random() * 10), 30 + Math.floor(Math.random() * 10)];
+    const subscriptionDistribution = [planCounts.starter, planCounts.pro, planCounts.luxury];
+
+    // 6. WEEKLY PROFIT (Last 7 Days)
+    const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const weeklyStats = Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date();
+      d.setDate(now.getDate() - (6 - i));
+      return {
+        day: weekDays[d.getDay()],
+        dateStr: d.toDateString(),
+        sales: 0,
+        revenue: 0,
+      };
+    });
+
+    subscriptions.forEach(sub => {
+      const subDate = new Date(sub.date_debut);
+      const subDateStr = subDate.toDateString();
+      const statIndex = weeklyStats.findIndex(w => w.dateStr === subDateStr);
+      
+      if (statIndex !== -1) {
+        const planKey = sub.plan.toLowerCase().trim();
+        let price = prices[planKey] || 39;
+        
+        // Match specific synonyms
+        if (planKey.includes('essential') || planKey.includes('starter')) price = prices['essential'];
+        else if (planKey.includes('premium') || planKey.includes('pro')) price = prices['premium'];
+        else if (planKey.includes('luxury') || planKey.includes('enterprise')) price = prices['luxury'];
+
+        weeklyStats[statIndex].sales += 1;
+        weeklyStats[statIndex].revenue += price;
+      }
+    });
 
     return NextResponse.json({
       totalUsers,
@@ -128,11 +148,13 @@ export async function GET() {
       donutData,
       subscriptionDistribution,
       profitData: {
-        sales: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ x: d, y: Math.floor(Math.random() * 100) })),
-        revenue: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ x: d, y: Math.floor(Math.random() * 60) }))
+        sales: weeklyStats.map(w => ({ x: w.day, y: w.sales })),
+        revenue: weeklyStats.map(w => ({ x: w.day, y: w.revenue }))
       },
       lastUpdated: new Date().toISOString()
     });
+
+
 
 
   } catch (error: any) {

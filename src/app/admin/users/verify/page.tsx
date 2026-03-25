@@ -137,7 +137,16 @@ export default function UserVerificationPage() {
 
     return (
         <AdminLayout>
-            <div className="flex h-[calc(100vh-140px)] gap-6 antialiased">
+            <div className="space-y-6 pb-6 lg:pb-0">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-400">
+                    <span>Admin</span>
+                    <ChevronRight size={14} />
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">Verification Center</span>
+                </nav>
+
+                <div className="flex h-[calc(100vh-180px)] gap-6 antialiased">
+
 
                 {/* Left Sidebar: User List */}
                 <div className="w-80 lg:w-96 flex flex-col bg-white dark:bg-gray-800 rounded-[32px] border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
@@ -368,6 +377,8 @@ export default function UserVerificationPage() {
                     background: #334155;
                 }
             `}</style>
+            </div>
         </AdminLayout>
     );
 }
+

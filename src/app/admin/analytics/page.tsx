@@ -18,9 +18,11 @@ import {
     Filter,
     Calendar,
     ChevronDown,
+    ChevronRight,
     ExternalLink,
     Search
 } from "lucide-react";
+
 import { AdminLayout } from "@/app/ui/AdminLayout";
 import { motion } from "framer-motion";
 import { ApexOptions } from "apexcharts";
@@ -260,6 +262,14 @@ export default function AnalyticsPage() {
     return (
         <AdminLayout>
             <div className="space-y-8 pb-10">
+
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-400">
+                    <span>Admin</span>
+                    <ChevronRight size={14} />
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">Platform Analytics</span>
+                </nav>
+
 
                 {/* Header & Global Filters */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-gray-800 p-8 rounded-[32px] border border-gray-100 dark:border-gray-700 shadow-sm">
