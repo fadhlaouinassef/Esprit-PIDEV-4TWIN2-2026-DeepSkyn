@@ -5,7 +5,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History } from "lucide-react";
 
 interface Question {
     id: number;
@@ -837,16 +837,27 @@ export default function QuestionnairePage() {
                             )}
 
                             {/* ── CTA ── */}
-                            <motion.button
-                                onClick={() => window.location.href = "/user/routines"}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="w-full flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-purple-500/30 text-base"
-                            >
-                                <Sparkles className="size-5" />
-                                View My Personalized Routine
-                                <ArrowRight className="size-5" />
-                            </motion.button>
+                            <div className="flex flex-col sm:flex-row gap-4 w-full">
+                                <motion.button
+                                    onClick={() => window.location.href = "/user/routines"}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="flex-1 flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-purple-500/30 text-base"
+                                >
+                                    <Sparkles className="size-5" />
+                                    View Routine
+                                    <ArrowRight className="size-5" />
+                                </motion.button>
+                                <motion.button
+                                    onClick={() => window.location.href = "/user/Analyzes"}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="flex-1 flex items-center justify-center gap-3 py-4 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 text-gray-900 dark:text-white font-bold rounded-2xl transition-all shadow-lg text-base"
+                                >
+                                    <History className="size-5 text-[#156d95]" />
+                                    View History
+                                </motion.button>
+                            </div>
                         </motion.div>
                     )}
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { 
     Calendar, 
@@ -25,97 +25,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-
-// --- MOCK DATA ---
-const ANALYSES_DATA = [
-    {
-        id: "1",
-        date: "October 12, 2023",
-        score: 82,
-        skinType: "Combination",
-        status: "Improved", // Improved, Stable, Worse
-        hydration: 75,
-        oilProduction: 40,
-        sensitivity: "Low",
-        concerns: ["Acne", "Redness"],
-        skinAge: 26,
-        actualAge: 28,
-        riskFactor: "Low sun damage",
-        recommendations: [
-            "Increase SPF usage to protect areas of minimal redness from further inflammation.",
-            "Introduce a mild retinol (0.1-0.2%) twice weekly to address acne and fine texture."
-        ],
-        routine: {
-            morning: [
-                { step: 1, name: "Gentle Cleanser" },
-                { step: 2, name: "Vitamin C Serum" },
-                { step: 3, name: "Moisturizer" }
-            ],
-            night: [
-                { step: 1, name: "Oil Cleanser" },
-                { step: 2, name: "Foaming Cleanser" },
-                { step: 3, name: "Niacinamide" }
-            ]
-        }
-    },
-    {
-        id: "2",
-        date: "September 28, 2023",
-        score: 78,
-        skinType: "Normal",
-        status: "Stable",
-        hydration: 60,
-        oilProduction: 30,
-        sensitivity: "Low",
-        concerns: ["Dryness"],
-        skinAge: 27,
-        actualAge: 28,
-        riskFactor: "Normal",
-        recommendations: [
-            "Maintain current hydration levels.",
-            "Add a hydrating serum for night routine."
-        ],
-        routine: {
-            morning: [
-                { step: 1, name: "Gentle Cleanser" },
-                { step: 2, name: "Moisturizer" }
-            ],
-            night: [
-                { step: 1, name: "Oil Cleanser" },
-                { step: 2, name: "Night Cream" }
-            ]
-        }
-    },
-    {
-        id: "3",
-        date: "September 14, 2023",
-        score: 74,
-        skinType: "Oily",
-        status: "Worse",
-        hydration: 55,
-        oilProduction: 80,
-        sensitivity: "Medium",
-        concerns: ["Pigmentation", "Pores"],
-        skinAge: 29,
-        actualAge: 28,
-        riskFactor: "High sun damage",
-        recommendations: [
-            "Use salicylic acid to control oil production.",
-            "Apply extra SPF for pigmentation areas."
-        ],
-        routine: {
-            morning: [
-                { step: 1, name: "Foaming Cleanser" },
-                { step: 2, name: "BHA Liquid" },
-                { step: 3, name: "SPF 50" }
-            ],
-            night: [
-                { step: 1, name: "Double Cleanse" },
-                { step: 2, name: "Retinol" }
-            ]
-        }
-    }
-];
 
 // --- COMPONENTS ---
 
@@ -170,7 +79,7 @@ const CircularScore = ({ score, size = "md" }: { score: number; size?: "sm" | "m
     );
 };
 
-const AnalysisCard = ({ analysis, onClick }: { analysis: any; onClick: () => void }) => {
+const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: string; onClick: () => void }) => {
     const getStatusIcon = (status: string) => {
         switch (status) {
             case "Improved": return <TrendingUp className="size-3 text-emerald-500" />;
@@ -196,7 +105,7 @@ const AnalysisCard = ({ analysis, onClick }: { analysis: any; onClick: () => voi
             <div className="flex justify-between items-start mb-6">
                 <div>
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[2px] mb-1 block">
-                        {analysis.id === "1" ? "Last Diagnostic" : analysis.id === "2" ? "Previous Result" : "Baseline Analysis"}
+                        {label || "Baseline Analysis"}
                     </span>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
                         {analysis.date}
@@ -426,17 +335,25 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                     </div>
                                     <div className="bg-gray-50/50 dark:bg-gray-800 rounded-[32px] p-8 border border-gray-100 dark:border-gray-700">
                                         <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                                            Based on your high hydration but mild acne markers, we recommend focusing on maintaining your skin barrier while gently accelerating cell turnover.
+                                            {analysis.summary || "Based on your clinical parameters, we've outlined the following strategic recommendations for your skin health."}
                                         </p>
                                         <ul className="space-y-4">
-                                            {analysis.recommendations.map((rec: string, i: number) => (
-                                                <li key={i} className="flex gap-4">
-                                                    <div className="shrink-0 mt-1 size-5 rounded-full bg-[#156d95] flex items-center justify-center text-white">
-                                                        <CheckCircle2 size={12} />
-                                                    </div>
-                                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{rec}</p>
-                                                </li>
-                                            ))}
+                                            {(() => {
+                                                const recs = Array.isArray(analysis.recommendations) 
+                                                    ? analysis.recommendations 
+                                                    : analysis.recommendations?.immediate 
+                                                        ? [...(analysis.recommendations.immediate || []), ...(analysis.recommendations.weekly || [])]
+                                                        : [];
+                                                
+                                                return recs.map((rec: string, i: number) => (
+                                                    <li key={i} className="flex gap-4">
+                                                        <div className="shrink-0 mt-1 size-5 rounded-full bg-[#156d95] flex items-center justify-center text-white">
+                                                            <CheckCircle2 size={12} />
+                                                        </div>
+                                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{rec}</p>
+                                                    </li>
+                                                ));
+                                            })()}
                                         </ul>
                                     </div>
                                 </div>
@@ -457,11 +374,11 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                                 <span className="text-xs font-bold uppercase tracking-widest">Morning</span>
                                             </div>
                                             <div className="space-y-3">
-                                                {analysis.routine.morning.map((item: any) => (
-                                                    <div key={item.step} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-amber-200 transition-colors">
+                                                {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => (
+                                                    <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-amber-200 transition-colors">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step}</span>
-                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{item.name}</span>
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
+                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
                                                         </div>
                                                         <ChevronRight size={16} className="text-gray-300 group-hover:text-amber-500 transition-colors" />
                                                     </div>
@@ -475,11 +392,11 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                                 <span className="text-xs font-bold uppercase tracking-widest">Night</span>
                                             </div>
                                             <div className="space-y-3">
-                                                {analysis.routine.night.map((item: any) => (
-                                                    <div key={item.step} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-blue-200 transition-colors">
+                                                {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => (
+                                                    <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-blue-200 transition-colors">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step}</span>
-                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{item.name}</span>
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
+                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
                                                         </div>
                                                         <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
                                                     </div>
@@ -500,15 +417,34 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
 // --- MAIN PAGE ---
 
 export default function AnalyzesPage() {
+    const [analyses, setAnalyses] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
 
-    const filteredAnalyses = ANALYSES_DATA.filter(analysis => {
+    useEffect(() => {
+        async function fetchAnalyses() {
+            try {
+                const res = await fetch("/api/user/analyses");
+                if (res.ok) {
+                    const data = await res.json();
+                    setAnalyses(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch analyses:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchAnalyses();
+    }, []);
+
+    const filteredAnalyses = analyses.filter(analysis => {
         const matchesSearch = 
             analysis.date.toLowerCase().includes(searchTerm.toLowerCase()) || 
             analysis.skinType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            analysis.concerns.some(c => c.toLowerCase().includes(searchTerm.toLowerCase()));
+            analysis.concerns.some((c: string) => c.toLowerCase().includes(searchTerm.toLowerCase()));
         
         const matchesStatus = statusFilter === "All" || analysis.status === statusFilter;
         
@@ -568,29 +504,44 @@ export default function AnalyzesPage() {
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredAnalyses.map((analysis) => (
-                        <AnalysisCard 
-                            key={analysis.id} 
-                            analysis={analysis} 
-                            onClick={() => setSelectedAnalysis(analysis)}
-                        />
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="flex items-center justify-center p-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#156d95]"></div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {filteredAnalyses.map((analysis, index) => {
+                            let label = "Baseline Analysis";
+                            if (index === 0) label = "Latest Analysis";
+                            else if (index === 1) label = "Previous Result";
+                            else if (index === filteredAnalyses.length - 1 && filteredAnalyses.length > 2) label = "Baseline Analysis";
+                            else label = "Past History";
+
+                            return (
+                                <AnalysisCard 
+                                    key={analysis.id} 
+                                    analysis={analysis} 
+                                    label={label}
+                                    onClick={() => setSelectedAnalysis(analysis)}
+                                />
+                            );
+                        })}
+                    </div>
+                )}
 
                 {/* Empty State if needed */}
-                {filteredAnalyses.length === 0 && (
+                {!loading && filteredAnalyses.length === 0 && (
                     <div className="mt-12 bg-white dark:bg-gray-800 rounded-[40px] p-20 text-center border-2 border-dashed border-gray-100 dark:border-gray-700">
                         <div className="size-24 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Search className="text-gray-300 size-10" />
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No analyses found</h3>
                         <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-                            {ANALYSES_DATA.length === 0 
+                            {analyses.length === 0 
                                 ? "You haven't performed any skin analyses yet. Start your first scan to see your detailed report."
                                 : "We couldn't find any analyses matching your search or filters. Try adjusting them or start a new scan."}
                         </p>
-                        {ANALYSES_DATA.length === 0 ? (
+                        {analyses.length === 0 ? (
                             <Link 
                                 href="/user/questionnaire"
                                 className="mt-8 px-10 py-4 bg-[#156d95] text-white rounded-full font-bold hover:bg-[#115a7b] transition-all inline-block"

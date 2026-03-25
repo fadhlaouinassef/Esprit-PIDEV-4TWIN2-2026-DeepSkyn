@@ -1,0 +1,11 @@
+import 'dotenv/config';
+import pkg from 'pg';
+const { Pool } = pkg;
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const r1 = await pool.query('SELECT id, user_id, quiz_id, "trigger", score, created_at FROM "SkinScoreAnalysis" ORDER BY created_at DESC LIMIT 20');
+console.log('=== SkinScoreAnalysis rows ===');
+r1.rows.forEach(row => console.log(JSON.stringify(row)));
+const r2 = await pool.query('SELECT id, email FROM "User" LIMIT 10');
+console.log('=== Users ===');
+r2.rows.forEach(row => console.log(JSON.stringify(row)));
+await pool.end();

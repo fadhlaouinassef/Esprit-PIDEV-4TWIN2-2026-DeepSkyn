@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AdminLayout } from "@/app/ui/AdminLayout";
 import { 
     Search,
@@ -233,12 +233,20 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                     </div>
                                     <div className="bg-gray-50/50 dark:bg-gray-800 rounded-[32px] p-8 border border-gray-100 dark:border-gray-700">
                                         <ul className="space-y-4">
-                                            {analysis.recommendations.map((rec: string, i: number) => (
-                                                <li key={i} className="flex gap-4">
-                                                    <div className="shrink-0 mt-1 size-5 rounded-full bg-[#156d95] flex items-center justify-center text-white"><CheckCircle2 size={12} /></div>
-                                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{rec}</p>
-                                                </li>
-                                            ))}
+                                            {(() => {
+                                                const recs = Array.isArray(analysis.recommendations) 
+                                                    ? analysis.recommendations 
+                                                    : analysis.recommendations?.immediate 
+                                                        ? [...(analysis.recommendations.immediate || []), ...(analysis.recommendations.weekly || [])]
+                                                        : [];
+                                                
+                                                return recs.map((rec: string, i: number) => (
+                                                    <li key={i} className="flex gap-4">
+                                                        <div className="shrink-0 mt-1 size-5 rounded-full bg-[#156d95] flex items-center justify-center text-white"><CheckCircle2 size={12} /></div>
+                                                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{rec}</p>
+                                                    </li>
+                                                ));
+                                            })()}
                                         </ul>
                                     </div>
                                 </div>
@@ -251,9 +259,12 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-2 text-amber-500"><Sun size={18} /><span className="text-xs font-bold uppercase tracking-widest">Morning</span></div>
                                             <div className="space-y-3">
-                                                {analysis.routine.morning.map((item: any) => (
-                                                    <div key={item.step} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                                        <div className="flex flex-col"><span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step}</span><span className="font-bold text-gray-900 dark:text-white text-sm">{item.name}</span></div>
+                                                {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => (
+                                                    <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
+                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -261,9 +272,12 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400"><Moon size={18} /><span className="text-xs font-bold uppercase tracking-widest">Night</span></div>
                                             <div className="space-y-3">
-                                                {analysis.routine.night.map((item: any) => (
-                                                    <div key={item.step} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                                        <div className="flex flex-col"><span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step}</span><span className="font-bold text-gray-900 dark:text-white text-sm">{item.name}</span></div>
+                                                {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => (
+                                                    <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
+                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -282,14 +296,36 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
 // --- MAIN ADMIN PAGE ---
 
 export default function AdminAnalyzesPage() {
+    const [analyses, setAnalyses] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredAnalyses = ALL_ANALYSES.filter(analysis => {
+    useEffect(() => {
+        async function fetchAnalyses() {
+            try {
+                const res = await fetch("/api/admin/analyses");
+                if (res.ok) {
+                    const data = await res.json();
+                    setAnalyses(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch admin analyses:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchAnalyses();
+    }, []);
+
+    const filteredAnalyses = analyses.filter(analysis => {
         return analysis.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                analysis.id.includes(searchTerm) || 
                analysis.date.toLowerCase().includes(searchTerm.toLowerCase());
     });
+
+    const totalAnalyses = analyses.length;
+    const avgScore = (analyses.reduce((acc, curr) => acc + curr.score, 0) / (totalAnalyses || 1)).toFixed(1);
 
     return (
         <AdminLayout>
@@ -297,10 +333,10 @@ export default function AdminAnalyzesPage() {
                 {/* Header Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                     {[
-                        { label: "Total Analyses", value: "1,284", icon: Activity, color: "text-blue-600", bg: "bg-blue-50" },
-                        { label: "Active Users", value: "842", icon: UsersIcon, color: "text-emerald-600", bg: "bg-emerald-50" },
-                        { label: "Avg. Score", value: "76.4", icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50" },
-                        { label: "New Today", value: "12", icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
+                        { label: "Total Analyses", value: totalAnalyses.toString(), icon: Activity, color: "text-blue-600", bg: "bg-blue-50" },
+                        { label: "Active Users", value: Array.from(new Set(analyses.map(a => a.userId))).length.toString(), icon: UsersIcon, color: "text-emerald-600", bg: "bg-emerald-50" },
+                        { label: "Avg. Score", value: avgScore, icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50" },
+                        { label: "New Today", value: "New", icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
                     ].map((stat, i) => (
                         <motion.div 
                             key={i}
@@ -338,69 +374,77 @@ export default function AdminAnalyzesPage() {
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="text-[10px] font-bold text-gray-400 uppercase tracking-[2px] border-b border-gray-50 dark:border-gray-700/50">
-                                    <th className="px-8 py-5">User</th>
-                                    <th className="px-8 py-5">Date</th>
-                                    <th className="px-8 py-5">Summary</th>
-                                    <th className="px-8 py-5">Score</th>
-                                    <th className="px-8 py-5 text-right whitespace-nowrap">Details</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
-                                {filteredAnalyses.map((item, i) => (
-                                    <tr 
-                                        key={item.id}
-                                        className="group hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors cursor-pointer"
-                                        onClick={() => setSelectedAnalysis(item)}
-                                    >
-                                        <td className="px-8 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="size-10 rounded-full overflow-hidden border border-gray-100">
-                                                    <Image src={item.userPhoto} width={40} height={40} alt={item.userName} className="object-cover" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-gray-900 dark:text-white text-sm">{item.userName}</p>
-                                                    <p className="text-[10px] text-gray-400">ID: USR-{1000 + i}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-4">
-                                            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">{item.date}</p>
-                                        </td>
-                                        <td className="px-8 py-4">
-                                            <div className="space-y-1">
-                                                <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.skinType} Type</p>
-                                                <div className="flex gap-1">
-                                                    {item.concerns.map(c => (
-                                                        <span key={c} className="text-[8px] bg-rose-50 text-rose-500 px-1.5 rounded uppercase font-bold">{c}</span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-[#156d95] rounded-full" style={{ width: `${item.score}%` }} />
-                                                </div>
-                                                <span className="text-sm font-bold text-gray-900 dark:text-white">{item.score}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-4 text-right">
-                                            <div className="size-8 rounded-lg bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400 group-hover:bg-[#156d95] group-hover:text-white transition-all ml-auto">
-                                                <ArrowUpRight size={16} />
-                                            </div>
-                                        </td>
+                    {loading ? (
+                        <div className="flex items-center justify-center p-20">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#156d95]"></div>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="text-[10px] font-bold text-gray-400 uppercase tracking-[2px] border-b border-gray-50 dark:border-gray-700/50">
+                                        <th className="px-8 py-5">User</th>
+                                        <th className="px-8 py-5">Date</th>
+                                        <th className="px-8 py-5">Summary</th>
+                                        <th className="px-8 py-5">Score</th>
+                                        <th className="px-8 py-5 text-right whitespace-nowrap">Details</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
+                                    {filteredAnalyses.map((item, i) => (
+                                        <tr 
+                                            key={item.id}
+                                            className="group hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors cursor-pointer"
+                                            onClick={() => setSelectedAnalysis(item)}
+                                        >
+                                            <td className="px-8 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="size-10 rounded-full overflow-hidden border border-gray-100">
+                                                        {item.userPhoto && (
+                                                            <Image src={item.userPhoto} width={40} height={40} alt={item.userName} className="object-cover" />
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-gray-900 dark:text-white text-sm">{item.userName}</p>
+                                                        <p className="text-[10px] text-gray-400">ID: {item.userId}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-4">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">{item.date}</p>
+                                            </td>
+                                            <td className="px-8 py-4">
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.skinType} Type</p>
+                                                    <div className="flex gap-1 flex-wrap">
+                                                        {item.concerns.map((c: string) => (
+                                                            <span key={c} className="text-[8px] bg-rose-50 text-rose-500 px-1.5 rounded uppercase font-bold">{c}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-12 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                                        <div className="h-full bg-[#156d95] rounded-full" style={{ width: `${item.score}%` }} />
+                                                    </div>
+                                                    <span className="text-sm font-bold text-gray-900 dark:text-white">{item.score}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-4 text-right">
+                                                <div className="size-8 rounded-lg bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400 group-hover:bg-[#156d95] group-hover:text-white transition-all ml-auto">
+                                                    <ArrowUpRight size={16} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                     
                     <div className="p-8 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                        <p className="text-xs text-gray-400 font-medium">Showing {filteredAnalyses.length} of {ALL_ANALYSES.length} analyses</p>
+                        <p className="text-xs text-gray-400 font-medium">Showing {filteredAnalyses.length} of {analyses.length} analyses</p>
                         <div className="flex items-center gap-2">
                             <button className="px-4 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-400 opacity-50 cursor-not-allowed">Previous</button>
                             <button className="px-4 py-2 border border-blue-500 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold cursor-not-allowed">Next</button>

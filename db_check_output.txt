@@ -1,0 +1,74 @@
+﻿Total analyses in DB: [ { total: '57' } ]
+Sample rows: [
+  {
+    "id": 57,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "final",
+    "created_at": "2026-03-25T19:59:43.375Z"
+  },
+  {
+    "id": 56,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:40.725Z"
+  },
+  {
+    "id": 55,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:40.640Z"
+  },
+  {
+    "id": 54,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:38.553Z"
+  },
+  {
+    "id": 53,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:38.472Z"
+  },
+  {
+    "id": 52,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:37.810Z"
+  },
+  {
+    "id": 51,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:37.719Z"
+  },
+  {
+    "id": 50,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:37.041Z"
+  },
+  {
+    "id": 49,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:36.955Z"
+  },
+  {
+    "id": 48,
+    "user_id": 13,
+    "score": 62,
+    "trigger": "progress",
+    "created_at": "2026-03-25T19:59:35.621Z"
+  }
+]
+Users: [{"id":47,"email":"test3@gmail.com"},{"id":39,"email":"unverified1772329929132@example.com"},{"id":17,"email":"admin@gmail.com"},{"id":15,"email":"meriem@gmail.com"},{"id":16,"email":"souhir.krizi002@gmail.com"}]
