@@ -108,6 +108,38 @@ export async function GET() {
 
     const subscriptionDistribution = [planCounts.starter, planCounts.pro, planCounts.luxury];
 
+    // 6. WEEKLY PROFIT (Last 7 Days)
+    const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const weeklyStats = Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date();
+      d.setDate(now.getDate() - (6 - i));
+      return {
+        day: weekDays[d.getDay()],
+        dateStr: d.toDateString(),
+        sales: 0,
+        revenue: 0,
+      };
+    });
+
+    subscriptions.forEach(sub => {
+      const subDate = new Date(sub.date_debut);
+      const subDateStr = subDate.toDateString();
+      const statIndex = weeklyStats.findIndex(w => w.dateStr === subDateStr);
+      
+      if (statIndex !== -1) {
+        const planKey = sub.plan.toLowerCase().trim();
+        let price = prices[planKey] || 39;
+        
+        // Match specific synonyms
+        if (planKey.includes('essential') || planKey.includes('starter')) price = prices['essential'];
+        else if (planKey.includes('premium') || planKey.includes('pro')) price = prices['premium'];
+        else if (planKey.includes('luxury') || planKey.includes('enterprise')) price = prices['luxury'];
+
+        weeklyStats[statIndex].sales += 1;
+        weeklyStats[statIndex].revenue += price;
+      }
+    });
+
     return NextResponse.json({
       totalUsers,
       totalSubscriptions,
@@ -116,11 +148,12 @@ export async function GET() {
       donutData,
       subscriptionDistribution,
       profitData: {
-        sales: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ x: d, y: 0 })),
-        revenue: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ x: d, y: 0 }))
+        sales: weeklyStats.map(w => ({ x: w.day, y: w.sales })),
+        revenue: weeklyStats.map(w => ({ x: w.day, y: w.revenue }))
       },
       lastUpdated: new Date().toISOString()
     });
+
 
 
 

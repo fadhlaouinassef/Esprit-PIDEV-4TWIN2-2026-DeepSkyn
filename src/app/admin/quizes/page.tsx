@@ -10,6 +10,7 @@ import {
     SquarePen,
     Trash2,
     ChevronDown,
+    ChevronRight,
     BookOpenCheck,
     FileText,
     PlusCircle,
@@ -30,6 +31,7 @@ import {
     HeartPulse,
     UserCircle
 } from "lucide-react";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
@@ -312,6 +314,13 @@ export default function QuizzesPage() {
     return (
         <AdminLayout>
             <div className="max-w-6xl mx-auto space-y-6 pb-20">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-400">
+                    <span>Admin</span>
+                    <ChevronRight size={14} />
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">Quiz Management</span>
+                </nav>
+
                 <AnimatePresence mode="wait">
                     {view === "list" ? (
                         <motion.div
