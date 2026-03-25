@@ -87,6 +87,8 @@ export function PaymentsOverviewChart({ data }: PropsType) {
         },
     };
 
+    if (!data) return <div className="h-[310px] flex items-center justify-center">Loading data...</div>;
+
     return (
         <div className="-ml-4 -mr-5 h-[310px]">
             <Chart
@@ -94,11 +96,11 @@ export function PaymentsOverviewChart({ data }: PropsType) {
                 series={[
                     {
                         name: "Received",
-                        data: data.received,
+                        data: data.received || [],
                     },
                     {
                         name: "Due",
-                        data: data.due,
+                        data: data.due || [],
                     },
                 ]}
                 type="area"
@@ -106,4 +108,5 @@ export function PaymentsOverviewChart({ data }: PropsType) {
             />
         </div>
     );
+
 }

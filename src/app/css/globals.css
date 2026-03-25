@@ -199,8 +199,16 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-none;
   }
+
+  *:focus, *:focus-visible {
+    @apply outline-none ring-0 ring-offset-0;
+    box-shadow: none !important;
+  }
+
+
+
 
   .admin-dashboard {
     font-size: 1.125rem;

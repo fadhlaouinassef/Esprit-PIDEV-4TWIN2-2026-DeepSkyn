@@ -93,6 +93,8 @@ export function WeeksProfitChart({ data }: PropsType) {
             opacity: 1,
         },
     };
+    if (!data) return <div className="h-[370px] flex items-center justify-center text-sm italic text-gray-400">Loading data...</div>;
+
     return (
         <div className="-ml-3.5 mt-3">
             <Chart
@@ -100,11 +102,11 @@ export function WeeksProfitChart({ data }: PropsType) {
                 series={[
                     {
                         name: "Sales",
-                        data: data.sales,
+                        data: data.sales || [],
                     },
                     {
                         name: "Revenue",
-                        data: data.revenue,
+                        data: data.revenue || [],
                     },
                 ]}
                 type="bar"
@@ -112,4 +114,5 @@ export function WeeksProfitChart({ data }: PropsType) {
             />
         </div>
     );
+
 }
