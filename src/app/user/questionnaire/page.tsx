@@ -41,6 +41,20 @@ interface UploadedSurveyImage {
     base64: string;
 }
 
+type N8nResult = {
+    status?: string;
+    nextQuestion?: {
+        id?: number;
+        text?: string;
+        type?: string;
+        options?: unknown;
+        quizId?: number;
+    };
+    text?: string;
+    analysis?: string;
+    score?: number;
+};
+
 // N8N Webhook Proxy URL
 const N8N_WEBHOOK_URL = "/api/quiz/n8n";
 
@@ -120,7 +134,7 @@ const fileToCompressedDataUrl = (file: File): Promise<string> =>
         reader.readAsDataURL(file);
     });
 
-const parseN8nResult = (raw: unknown): any => {
+const parseN8nResult = (raw: unknown): N8nResult | null => {
     let result = Array.isArray(raw) ? raw[0] : raw;
 
     if (result && typeof result === 'object' && 'json' in (result as Record<string, unknown>)) {
@@ -130,7 +144,8 @@ const parseN8nResult = (raw: unknown): any => {
         result = (result as Record<string, unknown>).body;
     }
 
-    return result;
+    if (!result || typeof result !== 'object') return null;
+    return result as N8nResult;
 };
 
 export default function QuestionnairePage() {
@@ -191,8 +206,13 @@ export default function QuestionnairePage() {
                 }
             }
 
-            const fallbackAnalysis = String(result.analysis || 'Analysis complete.');
-            const fallbackScore = Number(result.score || 85);
+            const incomingAnalysis = String(result.analysis || '').trim();
+            const incomingScore = Number(result.score);
+            const hasIncomingAnalysis = incomingAnalysis.length > 0;
+            const hasIncomingScore = Number.isFinite(incomingScore);
+
+            const fallbackAnalysis = hasIncomingAnalysis ? incomingAnalysis : 'Analysis complete.';
+            const fallbackScore = hasIncomingScore ? incomingScore : 85;
 
             const elapsed = Date.now() - startedAt;
             const minLoaderDuration = 1200;
@@ -201,8 +221,11 @@ export default function QuestionnairePage() {
             }
 
             setAnalysisResult({
-                analysis: computed?.analysis || fallbackAnalysis,
-                score: Number.isFinite(computed?.score) ? Number(computed?.score) : fallbackScore,
+                // Final n8n/Gemini output has priority for displayed final result.
+                analysis: hasIncomingAnalysis ? incomingAnalysis : (computed?.analysis || fallbackAnalysis),
+                score: hasIncomingScore
+                    ? incomingScore
+                    : (Number.isFinite(computed?.score) ? Number(computed?.score) : fallbackScore),
                 scoreEau: computed?.scoreEau,
                 agePeau: computed?.agePeau,
                 skinType: computed?.skinType,
@@ -305,15 +328,17 @@ export default function QuestionnairePage() {
 
             if (result && result.status === "continue" && (result.nextQuestion || result.text)) {
                 const nextQ = result.nextQuestion || { text: result.text, id: Date.now(), type: 'TEXT' };
+                const normalizedQuestionId = Number(nextQ.id || Date.now());
+                const normalizedQuestionText = String(nextQ.text || 'Please continue.');
                 setCurrentQuestion({
-                    id: nextQ.id,
-                    text: nextQ.text,
+                    id: normalizedQuestionId,
+                    text: normalizedQuestionText,
                     type: normalizeQuestionType(nextQ.type),
                     options: normalizeOptions(nextQ.options),
                     quizId: nextQ.quizId
                 });
                 if (nextQ.quizId) setQuizId(nextQ.quizId);
-                setMessages(prev => [...prev, { role: "assistant", content: nextQ.text }]);
+                setMessages(prev => [...prev, { role: "assistant", content: normalizedQuestionText }]);
             } else if (result && result.status === "complete") {
                 setPendingFinalResult(result as Record<string, unknown>);
                 setIsImageStep(true);
@@ -474,9 +499,43 @@ export default function QuestionnairePage() {
 
     const skipImageStep = async () => {
         if (!pendingFinalResult) return;
-        setIsImageStep(false);
-        setPendingFinalResult(null);
-        await finalizeAndSaveAnalysis(pendingFinalResult);
+
+        setIsSubmittingImages(true);
+        try {
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: userId || 0,
+                    quizId,
+                    model: selectedModel,
+                    sessionId: questionnaireSessionIdRef.current,
+                    answersSoFar,
+                    forceFinalAnalysis: true,
+                }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.detail || errData.error || 'Final analysis request failed');
+            }
+
+            const result = parseN8nResult(await response.json());
+            setIsImageStep(false);
+            setPendingFinalResult(null);
+            await finalizeAndSaveAnalysis((result && result.status === 'complete') ? result : pendingFinalResult);
+        } catch (error: unknown) {
+            const err = error as { message?: string };
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: 'assistant',
+                    content: `Unable to finalize analysis: ${err.message || 'unknown error'}.`,
+                },
+            ]);
+        } finally {
+            setIsSubmittingImages(false);
+        }
     };
 
     const handleUserResponse = async (content: string, imageData?: string) => {
