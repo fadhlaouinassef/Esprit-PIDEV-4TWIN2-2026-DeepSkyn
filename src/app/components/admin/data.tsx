@@ -11,6 +11,7 @@ import {
     FileText,
     MessageSquare,
     ClipboardList,
+    Activity,
     LucideIcon
 } from "lucide-react";
 
@@ -47,6 +48,12 @@ export const NAV_DATA: NavSection[] = [
                 icon: BarChart3,
                 items: [],
             },
+            {
+                title: "Analyzes",
+                url: "/admin/Analyzes",
+                icon: Activity,
+                items: [],
+            },
         ],
     },
     {
@@ -66,12 +73,6 @@ export const NAV_DATA: NavSection[] = [
                 title: "Quizzes",
                 url: "/admin/quizes",
                 icon: ClipboardList,
-                items: [],
-            },
-            {
-                title: "Products",
-                url: "/admin/products",
-                icon: Package,
                 items: [],
             },
             {
