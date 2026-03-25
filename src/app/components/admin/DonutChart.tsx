@@ -14,7 +14,10 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function DonutChart({ data }: PropsType) {
+    if (!data || data.length === 0) return <div className="h-[300px] flex items-center justify-center text-gray-400 italic">No data available</div>;
+
     const chartOptions: ApexOptions = {
+
         chart: {
             type: "donut",
             background: 'transparent',
