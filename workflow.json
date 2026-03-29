@@ -179,11 +179,148 @@
       }
     },
     {
+      "id": "13",
+      "name": "IF - Routine Status Complete",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1660, 200],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "equal",
+              "value2": "complete"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "14",
+      "name": "Prepare Routine Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1860, 120],
+      "parameters": {
+        "jsCode": "const finalAnalysis = $node[\"Parser Analyse Finale\"].json || {};\nconst nextStep = $node[\"Determiner Prochaine Etape\"].json || {};\nconst webhookRaw = $node[\"Quiz Webhook\"].json || {};\nconst body = webhookRaw.body && typeof webhookRaw.body === 'object' ? webhookRaw.body : webhookRaw;\n\nconst answers = (() => {\n  try {\n    return JSON.parse(nextStep.answersJSON || '[]');\n  } catch (e) {\n    return [];\n  }\n})();\n\nconst userId = Number(body.userId || 0);\nconst analysis = String(finalAnalysis.analysis || '');\nconst score = Number(finalAnalysis.score || 0);\n\nconst hashString = (str) => {\n  let h = 2166136261;\n  for (let i = 0; i < str.length; i++) {\n    h ^= str.charCodeAt(i);\n    h = Math.imul(h, 16777619);\n  }\n  return (h >>> 0).toString(16);\n};\n\nconst analysisHash = hashString(`${userId}|${analysis}`);\nconst idempotencyKey = `${userId}:${analysisHash}`;\n\nreturn {\n  status: 'complete',\n  analysis,\n  score,\n  userId,\n  answers,\n  analysisHash,\n  idempotencyKey\n};"
+      }
+    },
+    {
+      "id": "15",
+      "name": "Generate Routine",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2060, 120],
+      "continueOnFail": true,
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({\n  model: 'google/gemini-2.0-flash-001',\n  temperature: 0.1,\n  response_format: { type: 'json_object' },\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert skincare routine generator. Return ONLY valid JSON. No markdown. No prose. No extra keys. Use exactly this schema and key order: {\"title\":\"string\",\"skinType\":\"OILY|DRY|COMBINATION|SENSITIVE|NORMAL\",\"morning\":[{\"step\":1,\"name\":\"string\",\"instruction\":\"string\",\"frequency\":\"daily\"}],\"evening\":[{\"step\":1,\"name\":\"string\",\"instruction\":\"string\",\"frequency\":\"daily\"}],\"weekly\":[{\"day\":\"string\",\"focus\":\"string\",\"instruction\":\"string\"}],\"warnings\":[\"string\"],\"durationWeeks\":4}. Rules: skinType must be one of enum values; morning/evening steps must be sequential starting at 1; frequency must be daily for all morning/evening items; durationWeeks must be integer 4.'\n    },\n    {\n      role: 'user',\n      content: 'Generate a personalized skincare routine JSON from this input. userId=' + String($node[\"Prepare Routine Context\"].json.userId || 0) + '; score=' + String($node[\"Prepare Routine Context\"].json.score || 0) + '; analysis=' + String($node[\"Prepare Routine Context\"].json.analysis || '') + '; answers=' + JSON.stringify($node[\"Prepare Routine Context\"].json.answers || [])\n    }\n  ]\n}) }}"
+      }
+    },
+    {
+      "id": "16",
+      "name": "Parser Routine JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2260, 120],
+      "parameters": {
+        "jsCode": "const base = $node[\"Prepare Routine Context\"].json || {};\nconst src = $node[\"Generate Routine\"].json || {};\n\nconst allowedSkinTypes = new Set(['OILY', 'DRY', 'COMBINATION', 'SENSITIVE', 'NORMAL']);\n\nconst isValidStepList = (list) => Array.isArray(list) && list.every((item, idx) =>\n  Number(item?.step) === idx + 1 &&\n  typeof item?.name === 'string' && item.name.trim().length > 0 &&\n  typeof item?.instruction === 'string' && item.instruction.trim().length > 0 &&\n  String(item?.frequency || '').toLowerCase() === 'daily'\n);\n\nconst isValidWeekly = (list) => Array.isArray(list) && list.every((item) =>\n  typeof item?.day === 'string' && item.day.trim().length > 0 &&\n  typeof item?.focus === 'string' && item.focus.trim().length > 0 &&\n  typeof item?.instruction === 'string' && item.instruction.trim().length > 0\n);\n\nconst isValidRoutine = (obj) => {\n  if (!obj || typeof obj !== 'object') return false;\n  if (typeof obj.title !== 'string' || !obj.title.trim()) return false;\n  if (!allowedSkinTypes.has(String(obj.skinType || '').toUpperCase())) return false;\n  if (!isValidStepList(obj.morning)) return false;\n  if (!isValidStepList(obj.evening)) return false;\n  if (!isValidWeekly(obj.weekly)) return false;\n  if (!Array.isArray(obj.warnings) || !obj.warnings.every((w) => typeof w === 'string')) return false;\n  if (Number(obj.durationWeeks) !== 4) return false;\n  return true;\n};\n\nlet generatedRoutine = null;\nlet routineGenerationError = null;\n\ntry {\n  if (src?.error) {\n    throw new Error(String(src.error.message || src.error || 'Routine generation request failed'));\n  }\n\n  const raw = src?.choices?.[0]?.message?.content || '{}';\n  const text = typeof raw === 'string' ? raw : JSON.stringify(raw);\n  const parsed = JSON.parse(text);\n\n  if (!isValidRoutine(parsed)) {\n    throw new Error('Routine JSON does not match expected schema');\n  }\n\n  generatedRoutine = {\n    ...parsed,\n    skinType: String(parsed.skinType).toUpperCase()\n  };\n} catch (error) {\n  routineGenerationError = String(error?.message || error || 'Unknown routine generation error');\n}\n\nreturn {\n  ...base,\n  generatedRoutine,\n  routineGenerationError\n};"
+      }
+    },
+    {
+      "id": "17",
+      "name": "IF - Routine JSON Ready",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [2460, 120],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.generatedRoutine ? 'ok' : 'error' }}",
+              "operation": "equal",
+              "value2": "ok"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "18",
+      "name": "Save Routine DB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2660, 60],
+      "continueOnFail": true,
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/quiz/save-routine",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  userId: Number($node[\"Parser Routine JSON\"].json.userId || 0),\n  analysis: String($node[\"Parser Routine JSON\"].json.analysis || ''),\n  analysisHash: String($node[\"Parser Routine JSON\"].json.analysisHash || ''),\n  score: Number($node[\"Parser Routine JSON\"].json.score || 0),\n  quizAnswers: $node[\"Parser Routine JSON\"].json.answers || [],\n  routine: $node[\"Parser Routine JSON\"].json.generatedRoutine,\n  upsert: true,\n  source: 'n8n-routine-generator',\n  idempotencyKey: String($node[\"Parser Routine JSON\"].json.idempotencyKey || '')\n} }}"
+      }
+    },
+    {
+      "id": "19",
+      "name": "Logger Routine",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2860, 120],
+      "parameters": {
+        "jsCode": "const parsedRoutine = $node[\"Parser Routine JSON\"]?.json || {};\nconst saveResult = $node[\"Save Routine DB\"]?.json || $json || {};\n\nif (parsedRoutine.routineGenerationError) {\n  console.error('[Routine] Generation failed:', parsedRoutine.routineGenerationError);\n}\n\nif (saveResult.error) {\n  console.error('[Routine] Save DB failed:', saveResult.error);\n}\n\nif (!parsedRoutine.routineGenerationError && !saveResult.error) {\n  console.log('[Routine] Routine generated and persisted successfully.');\n}\n\nreturn {\n  status: 'complete',\n  analysis: String(parsedRoutine.analysis || ''),\n  score: Number(parsedRoutine.score || 0)\n};"
+      }
+    },
+    {
+      "id": "20",
+      "name": "Reponse Finale Complete",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [3060, 200],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "={{ $json.status || 'complete' }}"
+            },
+            {
+              "name": "analysis",
+              "value": "={{ $json.analysis || '' }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "score",
+              "value": "={{ Number($json.score || 0) }}"
+            }
+          ]
+        },
+        "keepOnlySet": true
+      }
+    },
+    {
       "id": "9",
       "name": "Merge Reponses",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
-      "position": [1860, 300],
+      "position": [3260, 300],
       "parameters": {
         "mode": "append"
       }
@@ -318,6 +455,108 @@
       "main": [
         [
           {
+            "node": "IF - Routine Status Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Routine Status Complete": {
+      "main": [
+        [
+          {
+            "node": "Prepare Routine Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reponse Finale Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Routine Context": {
+      "main": [
+        [
+          {
+            "node": "Generate Routine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Routine": {
+      "main": [
+        [
+          {
+            "node": "Parser Routine JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser Routine JSON": {
+      "main": [
+        [
+          {
+            "node": "IF - Routine JSON Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Routine JSON Ready": {
+      "main": [
+        [
+          {
+            "node": "Save Routine DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Logger Routine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Routine DB": {
+      "main": [
+        [
+          {
+            "node": "Logger Routine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logger Routine": {
+      "main": [
+        [
+          {
+            "node": "Reponse Finale Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reponse Finale Complete": {
+      "main": [
+        [
+          {
             "node": "Merge Reponses",
             "type": "main",
             "index": 0
@@ -330,7 +569,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "adaptive-loop-v3",
+  "versionId": "adaptive-loop-v4-routine",
   "id": "skincare-quiz-workflow",
   "meta": {
     "instanceId": "1"
