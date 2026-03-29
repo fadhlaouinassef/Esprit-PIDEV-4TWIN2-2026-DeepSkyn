@@ -37,6 +37,8 @@ type ComputeOptions = {
   quizId?: number;
   trigger?: string;
   saveLegacySkinAnalyse?: boolean;
+  finalSummaryOverride?: string;
+  finalScoreOverride?: number;
 };
 
 const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(max, value));
@@ -319,6 +321,8 @@ export const computeAndStoreSkinScoreAnalysis = async ({
   quizId,
   trigger = 'progress',
   saveLegacySkinAnalyse = false,
+  finalSummaryOverride,
+  finalScoreOverride,
 }: ComputeOptions) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -349,6 +353,18 @@ export const computeAndStoreSkinScoreAnalysis = async ({
   }
 
   const snapshot = computeFromAnswers(answers, user.age ?? null, user.skin_type ?? null);
+
+  const normalizedSummaryOverride = String(finalSummaryOverride || '').trim();
+  const hasSummaryOverride = normalizedSummaryOverride.length > 0;
+  const hasScoreOverride = Number.isFinite(finalScoreOverride);
+
+  if (hasSummaryOverride) {
+    snapshot.analysis = normalizedSummaryOverride;
+  }
+
+  if (hasScoreOverride) {
+    snapshot.score = clamp(Math.round(Number(finalScoreOverride)), 0, 100);
+  }
 
   const inserted = await prisma.$queryRawUnsafe<{ id: number }[]>(
     `INSERT INTO "SkinScoreAnalysis" (

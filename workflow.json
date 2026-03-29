@@ -75,7 +75,26 @@
       "typeVersion": 2,
       "position": [1240, 400],
       "parameters": {
-        "jsCode": "const base = $node[\"Determiner Prochaine Etape\"].json;\n\nif (base.mode === 'opening' && base.nextQuestion) {\n  return { status: 'continue', nextQuestion: base.nextQuestion };\n}\n\nconst answers = JSON.parse(base.answersJSON || '[]');\nconst remainingQuestions = JSON.parse(base.remainingQuestionsJSON || '[]');\n\nif (!remainingQuestions.length) {\n  const summary = answers.slice(-3).map((a) => `Q${a.questionId}: ${a.answer}`).join(' | ');\n  return {\n    status: 'complete',\n    analysis: `Questionnaire completed: no more relevant questions. Final summary: ${summary || 'answers recorded'}.`,\n    score: 82\n  };\n}\n\nconst allAnswerText = answers.map((a) => String(a.answer || '')).join(' ').toLowerCase();\nconst lastAnswer = String(answers[answers.length - 1]?.answer || '').toLowerCase();\n\nconst tokenize = (txt) => String(txt || '').toLowerCase().replace(/[^a-z0-9_\\s]/g, ' ').split(/\\s+/).filter((t) => t.length > 2);\nconst answerTokens = new Set(tokenize(`${lastAnswer} ${allAnswerText}`));\n\nconst questionScore = (q) => {\n  const optionText = Array.isArray(q.options) ? q.options.map((o) => o?.text || o).join(' ') : '';\n  const qTokens = tokenize(`${q.text || ''} ${optionText}`);\n  let overlap = 0;\n  for (const t of qTokens) {\n    if (answerTokens.has(t)) overlap += 1;\n  }\n  const typeBonus = String(q.type || '').toLowerCase().includes('multiple') ? 0.5 : 0;\n  const diversityBonus = (q.quizId || q.quiz_id) ? 0.2 : 0;\n  return overlap + typeBonus + diversityBonus;\n};\n\nconst ranked = [...remainingQuestions].sort((a, b) => questionScore(b) - questionScore(a) || Number(a.id) - Number(b.id));\n\nconst categories = [\n  /(oily|dry|combination|normal|sensitive|skin type|tight|shiny|flaky)/i,\n  /(acne|pores|redness|pigmentation|aging|dehydration|dullness|blackheads)/i,\n  /(sunscreen|sun exposure|uv|spf)/i,\n  /(sleep|stress|diet|water|climate|pollution|smoke)/i,\n  /(cleanser|exfoliate|routine|moisturizer|product|texture)/i\n];\n\nlet covered = 0;\nfor (const re of categories) {\n  if (re.test(allAnswerText)) covered += 1;\n}\n\nconst informativeAnswers = answers.filter((a) => {\n  const txt = String(a.answer || '').trim().toLowerCase();\n  return txt.length > 2 && !['idk', 'unknown', 'none', 'n/a', 'not sure'].includes(txt);\n}).length;\n\nconst informativeRatio = answers.length ? informativeAnswers / answers.length : 0;\nconst minQuestions = 3;\nconst maxQuestions = 12;\nconst shouldStop = answers.length >= minQuestions && (covered >= 4 || (answers.length >= 5 && informativeRatio >= 0.75) || answers.length >= maxQuestions);\n\nif (shouldStop) {\n  const reasons = [];\n  if (covered >= 4) reasons.push('sufficient skin profile coverage');\n  if (informativeRatio >= 0.75) reasons.push('detailed and coherent answers');\n  if (answers.length >= maxQuestions) reasons.push('maximum number of questions reached');\n\n  return {\n    status: 'complete',\n    analysis: `Dynamic questionnaire stop (${reasons.join(', ')}). We now have enough data for a personalized analysis.`,\n    score: Math.min(95, 68 + covered * 5 + Math.round(informativeRatio * 10))\n  };\n}\n\nreturn { status: 'continue', nextQuestion: ranked[0] || remainingQuestions[0] };"
+        "jsCode": "const base = $node[\"Determiner Prochaine Etape\"].json;\n\nif (base.mode === 'opening' && base.nextQuestion) {\n  return { status: 'continue', nextQuestion: base.nextQuestion };\n}\n\nconst answers = JSON.parse(base.answersJSON || '[]');\nconst remainingQuestions = JSON.parse(base.remainingQuestionsJSON || '[]');\n\nif (!remainingQuestions.length) {\n  return { status: 'complete', score: 82 };\n}\n\nconst allAnswerText = answers.map((a) => String(a.answer || '')).join(' ').toLowerCase();\nconst lastAnswer = String(answers[answers.length - 1]?.answer || '').toLowerCase();\n\nconst tokenize = (txt) => String(txt || '').toLowerCase().replace(/[^a-z0-9_\\s]/g, ' ').split(/\\s+/).filter((t) => t.length > 2);\nconst answerTokens = new Set(tokenize(`${lastAnswer} ${allAnswerText}`));\n\nconst questionScore = (q) => {\n  const optionText = Array.isArray(q.options) ? q.options.map((o) => o?.text || o).join(' ') : '';\n  const qTokens = tokenize(`${q.text || ''} ${optionText}`);\n  let overlap = 0;\n  for (const t of qTokens) {\n    if (answerTokens.has(t)) overlap += 1;\n  }\n  const typeBonus = String(q.type || '').toLowerCase().includes('multiple') ? 0.5 : 0;\n  const diversityBonus = (q.quizId || q.quiz_id) ? 0.2 : 0;\n  return overlap + typeBonus + diversityBonus;\n};\n\nconst ranked = [...remainingQuestions].sort((a, b) => questionScore(b) - questionScore(a) || Number(a.id) - Number(b.id));\n\nconst categories = [\n  /(oily|dry|combination|normal|sensitive|skin type|tight|shiny|flaky)/i,\n  /(acne|pores|redness|pigmentation|aging|dehydration|dullness|blackheads)/i,\n  /(sunscreen|sun exposure|uv|spf)/i,\n  /(sleep|stress|diet|water|climate|pollution|smoke)/i,\n  /(cleanser|exfoliate|routine|moisturizer|product|texture)/i\n];\n\nlet covered = 0;\nfor (const re of categories) {\n  if (re.test(allAnswerText)) covered += 1;\n}\n\nconst informativeAnswers = answers.filter((a) => {\n  const txt = String(a.answer || '').trim().toLowerCase();\n  return txt.length > 2 && !['idk', 'unknown', 'none', 'n/a', 'not sure'].includes(txt);\n}).length;\n\nconst informativeRatio = answers.length ? informativeAnswers / answers.length : 0;\nconst requiredQuestions = 10;\nconst shouldStop = answers.length >= requiredQuestions;\n\nif (shouldStop) {\n  return {\n    status: 'complete',\n    score: Math.min(95, 68 + covered * 5 + Math.round(informativeRatio * 10))\n  };\n}\n\nreturn { status: 'continue', nextQuestion: ranked[0] || remainingQuestions[0] };"
+        
+      }
+    },
+    {
+      "id": "12",
+      "name": "IF - Stop Adaptatif",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1360, 400],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "equal",
+              "value2": "complete"
+            }
+          ]
+        }
       }
     },
     {
@@ -85,7 +104,7 @@
       "typeVersion": 2,
       "position": [1460, 400],
       "parameters": {
-        "jsCode": "const src = $node[\"Decision Adaptative Locale\"].json || {};\nif (src.status === 'complete') {\n  return { status: 'complete', analysis: src.analysis || 'Analysis complete.', score: Number(src.score || 80) };\n}\nif (!src.nextQuestion) {\n  return { status: 'complete', analysis: 'Questionnaire complete: no next question.', score: 80 };\n}\nreturn { status: 'continue', nextQuestion: src.nextQuestion };"
+        "jsCode": "const src = $node[\"Decision Adaptative Locale\"].json || {};\nif (src.nextQuestion) {\n  return { status: 'continue', nextQuestion: src.nextQuestion };\n}\nreturn { status: 'complete', analysis: 'Questionnaire complete: no next question.', score: Number(src.score || 80) };"
       }
     },
     {
@@ -130,10 +149,23 @@
       "position": [1240, 200],
       "parameters": {
         "method": "POST",
-        "url": "={{ 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + $env.GEMINI_API_KEY }}",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ ({\n  contents: [{\n    parts: [\n      {\n        text: 'You are an expert dermatologist. Analyze quiz answers and skin images (if provided) with a careful and clinically grounded approach. Return only valid JSON with exactly these keys: status, analysis, score. Strict constraints: status must be complete; score must be an integer from 0 to 100; analysis must be detailed and actionable, between 1200 and 3000 characters, fully in professional English, and structured in 7 numbered sections: 1) probable skin profile and confidence level, 2) detailed interpretation of observed signs and correlation with answers, 3) likely aggravating factors and habits to improve, 4) cautious differential assessment with main and secondary hypotheses, 5) personalized morning and evening routine with recommended actives, concentrations, and gradual frequency, 6) warning signs and situations requiring in-person consultation, 7) 4-week follow-up plan with measurable goals. Forbidden: no markdown, no extra keys, no text outside JSON, no absolute medical claims. Clearly mention limitations of remote analysis. Answers JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.answersJSON || '[]') + '. Questions JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.questionsJSON || '[]')\n      },\n      ...(($node[\"Quiz Webhook\"].json.body?.imageParts ?? $node[\"Quiz Webhook\"].json.imageParts ?? []).slice(0, 5))\n    ]\n  }],\n  generationConfig: {\n    responseMimeType: 'application/json',\n    temperature: 0.2\n  }\n}) }}"
+        "jsonBody": "={{ ({\n  model: 'google/gemini-2.0-flash-001',\n  temperature: 0.2,\n  response_format: { type: 'json_object' },\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert dermatologist. Return only valid JSON with exactly these keys: status, analysis, score. Constraints: status must be complete; score must be an integer from 0 to 100; analysis must be detailed and actionable in professional English. No markdown and no extra keys.'\n    },\n    {\n      role: 'user',\n      content: 'Analyze these questionnaire answers. Answers JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.answersJSON || '[]') + '. Questions JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.questionsJSON || '[]')\n    }\n  ]\n}) }}"
       }
     },
     {
@@ -143,7 +175,7 @@
       "typeVersion": 2,
       "position": [1460, 200],
       "parameters": {
-        "jsCode": "const src = $node[\"Gemini Analyse Finale\"].json || {};\nlet parsed = null;\ntry {\n  const txt = src?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';\n  parsed = JSON.parse(txt);\n} catch (e) {\n  parsed = null;\n}\n\nreturn {\n  status: 'complete',\n  analysis: String(parsed?.analysis || 'Analysis complete.'),\n  score: Number(parsed?.score || 80)\n};"
+        "jsCode": "const src = $node[\"Gemini Analyse Finale\"].json || {};\n\nlet parsed = null;\ntry {\n  const raw = src?.choices?.[0]?.message?.content || '{}';\n  const txt = typeof raw === 'string' ? raw : JSON.stringify(raw);\n  parsed = JSON.parse(txt);\n} catch (e) {\n  parsed = null;\n}\n\nreturn {\n  status: 'complete',\n  analysis: String(parsed?.analysis || src?.error?.message || 'Analysis complete.'),\n  score: Number(parsed?.score || 80)\n};"
       }
     },
     {
@@ -222,6 +254,24 @@
     },
     "Decision Adaptative Locale": {
       "main": [
+        [
+          {
+            "node": "IF - Stop Adaptatif",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Stop Adaptatif": {
+      "main": [
+        [
+          {
+            "node": "Gemini Analyse Finale",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Parser Prochaine Question",

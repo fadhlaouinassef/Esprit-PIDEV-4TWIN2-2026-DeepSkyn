@@ -6,6 +6,7 @@ import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History } from "lucide-react";
+import { toast } from "sonner";
 
 interface Question {
     id: number;
@@ -183,10 +184,17 @@ export default function QuestionnairePage() {
             let computed: Partial<AnalysisResult> | null = null;
 
             if (userId) {
+                const incomingAnalysis = String(result.analysis || '').trim();
+                const incomingScore = Number(result.score);
                 const response = await fetch('/api/quiz/skin-score', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, quizId })
+                    body: JSON.stringify({
+                        userId,
+                        quizId,
+                        finalSummaryOverride: incomingAnalysis,
+                        finalScoreOverride: Number.isFinite(incomingScore) ? incomingScore : undefined,
+                    })
                 });
 
                 if (response.ok) {
@@ -371,7 +379,14 @@ export default function QuestionnairePage() {
         if (files.length === 0) return;
 
         const remaining = 5 - uploadedSurveyImages.length;
-        if (remaining <= 0) return;
+        if (remaining <= 0) {
+            toast.error('Maximum 5 images autorisees.');
+            return;
+        }
+
+        if (files.length > remaining) {
+            toast.warning('Maximum 5 images autorisees. Veuillez retirer des images avant d\'en ajouter.');
+        }
 
         const selected = files.slice(0, remaining);
         const converted: UploadedSurveyImage[] = [];
