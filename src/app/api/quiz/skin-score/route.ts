@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
     const body = (await request.json().catch(() => ({}))) as {
       userId?: number;
       quizId?: number;
+      finalSummaryOverride?: string;
+      finalScoreOverride?: number;
     };
 
     const sessionUser = await prisma.user.findUnique({
@@ -37,6 +39,8 @@ export async function POST(request: NextRequest) {
       quizId,
       trigger: 'final',
       saveLegacySkinAnalyse: true,
+      finalSummaryOverride: String(body.finalSummaryOverride || ''),
+      finalScoreOverride: Number(body.finalScoreOverride),
     });
 
     return NextResponse.json(result, { status: 201 });

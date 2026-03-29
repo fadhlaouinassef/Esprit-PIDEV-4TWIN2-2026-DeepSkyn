@@ -66,9 +66,11 @@ export async function GET(request: NextRequest) {
           month: 'long',
           day: 'numeric',
           year: 'numeric',
+          timeZone: 'UTC',
         }) + ' at ' + new Date(analysis.created_at).toLocaleTimeString('en-US', {
           hour: '2-digit',
-           minute: '2-digit'
+          minute: '2-digit',
+          timeZone: 'UTC',
         }),
         fullDate: analysis.created_at, // useful for sorting or hidden fields
         score: Math.round(Number(analysis.score)),

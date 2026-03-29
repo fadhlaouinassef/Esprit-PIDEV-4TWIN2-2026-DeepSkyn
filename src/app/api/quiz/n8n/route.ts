@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const N8N_URL = process.env.N8N_WEBHOOK_URL || "http://localhost:5678/webhook/skincare-quiz";
 const ALLOW_TEST_WEBHOOK = process.env.N8N_ALLOW_TEST_WEBHOOK === 'true';
+const MIN_REQUIRED_QUESTIONS = 10;
 
 type QuizAnswer = {
   questionId: number;
@@ -140,24 +141,9 @@ const chooseAdaptiveNextQuestion = (remainingQuestions: QuizQuestion[], answersS
 };
 
 const shouldStopDynamically = (answersSoFar: QuizAnswer[]) => {
-  if (answersSoFar.length < 3) return false;
+  if (answersSoFar.length < MIN_REQUIRED_QUESTIONS) return false;
 
-  const allAnswerText = answersSoFar.map((a) => String(a.answer || '')).join(' ').toLowerCase();
-  const coveredSignals = [
-    /(oily|dry|combination|normal|sensitive|tight|shiny|flaky)/i,
-    /(acne|pores|redness|pigmentation|aging|dehydration|dullness|blackheads)/i,
-    /(sunscreen|sun|spf|uv)/i,
-    /(sleep|stress|diet|water|climate|pollution|smoke)/i,
-    /(cleanser|exfoliate|routine|moisturizer|product|texture)/i,
-  ].filter((re) => re.test(allAnswerText)).length;
-
-  const informativeAnswers = answersSoFar.filter((a) => {
-    const txt = String(a.answer || '').trim().toLowerCase();
-    return txt.length > 2 && !['idk', 'unknown', 'none', 'n/a', 'not sure'].includes(txt);
-  }).length;
-  const informativeRatio = answersSoFar.length ? informativeAnswers / answersSoFar.length : 0;
-
-  return coveredSignals >= 4 || (answersSoFar.length >= 5 && informativeRatio >= 0.75) || answersSoFar.length >= 12;
+  return answersSoFar.length >= MIN_REQUIRED_QUESTIONS;
 };
 
 const tryN8n = async (payload: Record<string, unknown>, signal: AbortSignal) => {
@@ -241,6 +227,24 @@ export async function POST(request: NextRequest) {
     if (!forceFinalAnalysis) {
       if (answersSoFar.length === 0) {
         return NextResponse.json({ status: 'continue', nextQuestion: mixedQuestions[0] });
+      }
+
+      const hasReachedRequiredCount = answersSoFar.length >= MIN_REQUIRED_QUESTIONS;
+
+      if (!hasReachedRequiredCount) {
+        let nextQuestion = chooseAdaptiveNextQuestion(remainingQuestions, answersSoFar);
+
+        // If all unique questions are exhausted before reaching 10 answers,
+        // recycle one question to satisfy the mandatory minimum count.
+        if (!nextQuestion) {
+          const lastQuestionId = Number(answersSoFar[answersSoFar.length - 1]?.questionId || 0);
+          const recyclable = mixedQuestions.filter((q) => Number(q.id) !== lastQuestionId);
+          nextQuestion = chooseAdaptiveNextQuestion(recyclable, answersSoFar) || recyclable[0] || mixedQuestions[0];
+        }
+
+        if (nextQuestion) {
+          return NextResponse.json({ status: 'continue', nextQuestion });
+        }
       }
 
       const stopNow = shouldStopDynamically(answersSoFar) || remainingQuestions.length === 0;
