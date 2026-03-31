@@ -24,6 +24,9 @@ import {
     DollarSign,
     ShieldCheck,
     FlaskConical,
+    Globe,
+    Loader2,
+    ExternalLink,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -41,6 +44,28 @@ interface Product {
     status: "active" | "inactive";
     createdAt: string;
     image: string;
+}
+
+interface ScrapedProduct {
+    name: string;
+    url: string;
+    image?: string;
+    description?: string;
+    price?: string;
+    matchedIngredients: string[];
+    sourceUrl: string;
+}
+
+interface ScrapeApiResponse {
+    products?: ScrapedProduct[];
+    warnings?: string[];
+    meta?: {
+        totalMatches: number;
+        returned: number;
+        sourceCount: number;
+        ingredients: string[];
+    };
+    error?: string;
 }
 
 // ── Static data ───────────────────────────────────────────────────────────────
@@ -463,6 +488,15 @@ export default function ProductsPage() {
     const [filterStatus, setFilterStatus] = useState("All");
     const [currentPage, setCurrentPage] = useState(1);
 
+    // Web scraping state
+    const [scrapeIngredientInput, setScrapeIngredientInput] = useState("");
+    const [scrapeIngredients, setScrapeIngredients] = useState<string[]>(["SPF 50", "Retinol"]);
+    const [scrapedProducts, setScrapedProducts] = useState<ScrapedProduct[]>([]);
+    const [scrapeWarnings, setScrapeWarnings] = useState<string[]>([]);
+    const [scrapeMeta, setScrapeMeta] = useState<ScrapeApiResponse["meta"] | null>(null);
+    const [scrapeLoading, setScrapeLoading] = useState(false);
+    const [scrapeError, setScrapeError] = useState("");
+
     // Add Product form state
     const [formData, setFormData] = useState({
         name: "",
@@ -546,6 +580,73 @@ export default function ProductsPage() {
             ...prev,
             images: prev.images.filter((_, i) => i !== index)
         }));
+    };
+
+    const handleAddScrapeIngredient = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if ((e.key === "Enter" || e.key === ",") && scrapeIngredientInput.trim()) {
+            e.preventDefault();
+            const value = scrapeIngredientInput.trim();
+            if (!scrapeIngredients.includes(value)) {
+                setScrapeIngredients((prev) => [...prev, value]);
+            }
+            setScrapeIngredientInput("");
+        }
+    };
+
+    const handleRemoveScrapeIngredient = (ingredient: string) => {
+        setScrapeIngredients((prev) => prev.filter((item) => item !== ingredient));
+    };
+
+    const handleRunScraping = async () => {
+        const pendingKeyword = scrapeIngredientInput.trim();
+        const finalIngredients = pendingKeyword
+            ? scrapeIngredients.includes(pendingKeyword)
+                ? scrapeIngredients
+                : [...scrapeIngredients, pendingKeyword]
+            : scrapeIngredients;
+
+        if (pendingKeyword) {
+            setScrapeIngredientInput("");
+            if (!scrapeIngredients.includes(pendingKeyword)) {
+                setScrapeIngredients(finalIngredients);
+            }
+        }
+
+        if (finalIngredients.length === 0) {
+            setScrapeError("Please add at least one ingredient keyword.");
+            return;
+        }
+
+        setScrapeLoading(true);
+        setScrapeError("");
+        setScrapeWarnings([]);
+
+        try {
+            const response = await fetch("/api/admin/products/scrape", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ingredients: finalIngredients,
+                    maxResults: 20,
+                }),
+            });
+
+            const payload: ScrapeApiResponse = await response.json();
+
+            if (!response.ok) {
+                throw new Error(payload.error || "Scraping failed.");
+            }
+
+            setScrapedProducts(payload.products || []);
+            setScrapeWarnings(payload.warnings || []);
+            setScrapeMeta(payload.meta || null);
+        } catch (error: any) {
+            setScrapeError(error?.message || "Unable to run scraping.");
+            setScrapedProducts([]);
+            setScrapeMeta(null);
+        } finally {
+            setScrapeLoading(false);
+        }
     };
 
     // ── Render ──────────────────────────────────────────────────────────────────
@@ -680,6 +781,199 @@ export default function ProductsPage() {
                                 <Plus className="size-4" />
                                 Add New Product
                             </button>
+                        </div>
+
+                        {/* Admin Web Scraping */}
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50 p-5 space-y-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                <div>
+                                    <h2 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
+                                        <Globe className="size-5 text-[#156d95]" />
+                                        Product Web Scraping
+                                    </h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        Write only ingredient keywords, then click the button to display matching products.
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setScrapeIngredients(formData.ingredients)}
+                                        className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        Use Form Ingredients
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setScrapedProducts([]);
+                                            setScrapeWarnings([]);
+                                            setScrapeMeta(null);
+                                            setScrapeError("");
+                                        }}
+                                        className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        Clear Results
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                                        Ingredient Keywords
+                                    </label>
+                                    <div className="flex flex-wrap items-center gap-2 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 min-h-[46px] focus-within:border-[#156d95] focus-within:ring-2 focus-within:ring-[#156d95]/20 transition-all bg-white dark:bg-gray-900">
+                                        {scrapeIngredients.map((ingredient) => (
+                                            <span
+                                                key={ingredient}
+                                                className="flex items-center gap-1 bg-[#156d95]/10 text-[#156d95] dark:text-[#5ab8e0] text-xs font-medium px-2.5 py-1 rounded-lg"
+                                            >
+                                                {ingredient}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveScrapeIngredient(ingredient)}
+                                                    className="text-[#156d95]/60 hover:text-red-500 transition-colors"
+                                                >
+                                                    <X className="size-3" />
+                                                </button>
+                                            </span>
+                                        ))}
+                                        <input
+                                            type="text"
+                                            value={scrapeIngredientInput}
+                                            onChange={(e) => setScrapeIngredientInput(e.target.value)}
+                                            onKeyDown={handleAddScrapeIngredient}
+                                            placeholder="Type ingredient..."
+                                            className="flex-1 min-w-[140px] text-sm bg-transparent outline-none text-gray-700 dark:text-gray-200 placeholder:text-gray-400"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={handleRunScraping}
+                                    disabled={scrapeLoading}
+                                    className="inline-flex items-center gap-2 bg-[#156d95] hover:bg-[#1a87b8] disabled:opacity-70 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                                >
+                                    {scrapeLoading ? <Loader2 className="size-4 animate-spin" /> : <Globe className="size-4" />}
+                                    {scrapeLoading ? "Scraping..." : "Run Scraping"}
+                                </button>
+                                {scrapeMeta && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Found {scrapeMeta.totalMatches} matches, showing {scrapeMeta.returned} results.
+                                    </p>
+                                )}
+                            </div>
+
+                            {scrapeError && (
+                                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                    {scrapeError}
+                                </div>
+                            )}
+
+                            {scrapeWarnings.length > 0 && (
+                                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                                    <p className="font-bold mb-1">Warnings</p>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                        {scrapeWarnings.map((warning) => (
+                                            <li key={warning}>{warning}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            <div className="border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full">
+                                        <thead>
+                                            <tr className="bg-gray-50 dark:bg-gray-900/30 border-b border-gray-100 dark:border-gray-700/50">
+                                                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                    Image
+                                                </th>
+                                                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                    Product Name
+                                                </th>
+                                                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                    Description
+                                                </th>
+                                                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                    Matched Ingredients
+                                                </th>
+                                                <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                    Price
+                                                </th>
+                                                <th className="text-right px-4 py-3 text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                    Link
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {scrapedProducts.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">
+                                                        No scraped products yet.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                scrapedProducts.map((product, index) => (
+                                                    <tr key={`${product.url}-${index}`} className="border-b border-gray-50 dark:border-gray-700/30">
+                                                        <td className="px-4 py-3">
+                                                            {product.image ? (
+                                                                <img
+                                                                    src={product.image}
+                                                                    alt={product.name}
+                                                                    className="size-14 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
+                                                                />
+                                                            ) : (
+                                                                <div className="size-14 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-[10px] text-gray-400">
+                                                                    No image
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-4 py-3">
+                                                            <p className="text-sm font-bold text-gray-900 dark:text-white">{product.name}</p>
+                                                        </td>
+                                                        <td className="px-4 py-3">
+                                                            <p className="text-xs text-gray-600 dark:text-gray-300 max-w-[320px] line-clamp-3">
+                                                                {product.description || "-"}
+                                                            </p>
+                                                        </td>
+                                                        <td className="px-4 py-3">
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                {product.matchedIngredients.map((ingredient) => (
+                                                                    <span
+                                                                        key={ingredient}
+                                                                        className="text-[10px] font-medium bg-[#156d95]/10 text-[#156d95] border border-[#156d95]/20 px-2 py-0.5 rounded-md"
+                                                                    >
+                                                                        {ingredient}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
+                                                            {product.price || "-"}
+                                                        </td>
+                                                        <td className="px-4 py-3 text-right">
+                                                            <a
+                                                                href={product.url}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="inline-flex items-center gap-1 text-sm font-medium text-[#156d95] hover:underline"
+                                                            >
+                                                                Open
+                                                                <ExternalLink className="size-3.5" />
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Table */}

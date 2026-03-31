@@ -12,6 +12,7 @@ import {
     MessageSquare,
     ClipboardList,
     Activity,
+    Globe,
     LucideIcon
 } from "lucide-react";
 
@@ -85,6 +86,12 @@ export const NAV_DATA: NavSection[] = [
                 title: "Subscriptions",
                 url: "/admin/subscriptions",
                 icon: CreditCard,
+                items: [],
+            },
+            {
+                title: "Product Scraper",
+                url: "/admin/scraping",
+                icon: Globe,
                 items: [],
             },
         ],
