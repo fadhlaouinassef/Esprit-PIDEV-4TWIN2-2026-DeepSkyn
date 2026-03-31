@@ -77,7 +77,6 @@ export async function POST(request: NextRequest) {
     const countryCode   = String(body.countryCode || 'us');
     const languageCode  = String(body.languageCode || 'en');
 
-    // 1. Start Apify actor run
     const startRes = await fetch(
       `https://api.apify.com/v2/acts/${encodeURIComponent(ACTOR_ID)}/runs?token=${APIFY_TOKEN}`,
       {
@@ -113,18 +112,47 @@ export async function POST(request: NextRequest) {
 
     const rawItems = (await dataRes.json()) as ApifyDatasetItem[];
 
-    const organicResults: unknown[] = [];
+    const products: any[] = [];
     for (const item of rawItems) {
-      const organic = item.organicResults;
-      if (Array.isArray(organic)) organicResults.push(...organic);
+      // Extract shopping results if available
+      const shopping = (item as any).shoppingResults;
+      if (Array.isArray(shopping)) {
+        for (const shop of shopping) {
+          products.push({
+            title: shop.title || shop.productName || 'Untitled',
+            url: shop.url || shop.productUrl || '',
+            price: shop.price || 'N/A',
+            imageUrl: shop.imageUrl || shop.thumbnail || '',
+            merchantName: shop.supplier || shop.merchantName || shop.source || '',
+            description: shop.description || '',
+            position: shop.position || products.length + 1,
+          });
+        }
+      }
+
+      // Extract organic results
+      const organic = (item as any).organicResults;
+      if (Array.isArray(organic)) {
+        for (const org of organic) {
+          products.push({
+            title: org.title || 'Untitled',
+            url: org.url || org.displayedUrl || '',
+            description: org.description || '',
+            price: org.productInfo?.price || 'N/A',
+            imageUrl: org.productInfo?.imageUrl || org.richSnippets?.imageUrl || '',
+            merchantName: org.domain || '',
+            position: org.position || products.length + 1,
+          });
+        }
+      }
     }
 
     return NextResponse.json({
       query: rawQuery,
       enrichedQuery,
       category,
-      totalResults: organicResults.length,
-      results: organicResults.slice(0, maxResults),
+      totalResults: products.length,
+      results: products.slice(0, maxResults),
       runId,
       datasetId,
     });
