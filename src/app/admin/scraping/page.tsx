@@ -95,13 +95,7 @@ const CATEGORIES: Category[] = [
     color: "from-cyan-400 to-sky-500",
     examples: ["Vanicream Gentle Cleanser", "Simple Kind to Skin", "Bioderma Sensibio"],
   },
-  {
-    value: "haircare",
-    label: "Haircare",
-    icon: <Leaf className="size-4" />,
-    color: "from-pink-500 to-rose-500",
-    examples: ["Kérastase Elixir Ultime", "OGX Argan Oil", "Briogeo Scalp Revival"],
-  },
+
   {
     value: "pharmaceutical",
     label: "Pharmaceutical",
@@ -546,70 +540,60 @@ export default function AdminScrapingPage() {
                 </div>
               )}
 
-              {/* Result cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {searchData.results.map((result, index) => {
+              {/* ── Helper to render a single product card ── */}
+              {(() => {
+                const withImage    = searchData.results.filter((r) => !!r.imageUrl);
+                const withoutImage = searchData.results.filter((r) => !r.imageUrl);
+
+                const renderCard = (result: OrganicResult, globalIndex: number) => {
                   let domain = "—";
                   try {
                     if (result.url) domain = new URL(result.url).hostname.replace("www.", "");
-                  } catch (e) {}
-
+                  } catch (_) {}
                   return (
                     <motion.div
-                      key={index}
+                      key={`${result.url}-${globalIndex}`}
                       initial={{ opacity: 0, y: 14 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.04 }}
+                      transition={{ duration: 0.3, delay: globalIndex * 0.04 }}
                       className="group flex flex-col bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-300"
                     >
                       {/* Position badge & Image Header */}
                       <div className="relative">
                         <div className={`absolute top-4 left-4 flex items-center justify-center size-8 rounded-xl bg-gradient-to-br ${selectedCategory.color} text-white text-xs font-black shadow-lg z-10`}>
-                          {result.position ?? index + 1}
+                          {result.position ?? globalIndex + 1}
                         </div>
-                        
                         <div className="w-full pt-[75%] relative bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center overflow-hidden border-b border-gray-100 dark:border-gray-700">
                           {result.imageUrl ? (
                             /* eslint-disable-next-line @next/next/no-img-element */
-                            <img 
-                              src={result.imageUrl} 
-                              alt={result.title || "Product"} 
-                              className="absolute inset-0 w-full h-full object-contain p-8 mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-500" 
+                            <img
+                              src={result.imageUrl}
+                              alt={result.title || "Product"}
+                              className="absolute inset-0 w-full h-full object-contain p-8 mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-500"
                             />
                           ) : (
                             <OgImageFallback url={result.url} alt={result.title || "Product fallback"} />
                           )}
-                          
-                          {/* Price Badge */}
-                          {result.price && result.price !== 'N/A' && (
+                          {result.price && result.price !== "N/A" && (
                             <div className="absolute bottom-4 right-4 px-3.5 py-1.5 rounded-xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-green-700 dark:text-green-400 text-sm font-black shadow-md border border-gray-100 dark:border-gray-700">
                               {result.price}
                             </div>
                           )}
                         </div>
                       </div>
-
-                      {/* Content Section */}
+                      {/* Content */}
                       <div className="flex flex-col flex-1 p-5 gap-3">
                         <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                           <Globe className="size-3.5 shrink-0" />
-                          <span className="truncate">
-                            {result.merchantName || result.displayedUrl || domain}
-                          </span>
+                          <span className="truncate">{result.merchantName || result.displayedUrl || domain}</span>
                         </div>
-                        
                         <h3 className="text-base font-bold text-gray-900 dark:text-white leading-snug group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                           {result.title || "Title Unavailable"}
                         </h3>
-                        
                         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3">
                           {result.description || "No description provided."}
                         </p>
-                        
-                        {/* Push footer down */}
                         <div className="flex-1" />
-
-                        {/* Footer Link */}
                         {result.url && (
                           <div className="pt-4 mt-2 border-t border-gray-100 dark:border-gray-700">
                             <a
@@ -618,7 +602,7 @@ export default function AdminScrapingPage() {
                               rel="noopener noreferrer"
                               className="inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 hover:bg-blue-50 dark:bg-gray-700/50 dark:hover:bg-blue-900/30 text-gray-600 hover:text-blue-700 dark:text-gray-300 dark:hover:text-blue-400 text-sm font-bold transition-all group/btn"
                             >
-                              Visit Page 
+                              Visit Page
                               <ExternalLink className="size-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                             </a>
                           </div>
@@ -626,8 +610,46 @@ export default function AdminScrapingPage() {
                       </div>
                     </motion.div>
                   );
-                })}
-              </div>
+                };
+
+                return (
+                  <div className="space-y-8">
+                    {/* ── Group 1 : Products WITH image ── */}
+                    {withImage.length > 0 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                            <span className="inline-block size-2 rounded-full bg-emerald-500" />
+                            {withImage.length} produit{withImage.length > 1 ? "s" : ""} avec image
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {withImage.map((result, i) => renderCard(result, i))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ── Separator ── */}
+                    {withImage.length > 0 && withoutImage.length > 0 && (
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                        <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                          <Package className="size-3.5" />
+                          Produits sans image
+                        </span>
+                        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                      </div>
+                    )}
+
+                    {/* ── Group 2 : Products WITHOUT image ── */}
+                    {withoutImage.length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-80">
+                        {withoutImage.map((result, i) => renderCard(result, withImage.length + i))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </motion.div>
           )}
         </AnimatePresence>
