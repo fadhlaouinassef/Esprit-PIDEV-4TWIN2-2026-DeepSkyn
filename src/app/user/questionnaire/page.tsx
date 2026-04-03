@@ -5,8 +5,9 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 
 interface Question {
     id: number;
@@ -879,14 +880,17 @@ export default function QuestionnairePage() {
                                                 </div>
                                                 <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">Morning Routine</h4>
                                             </div>
-                                            <ol className="space-y-2">
+                                              <ol className="space-y-4">
                                                 {analysisResult.routine.morning.map((item, idx) => (
-                                                    <li key={idx} className="flex items-start gap-2">
-                                                        <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
-                                                        <span className="text-xs text-amber-900 dark:text-amber-100">{item}</span>
-                                                    </li>
+                                                  <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-amber-200/30">
+                                                    <div className="flex items-start gap-2">
+                                                      <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                      <span className="text-xs text-amber-900 dark:text-amber-100 font-bold">{item}</span>
+                                                    </div>
+                                                    <RoutineItemScraper action={item} />
+                                                  </li>
                                                 ))}
-                                            </ol>
+                                              </ol>
                                         </div>
                                     )}
                                     {!!analysisResult.routine?.evening?.length && (
@@ -897,14 +901,17 @@ export default function QuestionnairePage() {
                                                 </div>
                                                 <h4 className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">Evening Routine</h4>
                                             </div>
-                                            <ol className="space-y-2">
+                                              <ol className="space-y-4">
                                                 {analysisResult.routine.evening.map((item, idx) => (
-                                                    <li key={idx} className="flex items-start gap-2">
-                                                        <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
-                                                        <span className="text-xs text-indigo-900 dark:text-indigo-100">{item}</span>
-                                                    </li>
+                                                  <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-indigo-200/30">
+                                                    <div className="flex items-start gap-2">
+                                                      <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                      <span className="text-xs text-indigo-900 dark:text-indigo-100 font-bold">{item}</span>
+                                                    </div>
+                                                    <RoutineItemScraper action={item} />
+                                                  </li>
                                                 ))}
-                                            </ol>
+                                              </ol>
                                         </div>
                                     )}
                                 </motion.div>

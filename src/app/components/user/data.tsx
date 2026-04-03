@@ -11,7 +11,8 @@ import {
     CircleHelp,
     Sparkles,
     ClipboardList,
-    BarChart2
+    BarChart2,
+    Package
 } from "lucide-react";
 
 export const USER_NAV_DATA = [
@@ -40,6 +41,12 @@ export const USER_NAV_DATA = [
                 title: "Analyzes",
                 icon: BarChart2,
                 url: "/user/Analyzes",
+                items: []
+            },
+            {
+                title: "Products",
+                icon: Package,
+                url: "/user/products",
                 items: []
             },
             {

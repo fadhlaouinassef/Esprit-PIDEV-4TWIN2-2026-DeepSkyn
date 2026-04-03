@@ -88,12 +88,7 @@ export const NAV_DATA: NavSection[] = [
                 icon: CreditCard,
                 items: [],
             },
-            {
-                title: "Product Scraper",
-                url: "/admin/scraping",
-                icon: Globe,
-                items: [],
-            },
+
         ],
     },
     {
