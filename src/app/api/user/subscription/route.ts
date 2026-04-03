@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/../prisma/prisma.config';
+import prisma from '@/lib/prisma';
+
+const isMissingAmountFieldError = (error: unknown): boolean => {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.includes('Unknown argument `amount`');
+};
+
 
 export async function GET(request: NextRequest) {
     try {
@@ -19,9 +25,35 @@ export async function GET(request: NextRequest) {
         if (!subscription) {
             return NextResponse.json({
                 status: 'none',
-                message: 'Aucun abonnement trouvé'
+                message: 'No subscription found'
             });
         }
+
+        // --- Self-Healing Logic for Null Amounts ---
+        if (subscription.amount == null) {
+            const planPrice = subscription.plan.toLowerCase().includes('yearly') ? 200 : 20;
+            // Update the record in the background to fix the database
+            try {
+                await prisma.subscription.update({
+                    where: { id: subscription.id },
+                    data: { amount: planPrice }
+                });
+            } catch (error: unknown) {
+                if (!isMissingAmountFieldError(error)) {
+                    throw error;
+                }
+
+                await prisma.$executeRawUnsafe(
+                    'UPDATE "Subscription" SET "amount" = $1 WHERE "id" = $2',
+                    planPrice,
+                    subscription.id
+                );
+            }
+            // Update the local object for the final response
+            subscription.amount = planPrice;
+        }
+        // -------------------------------------------
+
 
         return NextResponse.json({
             status: 'success',
@@ -29,9 +61,11 @@ export async function GET(request: NextRequest) {
                 plan: subscription.plan,
                 date_debut: subscription.date_debut,
                 date_fin: subscription.date_fin,
+                amount: subscription.amount ?? null,
             }
         });
-    } catch (error: any) {
+
+    } catch (error: unknown) {
         console.error('Fetch subscription error:', error);
         return NextResponse.json(
             { error: 'Erreur lors de la récupération de l\'abonnement' },

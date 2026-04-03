@@ -1,22 +1,26 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-// Normalize plan name: strip _yearly / _monthly suffixes, capitalize
-// e.g. "pro_yearly" → "Pro",  "PREMIUM_MONTHLY" → "Premium"
-function normalizePlan(raw: string): string {
-  return raw
-    .replace(/[_-](yearly|monthly|annual|annuel|mensuel)/gi, '')
-    .trim()
-    .toLowerCase()
-    .replace(/^\w/, (c) => c.toUpperCase());
+type BillingCycle = 'monthly' | 'yearly';
+
+const isMissingAmountFieldError = (error: unknown): boolean => {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes('Unknown argument `amount`');
+};
+
+function detectBillingCycle(rawPlan: string, dateDebut: Date, dateFin: Date): BillingCycle {
+  const lowered = rawPlan.toLowerCase();
+  if (/(year|annual|annuel|yearly)/i.test(lowered)) return 'yearly';
+  if (/(month|monthly|mensuel)/i.test(lowered)) return 'monthly';
+
+  const diffMs = dateFin.getTime() - dateDebut.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  return diffDays > 45 ? 'yearly' : 'monthly';
 }
 
-// Plan pricing map (keys are normalized uppercased names)
-const PLAN_AMOUNTS: Record<string, number> = {
-  BASIC: 19.99,
-  PRO: 49.99,
-  PREMIUM: 79.99,
-};
+function defaultAmountForCycle(cycle: BillingCycle): number {
+  return cycle === 'yearly' ? 200 : 20;
+}
 
 function getPaymentStatus(dateFin: Date): 'Paid' | 'Expiring' | 'Expired' {
   const now = new Date();
@@ -44,10 +48,10 @@ export async function GET() {
     });
 
     const data = subscriptions.map((sub) => {
-      const plan = normalizePlan(sub.plan);
-      const planKey = plan.toUpperCase();
-      const amount = PLAN_AMOUNTS[planKey] ?? 0;
+      const billingCycle = detectBillingCycle(sub.plan, sub.date_debut, sub.date_fin);
+      const amount = sub.amount ?? defaultAmountForCycle(billingCycle);
       const paymentStatus = getPaymentStatus(sub.date_fin);
+      const monthlyAmount = billingCycle === 'yearly' ? amount / 12 : amount;
 
       // Build display name + initials
       const nom = sub.user.nom ?? '';
@@ -65,13 +69,43 @@ export async function GET() {
         email: sub.user.email,
         image: sub.user.image ?? null,
         initials,
-        plan,                                    // normalized name
+        plan: sub.plan,
         date_debut: sub.date_debut.toISOString(),
         date_fin: sub.date_fin.toISOString(),
         paymentStatus,
         amount,
+        billingCycle,
+        monthlyAmount,
       };
     });
+
+    // Backfill missing amount values in DB for legacy rows.
+    const rowsToBackfill = subscriptions.filter((sub) => sub.amount == null);
+    if (rowsToBackfill.length > 0) {
+      await Promise.all(
+        rowsToBackfill.map(async (sub) => {
+          const cycle = detectBillingCycle(sub.plan, sub.date_debut, sub.date_fin);
+          const fallbackAmount = defaultAmountForCycle(cycle);
+
+          try {
+            await prisma.subscription.update({
+              where: { id: sub.id },
+              data: { amount: fallbackAmount },
+            });
+          } catch (error: unknown) {
+            if (!isMissingAmountFieldError(error)) {
+              throw error;
+            }
+
+            await prisma.$executeRawUnsafe(
+              'UPDATE "Subscription" SET "amount" = $1 WHERE "id" = $2',
+              fallbackAmount,
+              sub.id
+            );
+          }
+        })
+      );
+    }
 
     return NextResponse.json({ subscriptions: data });
   } catch (error) {

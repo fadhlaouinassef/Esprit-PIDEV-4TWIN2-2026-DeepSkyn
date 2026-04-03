@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { useAppDispatch } from "@/store/hooks";
 import { updateUserProfile } from "@/store/slices/authSlice";
 import { UserLayout } from "@/app/ui/UserLayout";
 
@@ -12,23 +12,72 @@ export default function BillingSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
   const sessionId = searchParams.get("session_id");
   const [countdown, setCountdown] = useState(5);
-  const hasUpdatedRole = useRef(false);
+  const [isSyncing, setIsSyncing] = useState(true);
+  const [syncMessage, setSyncMessage] = useState("We are confirming your subscription and updating your account...");
 
-  // Mettre à jour le rôle de l'utilisateur dans Redux après paiement réussi (une seule fois)
   useEffect(() => {
-    if (user && sessionId && !hasUpdatedRole.current) {
-      // Mettre à jour le rôle en PREMIUM_USER
-      dispatch(updateUserProfile({ role: "PREMIUM_USER" }));
-      console.log("✅ Rôle mis à jour dans Redux : PREMIUM_USER");
-      hasUpdatedRole.current = true;
-    }
-  }, [dispatch, user, sessionId]);
+    let cancelled = false;
+
+    const confirmSession = async () => {
+      if (!sessionId) {
+        if (!cancelled) {
+          setSyncMessage("Missing session id. Please return to billing and retry.");
+          setIsSyncing(false);
+        }
+        return;
+      }
+
+      const maxRetries = 5;
+      for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
+        try {
+          const res = await fetch("/api/stripe/confirm-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId }),
+          });
+
+          if (res.ok) {
+            if (!cancelled) {
+              dispatch(updateUserProfile({ role: "PREMIUM_USER" }));
+              setSyncMessage("Subscription activated successfully.");
+              setIsSyncing(false);
+            }
+            return;
+          }
+
+          if (res.status !== 409) {
+            const payload = await res.json().catch(() => ({}));
+            throw new Error(payload?.error || "Unable to confirm subscription");
+          }
+        } catch (error: unknown) {
+          if (attempt === maxRetries && !cancelled) {
+            setSyncMessage(error instanceof Error ? error.message : "Subscription confirmation failed. Please open billing page.");
+            setIsSyncing(false);
+            return;
+          }
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+      }
+
+      if (!cancelled) {
+        setIsSyncing(false);
+      }
+    };
+
+    confirmSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, sessionId]);
 
   // Countdown timer
   useEffect(() => {
+    if (isSyncing) return;
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -40,14 +89,14 @@ export default function BillingSuccessPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [isSyncing]);
 
   // Navigate when countdown reaches 0
   useEffect(() => {
-    if (countdown === 0) {
+    if (countdown === 0 && !isSyncing) {
       router.push("/user/billing");
     }
-  }, [countdown, router]);
+  }, [countdown, isSyncing, router]);
 
   return (
     <UserLayout>
@@ -80,7 +129,7 @@ export default function BillingSuccessPage() {
             transition={{ delay: 0.3 }}
             className="text-4xl md:text-5xl font-black text-foreground mb-4 flex items-center justify-center gap-3"
           >
-            Paiement Réussi!
+            Payment Successful!
             <Sparkles className="w-8 h-8 text-primary" />
           </motion.h1>
 
@@ -91,7 +140,7 @@ export default function BillingSuccessPage() {
             transition={{ delay: 0.4 }}
             className="text-lg text-muted-foreground mb-8 max-w-md mx-auto"
           >
-            Merci pour ton paiement! Ton abonnement premium est maintenant actif.
+            {syncMessage}
           </motion.p>
 
           {/* Session Info */}
@@ -119,11 +168,17 @@ export default function BillingSuccessPage() {
             className="space-y-4"
           >
             <p className="text-sm text-muted-foreground">
-              Redirection automatique dans{" "}
-              <span className="font-black text-primary text-xl">
-                {countdown}
-              </span>{" "}
-              secondes...
+              {isSyncing ? (
+                <span className="font-semibold">Please wait while we finalize your account...</span>
+              ) : (
+                <>
+                  Automatic redirection in{" "}
+                  <span className="font-black text-primary text-xl">
+                    {countdown}
+                  </span>{" "}
+                  seconds...
+                </>
+              )}
             </p>
 
             {/* Manual redirect button */}
@@ -131,7 +186,7 @@ export default function BillingSuccessPage() {
               onClick={() => router.push("/user/billing")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-primary/20"
             >
-              <span>Retour à Billing</span>
+              <span>Back to Billing</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </motion.div>

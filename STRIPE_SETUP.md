@@ -159,3 +159,6 @@ En cas de problème :
 2. Vérifier que Stripe CLI est en cours d'exécution (si utilisé)
 3. Consulter les logs du serveur Next.js
 4. Consulter les logs Stripe Dashboard > Developers > Logs
+
+## pour lancer stripe::
+stripe listen --forward-to localhost:3000/api/stripe/webhook

@@ -98,9 +98,11 @@ model Subscription {
   plan        String
   date_debut  DateTime
   date_fin    DateTime
+  amount      Float?
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
+
 
 model ChatbotMessage {
   id         Int      @id @default(autoincrement())
