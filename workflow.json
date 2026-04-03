@@ -6,7 +6,10 @@
       "name": "Quiz Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [200, 300],
+      "position": [
+        200,
+        300
+      ],
       "parameters": {
         "httpMethod": "POST",
         "path": "skincare-quiz",
@@ -19,7 +22,10 @@
       "name": "Sauvegarder Reponse",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [400, 300],
+      "position": [
+        400,
+        300
+      ],
       "parameters": {
         "method": "POST",
         "url": "http://localhost:3000/api/quiz/save-answer",
@@ -33,7 +39,10 @@
       "name": "Recuperer Toutes les Questions",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [600, 300],
+      "position": [
+        600,
+        300
+      ],
       "parameters": {
         "method": "GET",
         "url": "http://localhost:3000/api/quiz/questions",
@@ -45,7 +54,10 @@
       "name": "Determiner Prochaine Etape",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [820, 300],
+      "position": [
+        820,
+        300
+      ],
       "parameters": {
         "jsCode": "const questionsData = $node[\"Recuperer Toutes les Questions\"].json;\nconst allQuestions = Array.isArray(questionsData) ? questionsData : (questionsData.questions || []);\n\nconst webhookRaw = $node[\"Quiz Webhook\"].json || {};\nconst body = webhookRaw.body && typeof webhookRaw.body === 'object' ? webhookRaw.body : webhookRaw;\nconst answersSoFar = Array.isArray(body.answersSoFar) ? body.answersSoFar : [];\nconst sessionId = String(body.sessionId || `session-${body.userId || 0}`);\n\nconst hashString = (str) => {\n  let h = 2166136261;\n  for (let i = 0; i < str.length; i++) {\n    h ^= str.charCodeAt(i);\n    h = Math.imul(h, 16777619);\n  }\n  return h >>> 0;\n};\n\nconst mulberry32 = (a) => () => {\n  let t = (a += 0x6D2B79F5);\n  t = Math.imul(t ^ (t >>> 15), t | 1);\n  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);\n  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;\n};\n\nconst shuffle = (arr, rng) => {\n  const out = [...arr];\n  for (let i = out.length - 1; i > 0; i--) {\n    const j = Math.floor(rng() * (i + 1));\n    [out[i], out[j]] = [out[j], out[i]];\n  }\n  return out;\n};\n\nconst rng = mulberry32(hashString(sessionId));\n\nconst byQuiz = allQuestions.reduce((acc, q) => {\n  const quizId = String(q.quizId ?? q.quiz_id ?? 'unknown');\n  if (!acc[quizId]) acc[quizId] = [];\n  acc[quizId].push(q);\n  return acc;\n}, {});\n\nObject.keys(byQuiz).forEach((key) => {\n  const sorted = [...byQuiz[key]].sort((a, b) => Number(a.id) - Number(b.id));\n  byQuiz[key] = shuffle(sorted, rng);\n});\n\nconst quizIds = shuffle(Object.keys(byQuiz).sort((a, b) => Number(a) - Number(b)), rng);\nconst mixedQuestions = [];\nlet keepGoing = true;\nlet offset = 0;\n\nwhile (keepGoing) {\n  keepGoing = false;\n  for (const qid of quizIds) {\n    const list = byQuiz[qid];\n    if (offset < list.length) {\n      mixedQuestions.push(list[offset]);\n      keepGoing = true;\n    }\n  }\n  offset += 1;\n}\n\nconst quizQuestions = mixedQuestions;\nconst maxQuestions = Number(body.maxQuestions || Math.min(12, quizQuestions.length || 10));\n\nif (quizQuestions.length === 0) {\n  return { status: \"complete\", analysis: \"No questions were found in the database.\", score: 0, answersJSON: JSON.stringify(answersSoFar), questionsJSON: JSON.stringify([]), sessionId };\n}\n\nconst answeredIds = answersSoFar.map((a) => Number(a.questionId)).filter((id) => !Number.isNaN(id));\nconst remainingQuestions = quizQuestions.filter((q) => !answeredIds.includes(Number(q.id)));\n\nif (answersSoFar.length === 0) {\n  return {\n    status: \"continue\",\n    mode: \"opening\",\n    nextQuestion: quizQuestions[0],\n    answersJSON: JSON.stringify([]),\n    questionsJSON: JSON.stringify(quizQuestions),\n    remainingQuestionsJSON: JSON.stringify(quizQuestions.slice(1)),\n    sessionId\n  };\n}\n\nif (remainingQuestions.length === 0 || answersSoFar.length >= maxQuestions) {\n  return {\n    status: \"complete\",\n    answersJSON: JSON.stringify(answersSoFar),\n    questionsJSON: JSON.stringify(quizQuestions),\n    sessionId\n  };\n}\n\nreturn {\n  status: \"continue\",\n  mode: \"adaptive\",\n  answersJSON: JSON.stringify(answersSoFar),\n  questionsJSON: JSON.stringify(quizQuestions),\n  remainingQuestionsJSON: JSON.stringify(remainingQuestions),\n  sessionId\n};"
       }
@@ -55,7 +67,10 @@
       "name": "IF - Quiz Complet",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [1020, 300],
+      "position": [
+        1020,
+        300
+      ],
       "parameters": {
         "conditions": {
           "string": [
@@ -73,10 +88,12 @@
       "name": "Decision Adaptative Locale",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1240, 400],
+      "position": [
+        1240,
+        400
+      ],
       "parameters": {
         "jsCode": "const base = $node[\"Determiner Prochaine Etape\"].json;\n\nif (base.mode === 'opening' && base.nextQuestion) {\n  return { status: 'continue', nextQuestion: base.nextQuestion };\n}\n\nconst answers = JSON.parse(base.answersJSON || '[]');\nconst remainingQuestions = JSON.parse(base.remainingQuestionsJSON || '[]');\n\nif (!remainingQuestions.length) {\n  return { status: 'complete', score: 82 };\n}\n\nconst allAnswerText = answers.map((a) => String(a.answer || '')).join(' ').toLowerCase();\nconst lastAnswer = String(answers[answers.length - 1]?.answer || '').toLowerCase();\n\nconst tokenize = (txt) => String(txt || '').toLowerCase().replace(/[^a-z0-9_\\s]/g, ' ').split(/\\s+/).filter((t) => t.length > 2);\nconst answerTokens = new Set(tokenize(`${lastAnswer} ${allAnswerText}`));\n\nconst questionScore = (q) => {\n  const optionText = Array.isArray(q.options) ? q.options.map((o) => o?.text || o).join(' ') : '';\n  const qTokens = tokenize(`${q.text || ''} ${optionText}`);\n  let overlap = 0;\n  for (const t of qTokens) {\n    if (answerTokens.has(t)) overlap += 1;\n  }\n  const typeBonus = String(q.type || '').toLowerCase().includes('multiple') ? 0.5 : 0;\n  const diversityBonus = (q.quizId || q.quiz_id) ? 0.2 : 0;\n  return overlap + typeBonus + diversityBonus;\n};\n\nconst ranked = [...remainingQuestions].sort((a, b) => questionScore(b) - questionScore(a) || Number(a.id) - Number(b.id));\n\nconst categories = [\n  /(oily|dry|combination|normal|sensitive|skin type|tight|shiny|flaky)/i,\n  /(acne|pores|redness|pigmentation|aging|dehydration|dullness|blackheads)/i,\n  /(sunscreen|sun exposure|uv|spf)/i,\n  /(sleep|stress|diet|water|climate|pollution|smoke)/i,\n  /(cleanser|exfoliate|routine|moisturizer|product|texture)/i\n];\n\nlet covered = 0;\nfor (const re of categories) {\n  if (re.test(allAnswerText)) covered += 1;\n}\n\nconst informativeAnswers = answers.filter((a) => {\n  const txt = String(a.answer || '').trim().toLowerCase();\n  return txt.length > 2 && !['idk', 'unknown', 'none', 'n/a', 'not sure'].includes(txt);\n}).length;\n\nconst informativeRatio = answers.length ? informativeAnswers / answers.length : 0;\nconst requiredQuestions = 10;\nconst shouldStop = answers.length >= requiredQuestions;\n\nif (shouldStop) {\n  return {\n    status: 'complete',\n    score: Math.min(95, 68 + covered * 5 + Math.round(informativeRatio * 10))\n  };\n}\n\nreturn { status: 'continue', nextQuestion: ranked[0] || remainingQuestions[0] };"
-        
       }
     },
     {
@@ -84,7 +101,10 @@
       "name": "IF - Stop Adaptatif",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [1360, 400],
+      "position": [
+        1360,
+        400
+      ],
       "parameters": {
         "conditions": {
           "string": [
@@ -102,7 +122,10 @@
       "name": "Parser Prochaine Question",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1460, 400],
+      "position": [
+        1460,
+        400
+      ],
       "parameters": {
         "jsCode": "const src = $node[\"Decision Adaptative Locale\"].json || {};\nif (src.nextQuestion) {\n  return { status: 'continue', nextQuestion: src.nextQuestion };\n}\nreturn { status: 'complete', analysis: 'Questionnaire complete: no next question.', score: Number(src.score || 80) };"
       }
@@ -112,7 +135,10 @@
       "name": "Reponse Continue",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [1660, 400],
+      "position": [
+        1660,
+        400
+      ],
       "parameters": {
         "values": {
           "string": [
@@ -146,7 +172,10 @@
       "name": "Gemini Analyse Finale",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [1240, 200],
+      "position": [
+        1240,
+        200
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://openrouter.ai/api/v1/chat/completions",
@@ -173,9 +202,30 @@
       "name": "Parser Analyse Finale",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1460, 200],
+      "position": [
+        1460,
+        200
+      ],
       "parameters": {
         "jsCode": "const src = $node[\"Gemini Analyse Finale\"].json || {};\n\nlet parsed = null;\ntry {\n  const raw = src?.choices?.[0]?.message?.content || '{}';\n  const txt = typeof raw === 'string' ? raw : JSON.stringify(raw);\n  parsed = JSON.parse(txt);\n} catch (e) {\n  parsed = null;\n}\n\nreturn {\n  status: 'complete',\n  analysis: String(parsed?.analysis || src?.error?.message || 'Analysis complete.'),\n  score: Number(parsed?.score || 80)\n};"
+      }
+    },
+    {
+      "id": "21",
+      "name": "Envoyer Email Analyse",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1560,
+        120
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/quiz/send-analysis-email",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\n  userId: Number(($node[\"Quiz Webhook\"].json.body?.userId ?? $node[\"Quiz Webhook\"].json.userId) || 0),\n  userEmail: String(($node[\"Quiz Webhook\"].json.body?.userEmail ?? $node[\"Quiz Webhook\"].json.userEmail ?? '') || ''),\n  userName: String(($node[\"Quiz Webhook\"].json.body?.userName ?? $node[\"Quiz Webhook\"].json.userName ?? 'User') || 'User'),\n  status: 'complete',\n  analysis: String($node[\"Parser Analyse Finale\"].json.analysis || ''),\n  score: Number($node[\"Parser Analyse Finale\"].json.score || 0),\n  smtpUser: 'nasseffadhlaoui@gmail.com',\n  smtpPass: 'xnye onep frrg swzp'\n} }}"
       }
     },
     {
@@ -183,7 +233,10 @@
       "name": "IF - Routine Status Complete",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [1660, 200],
+      "position": [
+        1660,
+        200
+      ],
       "parameters": {
         "conditions": {
           "string": [
@@ -201,7 +254,10 @@
       "name": "Prepare Routine Context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1860, 120],
+      "position": [
+        1860,
+        120
+      ],
       "parameters": {
         "jsCode": "const finalAnalysis = $node[\"Parser Analyse Finale\"].json || {};\nconst nextStep = $node[\"Determiner Prochaine Etape\"].json || {};\nconst webhookRaw = $node[\"Quiz Webhook\"].json || {};\nconst body = webhookRaw.body && typeof webhookRaw.body === 'object' ? webhookRaw.body : webhookRaw;\n\nconst answers = (() => {\n  try {\n    return JSON.parse(nextStep.answersJSON || '[]');\n  } catch (e) {\n    return [];\n  }\n})();\n\nconst userId = Number(body.userId || 0);\nconst analysis = String(finalAnalysis.analysis || '');\nconst score = Number(finalAnalysis.score || 0);\n\nconst hashString = (str) => {\n  let h = 2166136261;\n  for (let i = 0; i < str.length; i++) {\n    h ^= str.charCodeAt(i);\n    h = Math.imul(h, 16777619);\n  }\n  return (h >>> 0).toString(16);\n};\n\nconst analysisHash = hashString(`${userId}|${analysis}`);\nconst idempotencyKey = `${userId}:${analysisHash}`;\n\nreturn {\n  status: 'complete',\n  analysis,\n  score,\n  userId,\n  answers,\n  analysisHash,\n  idempotencyKey\n};"
       }
@@ -211,7 +267,10 @@
       "name": "Generate Routine",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [2060, 120],
+      "position": [
+        2060,
+        120
+      ],
       "continueOnFail": true,
       "parameters": {
         "method": "POST",
@@ -239,7 +298,10 @@
       "name": "Parser Routine JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2260, 120],
+      "position": [
+        2260,
+        120
+      ],
       "parameters": {
         "jsCode": "const base = $node[\"Prepare Routine Context\"].json || {};\nconst src = $node[\"Generate Routine\"].json || {};\n\nconst allowedSkinTypes = new Set(['OILY', 'DRY', 'COMBINATION', 'SENSITIVE', 'NORMAL']);\n\nconst isValidStepList = (list) => Array.isArray(list) && list.every((item, idx) =>\n  Number(item?.step) === idx + 1 &&\n  typeof item?.name === 'string' && item.name.trim().length > 0 &&\n  typeof item?.instruction === 'string' && item.instruction.trim().length > 0 &&\n  String(item?.frequency || '').toLowerCase() === 'daily'\n);\n\nconst isValidWeekly = (list) => Array.isArray(list) && list.every((item) =>\n  typeof item?.day === 'string' && item.day.trim().length > 0 &&\n  typeof item?.focus === 'string' && item.focus.trim().length > 0 &&\n  typeof item?.instruction === 'string' && item.instruction.trim().length > 0\n);\n\nconst isValidRoutine = (obj) => {\n  if (!obj || typeof obj !== 'object') return false;\n  if (typeof obj.title !== 'string' || !obj.title.trim()) return false;\n  if (!allowedSkinTypes.has(String(obj.skinType || '').toUpperCase())) return false;\n  if (!isValidStepList(obj.morning)) return false;\n  if (!isValidStepList(obj.evening)) return false;\n  if (!isValidWeekly(obj.weekly)) return false;\n  if (!Array.isArray(obj.warnings) || !obj.warnings.every((w) => typeof w === 'string')) return false;\n  if (Number(obj.durationWeeks) !== 4) return false;\n  return true;\n};\n\nlet generatedRoutine = null;\nlet routineGenerationError = null;\n\ntry {\n  if (src?.error) {\n    throw new Error(String(src.error.message || src.error || 'Routine generation request failed'));\n  }\n\n  const raw = src?.choices?.[0]?.message?.content || '{}';\n  const text = typeof raw === 'string' ? raw : JSON.stringify(raw);\n  const parsed = JSON.parse(text);\n\n  if (!isValidRoutine(parsed)) {\n    throw new Error('Routine JSON does not match expected schema');\n  }\n\n  generatedRoutine = {\n    ...parsed,\n    skinType: String(parsed.skinType).toUpperCase()\n  };\n} catch (error) {\n  routineGenerationError = String(error?.message || error || 'Unknown routine generation error');\n}\n\nreturn {\n  ...base,\n  generatedRoutine,\n  routineGenerationError\n};"
       }
@@ -249,7 +311,10 @@
       "name": "IF - Routine JSON Ready",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [2460, 120],
+      "position": [
+        2460,
+        120
+      ],
       "parameters": {
         "conditions": {
           "string": [
@@ -267,7 +332,10 @@
       "name": "Save Routine DB",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [2660, 60],
+      "position": [
+        2660,
+        60
+      ],
       "continueOnFail": true,
       "parameters": {
         "method": "POST",
@@ -282,7 +350,10 @@
       "name": "Logger Routine",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2860, 120],
+      "position": [
+        2860,
+        120
+      ],
       "parameters": {
         "jsCode": "const parsedRoutine = $node[\"Parser Routine JSON\"]?.json || {};\nconst saveResult = $node[\"Save Routine DB\"]?.json || $json || {};\n\nif (parsedRoutine.routineGenerationError) {\n  console.error('[Routine] Generation failed:', parsedRoutine.routineGenerationError);\n}\n\nif (saveResult.error) {\n  console.error('[Routine] Save DB failed:', saveResult.error);\n}\n\nif (!parsedRoutine.routineGenerationError && !saveResult.error) {\n  console.log('[Routine] Routine generated and persisted successfully.');\n}\n\nreturn {\n  status: 'complete',\n  analysis: String(parsedRoutine.analysis || ''),\n  score: Number(parsedRoutine.score || 0)\n};"
       }
@@ -292,7 +363,10 @@
       "name": "Reponse Finale Complete",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
-      "position": [3060, 200],
+      "position": [
+        3060,
+        200
+      ],
       "parameters": {
         "values": {
           "string": [
@@ -320,7 +394,10 @@
       "name": "Merge Reponses",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
-      "position": [3260, 300],
+      "position": [
+        3260,
+        300
+      ],
       "parameters": {
         "mode": "append"
       }
@@ -452,6 +529,17 @@
       ]
     },
     "Parser Analyse Finale": {
+      "main": [
+        [
+          {
+            "node": "Envoyer Email Analyse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envoyer Email Analyse": {
       "main": [
         [
           {

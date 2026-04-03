@@ -122,8 +122,8 @@ const chooseAdaptiveNextQuestion = (remainingQuestions: QuizQuestion[], answersS
   const questionScore = (q: QuizQuestion) => {
     const optionText = Array.isArray(q.options)
       ? q.options
-          .map((o) => (typeof o === 'string' ? o : o?.text || ''))
-          .join(' ')
+        .map((o) => (typeof o === 'string' ? o : o?.text || ''))
+        .join(' ')
       : '';
 
     const qTokens = tokenize(`${q.text || ''} ${optionText}`);

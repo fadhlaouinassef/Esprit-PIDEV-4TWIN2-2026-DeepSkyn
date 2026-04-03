@@ -172,7 +172,7 @@ export default function QuestionnairePage() {
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     const imageInputRef = useRef<HTMLInputElement>(null);
-    
+
     const scrollRef = useRef<HTMLDivElement>(null);
     const analysisRef = useRef<HTMLDivElement>(null);
 
@@ -364,7 +364,7 @@ export default function QuestionnairePage() {
             } else {
                 console.warn("⚠️ Unexpected n8n format or empty response", result);
                 if (messages.length === 0) {
-                   setMessages(prev => [...prev, { role: "assistant", content: "I'm ready when you are. If you see this, n8n might be returning an empty response." }]);
+                    setMessages(prev => [...prev, { role: "assistant", content: "I'm ready when you are. If you see this, n8n might be returning an empty response." }]);
                 }
             }
         } catch (error: unknown) {
@@ -570,7 +570,7 @@ export default function QuestionnairePage() {
 
     const handleUserResponse = async (content: string, imageData?: string) => {
         console.log("📝 handleUserResponse triggered with:", content);
-        
+
         if (isStreaming) {
             console.warn("🚫 Already streaming, ignoring response.");
             return;
@@ -589,7 +589,7 @@ export default function QuestionnairePage() {
 
         const newAnswer = { questionId: currentQuestion.id, answer: content };
         const updatedAnswers = [...answersSoFar, newAnswer];
-        
+
         console.log("✅ State updated with new answer. Calling fetchNextStep...");
         setAnswersSoFar(updatedAnswers);
         setIsStreaming(true);
@@ -599,9 +599,8 @@ export default function QuestionnairePage() {
 
     return (
         <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
-            <div className={`mx-auto w-full max-w-[800px] flex flex-col relative space-y-6 ${
-                analysisResult ? "" : "h-[calc(100vh-180px)]"
-            }`}>
+            <div className={`mx-auto w-full max-w-[800px] flex flex-col relative space-y-6 ${analysisResult ? "" : "h-[calc(100vh-180px)]"
+                }`}>
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
                     <span>User</span>
@@ -622,25 +621,24 @@ export default function QuestionnairePage() {
                         )}
                     </div>
                     {!analysisResult && (
-                    <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden dark:bg-gray-800">
-                        <motion.div
-                            className="h-full bg-primary"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min(100, (answersSoFar.length / 10) * 100)}%` }}
-                            transition={{ duration: 0.5 }}
-                        />
-                    </div>
+                        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden dark:bg-gray-800">
+                            <motion.div
+                                className="h-full bg-primary"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(100, (answersSoFar.length / 10) * 100)}%` }}
+                                transition={{ duration: 0.5 }}
+                            />
+                        </div>
                     )}
                 </div>
 
                 {/* Chat Area / Analysis Area */}
                 <div
                     ref={scrollRef}
-                    className={`space-y-6 pr-2 ${
-                        analysisResult
+                    className={`space-y-6 pr-2 ${analysisResult
                             ? "" // let <main> scroll naturally with mouse wheel
                             : "flex-1 overflow-y-auto pb-64 custom-scrollbar scroll-smooth" // chat mode: inner scroll
-                    }`}
+                        }`}
                 >
                     <AnimatePresence initial={false}>
                         {messages.map((msg, i) => (
@@ -749,8 +747,8 @@ export default function QuestionnairePage() {
                                         <h3 className="text-xl font-black text-white leading-tight">Your Skin Score</h3>
                                         <p className="mt-1 text-sm text-white/70">
                                             {analysisResult.score >= 80 ? "Excellent skin health! Keep it up." :
-                                             analysisResult.score >= 60 ? "Good health with room to improve." :
-                                             "Your skin needs some extra care."}
+                                                analysisResult.score >= 60 ? "Good health with room to improve." :
+                                                    "Your skin needs some extra care."}
                                         </p>
                                         {/* Stat pills */}
                                         <div className="mt-3 flex flex-wrap gap-2">
@@ -894,17 +892,17 @@ export default function QuestionnairePage() {
                                                 </div>
                                                 <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">Morning Routine</h4>
                                             </div>
-                                              <ol className="space-y-4">
+                                            <ol className="space-y-4">
                                                 {analysisResult.routine.morning.map((item, idx) => (
-                                                  <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-amber-200/30">
-                                                    <div className="flex items-start gap-2">
-                                                      <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
-                                                      <span className="text-xs text-amber-900 dark:text-amber-100 font-bold">{item}</span>
-                                                    </div>
-                                                    <RoutineItemScraper action={item} />
-                                                  </li>
+                                                    <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-amber-200/30">
+                                                        <div className="flex items-start gap-2">
+                                                            <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                            <span className="text-xs text-amber-900 dark:text-amber-100 font-bold">{item}</span>
+                                                        </div>
+                                                        <RoutineItemScraper action={item} />
+                                                    </li>
                                                 ))}
-                                              </ol>
+                                            </ol>
                                         </div>
                                     )}
                                     {!!analysisResult.routine?.evening?.length && (
@@ -915,17 +913,17 @@ export default function QuestionnairePage() {
                                                 </div>
                                                 <h4 className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">Evening Routine</h4>
                                             </div>
-                                              <ol className="space-y-4">
+                                            <ol className="space-y-4">
                                                 {analysisResult.routine.evening.map((item, idx) => (
-                                                  <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-indigo-200/30">
-                                                    <div className="flex items-start gap-2">
-                                                      <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
-                                                      <span className="text-xs text-indigo-900 dark:text-indigo-100 font-bold">{item}</span>
-                                                    </div>
-                                                    <RoutineItemScraper action={item} />
-                                                  </li>
+                                                    <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-indigo-200/30">
+                                                        <div className="flex items-start gap-2">
+                                                            <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                            <span className="text-xs text-indigo-900 dark:text-indigo-100 font-bold">{item}</span>
+                                                        </div>
+                                                        <RoutineItemScraper action={item} />
+                                                    </li>
                                                 ))}
-                                              </ol>
+                                            </ol>
                                         </div>
                                     )}
                                 </motion.div>
@@ -959,167 +957,166 @@ export default function QuestionnairePage() {
 
                 {/* Interaction Overlay (at bottom) */}
                 {!analysisResult && !isAnalyzing && (
-                <div className="absolute bottom-0 left-0 right-0 py-10 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent dark:from-[#0b0b0f] dark:via-[#0b0b0f]/95 z-20 pointer-events-none">
-                    <div className="max-w-2xl mx-auto flex flex-col items-center gap-6 pointer-events-none">
-                        <AnimatePresence mode="wait">
-                            {isImageStep && (
-                                <motion.div
-                                    key="image-step"
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 20 }}
-                                    className="w-full pointer-events-auto"
-                                >
-                                    <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xl space-y-4">
-                                        <div className="flex items-center justify-between gap-3">
-                                            <div>
-                                                <h4 className="text-sm font-black text-gray-900 dark:text-white">Add images for Gemini</h4>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">Maximum 5 images. Gallery, camera, or drag and drop.</p>
+                    <div className="absolute bottom-0 left-0 right-0 py-10 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent dark:from-[#0b0b0f] dark:via-[#0b0b0f]/95 z-20 pointer-events-none">
+                        <div className="max-w-2xl mx-auto flex flex-col items-center gap-6 pointer-events-none">
+                            <AnimatePresence mode="wait">
+                                {isImageStep && (
+                                    <motion.div
+                                        key="image-step"
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 20 }}
+                                        className="w-full pointer-events-auto"
+                                    >
+                                        <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xl space-y-4">
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div>
+                                                    <h4 className="text-sm font-black text-gray-900 dark:text-white">Add images for Gemini</h4>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Maximum 5 images. Gallery, camera, or drag and drop.</p>
+                                                </div>
+                                                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+                                                    {uploadedSurveyImages.length}/5
+                                                </span>
                                             </div>
-                                            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
-                                                {uploadedSurveyImages.length}/5
-                                            </span>
-                                        </div>
 
-                                        <input
-                                            ref={imageInputRef}
-                                            type="file"
-                                            accept="image/*"
-                                            multiple
-                                            className="hidden"
-                                            onChange={onImageFileChange}
+                                            <input
+                                                ref={imageInputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                className="hidden"
+                                                onChange={onImageFileChange}
+                                            />
+
+                                            <div
+                                                onDragOver={(e) => {
+                                                    e.preventDefault();
+                                                    setIsDraggingImages(true);
+                                                }}
+                                                onDragLeave={() => setIsDraggingImages(false)}
+                                                onDrop={async (e) => {
+                                                    e.preventDefault();
+                                                    setIsDraggingImages(false);
+                                                    if (e.dataTransfer.files?.length) {
+                                                        await appendFiles(e.dataTransfer.files);
+                                                    }
+                                                }}
+                                                className={`rounded-2xl border-2 border-dashed p-5 transition-colors ${isDraggingImages
+                                                        ? 'border-primary bg-primary/5'
+                                                        : 'border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30'
+                                                    }`}
+                                            >
+                                                <div className="flex flex-col items-center text-center gap-2">
+                                                    <Upload className="size-6 text-primary" />
+                                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Drag your images here</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">or use the buttons below</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => imageInputRef.current?.click()}
+                                                    disabled={uploadedSurveyImages.length >= 5}
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
+                                                >
+                                                    <Upload className="size-3.5" />
+                                                    Add from gallery
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsCameraOpen(true)}
+                                                    disabled={uploadedSurveyImages.length >= 5}
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
+                                                >
+                                                    <Camera className="size-3.5" />
+                                                    Take a photo
+                                                </button>
+                                            </div>
+
+                                            {uploadedSurveyImages.length > 0 && (
+                                                <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+                                                    {uploadedSurveyImages.map((img, index) => (
+                                                        <div key={`${img.base64.slice(0, 12)}-${index}`} className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                                                            <img src={img.dataUrl} alt={`survey-${index}`} className="h-20 w-full object-cover" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setUploadedSurveyImages((prev) => prev.filter((_, i) => i !== index))}
+                                                                className="absolute top-1 right-1 size-6 rounded-full bg-black/70 text-white flex items-center justify-center"
+                                                                aria-label="Remove"
+                                                            >
+                                                                <X className="size-3" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <div className="flex flex-wrap gap-2 justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={skipImageStep}
+                                                    disabled={isSubmittingImages}
+                                                    className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200"
+                                                >
+                                                    Continue without images
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={submitImageStep}
+                                                    disabled={isSubmittingImages}
+                                                    className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold disabled:opacity-60"
+                                                >
+                                                    {isSubmittingImages ? 'Analyzing...' : 'Analyze with Gemini'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {/* Choice UI */}
+                                {!isImageStep && !isStreaming && currentQuestion?.type === "choice" && messages[messages.length - 1]?.role === "assistant" && (
+                                    <motion.div
+                                        key="choices"
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 20 }}
+                                        className="pointer-events-auto flex flex-wrap justify-center gap-3"
+                                    >
+                                        {currentQuestion.options?.map((opt) => (
+                                            <button
+                                                key={opt.id}
+                                                onClick={() => handleUserResponse(opt.text)}
+                                                className="px-8 py-4 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white font-bold hover:border-primary hover:text-primary hover:shadow-2xl transition-all shadow-xl active:scale-95 flex items-center gap-3 group"
+                                            >
+                                                <div className="size-2.5 bg-gray-200 dark:bg-gray-700 rounded-full group-hover:bg-primary transition-colors"></div>
+                                                {opt.text}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+
+                                {/* Text Input UI */}
+                                {!isImageStep && !isStreaming && (currentQuestion?.type === "text" || !currentQuestion) && (messages[messages.length - 1]?.role === "assistant") && (
+                                    <motion.div
+                                        key="composer"
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 20 }}
+                                        className="w-full pointer-events-auto"
+                                    >
+                                        <Composer
+                                            onSend={handleUserResponse}
+                                            onStop={() => setIsStreaming(false)}
+                                            isStreaming={isStreaming}
+                                            selectedModel={selectedModel}
+                                            onModelChange={setSelectedModel}
                                         />
-
-                                        <div
-                                            onDragOver={(e) => {
-                                                e.preventDefault();
-                                                setIsDraggingImages(true);
-                                            }}
-                                            onDragLeave={() => setIsDraggingImages(false)}
-                                            onDrop={async (e) => {
-                                                e.preventDefault();
-                                                setIsDraggingImages(false);
-                                                if (e.dataTransfer.files?.length) {
-                                                    await appendFiles(e.dataTransfer.files);
-                                                }
-                                            }}
-                                            className={`rounded-2xl border-2 border-dashed p-5 transition-colors ${
-                                                isDraggingImages
-                                                    ? 'border-primary bg-primary/5'
-                                                    : 'border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30'
-                                            }`}
-                                        >
-                                            <div className="flex flex-col items-center text-center gap-2">
-                                                <Upload className="size-6 text-primary" />
-                                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Drag your images here</p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">or use the buttons below</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex flex-wrap gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => imageInputRef.current?.click()}
-                                                disabled={uploadedSurveyImages.length >= 5}
-                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
-                                            >
-                                                <Upload className="size-3.5" />
-                                                Add from gallery
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsCameraOpen(true)}
-                                                disabled={uploadedSurveyImages.length >= 5}
-                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
-                                            >
-                                                <Camera className="size-3.5" />
-                                                Take a photo
-                                            </button>
-                                        </div>
-
-                                        {uploadedSurveyImages.length > 0 && (
-                                            <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-                                                {uploadedSurveyImages.map((img, index) => (
-                                                    <div key={`${img.base64.slice(0, 12)}-${index}`} className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                                                        <img src={img.dataUrl} alt={`survey-${index}`} className="h-20 w-full object-cover" />
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setUploadedSurveyImages((prev) => prev.filter((_, i) => i !== index))}
-                                                            className="absolute top-1 right-1 size-6 rounded-full bg-black/70 text-white flex items-center justify-center"
-                                                            aria-label="Remove"
-                                                        >
-                                                            <X className="size-3" />
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        <div className="flex flex-wrap gap-2 justify-end">
-                                            <button
-                                                type="button"
-                                                onClick={skipImageStep}
-                                                disabled={isSubmittingImages}
-                                                className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200"
-                                            >
-                                                Continue without images
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={submitImageStep}
-                                                disabled={isSubmittingImages}
-                                                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold disabled:opacity-60"
-                                            >
-                                                {isSubmittingImages ? 'Analyzing...' : 'Analyze with Gemini'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {/* Choice UI */}
-                            {!isImageStep && !isStreaming && currentQuestion?.type === "choice" && messages[messages.length - 1]?.role === "assistant" && (
-                                <motion.div
-                                    key="choices"
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 20 }}
-                                    className="pointer-events-auto flex flex-wrap justify-center gap-3"
-                                >
-                                    {currentQuestion.options?.map((opt) => (
-                                        <button
-                                            key={opt.id}
-                                            onClick={() => handleUserResponse(opt.text)}
-                                            className="px-8 py-4 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white font-bold hover:border-primary hover:text-primary hover:shadow-2xl transition-all shadow-xl active:scale-95 flex items-center gap-3 group"
-                                        >
-                                            <div className="size-2.5 bg-gray-200 dark:bg-gray-700 rounded-full group-hover:bg-primary transition-colors"></div>
-                                            {opt.text}
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            )}
-
-                            {/* Text Input UI */}
-                            {!isImageStep && !isStreaming && (currentQuestion?.type === "text" || !currentQuestion) && (messages[messages.length - 1]?.role === "assistant") && (
-                                <motion.div
-                                    key="composer"
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 20 }}
-                                    className="w-full pointer-events-auto"
-                                >
-                                    <Composer
-                                        onSend={handleUserResponse}
-                                        onStop={() => setIsStreaming(false)}
-                                        isStreaming={isStreaming}
-                                        selectedModel={selectedModel}
-                                        onModelChange={setSelectedModel}
-                                    />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
-                </div>
                 )}
             </div>
 
