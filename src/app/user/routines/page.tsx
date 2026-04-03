@@ -23,6 +23,7 @@ import {
 
 import { UserLayout } from "@/app/ui/UserLayout";
 import { toast } from "sonner";
+import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteRoutine, fetchUserRoutines, markStepCompleted, toggleStepCompletedLocally } from "@/store/slices/routineSlice";
 import { AddRoutineModal } from "@/app/components/user/AddRoutineModal";
@@ -494,6 +495,7 @@ export default function RoutinePage() {
                                                                 {activeTab === 'morning' && !step.completed && <Sun className="w-3 h-3 text-amber-500 opacity-50" />}
                                                             </div>
                                                             <h4 className="text-lg font-black text-foreground">{step.action}</h4>
+                                                            <RoutineItemScraper action={step.action} />
                                                             {step.completed && step.completedAt && (
                                                                 <p className="text-xs text-muted-foreground mt-1">
                                                                     ✓ Completed on {new Date(step.completedAt).toLocaleDateString()}
@@ -592,7 +594,20 @@ export default function RoutinePage() {
                                     <h4 className="text-lg font-black tracking-tight">Daily Insight</h4>
                                 </div>
                                 <p className="text-sm font-medium text-slate-300 leading-relaxed mb-6">
-                                    Always apply your SPF, even on cloudy days. UV rays can penetrate through clouds and windows, causing premature aging and sensitive skin flare-ups.
+                                    {(() => {
+                                        // Dynamic insight based on the first found skin type in auto-routines
+                                        const skinType = currentRoutines.map(r => parseRoutineMeta(r.envie).skinType).find(Boolean);
+                                        const insightMap: Record<string, string> = {
+                                            'oily': "Use lightweight, non-comedogenic serums to manage sebum without clogging pores.",
+                                            'dry': "Layer a hydrating toner under your moisturizer to deeply replenish dry skin cells.",
+                                            'sensitive': "Introduce new active products slowly and one at a time to avoid irritation flares.",
+                                            'combination': "Focus hydration on cheeks and use balancing cleansers for your T-zone.",
+                                            'normal': "Maintaing a consistent barrier with ceramides will keep your glow through the seasons."
+                                        };
+                                        
+                                        const key = Object.keys(insightMap).find(k => skinType?.toLowerCase().includes(k));
+                                        return insightMap[key || ''] || "Always apply your SPF, even on cloudy days. UV rays can penetrate through clouds and windows to affect your skin.";
+                                    })()}
                                 </p>
                                 <button className="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
                                     Read deep dive <ArrowRight className="w-4 h-4" />
@@ -600,23 +615,58 @@ export default function RoutinePage() {
                             </div>
                         </div>
 
-                        <div className="bg-amber-500/5 border border-amber-500/10 rounded-[40px] p-8">
-                            <div className="flex items-center justify-between mb-6">
-                                <h4 className="text-sm font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                                    <AlertTriangle className="w-4 h-4" /> Shelf Life Alert
-                                </h4>
-                            </div>
+                        {(() => {
+                            // Logic to find a dynamic alert based on actual routine steps
+                            const allSteps = currentRoutines.flatMap(r => r.steps || []);
+                            const sensitiveKeywords = ['Serum', 'Vitamin C', 'Retinol', 'Acid', 'Treatment', 'Active'];
+                            
+                            // Find steps that might be sensitive products
+                            const sensitiveStep = allSteps.find(s => 
+                                sensitiveKeywords.some(keyword => s.action.toLowerCase().includes(keyword.toLowerCase()))
+                            );
 
-                            <div className="flex items-center gap-4 bg-white/50 dark:bg-black/20 p-4 rounded-[24px]">
-                                <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600">
-                                    <Clock className="w-6 h-6" />
+                            const productName = sensitiveStep 
+                                ? sensitiveStep.action.split(':')[0].trim() 
+                                : "Vitamin C Serum";
+                            
+                            // Mock expiration date based on the product
+                            const daysLeft = sensitiveStep ? (sensitiveStep.id % 20) + 5 : 12;
+
+                            // Component-based explanation logic
+                            const getExplanation = (name: string) => {
+                                const n = name.toLowerCase();
+                                if (n.includes('vitamin c')) return "Unstable active — can oxidize if exposed to light.";
+                                if (n.includes('retinol')) return "UV sensitive — keep in a dark place to stay potent.";
+                                if (n.includes('acid')) return "Potent exfoliant — best used before the seal weakens.";
+                                if (n.includes('serum')) return "High concentration — use quickly for best results.";
+                                return "Active formula — monitor for any changes in color or smell.";
+                            };
+
+                            const explanation = getExplanation(productName);
+
+                            return (
+                                <div className="bg-amber-500/5 border border-amber-500/10 rounded-[40px] p-8">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h4 className="text-sm font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest flex items-center gap-2">
+                                            <AlertTriangle className="w-4 h-4" /> Shelf Life Alert
+                                        </h4>
+                                    </div>
+
+                                    <div className="flex items-center gap-4 bg-white/50 dark:bg-black/20 p-4 rounded-[24px]">
+                                        <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600">
+                                            <Clock className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h5 className="text-sm font-black text-foreground leading-tight">{productName}</h5>
+                                            <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mt-0.5">Expires in {daysLeft} days</p>
+                                        </div>
+                                    </div>
+                                    <p className="mt-4 text-[10px] font-medium text-amber-800/60 dark:text-amber-400/40 italic leading-relaxed">
+                                        Note: {explanation}
+                                    </p>
                                 </div>
-                                <div>
-                                    <h5 className="text-sm font-black text-foreground leading-tight">Vitamin C Serum</h5>
-                                    <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mt-0.5">Expires in 12 days</p>
-                                </div>
-                            </div>
-                        </div>
+                            );
+                        })()}
                     </div>
                 </div>
 

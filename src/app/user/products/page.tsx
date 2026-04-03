@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { AdminLayout } from "@/app/ui/AdminLayout";
+import { UserLayout } from "@/app/ui/UserLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -180,7 +180,7 @@ function OgImageFallback({ url, alt }: { url?: string; alt: string }) {
 }
 
 /* ─────────────────────── Page ── */
-export default function AdminScrapingPage() {
+export default function ProductsPage() {
   const [query, setQuery]               = useState("");
   const [category, setCategory]         = useState("skincare");
   const [brand, setBrand]               = useState("");
@@ -229,14 +229,14 @@ export default function AdminScrapingPage() {
   };
 
   return (
-    <AdminLayout>
+    <UserLayout>
       <div className="mx-auto w-full max-w-[920px] flex flex-col gap-6">
 
         {/* ── Breadcrumb ── */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
-          <span>Admin</span>
+          <span>User</span>
           <ChevronRight size={14} />
-          <span className="text-foreground font-medium">Product Scraper</span>
+          <span className="text-foreground font-medium">Products</span>
         </nav>
 
         {/* ── Hero Banner ── */}
@@ -251,7 +251,7 @@ export default function AdminScrapingPage() {
               <div className="flex items-center gap-2 mb-1">
                 <Sparkles className="size-4 text-yellow-200" />
                 <span className="text-xs font-bold text-white/60 uppercase tracking-widest">
-                  Powered by Apify · Admin Only
+                  Powered by Apify
                 </span>
               </div>
               <h1 className="text-2xl font-black text-white leading-tight">
@@ -677,6 +677,6 @@ export default function AdminScrapingPage() {
         )}
 
       </div>
-    </AdminLayout>
+    </UserLayout>
   );
 }

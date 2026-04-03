@@ -25,6 +25,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 
 // --- COMPONENTS ---
 
@@ -367,42 +368,60 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         <h4 className="font-bold text-gray-900 dark:text-white">Prescribed Routine</h4>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        {/* Morning */}
-                                        <div className="space-y-4">
-                                            <div className="flex items-center gap-2 text-amber-500">
-                                                <Sun size={18} />
-                                                <span className="text-xs font-bold uppercase tracking-widest">Morning</span>
-                                            </div>
-                                            <div className="space-y-3">
-                                                {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => (
-                                                    <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-amber-200 transition-colors">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
-                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
-                                                        </div>
-                                                        <ChevronRight size={16} className="text-gray-300 group-hover:text-amber-500 transition-colors" />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        {/* Night */}
-                                        <div className="space-y-4">
-                                            <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400">
-                                                <Moon size={18} />
-                                                <span className="text-xs font-bold uppercase tracking-widest">Night</span>
-                                            </div>
-                                            <div className="space-y-3">
-                                                {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => (
-                                                    <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-blue-200 transition-colors">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
-                                                            <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
-                                                        </div>
-                                                        <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
+                                         {/* Morning */}
+                                         <div className="space-y-4">
+                                             <div className="flex items-center gap-2 text-amber-500">
+                                                 <Sun size={18} />
+                                                 <span className="text-xs font-bold uppercase tracking-widest">Morning Routine</span>
+                                             </div>
+                                             <div className="space-y-6">
+                                                 {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => {
+                                                     const stepName = typeof item === 'string' ? item : item.name;
+                                                     return (
+                                                         <div key={idx} className="flex flex-col gap-2">
+                                                             <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-amber-200 transition-colors">
+                                                                 <div className="flex flex-col">
+                                                                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
+                                                                     <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
+                                                                 </div>
+                                                                 <ChevronRight size={16} className="text-gray-300 group-hover:text-amber-500 transition-colors" />
+                                                             </div>
+                                                             {/* Dynamic product scraper for this step */}
+                                                             <div className="px-2">
+                                                                 <RoutineItemScraper action={stepName} />
+                                                             </div>
+                                                         </div>
+                                                     );
+                                                 })}
+                                             </div>
+                                         </div>
+                                         {/* Night */}
+                                         <div className="space-y-4">
+                                             <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400">
+                                                 <Moon size={18} />
+                                                 <span className="text-xs font-bold uppercase tracking-widest">Night Routine</span>
+                                             </div>
+                                             <div className="space-y-6">
+                                                 {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => {
+                                                     const stepName = typeof item === 'string' ? item : item.name;
+                                                     return (
+                                                         <div key={idx} className="flex flex-col gap-2">
+                                                             <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-blue-200 transition-colors">
+                                                                 <div className="flex flex-col">
+                                                                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
+                                                                     <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
+                                                                 </div>
+                                                                 <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
+                                                             </div>
+                                                             {/* Dynamic product scraper for this step */}
+                                                             <div className="px-2">
+                                                                 <RoutineItemScraper action={stepName} />
+                                                             </div>
+                                                         </div>
+                                                     );
+                                                 })}
+                                             </div>
+                                         </div>
                                     </div>
                                 </div>
                             </div>
