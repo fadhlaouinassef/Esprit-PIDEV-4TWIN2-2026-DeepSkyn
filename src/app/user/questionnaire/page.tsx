@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
+import { CameraModal } from "@/app/components/user/CameraModal";
 
 interface Question {
     id: number;
@@ -168,9 +169,9 @@ export default function QuestionnairePage() {
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
     const [answersSoFar, setAnswersSoFar] = useState<{ questionId: number; answer: string }[]>([]);
     const [quizId, setQuizId] = useState<number>(1);
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     const imageInputRef = useRef<HTMLInputElement>(null);
-    const cameraInputRef = useRef<HTMLInputElement>(null);
     
     const scrollRef = useRef<HTMLDivElement>(null);
     const analysisRef = useRef<HTMLDivElement>(null);
@@ -407,6 +408,19 @@ export default function QuestionnairePage() {
             await appendFiles(files);
         }
         event.target.value = '';
+    };
+
+    const handleCameraCapture = async (dataUrl: string) => {
+        const parsed = dataUrlToInlinePart(dataUrl);
+        if (parsed) {
+            // Check limits again just in case
+            if (uploadedSurveyImages.length >= 5) {
+                toast.error('Maximum 5 images autorisees.');
+                return;
+            }
+            setUploadedSurveyImages((prev) => [...prev, parsed].slice(0, 5));
+            toast.success('Photo capturee avec succes !');
+        }
     };
 
     const submitImageStep = async () => {
@@ -976,15 +990,6 @@ export default function QuestionnairePage() {
                                             onChange={onImageFileChange}
                                         />
 
-                                        <input
-                                            ref={cameraInputRef}
-                                            type="file"
-                                            accept="image/*"
-                                            capture="environment"
-                                            className="hidden"
-                                            onChange={onImageFileChange}
-                                        />
-
                                         <div
                                             onDragOver={(e) => {
                                                 e.preventDefault();
@@ -1023,7 +1028,7 @@ export default function QuestionnairePage() {
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => cameraInputRef.current?.click()}
+                                                onClick={() => setIsCameraOpen(true)}
                                                 disabled={uploadedSurveyImages.length >= 5}
                                                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
                                             >
@@ -1117,6 +1122,12 @@ export default function QuestionnairePage() {
                 </div>
                 )}
             </div>
+
+            <CameraModal
+                isOpen={isCameraOpen}
+                onClose={() => setIsCameraOpen(false)}
+                onCapture={handleCameraCapture}
+            />
         </UserLayout>
     );
 }
