@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
-import { mkdir, writeFile } from 'fs/promises';
-import path from 'path';
+import cloudinary from '@/lib/cloudinary';
 
 type UploadBody = {
   userId?: number;
@@ -55,12 +54,6 @@ export async function GET(request: NextRequest) {
 
 const DATA_URL_RE = /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=\r\n]+$/i;
 
-const getExtensionFromMime = (mimeType: string): string => {
-  const normalized = mimeType.toLowerCase();
-  if (normalized.includes('png')) return 'png';
-  if (normalized.includes('webp')) return 'webp';
-  return 'jpg';
-};
 
 export async function POST(request: NextRequest) {
   try {
@@ -113,26 +106,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Analysis not found.' }, { status: 404 });
     }
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'image-survey');
-    await mkdir(uploadDir, { recursive: true });
-
     const insertedIds: number[] = [];
 
     for (const image of images) {
-      const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(image);
-      if (!match) {
-        return NextResponse.json({ error: 'Invalid image payload.' }, { status: 400 });
-      }
+      // Upload to Cloudinary
+      const uploadResponse = await cloudinary.uploader.upload(image, {
+        folder: 'image-survey',
+        resource_type: 'image',
+      });
 
-      const mimeType = match[1];
-      const base64Payload = match[2];
-      const fileBuffer = Buffer.from(base64Payload, 'base64');
-      const extension = getExtensionFromMime(mimeType);
-      const fileName = `survey-${targetUserId}-${analysisId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
-      const diskPath = path.join(uploadDir, fileName);
-      const publicPath = `/uploads/image-survey/${fileName}`;
-
-      await writeFile(diskPath, fileBuffer);
+      const publicPath = uploadResponse.secure_url;
 
       const inserted = await prisma.$queryRawUnsafe<{ id: number }[]>(
         `INSERT INTO "ImageSurvey" ("user_id", "analyse_id", "image")
