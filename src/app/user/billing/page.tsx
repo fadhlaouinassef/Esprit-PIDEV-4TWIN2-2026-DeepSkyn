@@ -7,6 +7,8 @@ import {
     CheckCircle2,
     AlertCircle,
     XCircle,
+    Info,
+    AlertTriangle,
     CreditCard,
     Lock,
     ShieldCheck,
@@ -16,6 +18,7 @@ import {
     Shield,
     Zap
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { UserLayout } from "@/app/ui/UserLayout";
 import type { PlanKey } from "@/lib/stripe";
@@ -30,12 +33,14 @@ interface SubscriptionInfo {
     price: number;
     startDate: string;
     expiryDate: string;
+    amount?: number | null;
     remainingDays?: number;
 }
 
+
 // --- Helpers ---
-const getSubscriptionStatus = (expiryDate: string): { status: SubscriptionStatus, days: number } => {
-    if (!expiryDate || expiryDate === "N/A") return { status: "expired", days: 0 };
+const getSubscriptionStatus = (expiryDate: string, planName: string): { status: SubscriptionStatus, days: number } => {
+    if (planName === "Free Plan" || expiryDate === "N/A") return { status: "active", days: 0 };
 
     // On compare les dates pures (année-mois-jour) en ignorant l'heure
     const now = new Date();
@@ -55,36 +60,41 @@ const getSubscriptionStatus = (expiryDate: string): { status: SubscriptionStatus
     return { status: "active", days: diffDays };
 };
 
+
 // --- Mock Data ---
 const DEFAULT_SUBSCRIPTION: SubscriptionInfo = {
-    status: "expired",
+    status: "active",
     planName: "Free Plan",
     billingCycle: "monthly",
     price: 0,
-    startDate: "N/A",
+    startDate: "Today",
     expiryDate: "N/A",
+    amount: null,
 };
+
+
 
 // --- Components ---
 
-const StatusBadge = ({ status, remainingDays }: { status: SubscriptionStatus, remainingDays?: number }) => {
+const StatusBadge = ({ status, remainingDays, planName }: { status: SubscriptionStatus, remainingDays?: number, planName?: string }) => {
     const configs = {
         active: {
             color: "bg-green-500/10 text-green-500 border-green-500/20",
-            icon: <CheckCircle2 className="w-4 h-4" />,
-            label: "Active"
+            icon: planName === "Free Plan" ? <Info className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />,
+            label: planName === "Free Plan" ? "FREE" : "ACTIVE"
         },
         expiring: {
             color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
             icon: <AlertCircle className="w-4 h-4" />,
-            label: remainingDays ? `${remainingDays} ${remainingDays > 1 ? 'jours' : 'jour'} restants` : "Expiring Soon"
+            label: remainingDays ? `${remainingDays} ${remainingDays > 1 ? 'DAYS' : 'DAY'} REMAINING` : "EXPIRING SOON"
         },
         expired: {
             color: "bg-red-500/10 text-red-500 border-red-500/20",
             icon: <XCircle className="w-4 h-4" />,
-            label: "Expiré"
+            label: "EXPIRED"
         }
     };
+
 
     const config = configs[status];
 
@@ -101,7 +111,7 @@ export default function BillingPage() {
     const [subscription, setSubscription] = useState<SubscriptionInfo>(DEFAULT_SUBSCRIPTION);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
-    const [selectedPlan, setSelectedPlan] = useState<PlanKey>("pro_yearly");
+    const [selectedPlan, setSelectedPlan] = useState<PlanKey>("premium_yearly");
 
     useEffect(() => {
         const fetchSubscription = async () => {
@@ -131,18 +141,21 @@ export default function BillingPage() {
                     setSubscription({
                         status: "active",
                         planName: data.subscription.plan,
-                        billingCycle: "yearly",
-                        price: data.subscription.plan === "Pro Plan" ? 199.00 : 0,
+                        billingCycle: data.subscription.plan.includes("Yearly") ? "yearly" : "monthly",
+                        price: data.subscription.plan.includes("Yearly") ? 200 : 20,
                         startDate: formatDate(startDate),
                         expiryDate: formatDate(expiryDate),
+                        amount: data.subscription.amount || null,
                     });
+
                 } else if (data.status === 'none') {
                     setSubscription({
                         ...DEFAULT_SUBSCRIPTION,
                         planName: "Free Plan",
-                        status: "expired"
+                        status: "active"
                     });
                 }
+
             } catch (error) {
                 console.error("Failed to fetch subscription:", error);
             } finally {
@@ -154,36 +167,35 @@ export default function BillingPage() {
     }, [user?.id]);
 
     // Calculate status dynamically based on expiryDate
-    const { status: currentStatus, days: remainingDays } = getSubscriptionStatus(subscription.expiryDate);
+    const { status: currentStatus, days: remainingDays } = getSubscriptionStatus(subscription.expiryDate, subscription.planName);
+
 
     const isRenewalRequired = currentStatus === "expiring" || currentStatus === "expired";
 
     // Calculer le prix selon le plan sélectionné
     const getPlanPrice = () => {
         const prices = {
-            basic_monthly: 9.99,
-            pro_monthly: 19.99,
-            pro_yearly: 199.00,
+            premium_monthly: 20.00,
+            premium_yearly: 200.00,
         };
-        return prices[selectedPlan];
+        return prices[selectedPlan as keyof typeof prices] || 0;
     };
 
     const getPlanLabel = () => {
         const labels = {
-            basic_monthly: "Basic Monthly",
-            pro_monthly: "Pro Monthly", 
-            pro_yearly: "Pro Yearly",
+            premium_monthly: "Premium Monthly",
+            premium_yearly: "Premium Yearly",
         };
-        return labels[selectedPlan];
+        return labels[selectedPlan as keyof typeof labels] || "Premium Plan";
     };
 
-    const discount = selectedPlan === "pro_yearly" ? 40 : 0;
+    const discount = selectedPlan === "premium_yearly" ? 40 : 0;
 
     // Fonction pour démarrer le checkout Stripe
     const startStripeCheckout = async () => {
-        // Vérifier que l'utilisateur est connecté
+        // Check if user is logged in
         if (!user?.id) {
-            toast.error("Vous devez être connecté pour effectuer un paiement");
+            toast.error("You must be logged in to make a payment");
             return;
         }
 
@@ -192,30 +204,26 @@ export default function BillingPage() {
             const res = await fetch("/api/stripe/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     plan: selectedPlan,
                     userId: user.id.toString() // Envoyer l'ID de l'utilisateur depuis Redux
                 }),
             });
 
             const data = await res.json();
-            if (!res.ok) throw new Error(data?.error || "Échec du checkout");
-            if (!data?.url) throw new Error("URL de checkout manquante");
+            if (!res.ok) throw new Error(data?.error || "Checkout failed");
+            if (!data?.url) throw new Error("Missing checkout URL");
 
-            // Redirection vers Stripe
+            // Redirect to Stripe
             window.location.href = data.url;
         } catch (e: unknown) {
-            toast.error(e instanceof Error ? e.message : "Erreur lors du paiement");
+            toast.error(e instanceof Error ? e.message : "Payment error occurred");
             setIsProcessing(false);
         }
     };
 
     const handleAction = () => {
-        if (currentStatus === "active") {
-            toast.info("Redirection vers la gestion de l'abonnement...");
-        } else {
-            startStripeCheckout();
-        }
+        startStripeCheckout();
     };
 
     if (isLoadingData) {
@@ -277,12 +285,16 @@ export default function BillingPage() {
                                 <div className="p-8 md:p-10">
                                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-10">
                                         <div className="space-y-4">
-                                            <StatusBadge status={currentStatus} remainingDays={remainingDays} />
+                                            <StatusBadge status={currentStatus} remainingDays={remainingDays} planName={subscription.planName} />
+
                                             <h2 className="text-3xl md:text-4xl font-black text-foreground">{subscription.planName}</h2>
                                             <div className="flex items-center gap-3 text-muted-foreground font-bold">
                                                 <span className="bg-muted px-3 py-1 rounded-lg text-[10px] uppercase tracking-widest">{subscription.billingCycle}</span>
-                                                <span className="text-primary text-lg">${subscription.price}/yr</span>
+                                                <span className="text-primary text-lg">
+                                                    {subscription.amount !== null ? `${subscription.amount} TND` : `${subscription.price} TND`} / {subscription.billingCycle === "yearly" ? "Year" : "Month"}
+                                                </span>
                                             </div>
+
                                         </div>
                                         <div className="text-left md:text-right space-y-1">
                                             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Next Renewal Date</span>
@@ -298,25 +310,30 @@ export default function BillingPage() {
                                         currentStatus === "expiring" ? "bg-amber-500/5 border-amber-500/10 text-amber-700 dark:text-amber-400 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]" :
                                             "bg-red-500/5 border-red-500/10 text-red-700 dark:text-red-400 shadow-[inset_0_0_20px_rgba(239,68,68,0.05)]"
                                         }`}>
-                                        <div className={`p-3 rounded-2xl flex-shrink-0 ${currentStatus === "active" ? "bg-green-500/10" :
-                                            currentStatus === "expiring" ? "bg-amber-500/10" : "bg-red-500/10"
+                                        <div className={`p-3 rounded-2xl flex-shrink-0 ${subscription.planName === "Free Plan" ? "bg-primary/10" :
+                                            currentStatus === "active" ? "bg-green-500/10" :
+                                                currentStatus === "expiring" ? "bg-amber-500/10" : "bg-red-500/10"
                                             }`}>
-                                            {currentStatus === "active" ? <CheckCircle2 className="w-6 h-6" /> :
-                                                currentStatus === "expiring" ? <AlertCircle className="w-6 h-6" /> :
-                                                    <XCircle className="w-6 h-6" />}
+                                            {subscription.planName === "Free Plan" ? <Info className="w-6 h-6 text-primary" /> :
+                                                currentStatus === "active" ? <CheckCircle2 className="w-6 h-6" /> :
+                                                    currentStatus === "expiring" ? <AlertCircle className="w-6 h-6" /> :
+                                                        <XCircle className="w-6 h-6" />}
                                         </div>
                                         <p className="text-sm font-bold leading-relaxed">
-                                            {currentStatus === "active" ? `Votre abonnement est actif jusqu'au ${subscription.expiryDate}.` :
-                                                currentStatus === "expiring" ? `Action Requise : Votre abonnement expire dans ${remainingDays} jours.` :
-                                                    "Votre abonnement est expiré. Renouvelez-le pour retrouver l'accès."}
+                                            {subscription.planName === "Free Plan" ? "You are currently on the Free Plan. Upgrade to Premium to unlock exclusive features." :
+                                                currentStatus === "active" ? `Your subscription is active until ${subscription.expiryDate}.` :
+                                                    currentStatus === "expiring" ? `Action Required: Your subscription expires in ${remainingDays} days.` :
+                                                        "Your subscription is expired. Renew it to regain access."}
                                         </p>
+
                                     </div>
                                 </div>
                             </motion.div>
 
                             {/* Payment Section */}
                             <AnimatePresence mode="wait">
-                                {isRenewalRequired ? (
+                                {isRenewalRequired || subscription.planName === "Free Plan" ? (
+
                                     <motion.div
                                         key="renewal-form"
                                         initial={{ opacity: 0, y: 30 }}
@@ -327,79 +344,54 @@ export default function BillingPage() {
                                     >
                                         {/* Plan Selection Section */}
                                         <div className="p-8 md:p-10 space-y-6">
-                                            <h3 className="text-2xl font-black text-foreground mb-6">Choisir un Plan</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                {/* Basic Monthly */}
+                                            <h3 className="text-2xl font-black text-foreground mb-6">Choose a Plan</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {/* Premium Monthly */}
                                                 <button
-                                                    onClick={() => setSelectedPlan("basic_monthly")}
-                                                    className={`p-6 rounded-2xl border-2 transition-all text-left ${
-                                                        selectedPlan === "basic_monthly"
+                                                    onClick={() => setSelectedPlan("premium_monthly")}
+                                                    className={`p-6 rounded-2xl border-2 transition-all text-left ${selectedPlan === "premium_monthly"
                                                             ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
                                                             : "border-border hover:border-muted-foreground/30 bg-background/50"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <div className="flex items-start justify-between mb-3">
-                                                        <h4 className="text-lg font-black text-foreground">Basic</h4>
-                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                                            selectedPlan === "basic_monthly" ? "border-primary bg-primary" : "border-border"
-                                                        }`}>
-                                                            {selectedPlan === "basic_monthly" && (
+                                                        <h4 className="text-lg font-black text-foreground">Premium Monthly</h4>
+
+                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === "premium_monthly" ? "border-primary bg-primary" : "border-border"
+                                                            }`}>
+                                                            {selectedPlan === "premium_monthly" && (
                                                                 <CheckCircle2 className="w-3 h-3 text-white" />
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <p className="text-3xl font-black text-foreground mb-2">$9.99</p>
-                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Par Mois</p>
+                                                    <p className="text-3xl font-black text-foreground mb-2">20 TND</p>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Per Month</p>
                                                 </button>
 
-                                                {/* Pro Monthly */}
+                                                {/* Premium Yearly */}
                                                 <button
-                                                    onClick={() => setSelectedPlan("pro_monthly")}
-                                                    className={`p-6 rounded-2xl border-2 transition-all text-left ${
-                                                        selectedPlan === "pro_monthly"
+                                                    onClick={() => setSelectedPlan("premium_yearly")}
+                                                    className={`p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${selectedPlan === "premium_yearly"
                                                             ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
                                                             : "border-border hover:border-muted-foreground/30 bg-background/50"
-                                                    }`}
-                                                >
-                                                    <div className="flex items-start justify-between mb-3">
-                                                        <h4 className="text-lg font-black text-foreground">Pro</h4>
-                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                                            selectedPlan === "pro_monthly" ? "border-primary bg-primary" : "border-border"
-                                                        }`}>
-                                                            {selectedPlan === "pro_monthly" && (
-                                                                <CheckCircle2 className="w-3 h-3 text-white" />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-3xl font-black text-foreground mb-2">$19.99</p>
-                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Par Mois</p>
-                                                </button>
-
-                                                {/* Pro Yearly */}
-                                                <button
-                                                    onClick={() => setSelectedPlan("pro_yearly")}
-                                                    className={`p-6 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${
-                                                        selectedPlan === "pro_yearly"
-                                                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-                                                            : "border-border hover:border-muted-foreground/30 bg-background/50"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <div className="absolute top-2 right-2 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-wide">
-                                                        Économie
+                                                        Savings
                                                     </div>
                                                     <div className="flex items-start justify-between mb-3">
-                                                        <h4 className="text-lg font-black text-foreground">Pro</h4>
-                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                                            selectedPlan === "pro_yearly" ? "border-primary bg-primary" : "border-border"
-                                                        }`}>
-                                                            {selectedPlan === "pro_yearly" && (
+                                                        <h4 className="text-lg font-black text-foreground">Premium Yearly</h4>
+
+                                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === "premium_yearly" ? "border-primary bg-primary" : "border-border"
+                                                            }`}>
+                                                            {selectedPlan === "premium_yearly" && (
                                                                 <CheckCircle2 className="w-3 h-3 text-white" />
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <p className="text-3xl font-black text-foreground mb-2">$199.00</p>
-                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Par An</p>
-                                                    <p className="text-[10px] text-green-600 dark:text-green-400 font-bold mt-2">Économise $40/an</p>
+                                                    <p className="text-3xl font-black text-foreground mb-2">200 TND</p>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Per Year</p>
+                                                    <p className="text-[10px] text-green-600 dark:text-green-400 font-bold mt-2">Save 40 TND/year</p>
                                                 </button>
                                             </div>
                                         </div>
@@ -421,25 +413,25 @@ export default function BillingPage() {
                                         </div>
 
                                         <div className="p-8 md:p-10 space-y-8">
-                                            {/* Information sur le paiement */}
+                                            {/* Payment Information */}
                                             <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6">
                                                 <div className="flex items-start gap-4">
                                                     <div className="p-2 bg-primary/10 rounded-lg">
                                                         <Lock className="w-5 h-5 text-primary" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h4 className="font-black text-foreground text-sm mb-2">Paiement Sécurisé avec Stripe</h4>
+                                                        <h4 className="font-black text-foreground text-sm mb-2">Secure Payment with Stripe</h4>
                                                         <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                                                            En cliquant sur le bouton ci-dessous, vous serez redirigé vers la page de paiement sécurisée Stripe.
+                                                            By clicking the button below, you will be redirected to the secure Stripe payment page.
                                                         </p>
                                                         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 space-y-2">
                                                             <p className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
-                                                                📝 Mode Test - Cartes de test acceptées
+                                                                📝 Test Mode - Test cards accepted
                                                             </p>
                                                             <div className="text-[10px] text-muted-foreground space-y-1 font-mono">
-                                                                <p>✅ Succès: <span className="font-bold">4242 4242 4242 4242</span></p>
-                                                                <p>❌ Échec: <span className="font-bold">4000 0000 0000 0002</span></p>
-                                                                <p className="text-[9px] mt-2 font-sans">Date: n&apos;importe quelle date future (ex: 12/34) • CVC: 123</p>
+                                                                <p>✅ Success: <span className="font-bold">4242 4242 4242 4242</span></p>
+                                                                <p>❌ Failure: <span className="font-bold">4000 0000 0000 0002</span></p>
+                                                                <p className="text-[9px] mt-2 font-sans">Date: any future date (ex: 12/34) • CVC: 123</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -490,19 +482,19 @@ export default function BillingPage() {
 
                                     <div className="space-y-6">
                                         <div className="flex justify-between items-center text-sm font-bold">
-                                            <span className="text-slate-400 dark:text-muted-foreground">{isRenewalRequired ? getPlanLabel() : subscription.planName}</span>
-                                            <span>${isRenewalRequired ? getPlanPrice().toFixed(2) : subscription.price.toFixed(2)}</span>
+                                            <span className="text-slate-400 dark:text-muted-foreground">{(isRenewalRequired || subscription.planName === "Free Plan") ? getPlanLabel() : subscription.planName}</span>
+                                            <span>{(isRenewalRequired || subscription.planName === "Free Plan") ? getPlanPrice().toFixed(2) : (subscription.price || 0).toFixed(2)} TND</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm font-bold opacity-50">
-                                            <span>Sales Tax</span>
-                                            <span>$0.00</span>
+                                            <span>Tax</span>
+                                            <span>0.00 TND</span>
                                         </div>
-                                        {discount > 0 && (
+                                        {((isRenewalRequired || subscription.planName === "Free Plan") && selectedPlan === "premium_yearly") && (
                                             <div className="flex justify-between items-center text-sm font-black text-green-400">
                                                 <span className="flex items-center gap-2 uppercase tracking-tighter italic">
                                                     <Zap className="w-4 h-4" /> Yearly Member Discount
                                                 </span>
-                                                <span>-${discount.toFixed(2)}</span>
+                                                <span>-40.00 TND</span>
                                             </div>
                                         )}
                                     </div>
@@ -512,20 +504,21 @@ export default function BillingPage() {
                                             <div className="space-y-1">
                                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-muted-foreground/60">Grand Total</span>
                                                 <p className="text-[10px] text-slate-600 dark:text-muted-foreground/40 font-bold uppercase">
-                                                    {isRenewalRequired ? (selectedPlan.includes("yearly") ? "Billed annually" : "Billed monthly") : "Billed annually"}
+                                                    {(isRenewalRequired || subscription.planName === "Free Plan") ? (selectedPlan.includes("yearly") ? "Billed annually" : "Billed monthly") : "Billed annually"}
                                                 </p>
                                             </div>
                                             <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">
-                                                ${isRenewalRequired ? (getPlanPrice() - discount).toFixed(2) : (subscription.price - 20).toFixed(2)}
+                                                {(isRenewalRequired || subscription.planName === "Free Plan") ? (getPlanPrice() - discount).toFixed(2) : (subscription.price || 0).toFixed(2)}
                                             </span>
                                         </div>
 
                                         <button
                                             disabled={isProcessing}
                                             onClick={handleAction}
-                                            className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all relative overflow-hidden group ${subscription.status === "active"
-                                                ? "bg-slate-800 dark:bg-muted text-white hover:bg-slate-700 dark:hover:bg-muted/80 shadow-inner"
-                                                : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_40px_rgba(var(--primary),0.3)]"
+                                            className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all relative overflow-hidden group ${
+                                                (subscription.planName === "Free Plan" || isRenewalRequired)
+                                                ? "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_40px_rgba(var(--primary),0.3)]"
+                                                : "bg-slate-800 dark:bg-muted text-white hover:bg-slate-700 dark:hover:bg-muted/80 shadow-inner"
                                                 } ${isProcessing ? "opacity-90 cursor-wait" : ""}`}
                                         >
                                             {isProcessing ? (
@@ -533,13 +526,15 @@ export default function BillingPage() {
                                             ) : (
                                                 <>
                                                     <span>
-                                                        {subscription.status === "expired" ? "Renew Access" :
+                                                        {subscription.planName === "Free Plan" ? "Upgrade to Premium" :
+                                                            subscription.status === "expired" ? "Renew Access" :
                                                             subscription.status === "expiring" ? "Extend Now" : "Manage Settings"}
                                                     </span>
                                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                                                 </>
                                             )}
                                         </button>
+
 
                                         <p className="text-[10px] text-center mt-8 text-slate-500 dark:text-muted-foreground/40 leading-relaxed font-bold">
                                             PCI-DSS COMPLIANT • ENCRYPTED GATEWAY

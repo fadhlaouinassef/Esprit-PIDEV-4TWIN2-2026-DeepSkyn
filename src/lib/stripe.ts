@@ -9,32 +9,29 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   typescript: true,
 });
 
-// Types des plans disponibles
-export type PlanKey = "basic_monthly" | "pro_monthly" | "pro_yearly";
+// Available subscription plans
+export type PlanKey = "premium_monthly" | "premium_yearly";
 
-// Configuration des plans
+// Plan configuration
 export const PLANS: Record<PlanKey, {
   label: string;
   amountCents: number;
   currency: string;
   billingCycle: "monthly" | "yearly";
 }> = {
-  basic_monthly: {
-    label: "Basic Monthly",
-    amountCents: 999, // $9.99
+  premium_monthly: {
+    label: "Premium Monthly",
+    amountCents: 2000, // 20.00 USD (Stripe uses cents)
     currency: "usd",
     billingCycle: "monthly"
   },
-  pro_monthly: {
-    label: "Pro Monthly",
-    amountCents: 1999, // $19.99
-    currency: "usd",
-    billingCycle: "monthly"
-  },
-  pro_yearly: {
-    label: "Pro Yearly",
-    amountCents: 19900, // $199.00
+  premium_yearly: {
+    label: "Premium Yearly",
+    amountCents: 20000, // 200.00 USD
     currency: "usd",
     billingCycle: "yearly"
   },
 };
+
+
+

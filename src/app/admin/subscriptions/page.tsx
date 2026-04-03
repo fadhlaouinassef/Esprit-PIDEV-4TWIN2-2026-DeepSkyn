@@ -32,6 +32,7 @@ import {
 // Types
 // ─────────────────────────────────────────────
 type PaymentStatus = "Paid" | "Expiring" | "Expired";
+type BillingCycle = "monthly" | "yearly";
 
 interface SubscriptionRow {
   id: number;
@@ -45,6 +46,8 @@ interface SubscriptionRow {
   date_fin: string;
   paymentStatus: PaymentStatus;
   amount: number;
+  billingCycle: BillingCycle;
+  monthlyAmount: number;
 }
 
 // ─────────────────────────────────────────────
@@ -55,21 +58,19 @@ function formatDate(iso: string) {
 }
 
 function planColor(plan: string): string {
-  switch (plan.toUpperCase()) {
-    case "BASIC":   return "bg-slate-100 text-slate-600";
-    case "PRO":     return "bg-blue-50 text-blue-700";
-    case "PREMIUM": return "bg-violet-50 text-violet-700";
-    default:        return "bg-gray-100 text-gray-600";
-  }
+  const upper = plan.toUpperCase();
+  if (upper.includes("BASIC")) return "bg-slate-100 text-slate-600";
+  if (upper.includes("PRO")) return "bg-blue-50 text-blue-700";
+  if (upper.includes("PREMIUM")) return "bg-violet-50 text-violet-700";
+  return "bg-gray-100 text-gray-600";
 }
 
 function avatarBg(plan: string): string {
-  switch (plan.toUpperCase()) {
-    case "BASIC":   return "bg-slate-200 text-slate-700";
-    case "PRO":     return "bg-blue-100 text-blue-700";
-    case "PREMIUM": return "bg-violet-100 text-violet-700";
-    default:        return "bg-gray-200 text-gray-600";
-  }
+  const upper = plan.toUpperCase();
+  if (upper.includes("BASIC")) return "bg-slate-200 text-slate-700";
+  if (upper.includes("PRO")) return "bg-blue-100 text-blue-700";
+  if (upper.includes("PREMIUM")) return "bg-violet-100 text-violet-700";
+  return "bg-gray-200 text-gray-600";
 }
 
 
@@ -559,7 +560,7 @@ export default function SubscriptionsPage() {
   const expired = subscriptions.filter((s) => s.paymentStatus === "Expired").length;
   const monthlyRevenue = subscriptions
     .filter((s) => s.paymentStatus === "Paid")
-    .reduce((acc, s) => acc + s.amount / 12, 0)
+    .reduce((acc, s) => acc + (s.monthlyAmount ?? (s.billingCycle === "yearly" ? s.amount / 12 : s.amount)), 0)
     .toFixed(2);
 
   // ── Unique plans for dropdown ──
@@ -595,7 +596,7 @@ export default function SubscriptionsPage() {
       formatDate(s.date_debut),
       formatDate(s.date_fin),
       s.paymentStatus,
-      `$${s.amount.toFixed(2)}`,
+      `${s.amount.toFixed(2)} TND (${s.billingCycle === "yearly" ? "Year" : "Month"})`,
     ]);
     const csv = [headers, ...rows]
       .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
@@ -660,7 +661,7 @@ export default function SubscriptionsPage() {
           />
           <SummaryCard
             title="Monthly Revenue"
-            value={`$${monthlyRevenue}`}
+            value={`${monthlyRevenue} TND`}
             sub="From active subscriptions"
             icon={<TrendingUp size={22} className="text-violet-600" />}
             accent="bg-violet-50 dark:bg-violet-900/20"
@@ -865,8 +866,10 @@ export default function SubscriptionsPage() {
 
                       {/* Amount */}
                       <td className="px-4 py-3.5 font-semibold text-gray-800 dark:text-gray-100 whitespace-nowrap">
-                        ${sub.amount.toFixed(2)}
-                        <span className="ml-1 text-xs text-gray-400 font-normal">/yr</span>
+                        {sub.amount.toFixed(2)} TND
+                        <span className="ml-1 text-xs text-gray-400 font-normal">
+                          /{sub.billingCycle === "yearly" ? "Year" : "Month"}
+                        </span>
                       </td>
 
                       {/* Actions */}
