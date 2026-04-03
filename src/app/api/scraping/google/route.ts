@@ -31,7 +31,14 @@ async function waitForRun(runId: string, timeoutMs = 90_000): Promise<string> {
     const res = await fetch(
       `https://api.apify.com/v2/actor-runs/${runId}?token=${APIFY_TOKEN}`
     );
-    if (!res.ok) throw new Error(`Failed to poll run: ${res.status}`);
+
+    if (!res.ok) {
+      if (res.status >= 500) {
+        await new Promise((r) => setTimeout(r, 5000));
+        continue;
+      }
+      throw new Error(`Failed to poll run: ${res.status}`);
+    }
     const json = (await res.json()) as ApifyRunResponse;
     const { status, defaultDatasetId } = json.data;
     if (status === 'SUCCEEDED') return defaultDatasetId;
@@ -55,6 +62,7 @@ export async function POST(request: NextRequest) {
       countryCode?: string;
       languageCode?: string;
       maxResults?: number;
+      isTunisia?: boolean;
     };
 
     const rawQuery = String(body.query || '').trim();
@@ -68,9 +76,15 @@ export async function POST(request: NextRequest) {
     const parts: string[] = [rawQuery];
     if (categoryKeyword) parts.push(categoryKeyword);
     if (body.brand)  parts.push(`brand:"${body.brand.trim()}"`);
-    if (body.site)   parts.push(`site:${body.site.trim()}`);
-    // Always anchor to product context
-    parts.push('product buy ingredients');
+    
+    if (body.isTunisia) {
+      // Cibler directement primini.tn avec La Roche-Posay dans la requête
+      parts.push('"La Roche-Posay" site:primini.tn');
+    } else if (body.site) {
+      parts.push(`site:${body.site.trim()}`);
+    }
+    // Always anchor to product context, but not when Tunisia (query already targeted)
+    if (!body.isTunisia) parts.push('product buy ingredients');
 
     const enrichedQuery = parts.join(' ');
     const maxResults    = Math.min(Number(body.maxResults) || 10, 50);
@@ -88,6 +102,8 @@ export async function POST(request: NextRequest) {
           resultsPerPage: maxResults,
           countryCode,
           languageCode,
+          memory: 512, // Reduce memory from 1024MB to 512MB to allow more concurrent runs
+          timeout: 60, // Shorter timeout to free up resources faster
         }),
       }
     );
