@@ -110,8 +110,8 @@ export const NAV_DATA: NavSection[] = [
                 items: [],
             },
             {
-                title: "Feedback",
-                url: "/admin/feedback",
+                title: "Complaints & Feedback",
+                url: "/admin/complaints",
                 icon: MessageSquare,
                 items: [],
             },
