@@ -7,6 +7,7 @@ export interface ChatMessage {
     sender: 'user' | 'admin';
     text: string;
     timestamp: string;
+    isRead?: boolean;
 }
 
 export interface Complaint {
@@ -38,7 +39,8 @@ export const MOCK_COMPLAINTS: Complaint[] = [
                 id: "m1",
                 sender: "user",
                 text: "I was charged twice for the premium plan.",
-                timestamp: "2024-03-20T10:00:00Z"
+                timestamp: "2024-03-20T10:00:00Z",
+                isRead: false
             }
         ]
     },
@@ -57,13 +59,15 @@ export const MOCK_COMPLAINTS: Complaint[] = [
                 id: "m1",
                 sender: "user",
                 text: "The scan feature is not working on mobile Safari.",
-                timestamp: "2024-03-18T14:30:00Z"
+                timestamp: "2024-03-18T14:30:00Z",
+                isRead: true
             },
             {
                 id: "m2",
                 sender: "admin",
                 text: "Thank you for reporting, we are working on it.",
-                timestamp: "2024-03-19T09:00:00Z"
+                timestamp: "2024-03-19T09:00:00Z",
+                isRead: true
             }
         ]
     },
@@ -101,13 +105,15 @@ export const MOCK_COMPLAINTS: Complaint[] = [
                 id: "m1",
                 sender: "user",
                 text: "I don't understand how to use the recommended toner.",
-                timestamp: "2024-03-21T16:00:00Z"
+                timestamp: "2024-03-21T16:00:00Z",
+                isRead: true
             },
             {
                 id: "m2",
                 sender: "admin",
                 text: "We will add a detailed instruction video for this product.",
-                timestamp: "2024-03-22T10:00:00Z"
+                timestamp: "2024-03-22T10:00:00Z",
+                isRead: true
             }
         ]
     }

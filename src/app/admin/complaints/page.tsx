@@ -3,14 +3,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { AdminLayout } from "@/app/ui/AdminLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-    MessageSquare, 
-    Search, 
-    Filter, 
-    Send, 
-    Clock, 
-    CheckCircle2, 
-    XCircle, 
+import {
+    MessageSquare,
+    Search,
+    Filter,
+    Send,
+    Clock,
+    CheckCircle2,
+    XCircle,
     Paperclip,
     ChevronDown,
     User,
@@ -28,25 +28,48 @@ export default function AdminComplaintsPage() {
     const [replyText, setReplyText] = useState("");
     const [filterStatus, setFilterStatus] = useState<ComplaintStatus | 'all'>('all');
     const [searchQuery, setSearchQuery] = useState("");
-    
+
     const selectedComplaint = complaints.find(c => c.id === selectedId);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
+    // Scroll instantly to bottom on selection
     useEffect(() => {
         if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({ behavior: "auto" });
+        }
+    }, [selectedId]);
+
+    // Scroll smoothly on new messages or updates
+    useEffect(() => {
+        if (chatEndRef.current && selectedId) {
             chatEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [selectedComplaint?.messages]);
+
+        // Mark as read when selected
+        if (selectedId) {
+            setComplaints(prev => prev.map(c => {
+                if (c.id === selectedId) {
+                    return {
+                        ...c,
+                        messages: c.messages.map(m =>
+                            m.sender === 'user' ? { ...m, isRead: true } : m
+                        )
+                    };
+                }
+                return c;
+            }));
+        }
+    }, [selectedComplaint?.messages?.length]);
 
     const filteredComplaints = complaints.filter(c => {
         const matchesStatus = filterStatus === 'all' || c.status === filterStatus;
-        const matchesSearch = c.userName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             c.content.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = c.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.content.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesStatus && matchesSearch;
     });
 
     const handleUpdateStatus = (id: string, newStatus: ComplaintStatus) => {
-        setComplaints(prev => prev.map(c => 
+        setComplaints(prev => prev.map(c =>
             c.id === id ? { ...c, status: newStatus } : c
         ));
         toast.success(`Ticket status updated to ${newStatus}`);
@@ -63,16 +86,22 @@ export default function AdminComplaintsPage() {
             timestamp: new Date().toISOString()
         };
 
-        setComplaints(prev => prev.map(c => 
-            c.id === selectedId 
-                ? { ...c, messages: [...c.messages, newMessage] } 
+        const isClosed = newMessage.text.includes("🚨 TICKET CLOSED");
+
+        setComplaints(prev => prev.map(c =>
+            c.id === selectedId
+                ? { 
+                    ...c, 
+                    messages: [...c.messages, newMessage],
+                    status: isClosed ? 'rejected' : c.status
+                  }
                 : c
         ));
         setReplyText("");
     };
 
     const getStatusStyles = (status: ComplaintStatus) => {
-        switch(status) {
+        switch (status) {
             case 'pending': return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
             case 'accepted': return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
             case 'rejected': return "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400";
@@ -92,7 +121,7 @@ export default function AdminComplaintsPage() {
 
     return (
         <AdminLayout>
-            <div className="flex h-[calc(100vh-10rem)] bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden">
+            <div className="flex h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden">
                 {/* List Sidebar */}
                 <div className={cn(
                     "w-full md:w-80 lg:w-96 border-r border-gray-100 dark:border-gray-700 flex flex-col",
@@ -105,9 +134,9 @@ export default function AdminComplaintsPage() {
                         </h1>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-                            <input 
-                                type="text" 
-                                placeholder="Search conversations..." 
+                            <input
+                                type="text"
+                                placeholder="Search conversations..."
                                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 outline-none focus:border-primary transition-colors text-sm"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -120,8 +149,8 @@ export default function AdminComplaintsPage() {
                                     onClick={() => setFilterStatus(s as any)}
                                     className={cn(
                                         "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap capitalize transition-all",
-                                        filterStatus === s 
-                                            ? "bg-primary text-white" 
+                                        filterStatus === s
+                                            ? "bg-primary text-white"
                                             : "bg-gray-100 dark:bg-gray-900 text-gray-500 hover:bg-gray-200"
                                     )}
                                 >
@@ -131,7 +160,10 @@ export default function AdminComplaintsPage() {
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar">
+                    <div 
+                        className="flex-1 overflow-y-auto custom-scrollbar scrollbar-hide"
+                        data-lenis-prevent
+                    >
                         {filteredComplaints.length === 0 ? (
                             <div className="p-12 text-center text-gray-400">
                                 <MessageSquare className="size-12 mx-auto mb-4 opacity-20" />
@@ -143,29 +175,51 @@ export default function AdminComplaintsPage() {
                                     key={c.id}
                                     onClick={() => setSelectedId(c.id)}
                                     className={cn(
-                                        "p-5 border-b border-gray-50 dark:border-gray-700/50 cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-900/50 relative group",
-                                        selectedId === c.id && "bg-primary/5 dark:bg-primary/5 border-l-4 border-l-primary"
+                                        "p-6 border-b border-gray-50 dark:border-gray-700/50 cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-900/50 relative group rounded-3xl mx-2 mb-2",
+                                        selectedId === c.id ? "bg-white dark:bg-gray-800 shadow-lg border-primary/20" : "bg-transparent"
                                     )}
                                 >
-                                    <div className="flex justify-between items-start mb-1">
-                                        <div className="flex items-center gap-2">
-                                            <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                                                {c.userName.charAt(0)}
-                                            </div>
-                                            <span className="font-bold text-sm truncate max-w-[120px]">{c.userName}</span>
+                                    {/* Top Row: Category and Status */}
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-gray-100 dark:bg-gray-900 text-[10px] font-bold text-gray-500">
+                                            <span className="text-sm">{categories[c.category]}</span>
+                                            <span className="uppercase tracking-widest">{c.category}</span>
                                         </div>
-                                        <span className="text-[10px] text-gray-400">{new Date(c.createdAt).toLocaleDateString()}</span>
-                                    </div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-2">
-                                        {categories[c.category]} {c.content}
-                                    </p>
-                                    <div className="flex items-center justify-between">
-                                        <div className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider", getStatusStyles(c.status))}>
+                                        <div className={cn("px-3 py-1.5 rounded-3xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-sm border", 
+                                            c.status === 'pending' ? "bg-amber-50 text-amber-600 border-amber-100" :
+                                            c.status === 'accepted' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                            "bg-rose-50 text-rose-600 border-rose-100"
+                                        )}>
+                                            <Clock className="size-3" />
                                             {c.status}
                                         </div>
-                                        <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                                            <MessageSquare className="size-3" />
-                                            {c.messages.length}
+                                    </div>
+
+                                    {/* Middle Row: Title/Content (Last Message Preview) */}
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div className={cn("size-2 rounded-full shrink-0", 
+                                            c.messages[c.messages.length-1]?.sender === 'user' ? "bg-primary" : "bg-gray-300"
+                                        )} />
+                                        <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 text-sm">
+                                            {c.messages[c.messages.length - 1]?.text || c.content}
+                                        </h3>
+                                    </div>
+
+                                    {/* Bottom Row: Date and Stats */}
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-[11px] text-gray-400 font-medium">
+                                            {new Date(c.createdAt).toLocaleDateString()}
+                                        </span>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-bold group-hover:text-primary transition-colors">
+                                                <span className="italic">{c.messages.length} replies</span>
+                                                {c.messages.filter(m => m.sender === 'user' && !m.isRead).length > 0 && (
+                                                    <span className="text-rose-500 ml-1 font-extrabold underline decoration-rose-500/30">
+                                                        ({c.messages.filter(m => m.sender === 'user' && !m.isRead).length} unread)
+                                                    </span>
+                                                )}
+                                                <ChevronDown className="size-3 -rotate-90" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -204,7 +258,7 @@ export default function AdminComplaintsPage() {
                                                 onClick={() => handleUpdateStatus(selectedComplaint.id, s)}
                                                 className={cn(
                                                     "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
-                                                    selectedComplaint.status === s 
+                                                    selectedComplaint.status === s
                                                         ? getStatusStyles(s)
                                                         : "text-gray-400 hover:text-gray-600"
                                                 )}
@@ -220,8 +274,12 @@ export default function AdminComplaintsPage() {
                             </div>
 
                             {/* Chat Area */}
-                            <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
-                                {selectedComplaint.messages.map((msg) => (
+                            <div 
+                                className="flex-1 overflow-y-auto p-8 space-y-4 flex flex-col-reverse custom-scrollbar scrollbar-hide"
+                                data-lenis-prevent
+                            >
+                                <div ref={chatEndRef} />
+                                {[...selectedComplaint.messages].reverse().map((msg) => (
                                     <div key={msg.id} className={cn(
                                         "flex flex-col max-w-[80%]",
                                         msg.sender === 'admin' ? "ml-auto items-end" : "mr-auto items-start"
@@ -235,9 +293,9 @@ export default function AdminComplaintsPage() {
                                             </span>
                                         </div>
                                         <div className={cn(
-                                            "p-5 rounded-2xl text-sm shadow-sm",
-                                            msg.sender === 'admin' 
-                                                ? "bg-primary text-white rounded-tr-none shadow-primary/10" 
+                                            "p-3 px-5 rounded-2xl text-[13px] shadow-sm",
+                                            msg.sender === 'admin'
+                                                ? "bg-primary text-white rounded-tr-none shadow-primary/10"
                                                 : "bg-white dark:bg-gray-800 dark:text-white rounded-tl-none border border-gray-100 dark:border-gray-700"
                                         )}>
                                             {msg.text}
@@ -253,7 +311,6 @@ export default function AdminComplaintsPage() {
                                         )}
                                     </div>
                                 ))}
-                                <div ref={chatEndRef} />
                             </div>
 
                             {/* Footer Interaction */}
@@ -271,7 +328,7 @@ export default function AdminComplaintsPage() {
                                             <Paperclip className="size-5" />
                                         </button>
                                     </div>
-                                    <button 
+                                    <button
                                         type="submit"
                                         disabled={!replyText.trim()}
                                         className="bg-primary hover:bg-primary/90 disabled:opacity-50 text-white px-8 rounded-2xl font-bold shadow-lg shadow-primary/20 transition-all flex items-center gap-2"

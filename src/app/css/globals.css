@@ -300,7 +300,6 @@
     animation: image-bounce 0.4s ease-out;
   }
 
-  /* Custom Scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
@@ -310,12 +309,21 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #e5e7eb;
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #d1d5db;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  /* Scrollbar Hide Utility */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .badge-card-container {

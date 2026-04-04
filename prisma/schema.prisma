@@ -6,6 +6,265 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  password          String
+  role              RoleType            @default(USER)
+  created_at        DateTime            @default(now())
+  nom               String?
+  sexe              String?
+  age               Int?
+  skin_type         SkinType?
+  prenom            String?
+  image             String?
+  verified          Boolean             @default(false)
+  otp_code          String?
+  otp_expiry        DateTime?
+  status            UserStatus          @default(PENDING)
+  admin_notes       String?
+  activated         Boolean             @default(true)
+  badges            Badge[]
+  chatbotMessages   ChatbotMessage[]
+  complaints        Complaint[]
+  imageSurveys      ImageSurvey[]
+  loginActivities   LoginActivity[]
+  routines          Routine[]
+  skinAnalyses      SkinAnalyse[]
+  skinScoreAnalyses SkinScoreAnalysis[]
+  subscriptions     Subscription[]
+  surveyAnswers     SurveyAnswer[]
+}
+
+model Badge {
+  id          Int         @id @default(autoincrement())
+  user_id     Int
+  date        DateTime    @default(now())
+  description String?
+  niveau      NiveauBadge
+  titre       String
+  user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model LoginActivity {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  source     String   @db.VarChar(100)
+  day_key    String   @db.VarChar(10)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id, created_at])
+  @@index([day_key])
+}
+
+model Subscription {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  plan       String
+  date_debut DateTime
+  date_fin   DateTime
+  amount     Float?
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model ChatbotMessage {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  message    String
+  role       String
+  created_at DateTime @default(now())
+  msg_type   MsgType
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+
+model Feedback {
+  id      Int          @id @default(autoincrement())
+  nom     String
+  message String
+  note    Int
+  etat    EtatFeedback @default(visible)
+}
+
+model Complaint {
+  id          Int               @id @default(autoincrement())
+  user_id     Int
+  category    ComplaintCategory @default(OTHER)
+  content     String
+  status      EtatComplaint     @default(PENDING)
+  created_at  DateTime          @default(now())
+
+  user        User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  messages    ComplaintMessage[]
+  evidence    ComplaintEvidence[]
+}
+
+model ComplaintMessage {
+  id           Int      @id @default(autoincrement())
+  complaint_id Int
+  sender_role  RoleType
+  text         String
+  is_read      Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  complaint    Complaint @relation(fields: [complaint_id], references: [id], onDelete: Cascade)
+}
+
+model ComplaintEvidence {
+  id           Int      @id @default(autoincrement())
+  complaint_id Int
+  url          String
+
+  complaint    Complaint @relation(fields: [complaint_id], references: [id], onDelete: Cascade)
+}
+
+model Quiz {
+  id                Int                 @id @default(autoincrement())
+  titre             String
+  type              String
+  description       String?
+  questions         QuizQuestion[]
+  skinScoreAnalyses SkinScoreAnalysis[]
+  surveyAnswers     SurveyAnswer[]
+}
+
+model QuizQuestion {
+  id              Int            @id @default(autoincrement())
+  quiz_id         Int
+  question        String
+  type_reponse    String
+  reponse_options String?
+  quiz            Quiz           @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  surveyAnswers   SurveyAnswer[]
+}
+
+model SurveyAnswer {
+  id          Int          @id @default(autoincrement())
+  user_id     Int
+  question_id Int
+  quiz_id     Int
+  reponse     String
+  question    QuizQuestion @relation(fields: [question_id], references: [id], onDelete: Cascade)
+  quiz        Quiz         @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Routine {
+  id       Int           @id @default(autoincrement())
+  user_id  Int
+  type     String
+  objectif String?
+  envie    String?
+  user     User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  steps    RoutineStep[]
+}
+
+model RoutineStep {
+  id          Int                     @id @default(autoincrement())
+  routine_id  Int
+  ordre       Int
+  action      String
+  ingredients Ingredient[]
+  routine     Routine                 @relation(fields: [routine_id], references: [id], onDelete: Cascade)
+  completions RoutineStepCompletion[]
+}
+
+model RoutineStepCompletion {
+  id              Int         @id @default(autoincrement())
+  routine_step_id Int
+  day             String
+  created_at      DateTime    @default(now())
+  routineStep     RoutineStep @relation(fields: [routine_step_id], references: [id], onDelete: Cascade)
+
+  @@unique([routine_step_id, day])
+}
+
+model Ingredient {
+  id                  Int                  @id @default(autoincrement())
+  routine_step_id     Int
+  ingredient          String
+  description         String?
+  routineStep         RoutineStep          @relation(fields: [routine_step_id], references: [id], onDelete: Cascade)
+  ingredientConflicts IngredientConflict[]
+}
+
+model IngredientConflict {
+  id            Int        @id @default(autoincrement())
+  ingredient_id Int
+  description   String
+  text          String?
+  ingredient    Ingredient @relation(fields: [ingredient_id], references: [id], onDelete: Cascade)
+}
+
+model SkinAnalyse {
+  id            Int         @id @default(autoincrement())
+  user_id       Int
+  score_eau     Float?
+  age_peau      Int?
+  date_creation DateTime    @default(now())
+  score         Float?
+  description   String?
+  user          User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  images        SkinImage[]
+}
+
+model SkinImage {
+  id         Int         @id @default(autoincrement())
+  analyse_id Int
+  image_url  String
+  analyse    SkinAnalyse @relation(fields: [analyse_id], references: [id], onDelete: Cascade)
+}
+
+model SkinCondition {
+  id          Int     @id @default(autoincrement())
+  nom         String
+  description String?
+  type        String?
+}
+
+model SkinScoreAnalysis {
+  id              Int           @id @default(autoincrement())
+  user_id         Int
+  quiz_id         Int?
+  score           Float
+  score_eau       Float?
+  age_peau        Int?
+  skin_type       SkinType?
+  hydration       Float
+  barrier         Float
+  calmness        Float
+  clarity         Float
+  protection      Float
+  lifestyle       Float
+  strengths       Json?
+  concerns        Json?
+  recommendations Json?
+  routine         Json?
+  summary         String?
+  trigger         String        @default("progress")
+  created_at      DateTime      @default(now())
+  surveyImages    ImageSurvey[]
+  quiz            Quiz?         @relation(fields: [quiz_id], references: [id])
+  user            User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, created_at])
+  @@index([quiz_id])
+}
+
+model ImageSurvey {
+  id         Int               @id @default(autoincrement())
+  user_id    Int
+  analyse_id Int
+  image      String
+  created_at DateTime          @default(now())
+  analysis   SkinScoreAnalysis @relation(fields: [analyse_id], references: [id], onDelete: Cascade)
+  user       User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([analyse_id])
+}
+
 enum RoleType {
   USER
   PREMIUM_USER
@@ -50,263 +309,13 @@ enum EtatFeedback {
   invisible
 }
 
-
-model User {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique
-  password   String
-  role       RoleType  @default(USER)
-  created_at DateTime  @default(now())
-  nom        String?
-  prenom     String?
-  sexe       String?
-  age        Int?
-  skin_type  SkinType?
-  image      String?
-  verified   Boolean   @default(false)
-  activated  Boolean   @default(true)
-  status     UserStatus @default(PENDING)
-  otp_code   String?
-  otp_expiry DateTime?
-  admin_notes String?
-
-  badges          Badge[]
-  subscriptions   Subscription[]
-  chatbotMessages ChatbotMessage[]
-  complaints      Complaint[]
-  routines        Routine[]
-  skinAnalyses    SkinAnalyse[]
-  skinScoreAnalyses SkinScoreAnalysis[]
-  imageSurveys    ImageSurvey[]
-  surveyAnswers   SurveyAnswer[]
-  loginActivities LoginActivity[]
-}
-
-model Badge {
-  id          Int         @id @default(autoincrement())
-  user_id     Int
-  titre       String
-  date        DateTime    @default(now())
-  description String?
-  niveau      NiveauBadge
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@unique([user_id, niveau, titre])
-  @@index([user_id, date])
-}
-
-model LoginActivity {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  source     String   @default("credentials")
-  day_key    String
-  created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id, created_at])
-  @@index([day_key])
-}
-
-model Subscription {
-  id          Int      @id @default(autoincrement())
-  user_id     Int
-  plan        String
-  date_debut  DateTime
-  date_fin    DateTime
-  amount      Float?
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-
-model ChatbotMessage {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  message    String
-  role       String
-  created_at DateTime @default(now())
-  msg_type   MsgType
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-model Complaint {
-  id      Int           @id @default(autoincrement())
-  user_id Int
-  nom     String
-  message String
-  image   String?
-  etat    EtatComplaint @default(PENDING)
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-model Feedback {
-  id      Int          @id @default(autoincrement())
-  nom     String
-  message String
-  note    Int
-  etat    EtatFeedback @default(visible)
-}
-
-model Quiz {
-  id          Int      @id @default(autoincrement())
-  titre       String
-  type        String
-  description String?
-
-  questions     QuizQuestion[]
-  surveyAnswers SurveyAnswer[]
-  skinScoreAnalyses SkinScoreAnalysis[]
-}
-
-model QuizQuestion {
-  id            Int    @id @default(autoincrement())
-  quiz_id       Int
-  question      String
-  type_reponse  String
-  reponse_options  String? // JSON string for options
-
-  quiz          Quiz            @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
-  surveyAnswers SurveyAnswer[]
-}
-
-model SurveyAnswer {
-  id          Int    @id @default(autoincrement())
-  user_id     Int
-  question_id Int
-  reponse     String
-  quiz_id     Int
-
-  user     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  question QuizQuestion @relation(fields: [question_id], references: [id], onDelete: Cascade)
-  quiz     Quiz         @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
-}
-
-model Routine {
-  id       Int     @id @default(autoincrement())
-  user_id  Int
-  type     String
-  envie    String?
-  objectif String?
-
-  user  User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  steps RoutineStep[]
-}
-
-model RoutineStep {
-  id         Int    @id @default(autoincrement())
-  routine_id Int
-  ordre      Int
-  action     String
-
-  routine     Routine      @relation(fields: [routine_id], references: [id], onDelete: Cascade)
-  ingredients Ingredient[]
-  completions RoutineStepCompletion[]
-}
-
-// Stores if a step was completed for a given day (YYYY-MM-DD).
-// This enables: persist completion for today, and auto-reset next day.
-model RoutineStepCompletion {
-  id             Int      @id @default(autoincrement())
-  routine_step_id Int
-  day            String
-  created_at     DateTime @default(now())
-
-  routineStep RoutineStep @relation(fields: [routine_step_id], references: [id], onDelete: Cascade)
-
-  @@unique([routine_step_id, day])
-}
-
-model Ingredient {
-  id                 Int                  @id @default(autoincrement())
-  routine_step_id    Int
-  ingredient         String
-  description        String?
-
-  routineStep        RoutineStep          @relation(fields: [routine_step_id], references: [id], onDelete: Cascade)
-  ingredientConflicts IngredientConflict[]
-}
-
-model IngredientConflict {
-  id            Int        @id @default(autoincrement())
-  ingredient_id Int
-  description   String
-  text          String?
-
-  ingredient Ingredient @relation(fields: [ingredient_id], references: [id], onDelete: Cascade)
-}
-
-model SkinAnalyse {
-  id            Int      @id @default(autoincrement())
-  user_id       Int
-  score_eau     Float?
-  age_peau      Int?
-  date_creation DateTime @default(now())
-  score         Float?
-  description   String?
-
-  user   User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  images SkinImage[]
-}
-
-model SkinImage {
-  id          Int    @id @default(autoincrement())
-  analyse_id  Int
-  image_url   String
-
-  analyse SkinAnalyse @relation(fields: [analyse_id], references: [id], onDelete: Cascade)
-}
-
-model SkinCondition {
-  id          Int     @id @default(autoincrement())
-  nom         String
-  description String?
-  type        String?
-}
-
-model SkinScoreAnalysis {
-  id             Int       @id @default(autoincrement())
-  user_id        Int
-  quiz_id        Int?
-  score          Float
-  score_eau      Float?
-  age_peau       Int?
-  skin_type      SkinType?
-  hydration      Float
-  barrier        Float
-  calmness       Float
-  clarity        Float
-  protection     Float
-  lifestyle      Float
-  strengths      Json?
-  concerns       Json?
-  recommendations Json?
-  routine        Json?
-  summary        String?
-  trigger        String    @default("progress")
-  created_at     DateTime  @default(now())
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  quiz Quiz? @relation(fields: [quiz_id], references: [id], onDelete: SetNull)
-  surveyImages ImageSurvey[]
-
-  @@index([user_id, created_at])
-  @@index([quiz_id])
-}
-
-model ImageSurvey {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  analyse_id Int
-  image      String   @db.Text
-  created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  analysis SkinScoreAnalysis @relation(fields: [analyse_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([analyse_id])
+enum ComplaintCategory {
+  ANALYSIS
+  ROUTINE
+  PRODUCT
+  BADGE
+  BUG
+  PAYMENT
+  SERVICE
+  OTHER
 }
