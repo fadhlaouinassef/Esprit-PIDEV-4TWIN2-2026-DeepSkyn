@@ -148,6 +148,24 @@ export default function SignUp() {
         throw new Error(data.error || 'Failed to create account');
       }
 
+      // Handle existing unverified account
+      if (data.unverified) {
+        toast.warning("Compte non vérifié", {
+          description: data.message,
+          duration: 5000,
+        });
+
+        // Store user ID in sessionStorage for OTP verification
+        sessionStorage.setItem('pendingUserId', data.userId.toString());
+        sessionStorage.setItem('pendingUserEmail', email);
+
+        // Redirect to verify-code page
+        setTimeout(() => {
+          router.push('/verify-code');
+        }, 4000);
+        return;
+      }
+
       // Store user ID in sessionStorage for OTP verification
       sessionStorage.setItem('pendingUserId', data.userId.toString());
       sessionStorage.setItem('pendingUserEmail', email);

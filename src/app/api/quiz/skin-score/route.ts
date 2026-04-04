@@ -4,6 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { computeAndStoreSkinScoreAnalysis } from '@/services/skinScoreAnalysis.service';
 import { evaluateAndAwardBadgesForUser } from '@/services/badge.service';
+import { createNotification } from '@/services/notification.service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,6 +48,22 @@ export async function POST(request: NextRequest) {
     await evaluateAndAwardBadgesForUser({
       userId: targetUserId,
       trigger: 'analysis_final',
+    });
+
+    // Create & Emit notification via service
+    const user = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { nom: true, image: true }
+    });
+
+    await createNotification({
+      userId: targetUserId,
+      image: user?.image || "/avatar.png",
+      title: `${user?.nom || 'User'} completed a skin analysis!`,
+      subTitle: `Score: ${result.score}/100 - View details`,
+      type: 'analyse',
+      score: result.score,
+      message: 'completed an analysis!',
     });
 
     return NextResponse.json(result, { status: 201 });

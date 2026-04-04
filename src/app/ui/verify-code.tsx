@@ -135,7 +135,20 @@ export default function VerifyCode() {
                 throw new Error('Session expirée. Veuillez recommencer.')
             }
 
-            // You can implement a resend OTP API endpoint here
+            const response = await fetch('/api/auth/resend-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Échec de l\'envoi')
+            }
+
             toast.info("Code renvoyé", {
                 description: "Un nouveau code de vérification a été envoyé à votre e-mail."
             })

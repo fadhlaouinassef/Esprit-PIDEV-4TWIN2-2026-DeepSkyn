@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 // --- MOCK DATA FOR ADMIN ---
 const ALL_ANALYSES = [
@@ -300,6 +301,8 @@ export default function AdminAnalyzesPage() {
     const [loading, setLoading] = useState(true);
     const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const searchParams = useSearchParams();
+    const urlSearch = searchParams?.get("search") || "";
 
     useEffect(() => {
         async function fetchAnalyses() {
@@ -317,6 +320,12 @@ export default function AdminAnalyzesPage() {
         }
         fetchAnalyses();
     }, []);
+
+    useEffect(() => {
+        if (urlSearch) {
+            setSearchTerm(urlSearch);
+        }
+    }, [urlSearch]);
 
     const filteredAnalyses = analyses.filter(analysis => {
         return analysis.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 

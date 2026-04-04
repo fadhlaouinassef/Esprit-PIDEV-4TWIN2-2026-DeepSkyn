@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updateUserStatus } from '@/services/user.service';
+import { createNotification } from '@/services/notification.service';
+import prisma from '@/lib/prisma';
 import { getToken } from 'next-auth/jwt';
 
 export async function PATCH(
@@ -25,9 +27,23 @@ export async function PATCH(
             return NextResponse.json({ error: 'Invalid status type', receivedStatus: status }, { status: 400 });
         }
 
-        const updatedUser = await updateUserStatus(id, status);
+        const rowCount = await updateUserStatus(id, status);
 
-        return NextResponse.json(updatedUser, { status: 200 });
+        if (status === 'ACCEPTED' && rowCount > 0) {
+            const user = await prisma.user.findUnique({ where: { id } });
+            if (user) {
+                await createNotification({
+                    userId: id,
+                    image: user.image || "/avatar.png",
+                    title: `${user.nom || 'User'} Verified by Admin`,
+                    subTitle: "Identity confirmed by Admin",
+                    type: 'verify',
+                    message: 'Verified by Admin',
+                });
+            }
+        }
+
+        return NextResponse.json({ success: true, affected: rowCount }, { status: 200 });
     } catch (error: any) {
         console.error('SERVER SIDE ERROR - Admin Verify User:', error);
         return NextResponse.json(

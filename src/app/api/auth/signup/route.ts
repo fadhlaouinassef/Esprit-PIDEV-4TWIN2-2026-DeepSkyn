@@ -16,6 +16,11 @@ export async function POST(request: NextRequest) {
 
     const result = await signup({ email, password, nom, sexe, age });
 
+    // Handle special case for existing unverified user
+    if (result.unverified) {
+      return NextResponse.json(result, { status: 200 });
+    }
+
     return NextResponse.json(result, { status: 201 });
   } catch (error: any) {
     console.error('Signup API error:', error);
