@@ -80,6 +80,7 @@ model User {
   imageSurveys    ImageSurvey[]
   surveyAnswers   SurveyAnswer[]
   loginActivities LoginActivity[]
+  notifications   Notification[]
 }
 
 model Badge {
@@ -309,4 +310,21 @@ model ImageSurvey {
 
   @@index([user_id])
   @@index([analyse_id])
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  user_id    Int?
+  image      String?
+  title      String
+  subTitle   String
+  type       String
+  message    String?
+  score      Float?
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([created_at])
 }

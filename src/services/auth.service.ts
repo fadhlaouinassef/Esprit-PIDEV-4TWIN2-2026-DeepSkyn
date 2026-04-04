@@ -3,6 +3,7 @@ import { createUser, findUserByEmail, findUserById, updateUserOtp, verifyUserOtp
 import { sendOtpEmail, sendWelcomeEmail, generateOtp } from './email.service';
 import { RoleType } from '../entities/Enums';
 import { evaluateAndAwardBadgesForUser, trackLoginActivity } from './badge.service';
+import { createNotification } from './notification.service';
 
 export interface SignupData {
   email: string;
@@ -22,6 +23,20 @@ export const signup = async (data: SignupData) => {
     // Check if user already exists
     const existingUser = await findUserByEmail(data.email);
     if (existingUser) {
+      if (!existingUser.verified) {
+        // Handle unverified user case
+        const otp = generateOtp();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        await updateUserOtp(existingUser.id, otp, otpExpiry);
+        await sendOtpEmail(data.email, otp, existingUser.nom || 'User');
+
+        return {
+          success: false,
+          unverified: true,
+          userId: existingUser.id,
+          message: 'Votre compte n\'est pas encore vérifié. Un nouveau code vous a été envoyé.',
+        };
+      }
       throw new Error('User with this email already exists');
     }
 
@@ -49,6 +64,16 @@ export const signup = async (data: SignupData) => {
     // Send OTP email
     await sendOtpEmail(data.email, otp, data.nom);
 
+    // Create & Emit notification using service
+    await createNotification({
+      userId: user.id,
+      image: user.image || "/avatar.png",
+      title: `${user.nom || 'New User'} Joined the Team!`,
+      subTitle: "Congratulate him",
+      type: 'signup',
+      message: 'Joined the Team!',
+    });
+
     return {
       success: true,
       userId: user.id,
@@ -70,6 +95,16 @@ export const verifyOtp = async (userId: number, otp: string) => {
 
     // Mark user as verified
     const user = await markUserAsVerified(userId);
+
+    // Notify admin - Verify event
+    await createNotification({
+      userId: user.id,
+      image: user.image || "/avatar.png",
+      title: `${user.nom || 'User'} Verified their account!`,
+      subTitle: "Identity confirmed",
+      type: 'verify',
+      message: 'Verified their account!',
+    });
 
     // Send welcome email
     await sendWelcomeEmail(user.email, user.nom || 'User');
