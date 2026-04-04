@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { findUserByEmail, createUser } from '@/services/user.service';
+import { evaluateAndAwardBadgesForUser, trackLoginActivity } from '@/services/badge.service';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -26,6 +27,12 @@ export const authOptions: NextAuthOptions = {
               verified: true, // Auto-verify Google users
             });
           }
+
+          await trackLoginActivity(existingUser.id, 'google');
+          await evaluateAndAwardBadgesForUser({
+            userId: existingUser.id,
+            trigger: 'login',
+          });
         }
         return true;
       } catch (error) {

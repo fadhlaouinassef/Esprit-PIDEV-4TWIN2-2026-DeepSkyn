@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { createUser, findUserByEmail, findUserById, updateUserOtp, verifyUserOtp as verifyOtpInDb, markUserAsVerified, updateUser } from './user.service';
 import { sendOtpEmail, sendWelcomeEmail, generateOtp } from './email.service';
 import { RoleType } from '../entities/Enums';
+import { evaluateAndAwardBadgesForUser, trackLoginActivity } from './badge.service';
 
 export interface SignupData {
   email: string;
@@ -133,6 +134,12 @@ export const signin = async (data: SigninData) => {
         message: 'Compte non vérifié. Un nouveau code de vérification vous a été envoyé par e-mail.',
       };
     }
+
+    await trackLoginActivity(user.id, 'credentials');
+    await evaluateAndAwardBadgesForUser({
+      userId: user.id,
+      trigger: 'login',
+    });
 
     return {
       success: true,

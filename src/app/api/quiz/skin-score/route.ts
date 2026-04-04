@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { computeAndStoreSkinScoreAnalysis } from '@/services/skinScoreAnalysis.service';
+import { evaluateAndAwardBadgesForUser } from '@/services/badge.service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,6 +42,11 @@ export async function POST(request: NextRequest) {
       saveLegacySkinAnalyse: true,
       finalSummaryOverride: String(body.finalSummaryOverride || ''),
       finalScoreOverride: Number(body.finalScoreOverride),
+    });
+
+    await evaluateAndAwardBadgesForUser({
+      userId: targetUserId,
+      trigger: 'analysis_final',
     });
 
     return NextResponse.json(result, { status: 201 });

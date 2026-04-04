@@ -5,6 +5,7 @@ import { findRoutineById } from '@/entities/Routine';
 import { findRoutineStepById, updateRoutineStep } from '@/entities/RoutineStep';
 import { deleteRoutineStepCompletion, findCompletionForStepAndDay, upsertRoutineStepCompletion } from '@/entities/RoutineStepCompletion';
 import prisma from '@/lib/prisma';
+import { evaluateAndAwardBadgesForUser } from '@/services/badge.service';
 
 const toDayStringUTC = (date: Date) => date.toISOString().slice(0, 10);
 
@@ -62,6 +63,11 @@ export async function PUT(
           // ignore if already deleted
         }
       }
+
+      await evaluateAndAwardBadgesForUser({
+        userId: dbUser.id,
+        trigger: 'routine_step',
+      });
     }
 
     // Allow editing order/action if provided

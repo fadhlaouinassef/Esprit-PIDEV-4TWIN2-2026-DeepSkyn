@@ -79,6 +79,7 @@ model User {
   skinScoreAnalyses SkinScoreAnalysis[]
   imageSurveys    ImageSurvey[]
   surveyAnswers   SurveyAnswer[]
+  loginActivities LoginActivity[]
 }
 
 model Badge {
@@ -90,6 +91,22 @@ model Badge {
   niveau      NiveauBadge
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, niveau, titre])
+  @@index([user_id, date])
+}
+
+model LoginActivity {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  source     String   @default("credentials")
+  day_key    String
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, created_at])
+  @@index([day_key])
 }
 
 model Subscription {

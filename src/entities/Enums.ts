@@ -9,7 +9,7 @@ export enum NiveauBadge {
   SILVER = 'SILVER',
   GOLD = 'GOLD',
   PLATINUM = 'PLATINUM',
-  RUBY_MASTER = 'RUBY MASTER'
+  RUBY_MASTER = 'RUBY_MASTER'
 }
 
 export enum SkinType {

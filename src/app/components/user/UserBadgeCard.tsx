@@ -3,7 +3,7 @@
 import React from "react"
 import Image from "next/image"
 
-export type BadgeVariant = "silver" | "gold" | "platinium" | "bronze" | "ruby"
+export type BadgeVariant = "silver" | "gold" | "platinum" | "platinium" | "bronze" | "ruby"
 
 interface UserBadgeCardProps {
     userPhoto: string
@@ -23,6 +23,11 @@ const VARIANT_COLORS: Record<BadgeVariant, { primary: string, secondary: string,
         primary: "#fde047",
         secondary: "#ca8a04",
         accent: "#fef9c3"
+    },
+    platinum: {
+        primary: "#7dd3fc",
+        secondary: "#0ea5e9",
+        accent: "#e0f2fe"
     },
     platinium: {
         primary: "#7dd3fc",
@@ -120,7 +125,7 @@ export function UserBadgeCard({
                                 fill
                                 className="object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
                         </div>
                     </div>
 
