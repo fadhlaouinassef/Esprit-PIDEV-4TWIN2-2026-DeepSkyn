@@ -12,7 +12,8 @@ import {
     Sparkles,
     ClipboardList,
     BarChart2,
-    Package
+    Package,
+    MessageSquare
 } from "lucide-react";
 
 export const USER_NAV_DATA = [
@@ -92,7 +93,13 @@ export const USER_NAV_DATA = [
             {
                 title: "Help Center",
                 icon: CircleHelp,
-                url: "/user/help",
+                url: "/user/help center",
+                items: []
+            },
+            {
+                title: "Complaints & Feedback",
+                icon: MessageSquare,
+                url: "/user/complaints",
                 items: []
             }
         ]
