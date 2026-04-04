@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { UserBadgeCard, BadgeVariant } from "@/app/components/user/UserBadgeCard";
-import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays } from "lucide-react";
+import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays, Facebook, Instagram, Music2, Link2, Download, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 type MotivationSummary = {
     currentBadge: {
@@ -48,6 +49,8 @@ export default function BadgePage() {
     const { data: session } = useSession();
     const [data, setData] = useState<MotivationSummary | null>(null);
     const [loading, setLoading] = useState(true);
+    const [shareMenuOpen, setShareMenuOpen] = useState(false);
+    const [shareBusy, setShareBusy] = useState(false);
 
     useEffect(() => {
         fetch("/api/user/motivation")
@@ -68,24 +71,298 @@ export default function BadgePage() {
             });
     }, []);
 
-    const handleShare = async () => {
-        if (!data || !data.currentBadge) return;
-        const shareText = `I just earned the ${data.currentBadge.titre} badge on DeepSkyn! My skin health is on track. #DeepSkyn #SkinHero`;
-        
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'DeepSkyn Badge',
-                    text: shareText,
-                    url: window.location.origin,
-                });
-            } catch (err) {
-                console.error("Share failed:", err);
+    const shareUrl = useMemo(() => {
+        if (typeof window === "undefined") return "";
+        return `${window.location.origin}/user/badge`;
+    }, []);
+
+    const shareText = useMemo(() => {
+        const badgeTitle = data?.currentBadge?.titre || "my latest DeepSkyn badge";
+        return `I just earned ${badgeTitle} on DeepSkyn. Consistency pays off. #DeepSkyn #SkinHero`;
+    }, [data?.currentBadge?.titre]);
+
+    const renderShareImageBlob = async (): Promise<Blob> => {
+        const width = 1080;
+        const height = 1350;
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Unable to initialize image canvas");
+
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, "#f8fafc");
+        gradient.addColorStop(0.48, "#ffffff");
+        gradient.addColorStop(1, "#e0f2fe");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+
+        const cardX = 56;
+        const cardY = 56;
+        const cardW = width - 112;
+        const cardH = height - 112;
+
+        ctx.fillStyle = "rgba(255,255,255,0.95)";
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 2;
+
+        const drawRoundedRect = (x: number, y: number, w: number, h: number, r: number) => {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        };
+
+        drawRoundedRect(cardX, cardY, cardW, cardH, 56);
+        ctx.fill();
+        ctx.stroke();
+
+        const drawWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number, maxLines = 4) => {
+            const words = text.split(" ");
+            const lines: string[] = [];
+            let current = "";
+
+            for (const word of words) {
+                const candidate = current ? `${current} ${word}` : word;
+                if (ctx.measureText(candidate).width <= maxWidth) {
+                    current = candidate;
+                } else {
+                    if (current) lines.push(current);
+                    current = word;
+                }
             }
-        } else {
-            // Fallback: Copy to clipboard
-            navigator.clipboard.writeText(shareText);
-            alert("Share message copied to clipboard!");
+            if (current) lines.push(current);
+
+            lines.slice(0, maxLines).forEach((line, idx) => {
+                ctx.fillText(line, x, y + idx * lineHeight);
+            });
+        };
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "900 40px Satoshi, Arial, sans-serif";
+        ctx.fillText("DEEPSKYN BADGE", cardX + 56, cardY + 96);
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "900 84px Satoshi, Arial, sans-serif";
+        drawWrappedText(data?.currentBadge?.titre || "DeepSkyn Hero", cardX + 56, cardY + 220, cardW - 112, 92, 2);
+
+        ctx.fillStyle = "#475569";
+        ctx.font = "600 38px Satoshi, Arial, sans-serif";
+        drawWrappedText(
+            data?.currentBadge?.description || "Consistency and skin progress unlocked a new achievement.",
+            cardX + 56,
+            cardY + 430,
+            cardW - 112,
+            48,
+            4
+        );
+
+        const footerX = cardX + 56;
+        const footerY = cardY + cardH - 250;
+        const footerW = cardW - 112;
+        const footerH = 160;
+        drawRoundedRect(footerX, footerY, footerW, footerH, 30);
+        ctx.fillStyle = "#f8fafc";
+        ctx.fill();
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "700 22px Satoshi, Arial, sans-serif";
+        ctx.fillText("LEVEL", footerX + 32, footerY + 44);
+        ctx.fillText("USER", footerX + footerW - 260, footerY + 44);
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "900 46px Satoshi, Arial, sans-serif";
+        ctx.fillText((data?.currentBadge?.niveau || "BRONZE").replace("_", " "), footerX + 32, footerY + 104);
+        ctx.fillText(session?.user?.name || "DeepSkyn User", footerX + footerW - 260, footerY + 104);
+
+        const avatarSrc = session?.user?.image;
+        if (avatarSrc) {
+            try {
+                const avatar = await new Promise<HTMLImageElement>((resolve, reject) => {
+                    const image = new Image();
+                    image.crossOrigin = "anonymous";
+                    image.onload = () => resolve(image);
+                    image.onerror = reject;
+                    image.src = avatarSrc;
+                });
+
+                const avatarSize = 120;
+                const avatarX = cardX + cardW - avatarSize - 56;
+                const avatarY = cardY + 40;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+                ctx.restore();
+
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
+                ctx.stroke();
+            } catch {
+                // Avatar is optional; continue without it if cross-origin loading fails.
+            }
+        }
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "700 26px Satoshi, Arial, sans-serif";
+        ctx.fillText(new Date().toLocaleDateString(), cardX + 56, cardY + cardH - 40);
+        ctx.fillText("deepskyn.app", cardX + cardW - 220, cardY + cardH - 40);
+
+        const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
+        if (!blob) throw new Error("Unable to generate share image");
+        return blob;
+    };
+
+    const downloadBlob = (blob: Blob, fileName: string) => {
+        const blobUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = blobUrl;
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(blobUrl);
+    };
+
+    const prepareSocialAsset = async () => {
+        const blob = await renderShareImageBlob();
+        downloadBlob(blob, `deepskyn-badge-${(data?.currentBadge?.niveau || "hero").toLowerCase()}.png`);
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+    };
+
+    const downloadShareImage = async () => {
+        setShareBusy(true);
+        try {
+            const blob = await renderShareImageBlob();
+            downloadBlob(blob, `deepskyn-badge-${(data?.currentBadge?.niveau || "hero").toLowerCase()}.png`);
+            toast.success("Badge image downloaded");
+        } catch (error) {
+            console.error(error);
+            toast.error("Unable to generate badge image");
+        } finally {
+            setShareBusy(false);
+        }
+    };
+
+    const copyShareLink = async () => {
+        try {
+            await navigator.clipboard.writeText(shareUrl || window.location.href);
+            toast.success("Badge link copied");
+        } catch {
+            toast.error("Failed to copy link");
+        }
+    };
+
+    const copyCaption = async () => {
+        try {
+            await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+            toast.success("Caption copied");
+        } catch {
+            toast.error("Failed to copy caption");
+        }
+    };
+
+    const shareToFacebook = async () => {
+        setShareBusy(true);
+        try {
+            await prepareSocialAsset();
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+            window.open(url, "_blank", "noopener,noreferrer");
+            toast("Facebook opened. Your badge image and caption are ready to paste.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Facebook share preparation failed");
+        } finally {
+            setShareBusy(false);
+        }
+    };
+
+    const shareToX = async () => {
+        setShareBusy(true);
+        try {
+            await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+        } catch {
+            // Clipboard can fail on strict browser policies; continue with URL share.
+        } finally {
+            setShareBusy(false);
+        }
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+    };
+
+    const shareToInstagram = async () => {
+        setShareBusy(true);
+        try {
+            await prepareSocialAsset();
+            window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+            toast("Instagram opened. Upload the downloaded badge and paste the copied caption.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Instagram share preparation failed");
+        } finally {
+            setShareBusy(false);
+        }
+    };
+
+    const shareToTikTok = async () => {
+        setShareBusy(true);
+        try {
+            await prepareSocialAsset();
+            window.open("https://www.tiktok.com/upload", "_blank", "noopener,noreferrer");
+            toast("TikTok opened. Upload the downloaded badge and paste the copied caption.");
+        } catch (error) {
+            console.error(error);
+            toast.error("TikTok share preparation failed");
+        } finally {
+            setShareBusy(false);
+        }
+    };
+
+    const shareNatively = async () => {
+        if (!navigator.share) {
+            toast.error("Native share is not available on this device");
+            return;
+        }
+
+        setShareBusy(true);
+        try {
+            const image = await renderShareImageBlob();
+            const file = new File([image], "deepskyn-badge.png", { type: "image/png" });
+
+            if (navigator.canShare?.({ files: [file] })) {
+                await navigator.share({
+                    title: "My DeepSkyn badge",
+                    text: shareText,
+                    files: [file],
+                });
+            } else {
+                await navigator.share({
+                    title: "My DeepSkyn badge",
+                    text: shareText,
+                    url: shareUrl,
+                });
+            }
+        } catch (error) {
+            if ((error as Error)?.name !== "AbortError") {
+                console.error(error);
+                toast.error("Share failed");
+            }
+        } finally {
+            setShareBusy(false);
         }
     };
 
@@ -142,50 +419,6 @@ export default function BadgePage() {
                     <span className="text-gray-900 dark:text-white font-medium">Badges & Achievements</span>
                 </nav>
 
-                {/* Motivation Message with Mesh Gradient Background */}
-                <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="relative w-full py-16 px-8 rounded-[48px] overflow-hidden shadow-2xl"
-                >
-                    {/* Mesh Gradient Background Layer */}
-                    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[150%] bg-primary/20 blur-[120px] rounded-full animate-pulse" />
-                        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[150%] bg-blue-400/10 blur-[120px] rounded-full animate-pulse [animation-delay:2s]" />
-                        <div className="absolute inset-0 bg-white/40 dark:bg-gray-900/40 backdrop-blur-3xl" />
-                    </div>
-
-                    <div className="relative z-10 flex flex-col items-center text-center">
-                        <motion.div 
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.1 }}
-                            className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-xl border border-primary/20 text-primary text-xs font-black uppercase tracking-[0.2em] mb-6 shadow-sm"
-                        >
-                            <Sparkles size={14} className="text-primary animate-spin-[2s]" />
-                            Power Level
-                        </motion.div>
-                        
-                        <motion.h2 
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="text-4xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 leading-[1.1] tracking-tight max-w-3xl"
-                        >
-                            {data?.motivationMessage || "Welcome to your skin journey!"}
-                        </motion.h2>
-
-                        <motion.p
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="text-gray-500 dark:text-gray-400 font-medium text-lg max-w-xl"
-                        >
-                            Complete your routines and track your progress to unlock legendary status.
-                        </motion.p>
-                    </div>
-                </motion.div>
-
                 <div className="w-full space-y-10">
                     
                     {/* Progress & Metrics Section */}
@@ -207,7 +440,7 @@ export default function BadgePage() {
                             />
                             
                             <button 
-                                onClick={handleShare}
+                                onClick={() => setShareMenuOpen(true)}
                                 className="mt-6 w-full flex items-center justify-center gap-3 py-5 px-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-[24px] hover:scale-[1.03] active:scale-[0.97] transition-all shadow-[0_15px_40px_rgba(0,0,0,0.15)] group"
                             >
                                 <Share2 size={18} className="group-hover:rotate-12 transition-transform" />
@@ -454,7 +687,103 @@ export default function BadgePage() {
                     </div>
                 </div>
 
+                <AnimatePresence>
+                    {shareMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm p-4 flex items-center justify-center"
+                            onClick={() => setShareMenuOpen(false)}
+                        >
+                            <motion.div
+                                initial={{ y: 20, opacity: 0, scale: 0.98 }}
+                                animate={{ y: 0, opacity: 1, scale: 1 }}
+                                exit={{ y: 20, opacity: 0, scale: 0.98 }}
+                                transition={{ duration: 0.2 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-full max-w-[560px] rounded-[32px] border border-white/20 bg-white dark:bg-gray-900 p-6 shadow-2xl"
+                            >
+                                <div className="mb-5">
+                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white">Share Your Badge</h3>
+                                    <p className="text-sm text-gray-500 mt-1">Post your achievement on social media with a generated DeepSkyn card.</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    <button onClick={shareToFacebook} className="share-action-btn">
+                                        <Facebook size={18} /> Facebook
+                                    </button>
+                                    <button onClick={shareToX} className="share-action-btn">
+                                        <X size={18} /> X
+                                    </button>
+                                    <button onClick={shareToInstagram} className="share-action-btn" disabled={shareBusy}>
+                                        <Instagram size={18} /> Instagram
+                                    </button>
+                                    <button onClick={shareToTikTok} className="share-action-btn" disabled={shareBusy}>
+                                        <Music2 size={18} /> TikTok
+                                    </button>
+                                    <button onClick={copyShareLink} className="share-action-btn">
+                                        <Link2 size={18} /> Copier lien
+                                    </button>
+                                    <button onClick={downloadShareImage} className="share-action-btn" disabled={shareBusy}>
+                                        {shareBusy ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Télécharger
+                                    </button>
+                                </div>
+
+                                <button
+                                    onClick={shareNatively}
+                                    disabled={shareBusy}
+                                    className="mt-4 w-full py-3 rounded-2xl bg-primary text-white font-black hover:bg-primary/90 disabled:opacity-60"
+                                >
+                                    Share via device apps
+                                </button>
+
+                                <button
+                                    onClick={() => setShareMenuOpen(false)}
+                                    className="mt-3 w-full py-3 rounded-2xl border border-gray-200 dark:border-white/10 font-bold text-gray-700 dark:text-gray-200"
+                                >
+                                    Close
+                                </button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
             </div>
+
+            <style jsx>{`
+                .share-action-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    border-radius: 16px;
+                    border: 1px solid rgba(148, 163, 184, 0.3);
+                    padding: 12px 14px;
+                    font-weight: 800;
+                    font-size: 13px;
+                    background: rgba(248, 250, 252, 0.8);
+                    color: rgb(15, 23, 42);
+                    transition: transform 0.2s ease, background-color 0.2s ease;
+                }
+
+                .share-action-btn:hover {
+                    transform: translateY(-1px);
+                    background: rgba(241, 245, 249, 1);
+                }
+
+                .share-action-btn:disabled {
+                    opacity: 0.55;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+
+                .dark .share-action-btn {
+                    background: rgba(15, 23, 42, 0.55);
+                    border-color: rgba(148, 163, 184, 0.18);
+                    color: rgb(241, 245, 249);
+                }
+            `}</style>
         </UserLayout>
     );
 }
