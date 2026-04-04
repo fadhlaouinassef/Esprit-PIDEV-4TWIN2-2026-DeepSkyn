@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { sendAdminComplaintNotification } from "@/lib/mailService";
 
 export async function GET() {
     try {
@@ -44,8 +45,8 @@ export async function POST(req: Request) {
             const checkRes = await fetch(`https://www.purgomalum.com/service/json?text=${encodeURIComponent(content)}`);
             if (checkRes.ok) {
                 const checkData = await checkRes.json();
-                const filtered = checkData.result;
-                if (filtered !== content) {
+                const filtered = String(checkData.result);
+                if (filtered.trim() !== content.trim()) {
                     wasFiltered = true;
                     // Replace standard * with 🚫 for visual prohibition feel
                     cleanContent = filtered.replace(/\*/g, '🚫'); 
@@ -80,6 +81,15 @@ export async function POST(req: Request) {
                 evidence: true
             }
         });
+
+        // Trigger email notification to admin asynchronously (don't block the response)
+        sendAdminComplaintNotification({
+            userName: user.nom ? `${user.nom} ${user.prenom || ''}` : user.email,
+            userEmail: user.email,
+            category: (complaint as any).category,
+            content: (complaint as any).content,
+            complaintId: complaint.id
+        }).catch(err => console.error("Email notification error", err));
 
         return NextResponse.json(complaint);
     } catch (error) {

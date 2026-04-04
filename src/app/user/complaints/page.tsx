@@ -18,7 +18,8 @@ import {
     ShieldCheck,
     Image as ImageIcon,
     FileText,
-    AlertTriangle
+    AlertTriangle,
+    Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ComplaintCategory, ChatMessage } from "@/lib/complaintsData";
@@ -134,6 +135,7 @@ export default function UserComplaintsPage() {
             });
 
             setComplaints([res.data, ...complaints]);
+            setSelectedComplaint(null); // Return to list view
             setIsAddingNew(false);
             setNewComplaint({ category: 'Other', content: '', evidence: [] });
             toast.success("Complaint submitted successfully! (Cleaned from bad words)");
@@ -186,14 +188,14 @@ export default function UserComplaintsPage() {
                     if (c.id === selectedComplaint.id) {
                         return {
                             ...c,
-                            messages: c.messages.map(m => 
+                            messages: c.messages.map(m =>
                                 m.sender_role === 'ADMIN' ? { ...m, is_read: true } : m
                             )
                         };
                     }
                     return c;
                 }));
-                
+
                 // Potentially call API to mark as read here if implemented
                 // axios.put(`/api/user/complaints/${selectedComplaint.id}/read`);
             }
@@ -234,7 +236,6 @@ export default function UserComplaintsPage() {
                     <div className="space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
                             <ShieldCheck className="size-3.5" />
-                            Backend Connected
                         </div>
                         <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                             RECLAMATION <span className="text-primary italic">& FEEDBACK</span>
@@ -251,7 +252,7 @@ export default function UserComplaintsPage() {
                             className="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-2xl font-bold shadow-2xl transition-all active:scale-95"
                         >
                             <Plus className="size-5" />
-                            New Request
+                            New Claim
                         </motion.button>
                     )}
                 </div>
@@ -310,8 +311,8 @@ export default function UserComplaintsPage() {
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2 mb-4">
-                                            <div className={cn("size-2 rounded-full shrink-0", 
-                                                c.messages[c.messages.length-1]?.sender_role === 'ADMIN' ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" : "bg-gray-300"
+                                            <div className={cn("size-2 rounded-full shrink-0",
+                                                c.messages[c.messages.length - 1]?.sender_role === 'ADMIN' ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" : "bg-gray-300"
                                             )} />
                                             <p className="text-gray-900 dark:text-white font-bold text-sm line-clamp-1">
                                                 {c.messages[c.messages.length - 1]?.text || c.content}
@@ -434,28 +435,50 @@ export default function UserComplaintsPage() {
                                     className="bg-white dark:bg-gray-800 rounded-[2rem] border border-gray-100 dark:border-gray-700 flex flex-col h-[650px] shadow-2xl overflow-hidden"
                                 >
                                     {/* Chat Header */}
-                                    <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 z-10">
-                                        <div className="flex gap-5 items-center">
-                                            <div className="size-14 rounded-2xl bg-primary/20 flex items-center justify-center text-3xl shadow-inner">
-                                                {categories.find(cat => cat.label.toUpperCase() === selectedComplaint.category)?.icon || '📝'}
-                                            </div>
-                                            <div>
-                                                <h3 className="font-black text-xl tracking-tight text-gray-900 dark:text-white uppercase leading-none">{selectedComplaint.category} Claims</h3>
-                                                <div className="flex items-center gap-3 mt-2">
-                                                    <div className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border shadow-sm", getStatusBg(selectedComplaint.status))}>
-                                                        {selectedComplaint.status}
+                                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 z-10">
+                                            <div className="flex gap-5 items-center">
+                                                <div className="size-14 rounded-2xl bg-primary/20 flex items-center justify-center text-3xl shadow-inner">
+                                                    {categories.find(cat => cat.label.toUpperCase() === selectedComplaint.category)?.icon || '📝'}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-black text-xl tracking-tight text-gray-900 dark:text-white uppercase leading-none">{selectedComplaint.category} Claims</h3>
+                                                    <div className="flex items-center gap-3 mt-2">
+                                                        <div className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border shadow-sm", getStatusBg(selectedComplaint.status))}>
+                                                            {selectedComplaint.status}
+                                                        </div>
+                                                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">#{selectedComplaint.id}</span>
                                                     </div>
-                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">#{selectedComplaint.id}</span>
                                                 </div>
                                             </div>
+                                            <div className="flex items-center gap-3">
+                                                {selectedComplaint.status === 'PENDING' && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (window.confirm("Are you sure you want to delete this claim? This action is irreversible.")) {
+                                                                try {
+                                                                    await axios.delete(`/api/user/complaints/${selectedComplaint.id}`);
+                                                                    setComplaints(prev => prev.filter(c => c.id !== selectedComplaint.id));
+                                                                    setSelectedComplaint(null);
+                                                                    toast.success("Ticket deleted successfully.");
+                                                                } catch (error) {
+                                                                    toast.error("Failed to delete the ticket.");
+                                                                }
+                                                            }
+                                                        }}
+                                                        className="p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-500 hover:bg-rose-100 rounded-2xl transition-colors"
+                                                        title="Delete Claim"
+                                                    >
+                                                        <Trash2 className="size-5" />
+                                                    </button>
+                                                )}
+                                                <button onClick={() => setSelectedComplaint(null)} className="lg:hidden p-3 bg-gray-100 rounded-full">
+                                                    <X className="size-6" />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button onClick={() => setSelectedComplaint(null)} className="lg:hidden p-3 bg-gray-100 rounded-full">
-                                            <X className="size-6" />
-                                        </button>
-                                    </div>
 
                                     {/* Chat Messages */}
-                                    <div 
+                                    <div
                                         className="flex-1 overflow-y-auto p-8 space-y-4 flex flex-col-reverse custom-scrollbar"
                                         data-lenis-prevent
                                     >

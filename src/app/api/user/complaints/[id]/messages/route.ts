@@ -36,8 +36,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             const checkRes = await fetch(`https://www.purgomalum.com/service/json?text=${encodeURIComponent(text)}`);
             if (checkRes.ok) {
                 const checkData = await checkRes.json();
-                const filtered = checkData.result;
-                if (filtered !== text) {
+                const filtered = String(checkData.result);
+                if (filtered.trim() !== text.trim()) {
                     wasFiltered = true;
                     cleanText = filtered.replace(/\*/g, '🚫');
                 } else {
