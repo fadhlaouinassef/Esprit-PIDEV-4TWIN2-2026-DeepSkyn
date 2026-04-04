@@ -116,6 +116,26 @@ async function migrate() {
       );
     `);
 
+    // Table LoginActivity (suivi des connexions)
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "LoginActivity" (
+        "id" SERIAL PRIMARY KEY,
+        "user_id" INTEGER NOT NULL,
+        "source" VARCHAR(100) NOT NULL,
+        "day_key" VARCHAR(10) NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE
+      );
+    `);
+
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "LoginActivity_user_id_created_at_idx" ON "LoginActivity"("user_id", "created_at");'
+    );
+
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "LoginActivity_day_key_idx" ON "LoginActivity"("day_key");'
+    );
+
     // Table Subscription
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "Subscription" (

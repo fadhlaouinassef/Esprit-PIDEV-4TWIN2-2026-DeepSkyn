@@ -13,30 +13,34 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       try {
+        console.log('[AuthSign] Process started for:', user.email);
         if (account?.provider === 'google') {
-          // Check if user exists
           let existingUser = await findUserByEmail(user.email!);
 
           if (!existingUser) {
-            // Create new user with Google info
+            console.log('[AuthSign] Creating new Google user:', user.email);
             existingUser = await createUser({
               email: user.email!,
-              password: '', // No password for OAuth users
+              password: '',
               nom: user.name || '',
               image: user.image || '',
-              verified: true, // Auto-verify Google users
+              verified: true,
             });
           }
 
+          console.log('[AuthSign] Tracking login for user ID:', existingUser.id);
           await trackLoginActivity(existingUser.id, 'google');
+          
+          console.log('[AuthSign] Evaluating badges for user ID:', existingUser.id);
           await evaluateAndAwardBadgesForUser({
             userId: existingUser.id,
             trigger: 'login',
           });
         }
+        console.log('[AuthSign] Login successful');
         return true;
       } catch (error) {
-        console.error('Error during sign in:', error);
+        console.error('[AuthSign] Error during sign in:', error);
         return false;
       }
     },
