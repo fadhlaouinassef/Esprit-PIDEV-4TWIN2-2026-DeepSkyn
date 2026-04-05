@@ -4,10 +4,13 @@
 import { Sidebar } from "@/app/components/admin/Sidebar";
 import { Header } from "@/app/components/admin/Header";
 import { SidebarProvider, useSidebarContext } from "@/app/components/admin/sidebar-context";
+import { useNavigation } from "@/app/components/NavigationProvider";
+import { Loader2 } from "lucide-react";
 import "@/app/css/satoshi.css";
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-    const { isOpen, isMobile } = useSidebarContext();
+    useSidebarContext();
+    const { isLoading } = useNavigation();
 
     return (
         <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-lg font-medium" style={{ fontFamily: "Satoshi, sans-serif" }}>
@@ -16,7 +19,24 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex-1 flex flex-col min-w-0 transition-all duration-200">
                 <Header />
 
-                <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+                <main className="relative flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+                    {isLoading && (
+                        <div className="absolute inset-0 z-20 rounded-2xl bg-gray-50/90 dark:bg-gray-900/85 backdrop-blur-[1px]">
+                            <div className="h-full w-full p-4 md:p-6 lg:p-8 animate-pulse space-y-6">
+                                <div className="h-10 w-1/3 rounded-xl bg-gray-200 dark:bg-gray-700" />
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="h-24 rounded-2xl bg-gray-200 dark:bg-gray-700" />
+                                    <div className="h-24 rounded-2xl bg-gray-200 dark:bg-gray-700" />
+                                    <div className="h-24 rounded-2xl bg-gray-200 dark:bg-gray-700" />
+                                </div>
+                                <div className="h-72 rounded-2xl bg-gray-200 dark:bg-gray-700" />
+                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                                    <Loader2 className="size-4 animate-spin" />
+                                    Chargement de la page...
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {children}
                 </main>
             </div>

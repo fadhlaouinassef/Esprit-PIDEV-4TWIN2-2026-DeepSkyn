@@ -2,7 +2,6 @@
 
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense, useRef, createContext, useContext } from 'react';
-import { PageLoader } from './PageLoader';
 
 // Contexte pour gérer l'état de chargement global
 interface NavigationContextType {
@@ -66,17 +65,14 @@ function NavigationHandler({ children }: { children: React.ReactNode }) {
 
   return (
     <NavigationContext.Provider value={{ startLoading, isLoading }}>
-      {isLoading && <PageLoader />}
-      <div style={{ display: isLoading ? 'none' : 'block' }}>
-        {children}
-      </div>
+      {children}
     </NavigationContext.Provider>
   );
 }
 
 export function NavigationProvider({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={null}>
       <NavigationHandler>{children}</NavigationHandler>
     </Suspense>
   );
