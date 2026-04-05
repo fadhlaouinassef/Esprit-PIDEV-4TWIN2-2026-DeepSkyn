@@ -27,6 +27,7 @@ export async function POST(
     // Verify ownership
     const dbUser = await prisma.user.findUnique({
       where: { email: session.user.email },
+      select: { id: true },
     });
 
     if (!dbUser || dbUser.id !== routine.user_id) {

@@ -26,6 +26,7 @@ export async function GET(
     // Verify ownership
     const dbUser = await prisma.user.findUnique({
       where: { email: session.user.email },
+      select: { id: true },
     });
 
     if (!dbUser || dbUser.id !== routine.user_id) {
@@ -65,6 +66,7 @@ export async function PUT(
     // Verify ownership
     const dbUser = await prisma.user.findUnique({
       where: { email: session.user.email },
+      select: { id: true },
     });
 
     if (!dbUser || dbUser.id !== routine.user_id) {
@@ -113,6 +115,7 @@ export async function DELETE(
     // Verify ownership
     const dbUser = await prisma.user.findUnique({
       where: { email: session.user.email },
+      select: { id: true },
     });
 
     if (!dbUser || dbUser.id !== routine.user_id) {

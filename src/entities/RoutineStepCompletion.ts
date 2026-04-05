@@ -19,30 +19,61 @@ export const upsertRoutineStepCompletion = async (data: {
   routine_step_id: number;
   day: string;
 }) => {
-  await prisma.$executeRaw`
-    INSERT INTO "RoutineStepCompletion" ("routine_step_id", "day")
-    VALUES (${data.routine_step_id}, ${data.day})
-    ON CONFLICT ("routine_step_id", "day") DO NOTHING;
-  `;
+  const existing = await prisma.routineStepCompletion.findFirst({
+    where: {
+      routine_step_id: data.routine_step_id,
+      day: data.day,
+    },
+    select: {
+      id: true,
+      routine_step_id: true,
+      day: true,
+      created_at: true,
+    },
+  });
 
-  const rows = await prisma.$queryRaw<RoutineStepCompletionRow[]>`
-    SELECT "id", "routine_step_id", "day", "created_at"
-    FROM "RoutineStepCompletion"
-    WHERE "routine_step_id" = ${data.routine_step_id} AND "day" = ${data.day}
-    LIMIT 1;
-  `;
+  if (existing) return existing;
 
-  return rows[0] ?? null;
+  try {
+    return await prisma.routineStepCompletion.create({
+      data: {
+        routine_step_id: data.routine_step_id,
+        day: data.day,
+      },
+      select: {
+        id: true,
+        routine_step_id: true,
+        day: true,
+        created_at: true,
+      },
+    });
+  } catch {
+    // In race conditions, another request may create the row first.
+    return await prisma.routineStepCompletion.findFirst({
+      where: {
+        routine_step_id: data.routine_step_id,
+        day: data.day,
+      },
+      select: {
+        id: true,
+        routine_step_id: true,
+        day: true,
+        created_at: true,
+      },
+    });
+  }
 };
 
 export const deleteRoutineStepCompletion = async (data: {
   routine_step_id: number;
   day: string;
 }) => {
-  return await prisma.$executeRaw`
-    DELETE FROM "RoutineStepCompletion"
-    WHERE "routine_step_id" = ${data.routine_step_id} AND "day" = ${data.day};
-  `;
+  return await prisma.routineStepCompletion.deleteMany({
+    where: {
+      routine_step_id: data.routine_step_id,
+      day: data.day,
+    },
+  });
 };
 
 export const findCompletionsForStepsAndDays = async (data: {
@@ -63,11 +94,16 @@ export const findCompletionForStepAndDay = async (data: {
   routine_step_id: number;
   day: string;
 }) => {
-  const rows = await prisma.$queryRaw<RoutineStepCompletionRow[]>`
-    SELECT "id", "routine_step_id", "day", "created_at"
-    FROM "RoutineStepCompletion"
-    WHERE "routine_step_id" = ${data.routine_step_id} AND "day" = ${data.day}
-    LIMIT 1;
-  `;
-  return rows[0] ?? null;
+  return await prisma.routineStepCompletion.findFirst({
+    where: {
+      routine_step_id: data.routine_step_id,
+      day: data.day,
+    },
+    select: {
+      id: true,
+      routine_step_id: true,
+      day: true,
+      created_at: true,
+    },
+  });
 };

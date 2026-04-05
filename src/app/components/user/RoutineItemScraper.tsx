@@ -15,6 +15,7 @@ interface Product {
 
 interface RoutineItemScraperProps {
   action: string;
+  enabled?: boolean;
 }
 
 /** Fetches the OG image from a product URL using the existing og-image API */
@@ -62,12 +63,19 @@ function ProductImage({ url, title, imageUrl }: { url: string; title: string; im
   );
 }
 
-export function RoutineItemScraper({ action }: RoutineItemScraperProps) {
+export function RoutineItemScraper({ action, enabled = true }: RoutineItemScraperProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!enabled) {
+      setProducts([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     let cancelled = false;
 
     async function fetchProducts() {
@@ -125,7 +133,11 @@ export function RoutineItemScraper({ action }: RoutineItemScraperProps) {
 
     fetchProducts();
     return () => { cancelled = true; };
-  }, [action]);
+  }, [action, enabled]);
+
+  if (!enabled) {
+    return null;
+  }
 
   const handleRetry = () => {
     const cleanAction = action.split(':')[0].trim();

@@ -176,6 +176,8 @@ export default function RoutinePage() {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [consistency, setConsistency] = useState<ConsistencyResponse | null>(null);
     const [consistencyLoading, setConsistencyLoading] = useState(false);
+    const [isPremiumUser, setIsPremiumUser] = useState(false);
+    const [isScrapingEnabled, setIsScrapingEnabled] = useState(true);
 
     // Fetch user and routines
     useEffect(() => {
@@ -187,6 +189,16 @@ export default function RoutinePage() {
                         const userData = await response.json();
                         setUserName(userData.nom || "User");
                         setUserId(userData.id);
+
+                        const now = Date.now();
+                        const hasActiveSubscription = Array.isArray(userData.subscriptions)
+                            && userData.subscriptions.some((sub: { date_fin?: string }) => {
+                                if (!sub?.date_fin) return false;
+                                const endAt = new Date(sub.date_fin).getTime();
+                                return Number.isFinite(endAt) && endAt >= now;
+                            });
+
+                        setIsPremiumUser(userData.role === "PREMIUM_USER" || hasActiveSubscription);
 
                         // Fetch routines
                         if (userData.id) {
@@ -259,12 +271,23 @@ export default function RoutinePage() {
 
     const handleNewRoutine = () => {
         setRoutineToEdit(null);
+        setIsScrapingEnabled(false);
         setIsModalOpen(true);
     };
 
     const handleEditRoutine = (routine: any) => {
         setRoutineToEdit(routine);
+        setIsScrapingEnabled(false);
         setIsModalOpen(true);
+    };
+
+    const handleCloseRoutineModal = () => {
+        setIsModalOpen(false);
+
+        // Enforce a strict sequence: save routine + steps first, then start scraping.
+        window.setTimeout(() => {
+            setIsScrapingEnabled(true);
+        }, 800);
     };
 
     const handleDeleteRoutine = (routine: any) => {
@@ -495,7 +518,12 @@ export default function RoutinePage() {
                                                                 {activeTab === 'morning' && !step.completed && <Sun className="w-3 h-3 text-amber-500 opacity-50" />}
                                                             </div>
                                                             <h4 className="text-lg font-black text-foreground">{step.action}</h4>
-                                                            <RoutineItemScraper action={step.action} />
+                                                            {isPremiumUser && (
+                                                                <RoutineItemScraper
+                                                                    action={step.action}
+                                                                    enabled={isScrapingEnabled && !isModalOpen}
+                                                                />
+                                                            )}
                                                             {step.completed && step.completedAt && (
                                                                 <p className="text-xs text-muted-foreground mt-1">
                                                                     ✓ Completed on {new Date(step.completedAt).toLocaleDateString()}
@@ -679,7 +707,7 @@ export default function RoutinePage() {
                 {userId && (
                     <AddRoutineModal
                         isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
+                        onClose={handleCloseRoutineModal}
                         userId={userId}
                         routineToEdit={routineToEdit}
                     />

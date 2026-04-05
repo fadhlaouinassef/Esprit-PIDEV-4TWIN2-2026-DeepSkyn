@@ -185,7 +185,16 @@ export const markStepCompleted = createAsyncThunk(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed }),
       });
-      if (!response.ok) throw new Error('Failed to mark step');
+      if (!response.ok) {
+        let apiMessage = 'Failed to mark step';
+        try {
+          const err = await response.json();
+          apiMessage = err?.details || err?.error || apiMessage;
+        } catch {
+          // Keep fallback message when response body is not JSON.
+        }
+        throw new Error(apiMessage);
+      }
       const data = await response.json();
       return { routineId, step: data.step };
     } catch (error: unknown) {

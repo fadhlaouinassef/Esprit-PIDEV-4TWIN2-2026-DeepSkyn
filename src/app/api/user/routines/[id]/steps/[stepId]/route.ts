@@ -38,6 +38,7 @@ export async function PUT(
     // Verify ownership
     const dbUser = await prisma.user.findUnique({
       where: { email: session.user.email },
+      select: { id: true },
     });
 
     if (!dbUser || dbUser.id !== routine.user_id) {
@@ -64,17 +65,27 @@ export async function PUT(
         }
       }
 
-      await evaluateAndAwardBadgesForUser({
-        userId: dbUser.id,
-        trigger: 'routine_step',
-      });
+      try {
+        await evaluateAndAwardBadgesForUser({
+          userId: dbUser.id,
+          trigger: 'routine_step',
+        });
+      } catch (badgeError) {
+        // Badge refresh should never block step completion.
+        console.error('Routine step badge evaluation warning:', badgeError);
+      }
     }
 
-    // Allow editing order/action if provided
-    const updatedStep = await updateRoutineStep(stepId, {
+    // Only update step fields when at least one editable field is provided.
+    const stepUpdates = {
       ...(typeof ordre === 'number' ? { ordre } : {}),
       ...(typeof action === 'string' ? { action } : {}),
-    });
+    };
+
+    const hasStepUpdates = Object.keys(stepUpdates).length > 0;
+    const updatedStep = hasStepUpdates
+      ? await updateRoutineStep(stepId, stepUpdates)
+      : step;
 
     const completion = await findCompletionForStepAndDay({ routine_step_id: stepId, day });
 
@@ -127,6 +138,7 @@ export async function DELETE(
     // Verify ownership
     const dbUser = await prisma.user.findUnique({
       where: { email: session.user.email },
+      select: { id: true },
     });
 
     if (!dbUser || dbUser.id !== routine.user_id) {
