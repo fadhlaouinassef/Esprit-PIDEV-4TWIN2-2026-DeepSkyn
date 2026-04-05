@@ -59,7 +59,7 @@ export const deleteUser = async (id: number) => {
 
 export const getUserWithRelations = async (id: number) => {
   return await prisma.user.findUnique({
-    
+
     where: { id },
     include: {
       badges: true,

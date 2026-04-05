@@ -205,7 +205,7 @@ export default function ProfilePage() {
                                     </Link>
                                     <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-6 py-3 text-white font-bold backdrop-blur-md border border-white/20">
                                         <Award size={18} className="text-yellow-400" />
-                                        {profile?.badges?.length || 0} Badges
+                                        Latest Badge: {profile?.badges?.[0]?.titre || "Newbie"}
                                     </div>
                                 </div>
                             </div>
@@ -253,35 +253,69 @@ export default function ProfilePage() {
                                 <div className="flex justify-between items-center mb-8">
                                     <h3 className="text-xl font-bold flex items-center gap-3">
                                         <Sparkles className="text-[#156d95]" size={22} />
-                                        Recent Skin Analyses
+                                        Latest Skin Analysis
                                     </h3>
-                                    <Link href="/user/routines" className="text-sm font-bold text-[#156d95] hover:underline flex items-center gap-1 uppercase tracking-wider">
-                                        View All <ChevronRight size={14} />
+                                    <Link href="/user/Analyzes" className="text-sm font-bold text-[#156d95] hover:underline flex items-center gap-1 uppercase tracking-wider">
+                                        View History <ChevronRight size={14} />
                                     </Link>
                                 </div>
 
                                 {profile?.skinAnalyses && profile.skinAnalyses.length > 0 ? (
-                                    <div className="space-y-4">
-                                        {profile.skinAnalyses.map((scan, idx) => (
-                                            <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 transition-colors cursor-pointer group">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="size-12 rounded-xl bg-[#156d95]/10 flex items-center justify-center text-[#156d95] group-hover:bg-[#156d95] group-hover:text-white transition-all">
-                                                        <Activity size={20} />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-extrabold text-gray-900 dark:text-white">Analysis Result: {scan.description || 'Routine Check'}</p>
-                                                        <p className="text-sm text-gray-500 flex items-center gap-1">
-                                                            <Clock size={12} /> {new Date(scan.date_creation).toLocaleDateString()}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <span className="inline-block px-3 py-1 rounded-full bg-[#156d95]/20 text-[#156d95] text-[10px] font-black uppercase tracking-widest group-hover:bg-[#156d95] group-hover:text-white transition-all">
-                                                        {scan.score ? `Score: ${scan.score}` : 'View'}
-                                                    </span>
+                                    <div className="relative group overflow-hidden rounded-[28px] bg-white dark:bg-gray-900/40 p-5 border border-gray-100 dark:border-gray-800 transition-all hover:border-[#156d95]/40 shadow-sm hover:shadow-md">
+                                        <div className="flex flex-col sm:flex-row items-center gap-6">
+                                            {/* Compact Score Circle */}
+                                            <div className="relative size-20 shrink-0">
+                                                <svg className="size-full -rotate-90" viewBox="0 0 100 100">
+                                                    <circle className="text-gray-100 dark:text-gray-800" strokeWidth="10" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                                                    <circle
+                                                        className="text-[#156d95]"
+                                                        strokeWidth="10"
+                                                        strokeDasharray={2 * Math.PI * 40}
+                                                        strokeDashoffset={2 * Math.PI * 40 * (1 - (profile.skinAnalyses[0].score || 70) / 100)}
+                                                        strokeLinecap="round"
+                                                        stroke="currentColor"
+                                                        fill="transparent"
+                                                        r="40"
+                                                        cx="50"
+                                                        cy="50"
+                                                    />
+                                                </svg>
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <span className="text-xl font-black text-gray-900 dark:text-white">{profile.skinAnalyses[0].score || "70"}</span>
                                                 </div>
                                             </div>
-                                        ))}
+
+                                            {/* Sleek Info Section */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-4 mb-3">
+                                                    <div className="truncate">
+                                                        <h4 className="text-lg font-black text-gray-900 dark:text-white truncate">
+                                                            {profile.skinAnalyses[0].description || "General Analysis"}
+                                                        </h4>
+                                                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                                                            <Clock size={10} /> {new Date(profile.skinAnalyses[0].date_creation).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                                                        </p>
+                                                    </div>
+                                                    {profile.skinAnalyses[0].images?.[0]?.image_url && (
+                                                        <div className="relative size-10 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shrink-0 shadow-sm">
+                                                            <Image src={profile.skinAnalyses[0].images[0].image_url} alt="Scan" fill className="object-cover" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Compact Metrics Row */}
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-100 dark:border-gray-700/30">
+                                                        <Droplets size={12} className="text-blue-500" />
+                                                        <span className="text-xs font-black text-gray-700 dark:text-gray-300">{profile.skinAnalyses[0].score_eau || "64"}%</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-100 dark:border-gray-700/30">
+                                                        <Sparkles size={12} className="text-indigo-500" />
+                                                        <span className="text-xs font-black text-gray-700 dark:text-gray-300">{profile.skinAnalyses[0].age_peau || "24"} yrs</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center text-center py-10 opacity-60">
@@ -302,23 +336,22 @@ export default function ProfilePage() {
                             <motion.div variants={itemVariants} className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                 <h3 className="mb-6 text-xl font-bold flex items-center gap-3">
                                     <Award className="text-yellow-500" size={22} />
-                                    Badges
+                                    Recent Badge
                                 </h3>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col items-center">
                                     {profile?.badges && profile.badges.length > 0 ? (
-                                        profile.badges.map((badge, idx) => (
-                                            <div key={idx} className="flex flex-col items-center text-center group">
-                                                <div className="size-20 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 p-1 mb-2 shadow-lg group-hover:rotate-12 transition-transform duration-300">
-                                                    <div className="size-full bg-white dark:bg-gray-900 rounded-xl flex items-center justify-center">
-                                                        <Sparkles className="text-yellow-600" size={24} />
-                                                    </div>
+                                        <div className="flex flex-col items-center text-center group">
+                                            <div className="size-24 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 p-1 mb-3 shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                                                <div className="size-full bg-white dark:bg-gray-900 rounded-xl flex items-center justify-center">
+                                                    <Sparkles className="text-yellow-600" size={32} />
                                                 </div>
-                                                <p className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tight">{badge.titre}</p>
                                             </div>
-                                        ))
+                                            <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{profile.badges[0].titre}</p>
+                                            <p className="text-xs text-gray-500 mt-1">{profile.badges[0].description || "Achievement Earned"}</p>
+                                        </div>
                                     ) : (
-                                        <div className="col-span-2 py-6 text-center">
+                                        <div className="py-6 text-center">
                                             <p className="text-sm text-gray-400 font-medium">Earn badges by completing routines and scans.</p>
                                         </div>
                                     )}
@@ -348,15 +381,6 @@ export default function ProfilePage() {
                 </motion.div>
             </div>
 
-            <style jsx global>{`
-                @font-face {
-                    font-family: 'Satoshi';
-                    src: url('/fonts/Satoshi-Variable.woff2') format('woff2');
-                }
-                body {
-                    font-family: 'Satoshi', sans-serif;
-                }
-            `}</style>
         </UserLayout>
     );
 }

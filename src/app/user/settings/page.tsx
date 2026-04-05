@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function SettingsPage() {
     return (
-        <UserLayout userName="Nassef" userPhoto="/avatar.png">
+        <UserLayout>
             <div className="mx-auto w-full max-w-[1200px] space-y-6">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">

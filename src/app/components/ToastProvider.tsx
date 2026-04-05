@@ -10,11 +10,14 @@ export function ToastProvider() {
 
   return (
     <Toaster
-      position="top-center"
+      position="top-right"
       richColors
       closeButton
       expand={true}
       visibleToasts={5}
+      toastOptions={{
+        style: { zIndex: 9999 },
+      }}
     />
   );
 }

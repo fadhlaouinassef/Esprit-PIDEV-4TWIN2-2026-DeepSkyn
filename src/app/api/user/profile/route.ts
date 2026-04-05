@@ -15,11 +15,17 @@ export async function GET(request: NextRequest) {
         const dbUser = await prisma.user.findUnique({
             where: { email: session.user.email },
             include: {
-                badges: true,
+                badges: {
+                    orderBy: { date: 'desc' },
+                    take: 1,
+                },
                 subscriptions: true,
                 skinAnalyses: {
+                    include: {
+                        images: true,
+                    },
                     orderBy: { date_creation: 'desc' },
-                    take: 5,
+                    take: 1,
                 },
             },
         });
@@ -47,7 +53,7 @@ export async function PUT(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { nom, age, sexe, skin_type, image } = body;
+        const { nom, prenom, age, sexe, skin_type, image } = body;
 
         const dbUser = await prisma.user.findUnique({
             where: { email: session.user.email },
@@ -59,6 +65,7 @@ export async function PUT(request: NextRequest) {
 
         const updatedUser = await updateUser(dbUser.id, {
             nom,
+            prenom,
             age: age ? parseInt(age) : undefined,
             sexe,
             skin_type,

@@ -1,9 +1,14 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import Image from "next/image";
+import { useDispatch } from "react-redux";
+import { updateUserProfile } from "@/store/slices/authSlice";
 
 // --- Internal Helper Components ---
 
@@ -27,7 +32,8 @@ function InputGroup({
     type,
     name,
     placeholder,
-    defaultValue,
+    value,
+    onChange,
     icon,
     className = "",
     readOnly = false
@@ -36,7 +42,8 @@ function InputGroup({
     type: string;
     name: string;
     placeholder: string;
-    defaultValue: string;
+    value: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     icon: React.ReactNode;
     className?: string;
     readOnly?: boolean;
@@ -54,7 +61,8 @@ function InputGroup({
                     type={type}
                     name={name}
                     placeholder={placeholder}
-                    defaultValue={defaultValue}
+                    value={value}
+                    onChange={onChange}
                     readOnly={readOnly}
                     className={cn(
                         "w-full rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]",
@@ -66,259 +74,402 @@ function InputGroup({
     );
 }
 
-function TextAreaGroup({
-    label,
-    placeholder,
-    defaultValue,
-    icon
-}: {
-    label: string;
-    placeholder: string;
-    defaultValue: string;
-    icon: React.ReactNode;
-}) {
-    return (
-        <div className="mb-6">
-            <label className="mb-3 block text-[13px] font-medium text-gray-900 dark:text-white">
-                {label}
-            </label>
-            <div className="relative">
-                <span className="absolute left-5 top-5 text-gray-400">
-                    {icon}
-                </span>
-                <textarea
-                    rows={5}
-                    placeholder={placeholder}
-                    defaultValue={defaultValue}
-                    className="w-full rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]"
-                />
-            </div>
-        </div>
-    );
-}
-
 // --- Main Components ---
 
-export function PersonalInfoForm() {
-    return (
-        <ShowcaseSection title="Personal Information">
-            <form>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputGroup
-                        type="text"
-                        name="fullName"
-                        label="Full Name"
-                        placeholder="Souhir"
-                        defaultValue="Souhir"
-                        icon={<User size={20} />}
-                    />
-
-                    <InputGroup
-                        type="email"
-                        name="email"
-                        label="Email Address"
-                        placeholder="souhir@example.com"
-                        defaultValue="souhir@example.com"
-                        icon={<Mail size={20} />}
-                    />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputGroup
-                        type="date"
-                        name="birthDate"
-                        label="Date of Birth"
-                        placeholder=""
-                        defaultValue="2000-01-01"
-                        icon={<Calendar size={20} />}
-                    />
-
-                    <div className="mb-6">
-                        <label className="mb-3 block text-[13px] font-medium text-gray-900 dark:text-white">
-                            Sex (Gender)
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
-                                <UserCircle size={20} />
-                            </span>
-                            <select
-                                name="gender"
-                                defaultValue="Male"
-                                className="w-full appearance-none rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]"
-                            >
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputGroup
-                        type="text"
-                        name="username"
-                        label="Username"
-                        placeholder="souhir_dev"
-                        defaultValue="souhir_dev"
-                        icon={<User size={20} />}
-                    />
-                    <div />
-                </div>
-
-                <TextAreaGroup
-                    label="BIO"
-                    placeholder="Write your bio here"
-                    icon={<Edit size={20} />}
-                    defaultValue="Passionate deep sky enthusiast and software developer. Currently exploring the limits of AI and web technology."
-                />
-
-                <div className="flex justify-end gap-3">
-                    <button
-                        className="rounded-xl border border-gray-200 px-8 py-3.5 text-[15px] font-bold text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900 transition-all"
-                        type="button"
-                    >
-                        Reset
-                    </button>
-                    <button
-                        className="rounded-xl bg-[#156d95] px-8 py-3.5 text-[15px] font-bold text-white hover:shadow-lg hover:bg-opacity-95 transition-all"
-                        type="submit"
-                    >
-                        Update Profile
-                    </button>
-                </div>
-            </form>
-        </ShowcaseSection>
-    );
-}
-
-export function SecurityForm() {
-    return (
-        <ShowcaseSection title="Security & Password" className="mt-8">
-            <form>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputGroup
-                        type="password"
-                        name="currentPassword"
-                        label="Current Password"
-                        placeholder="••••••••"
-                        defaultValue=""
-                        icon={<Lock size={20} />}
-                    />
-                    <div />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputGroup
-                        type="password"
-                        name="newPassword"
-                        label="New Password"
-                        placeholder="••••••••"
-                        defaultValue=""
-                        icon={<Lock size={20} />}
-                    />
-                    <InputGroup
-                        type="password"
-                        name="confirmNewPassword"
-                        label="Confirm New Password"
-                        placeholder="••••••••"
-                        defaultValue=""
-                        icon={<Lock size={20} />}
-                    />
-                </div>
-                <div className="flex justify-end pt-4">
-                    <button
-                        className="rounded-xl bg-[#156d95] px-8 py-3.5 text-[15px] font-bold text-white hover:shadow-lg hover:bg-opacity-95 transition-all"
-                        type="submit"
-                    >
-                        Change Password
-                    </button>
-                </div>
-            </form>
-        </ShowcaseSection>
-    );
-}
-
-export function UploadPhotoForm() {
-    return (
-        <ShowcaseSection title="Your Photo">
-            <form className="flex h-full flex-col">
-                <div className="mb-7 flex items-center gap-4">
-                    <div className="size-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 dark:bg-gray-700 dark:border-gray-600">
-                        <User size={34} className="text-gray-400" />
-                    </div>
-
-                    <div>
-                        <span className="mb-2 block text-lg font-bold text-gray-900 dark:text-white">
-                            Edit your photo
-                        </span>
-                        <div className="flex gap-4">
-                            <button type="button" className="text-sm font-medium text-gray-500 hover:text-red-500 transition-colors">
-                                Delete
-                            </button>
-                            <button type="button" className="text-sm font-medium text-[#156d95] hover:underline transition-colors">
-                                Update
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="relative mb-7 block w-full rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50/30 hover:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:hover:border-[#156d95] transition-all">
-                    <input
-                        type="file"
-                        name="profilePhoto"
-                        id="profilePhoto"
-                        accept="image/png, image/jpg, image/jpeg"
-                        className="absolute inset-0 cursor-pointer opacity-0"
-                    />
-
-                    <label
-                        htmlFor="profilePhoto"
-                        className="flex cursor-pointer flex-col items-center justify-center p-6 py-10"
-                    >
-                        <div className="flex size-14 items-center justify-center rounded-full border border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800 mb-4 shadow-sm">
-                            <Upload size={24} className="text-[#156d95]" />
-                        </div>
-
-                        <p className="mb-2 text-base font-medium text-gray-900 dark:text-white">
-                            <span className="text-[#156d95]">Click to upload</span> or drag and drop
-                        </p>
-
-                        <p className="text-sm text-gray-400">
-                            SVG, PNG, JPG or GIF (max, 800 X 800px)
-                        </p>
-                    </label>
-                </div>
-
-                <div className="mt-auto flex justify-end gap-3 pt-6">
-                    <button
-                        className="rounded-xl border border-gray-200 px-8 py-3.5 text-[15px] font-bold text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900 transition-all"
-                        type="button"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        className="rounded-xl bg-[#156d95] px-8 py-3.5 text-[15px] font-bold text-white hover:shadow-lg hover:bg-opacity-95 transition-all"
-                        type="submit"
-                    >
-                        Save Photo
-                    </button>
-                </div>
-            </form>
-        </ShowcaseSection>
-    );
-}
-
 export default function Profile() {
+    const { data: session, status, update } = useSession();
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
+    const [isSavingPassword, setIsSavingPassword] = useState(false);
+    const [isSavedPassword, setIsSavedPassword] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const [formValues, setFormValues] = useState({
+        nom: "",
+        prenom: "",
+        email: "",
+        age: "",
+        sexe: "Male",
+    });
+
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
+    });
+
+    const [userPhoto, setUserPhoto] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('/api/user/profile');
+                if (response.ok) {
+                    const data = await response.json();
+                    setFormValues({
+                        nom: data.nom || "",
+                        prenom: data.prenom || "",
+                        email: data.email || "",
+                        age: data.age?.toString() || "",
+                        sexe: data.sexe || "Male",
+                    });
+                    setUserPhoto(data.image || null);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user data", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (status === 'authenticated') {
+            fetchUserData();
+        } else if (status === 'unauthenticated') {
+            setIsLoading(false);
+        }
+    }, [status]);
+
+    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormValues(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setPasswordData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSaving(true);
+        setIsSaved(false);
+        try {
+            const response = await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nom: formValues.nom,
+                    prenom: formValues.prenom,
+                    age: formValues.age,
+                    sexe: formValues.sexe
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to update profile');
+
+            // Update session
+            update({ name: `${formValues.prenom} ${formValues.nom}`.trim() });
+            
+            // Update Redux - parse age safely
+            const ageParsed = formValues.age ? parseInt(formValues.age) : undefined;
+            dispatch(updateUserProfile({
+                nom: formValues.nom,
+                prenom: formValues.prenom,
+                age: isNaN(Number(ageParsed)) ? undefined : Number(ageParsed),
+                sexe: formValues.sexe
+            }));
+
+            setIsSaved(true);
+            setTimeout(() => setIsSaved(false), 3000);
+        } catch (error) {
+            toast.error("Error updating profile");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (passwordData.newPassword !== passwordData.confirmNewPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        setIsSavingPassword(true);
+        setIsSavedPassword(false);
+        try {
+            const response = await fetch('/api/user/settings/password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to change password');
+
+            setIsSavedPassword(true);
+            setPasswordData({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
+            setTimeout(() => setIsSavedPassword(false), 3000);
+        } catch (error: any) {
+            toast.error(error.message || "Error changing password");
+        } finally {
+            setIsSavingPassword(false);
+        }
+    };
+
+    const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image too large (max 5MB)");
+            return;
+        }
+
+        setIsUploading(true);
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            const base64String = reader.result as string;
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64String })
+                });
+
+                if (!response.ok) throw new Error('Failed to update photo');
+
+                setUserPhoto(base64String);
+                update({ image: base64String });
+                // Update Redux
+                dispatch(updateUserProfile({ photo: base64String }));
+            } catch (error) {
+                toast.error("Error updating photo");
+            } finally {
+                setIsUploading(false);
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="size-12 animate-spin text-[#156d95]" />
+            </div>
+        );
+    }
+
     return (
         <div className="mx-auto w-full max-w-[1200px] mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
+                {/* Left Column: Forms */}
                 <div className="lg:col-span-3 flex flex-col gap-8">
-                    <PersonalInfoForm />
-                    <SecurityForm />
+                    {/* Personal Information Form */}
+                    <ShowcaseSection title="Personal Information">
+                        <form onSubmit={handleUpdateProfile}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputGroup
+                                    type="text"
+                                    name="nom"
+                                    label="Last Name"
+                                    placeholder="Nom"
+                                    value={formValues.nom}
+                                    onChange={handleFormChange}
+                                    icon={<User size={20} />}
+                                />
+                                <InputGroup
+                                    type="text"
+                                    name="prenom"
+                                    label="First Name"
+                                    placeholder="Prenom"
+                                    value={formValues.prenom}
+                                    onChange={handleFormChange}
+                                    icon={<User size={20} />}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputGroup
+                                    type="email"
+                                    name="email"
+                                    label="Email Address"
+                                    placeholder="email@example.com"
+                                    value={formValues.email}
+                                    readOnly={true}
+                                    icon={<Mail size={20} />}
+                                />
+                                <InputGroup
+                                    type="number"
+                                    name="age"
+                                    label="Age"
+                                    placeholder="Age"
+                                    value={formValues.age}
+                                    onChange={handleFormChange}
+                                    icon={<Calendar size={20} />}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="mb-6">
+                                    <label className="mb-3 block text-[13px] font-medium text-gray-900 dark:text-white">
+                                        Sex (Gender)
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
+                                            <UserCircle size={20} />
+                                        </span>
+                                        <select
+                                            name="sexe"
+                                            value={formValues.sexe}
+                                            onChange={handleFormChange}
+                                            className="w-full appearance-none rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]"
+                                        >
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    className={cn(
+                                        "rounded-xl px-8 py-3.5 text-[15px] font-bold text-white transition-all flex items-center gap-2",
+                                        isSaved ? "bg-emerald-500" : "bg-[#156d95] hover:shadow-lg hover:bg-opacity-95"
+                                    )}
+                                    type="submit"
+                                    disabled={isSaving}
+                                >
+                                    {isSaving ? (
+                                        <Loader2 className="size-4 animate-spin" />
+                                    ) : isSaved ? (
+                                        <>
+                                            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Saved!
+                                        </>
+                                    ) : (
+                                        "Update Profile"
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </ShowcaseSection>
+
+                    {/* Security & Password Form */}
+                    <ShowcaseSection title="Security & Password">
+                        <form onSubmit={handleChangePassword}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputGroup
+                                    type="password"
+                                    name="currentPassword"
+                                    label="Current Password"
+                                    placeholder="••••••••"
+                                    value={passwordData.currentPassword}
+                                    onChange={handlePasswordChange}
+                                    icon={<Lock size={20} />}
+                                />
+                                <div />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputGroup
+                                    type="password"
+                                    name="newPassword"
+                                    label="New Password"
+                                    placeholder="••••••••"
+                                    value={passwordData.newPassword}
+                                    onChange={handlePasswordChange}
+                                    icon={<Lock size={20} />}
+                                />
+                                <InputGroup
+                                    type="password"
+                                    name="confirmNewPassword"
+                                    label="Confirm New Password"
+                                    placeholder="••••••••"
+                                    value={passwordData.confirmNewPassword}
+                                    onChange={handlePasswordChange}
+                                    icon={<Lock size={20} />}
+                                />
+                            </div>
+                            <div className="flex justify-end pt-4">
+                                <button
+                                    className={cn(
+                                        "rounded-xl px-8 py-3.5 text-[15px] font-bold text-white transition-all flex items-center gap-2",
+                                        isSavedPassword ? "bg-emerald-500" : "bg-[#156d95] hover:shadow-lg hover:bg-opacity-95"
+                                    )}
+                                    type="submit"
+                                    disabled={isSavingPassword}
+                                >
+                                    {isSavingPassword ? (
+                                        <Loader2 className="size-4 animate-spin" />
+                                    ) : isSavedPassword ? (
+                                        <>
+                                            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Saved!
+                                        </>
+                                    ) : (
+                                        "Change Password"
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </ShowcaseSection>
                 </div>
+
+                {/* Right Column: Photo Upload */}
                 <div className="lg:col-span-2">
-                    <UploadPhotoForm />
+                    <ShowcaseSection title="Your Photo">
+                        <div className="flex h-full flex-col">
+                            <div className="mb-7 flex items-center gap-4">
+                                <div className="relative size-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-[#156d95]/20 dark:bg-gray-700 dark:border-gray-600">
+                                    {userPhoto ? (
+                                        <Image src={userPhoto} alt="Profile" fill className="object-cover" />
+                                    ) : (
+                                        <User size={34} className="text-gray-400" />
+                                    )}
+                                </div>
+
+                                <div>
+                                    <span className="mb-2 block text-lg font-bold text-gray-900 dark:text-white">
+                                        Profile Avatar
+                                    </span>
+                                    <p className="text-sm text-gray-500">
+                                        Update your personal photo
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="relative mb-7 block w-full rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50/30 hover:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:hover:border-[#156d95] transition-all">
+                                <input
+                                    type="file"
+                                    name="profilePhoto"
+                                    id="profilePhoto"
+                                    accept="image/png, image/jpg, image/jpeg"
+                                    className="absolute inset-0 cursor-pointer opacity-0"
+                                    onChange={handlePhotoUpload}
+                                    disabled={isUploading}
+                                />
+
+                                <div className="flex cursor-pointer flex-col items-center justify-center p-6 py-10">
+                                    <div className="flex size-14 items-center justify-center rounded-full border border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800 mb-4 shadow-sm">
+                                        {isUploading ? (
+                                            <Loader2 size={24} className="text-[#156d95] animate-spin" />
+                                        ) : (
+                                            <Upload size={24} className="text-[#156d95]" />
+                                        )}
+                                    </div>
+
+                                    <p className="mb-2 text-base font-medium text-gray-900 dark:text-white text-center">
+                                        <span className="text-[#156d95]">Click to upload</span> or drag and drop
+                                    </p>
+
+                                    <p className="text-sm text-gray-400 text-center">
+                                        PNG, JPG (max 5MB)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </ShowcaseSection>
                 </div>
             </div>
         </div>
