@@ -9,6 +9,9 @@ import { LogOut, Settings, User, ChevronUp } from "lucide-react";
 import { Dropdown, DropdownContent, DropdownTrigger } from "./dropdown";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { clearUser } from "@/store/slices/authSlice";
+import { signOut } from "next-auth/react";
+
+const AUTH_MODE_KEY = 'deepskyn_auth_mode';
 
 export function UserInfo() {
     const [isOpen, setIsOpen] = useState(false);
@@ -27,9 +30,11 @@ export function UserInfo() {
         router.push(path);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setIsOpen(false);
         dispatch(clearUser());
+        localStorage.removeItem(AUTH_MODE_KEY);
+        await signOut({ redirect: false });
         window.location.href = "/";
     };
 

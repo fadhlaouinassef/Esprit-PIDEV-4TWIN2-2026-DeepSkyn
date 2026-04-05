@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
-import { 
-    Calendar, 
-    ChevronRight, 
-    MoreHorizontal, 
-    Plus, 
-    Filter, 
-    TrendingUp, 
-    TrendingDown, 
+import {
+    Calendar,
+    ChevronRight,
+    MoreHorizontal,
+    Plus,
+    Filter,
+    TrendingUp,
+    TrendingDown,
     Minus,
     X,
     CheckCircle2,
@@ -98,7 +98,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
     };
 
     return (
-        <motion.div 
+        <motion.div
             whileHover={{ y: -5 }}
             onClick={onClick}
             className="group cursor-pointer bg-white dark:bg-gray-800 rounded-[32px] p-8 shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-xl hover:border-[#156d95]/30 flex flex-col h-full"
@@ -123,7 +123,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
 
             <div className="flex items-center gap-6 mb-8 mt-2">
                 <CircularScore score={analysis.score} size="md" />
-                
+
                 <div className="flex-1 space-y-4">
                     <div>
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Skin Type</span>
@@ -148,7 +148,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
                         <span className="text-[#156d95]">{analysis.hydration}%</span>
                     </div>
                     <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                             initial={{ width: 0 }}
                             whileInView={{ width: `${analysis.hydration}%` }}
                             transition={{ duration: 1, ease: "easeOut" }}
@@ -163,7 +163,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
                         <span className="text-[#156d95]">{analysis.oilProduction}%</span>
                     </div>
                     <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                             initial={{ width: 0 }}
                             whileInView={{ width: `${analysis.oilProduction}%` }}
                             transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
@@ -176,10 +176,9 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
             <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sensitivity</span>
-                    <span className={`text-sm font-bold ${
-                        analysis.sensitivity === "Low" ? "text-emerald-500" : 
-                        analysis.sensitivity === "Medium" ? "text-amber-500" : "text-rose-500"
-                    }`}>
+                    <span className={`text-sm font-bold ${analysis.sensitivity === "Low" ? "text-emerald-500" :
+                            analysis.sensitivity === "Medium" ? "text-amber-500" : "text-rose-500"
+                        }`}>
                         {analysis.sensitivity}
                     </span>
                 </div>
@@ -197,15 +196,15 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
     return (
         <AnimatePresence>
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
                     className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                 />
-                
-                <motion.div 
+
+                <motion.div
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -221,7 +220,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                 Detailed Analysis - {analysis.date}
                             </h2>
                         </div>
-                        <button 
+                        <button
                             onClick={onClose}
                             className="p-3 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors border border-gray-100 dark:border-gray-700"
                         >
@@ -231,7 +230,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
 
                     <div className="flex-1 overflow-y-auto p-8 pt-4" data-lenis-prevent>
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                            
+
                             {/* Left Column: Health Score & Basics */}
                             <div className="lg:col-span-4 space-y-6">
                                 <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-[32px] p-8 flex flex-col items-center text-center border border-gray-100 dark:border-gray-700">
@@ -340,12 +339,12 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         </p>
                                         <ul className="space-y-4">
                                             {(() => {
-                                                const recs = Array.isArray(analysis.recommendations) 
-                                                    ? analysis.recommendations 
-                                                    : analysis.recommendations?.immediate 
+                                                const recs = Array.isArray(analysis.recommendations)
+                                                    ? analysis.recommendations
+                                                    : analysis.recommendations?.immediate
                                                         ? [...(analysis.recommendations.immediate || []), ...(analysis.recommendations.weekly || [])]
                                                         : [];
-                                                
+
                                                 return recs.map((rec: string, i: number) => (
                                                     <li key={i} className="flex gap-4">
                                                         <div className="shrink-0 mt-1 size-5 rounded-full bg-[#156d95] flex items-center justify-center text-white">
@@ -368,60 +367,60 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         <h4 className="font-bold text-gray-900 dark:text-white">Prescribed Routine</h4>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                         {/* Morning */}
-                                         <div className="space-y-4">
-                                             <div className="flex items-center gap-2 text-amber-500">
-                                                 <Sun size={18} />
-                                                 <span className="text-xs font-bold uppercase tracking-widest">Morning Routine</span>
-                                             </div>
-                                             <div className="space-y-6">
-                                                 {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => {
-                                                     const stepName = typeof item === 'string' ? item : item.name;
-                                                     return (
-                                                         <div key={idx} className="flex flex-col gap-2">
-                                                             <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-amber-200 transition-colors">
-                                                                 <div className="flex flex-col">
-                                                                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
-                                                                     <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
-                                                                 </div>
-                                                                 <ChevronRight size={16} className="text-gray-300 group-hover:text-amber-500 transition-colors" />
-                                                             </div>
-                                                             {/* Dynamic product scraper for this step */}
-                                                             <div className="px-2">
-                                                                 <RoutineItemScraper action={stepName} />
-                                                             </div>
-                                                         </div>
-                                                     );
-                                                 })}
-                                             </div>
-                                         </div>
-                                         {/* Night */}
-                                         <div className="space-y-4">
-                                             <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400">
-                                                 <Moon size={18} />
-                                                 <span className="text-xs font-bold uppercase tracking-widest">Night Routine</span>
-                                             </div>
-                                             <div className="space-y-6">
-                                                 {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => {
-                                                     const stepName = typeof item === 'string' ? item : item.name;
-                                                     return (
-                                                         <div key={idx} className="flex flex-col gap-2">
-                                                             <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-blue-200 transition-colors">
-                                                                 <div className="flex flex-col">
-                                                                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
-                                                                     <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
-                                                                 </div>
-                                                                 <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
-                                                             </div>
-                                                             {/* Dynamic product scraper for this step */}
-                                                             <div className="px-2">
-                                                                 <RoutineItemScraper action={stepName} />
-                                                             </div>
-                                                         </div>
-                                                     );
-                                                 })}
-                                             </div>
-                                         </div>
+                                        {/* Morning */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 text-amber-500">
+                                                <Sun size={18} />
+                                                <span className="text-xs font-bold uppercase tracking-widest">Morning Routine</span>
+                                            </div>
+                                            <div className="space-y-6">
+                                                {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => {
+                                                    const stepName = typeof item === 'string' ? item : item.name;
+                                                    return (
+                                                        <div key={idx} className="flex flex-col gap-2">
+                                                            <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-amber-200 transition-colors">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
+                                                                    <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
+                                                                </div>
+                                                                <ChevronRight size={16} className="text-gray-300 group-hover:text-amber-500 transition-colors" />
+                                                            </div>
+                                                            {/* Dynamic product scraper for this step */}
+                                                            <div className="px-2">
+                                                                <RoutineItemScraper action={stepName} />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                        {/* Night */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400">
+                                                <Moon size={18} />
+                                                <span className="text-xs font-bold uppercase tracking-widest">Night Routine</span>
+                                            </div>
+                                            <div className="space-y-6">
+                                                {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => {
+                                                    const stepName = typeof item === 'string' ? item : item.name;
+                                                    return (
+                                                        <div key={idx} className="flex flex-col gap-2">
+                                                            <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-blue-200 transition-colors">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
+                                                                    <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
+                                                                </div>
+                                                                <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
+                                                            </div>
+                                                            {/* Dynamic product scraper for this step */}
+                                                            <div className="px-2">
+                                                                <RoutineItemScraper action={stepName} />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -460,13 +459,13 @@ export default function AnalyzesPage() {
     }, []);
 
     const filteredAnalyses = analyses.filter(analysis => {
-        const matchesSearch = 
-            analysis.date.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        const matchesSearch =
+            analysis.date.toLowerCase().includes(searchTerm.toLowerCase()) ||
             analysis.skinType.toLowerCase().includes(searchTerm.toLowerCase()) ||
             analysis.concerns.some((c: string) => c.toLowerCase().includes(searchTerm.toLowerCase()));
-        
+
         const matchesStatus = statusFilter === "All" || analysis.status === statusFilter;
-        
+
         return matchesSearch && matchesStatus;
     });
 
@@ -488,11 +487,11 @@ export default function AnalyzesPage() {
                             View and track your skin progress over time through our diagnostic lens.
                         </p>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                         <div className="relative hidden md:block">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 size-4" />
-                            <input 
+                            <input
                                 type="text"
                                 placeholder="Search analyses..."
                                 value={searchTerm}
@@ -502,7 +501,7 @@ export default function AnalyzesPage() {
                         </div>
                         <div className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-full font-bold text-gray-600 dark:text-gray-300 transition-all border border-transparent">
                             <Filter size={18} />
-                            <select 
+                            <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                                 className="bg-transparent border-none outline-none text-sm font-bold cursor-pointer"
@@ -512,7 +511,7 @@ export default function AnalyzesPage() {
                                 ))}
                             </select>
                         </div>
-                        <Link 
+                        <Link
                             href="/user/questionnaire"
                             className="flex items-center gap-2 px-8 py-4 bg-[#156d95] hover:bg-[#115a7b] rounded-full font-bold text-white shadow-xl shadow-[#156d95]/20 hover:scale-[1.02] transition-all"
                         >
@@ -537,9 +536,9 @@ export default function AnalyzesPage() {
                             else label = "Past History";
 
                             return (
-                                <AnalysisCard 
-                                    key={analysis.id} 
-                                    analysis={analysis} 
+                                <AnalysisCard
+                                    key={analysis.id}
+                                    analysis={analysis}
                                     label={label}
                                     onClick={() => setSelectedAnalysis(analysis)}
                                 />
@@ -556,20 +555,20 @@ export default function AnalyzesPage() {
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No analyses found</h3>
                         <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-                            {analyses.length === 0 
+                            {analyses.length === 0
                                 ? "You haven't performed any skin analyses yet. Start your first scan to see your detailed report."
                                 : "We couldn't find any analyses matching your search or filters. Try adjusting them or start a new scan."}
                         </p>
                         {analyses.length === 0 ? (
-                            <Link 
+                            <Link
                                 href="/user/questionnaire"
                                 className="mt-8 px-10 py-4 bg-[#156d95] text-white rounded-full font-bold hover:bg-[#115a7b] transition-all inline-block"
                             >
                                 Perform First Analysis
                             </Link>
                         ) : (
-                            <button 
-                                onClick={() => {setSearchTerm(""); setStatusFilter("All");}}
+                            <button
+                                onClick={() => { setSearchTerm(""); setStatusFilter("All"); }}
                                 className="mt-8 px-10 py-4 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-white rounded-full font-bold hover:bg-gray-200 transition-all"
                             >
                                 Clear All Filters
@@ -582,9 +581,9 @@ export default function AnalyzesPage() {
             {/* Modal */}
             <AnimatePresence>
                 {selectedAnalysis && (
-                    <AnalysisDetailModal 
-                        analysis={selectedAnalysis} 
-                        onClose={() => setSelectedAnalysis(null)} 
+                    <AnalysisDetailModal
+                        analysis={selectedAnalysis}
+                        onClose={() => setSelectedAnalysis(null)}
                     />
                 )}
             </AnimatePresence>

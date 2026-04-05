@@ -70,7 +70,7 @@ export function Notification() {
             try {
                 // Ensure the socket server is initialized
                 const socketInit = await fetch('/api/socket');
-                
+
                 // If the fetch fails with 404, we might be in a different environment
                 // Log it to help debugging
                 if (socketInit.status === 404) {
@@ -105,10 +105,10 @@ export function Notification() {
                         isNew: true,
                         link: '/admin/users'
                     };
-                    
+
                     setNotifications(prev => [newNotif, ...prev].slice(0, 50));
                     setUnreadCount(prev => prev + 1);
-                    
+
                     toast.success(`${data.nom || 'A user'} joined!`, {
                         description: "A new user just signed up.",
                         icon: <UserPlus className="size-4" />,
@@ -128,10 +128,10 @@ export function Notification() {
                         isNew: true,
                         link: `/admin/Analyzes?search=${encodeURIComponent(data.nom || '')}`
                     };
-                    
+
                     setNotifications(prev => [newNotif, ...prev].slice(0, 50));
                     setUnreadCount(prev => prev + 1);
-                    
+
                     toast.message(`${data.nom || 'A user'} analyzed their skin`, {
                         description: `Skin Score: ${data.score}/100`,
                         icon: <FileSearch className="size-4" />,
@@ -151,10 +151,10 @@ export function Notification() {
                         isNew: true,
                         link: '/admin/users'
                     };
-                    
+
                     setNotifications(prev => [newNotif, ...prev].slice(0, 50));
                     setUnreadCount(prev => prev + 1);
-                    
+
                     toast.success(`${data.nom || 'A user'} verified!`, {
                         description: "Account identity has been confirmed.",
                         icon: <ShieldCheck className="size-4" />,
@@ -252,7 +252,7 @@ export function Notification() {
                         <p className="text-xs text-gray-500 font-medium">{unreadCount} new notifications</p>
                     </div>
                     {notifications.length > 0 && (
-                        <button 
+                        <button
                             onClick={markAllAsRead}
                             className="text-xs text-[#156d95] hover:text-[#1a85b5] transition-colors font-bold px-2 py-1 rounded-lg hover:bg-[#156d95]/5"
                         >
@@ -279,8 +279,8 @@ export function Notification() {
                     ) : (
                         <AnimatePresence initial={false}>
                             {notifications.map((item, index) => (
-                                <motion.li 
-                                    key={item.id} 
+                                <motion.li
+                                    key={item.id}
                                     layout
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -293,8 +293,8 @@ export function Notification() {
                                         onClick={() => handleNotificationClick(item.link, item.id)}
                                         className={cn(
                                             "w-full text-left flex items-center gap-4 rounded-xl px-3 py-3 outline-none transition-all relative group",
-                                            item.isNew 
-                                                ? "bg-[#156d95]/5 hover:bg-[#156d95]/10 dark:bg-[#156d95]/10 dark:hover:bg-[#156d95]/20" 
+                                            item.isNew
+                                                ? "bg-[#156d95]/5 hover:bg-[#156d95]/10 dark:bg-[#156d95]/10 dark:hover:bg-[#156d95]/20"
                                                 : "hover:bg-gray-50 dark:hover:bg-white/5"
                                         )}
                                     >
@@ -340,7 +340,7 @@ export function Notification() {
                                                 </span>
                                             </div>
                                         </div>
-                                        
+
                                         {item.isNew && (
                                             <div className="size-1.5 rounded-full bg-[#156d95] absolute right-4 bottom-4 ring-4 ring-[#156d95]/10 animate-pulse" />
                                         )}

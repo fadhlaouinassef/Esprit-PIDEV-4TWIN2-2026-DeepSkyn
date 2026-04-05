@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getPremiumAccessStatus } from '@/lib/premium-access';
 import { SkinType } from '@prisma/client';
 
 type RoutineStep = {
@@ -124,6 +125,17 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
     if (!user) {
       return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+    }
+
+    const access = await getPremiumAccessStatus(userId);
+    if (!access.isPremium) {
+      return NextResponse.json(
+        {
+          error: 'Automatic routine creation is available for premium users only.',
+          code: 'PREMIUM_REQUIRED_FOR_AUTO_ROUTINE',
+        },
+        { status: 403 }
+      );
     }
 
     if (!analysis) {
