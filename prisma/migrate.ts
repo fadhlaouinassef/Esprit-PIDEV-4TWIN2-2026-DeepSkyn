@@ -81,7 +81,16 @@ async function migrate() {
       END $$;
     `);
 
+    await prisma.$executeRawUnsafe(`
+      DO $$ BEGIN
+        CREATE TYPE "ComplaintCategory" AS ENUM ('ANALYSIS', 'ROUTINE', 'PRODUCT', 'BADGE', 'BUG', 'PAYMENT', 'SERVICE', 'OTHER');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
+
     console.log('✅ Types enum créés');
+
 
     // =========================
     // 2) Création des TABLES
@@ -166,13 +175,58 @@ async function migrate() {
       CREATE TABLE IF NOT EXISTS "Complaint" (
         "id" SERIAL PRIMARY KEY,
         "user_id" INTEGER NOT NULL,
-        "nom" VARCHAR(255) NOT NULL,
-        "message" TEXT NOT NULL,
-        "image" TEXT,
-        "etat" "EtatComplaint" DEFAULT 'PENDING' NOT NULL,
+        "category" "ComplaintCategory" DEFAULT 'OTHER' NOT NULL,
+        "content" TEXT NOT NULL,
+        "status" "EtatComplaint" DEFAULT 'PENDING' NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE
       );
     `);
+
+    // Table ComplaintMessage
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "ComplaintMessage" (
+        "id" SERIAL PRIMARY KEY,
+        "complaint_id" INTEGER NOT NULL,
+        "sender_role" "RoleType" NOT NULL,
+        "text" TEXT NOT NULL,
+        "is_read" BOOLEAN DEFAULT false NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY ("complaint_id") REFERENCES "Complaint"("id") ON DELETE CASCADE
+      );
+    `);
+
+    // Table ComplaintEvidence
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "ComplaintEvidence" (
+        "id" SERIAL PRIMARY KEY,
+        "complaint_id" INTEGER NOT NULL,
+        "url" TEXT NOT NULL,
+        FOREIGN KEY ("complaint_id") REFERENCES "Complaint"("id") ON DELETE CASCADE
+      );
+    `);
+
+    // Table Notification
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "Notification" (
+        "id" SERIAL PRIMARY KEY,
+        "user_id" INTEGER,
+        "image" TEXT,
+        "title" VARCHAR(255) NOT NULL,
+        "subTitle" VARCHAR(255) NOT NULL,
+        "type" VARCHAR(100) NOT NULL,
+        "message" TEXT,
+        "score" DOUBLE PRECISION,
+        "is_read" BOOLEAN DEFAULT false NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE SET NULL
+      );
+    `);
+    
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "Notification_created_at_idx" ON "Notification"("created_at");'
+    );
+
 
     // Table Feedback
     await prisma.$executeRawUnsafe(`
@@ -456,7 +510,30 @@ async function migrate() {
       );
     }
 
+    // Complaint: sync columns
+    await addColumnIfMissing('Complaint', '"category" "ComplaintCategory" DEFAULT \'OTHER\' NOT NULL');
+    await addColumnIfMissing('Complaint', '"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL');
+
+    // Complaint rename: message -> content
+    const contentExists = await columnExists('Complaint', 'content');
+    const messageExists = await columnExists('Complaint', 'message');
+    if (!contentExists && messageExists) {
+      await prisma.$executeRawUnsafe('ALTER TABLE "Complaint" RENAME COLUMN "message" TO "content";');
+    } else if (!contentExists) {
+      await addColumnIfMissing('Complaint', '"content" TEXT NOT NULL DEFAULT \'\'');
+    }
+
+    // Complaint rename: etat -> status
+    const statusExists = await columnExists('Complaint', 'status');
+    const etatExists = await columnExists('Complaint', 'etat');
+    if (!statusExists && etatExists) {
+      await prisma.$executeRawUnsafe('ALTER TABLE "Complaint" RENAME COLUMN "etat" TO "status";');
+    } else if (!statusExists) {
+      await addColumnIfMissing('Complaint', '"status" "EtatComplaint" DEFAULT \'PENDING\' NOT NULL');
+    }
+
     console.log('✅ Synchronisation des colonnes terminée');
+
 
     // Vérifier les tables finales
     const finalTables = await prisma.$queryRaw<
