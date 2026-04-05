@@ -13,6 +13,7 @@ import {
     ClipboardList,
     Activity,
     Globe,
+    Award,
     LucideIcon
 } from "lucide-react";
 
@@ -67,8 +68,13 @@ export const NAV_DATA: NavSection[] = [
                 items: [
                     { title: "All Users", url: "/admin/users" },
                     { title: "Verification", url: "/admin/users/verify" },
-                    { title: "Badges", url: "/admin/users/badges" },
                 ],
+            },
+            {
+                title: "Badges",
+                url: "/admin/badges",
+                icon: Award,
+                items: [],
             },
             {
                 title: "Quizzes",
