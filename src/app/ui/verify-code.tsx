@@ -9,6 +9,8 @@ import { toast } from "sonner"
 import { useAppDispatch } from "@/store/hooks"
 import { setUser } from "@/store/slices/authSlice"
 
+const AUTH_MODE_KEY = 'deepskyn_auth_mode'
+
 export default function VerifyCode() {
     const router = useRouter()
     const dispatch = useAppDispatch()
@@ -106,6 +108,7 @@ export default function VerifyCode() {
                         role: data.user.role || 'user',
                         verified: true
                     }));
+                    localStorage.setItem(AUTH_MODE_KEY, 'credentials')
                 }
 
                 toast.success("Compte vérifié !", {

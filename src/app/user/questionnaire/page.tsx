@@ -5,7 +5,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, ShoppingBag } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3 } from "lucide-react";
 import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { CameraModal } from "@/app/components/user/CameraModal";
@@ -56,6 +56,17 @@ type N8nResult = {
     text?: string;
     analysis?: string;
     score?: number;
+};
+
+type AnalysisAccess = {
+    loading: boolean;
+    isPremium: boolean;
+    canCreateAnalysis: boolean;
+    nextAvailableAt: string | null;
+    remainingMs: number;
+    maxSurveyImages: number;
+    productRecommendationsEnabled: boolean;
+    autoRoutineEnabled: boolean;
 };
 
 // N8N Webhook Proxy URL
@@ -170,11 +181,65 @@ export default function QuestionnairePage() {
     const [answersSoFar, setAnswersSoFar] = useState<{ questionId: number; answer: string }[]>([]);
     const [quizId, setQuizId] = useState<number>(1);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const [analysisAccess, setAnalysisAccess] = useState<AnalysisAccess>({
+        loading: true,
+        isPremium: false,
+        canCreateAnalysis: true,
+        nextAvailableAt: null,
+        remainingMs: 0,
+        maxSurveyImages: 1,
+        productRecommendationsEnabled: false,
+        autoRoutineEnabled: false,
+    });
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     const imageInputRef = useRef<HTMLInputElement>(null);
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const analysisRef = useRef<HTMLDivElement>(null);
+    const maxSurveyImages = Math.max(1, analysisAccess.maxSurveyImages || 1);
+
+    useEffect(() => {
+        if (sessionStatus === "loading" || !userId) return;
+
+        let cancelled = false;
+
+        const fetchAnalysisAccess = async () => {
+            try {
+                const response = await fetch('/api/quiz/skin-score', { method: 'GET' });
+                if (!response.ok) {
+                    throw new Error('Failed to load analysis access status.');
+                }
+
+                const data = await response.json();
+                if (cancelled) return;
+
+                setAnalysisAccess({
+                    loading: false,
+                    isPremium: Boolean(data?.isPremium),
+                    canCreateAnalysis: Boolean(data?.canCreateAnalysis),
+                    nextAvailableAt: data?.nextAvailableAt ? String(data.nextAvailableAt) : null,
+                    remainingMs: Number(data?.remainingMs || 0),
+                    maxSurveyImages: Number(data?.limits?.maxSurveyImages || 1),
+                    productRecommendationsEnabled: Boolean(data?.limits?.productRecommendationsEnabled),
+                    autoRoutineEnabled: Boolean(data?.limits?.autoRoutineEnabled),
+                });
+            } catch (error) {
+                console.error('Failed to fetch analysis access:', error);
+                if (cancelled) return;
+
+                setAnalysisAccess((prev) => ({
+                    ...prev,
+                    loading: false,
+                }));
+            }
+        };
+
+        fetchAnalysisAccess();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [sessionStatus, userId]);
 
     const finalizeAndSaveAnalysis = async (result: Record<string, unknown>) => {
         setCurrentQuestion(null);
@@ -213,6 +278,21 @@ export default function QuestionnairePage() {
                         routine: data.routine,
                         confidence: Number(data.confidence || 0),
                     };
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    if (response.status === 429) {
+                        setAnalysisAccess((prev) => ({
+                            ...prev,
+                            loading: false,
+                            canCreateAnalysis: false,
+                            nextAvailableAt: errorData?.nextAvailableAt ? String(errorData.nextAvailableAt) : prev.nextAvailableAt,
+                            remainingMs: Number(errorData?.remainingMs || prev.remainingMs || 0),
+                        }));
+                        toast.error(errorData?.error || 'Vous avez atteint la limite d\'une analyse par 24h.');
+                        return;
+                    }
+
+                    throw new Error(errorData?.error || 'Failed to compute analysis score.');
                 }
             }
 
@@ -258,12 +338,20 @@ export default function QuestionnairePage() {
 
     // Initial call to get the first question
     useEffect(() => {
-        if (sessionStatus !== "loading" && messages.length === 0 && !isStreaming && !currentQuestion && !analysisResult) {
+        if (
+            sessionStatus !== "loading" &&
+            !analysisAccess.loading &&
+            analysisAccess.canCreateAnalysis &&
+            messages.length === 0 &&
+            !isStreaming &&
+            !currentQuestion &&
+            !analysisResult
+        ) {
             console.log("🚀 Starting initial questionnaire fetch...");
             fetchNextStep([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sessionStatus, userId]);
+    }, [sessionStatus, userId, analysisAccess.loading, analysisAccess.canCreateAnalysis]);
 
     // Scroll to bottom during chat — but NOT once the analysis result is shown
     useEffect(() => {
@@ -358,7 +446,7 @@ export default function QuestionnairePage() {
                     {
                         role: "assistant",
                         content:
-                            "Quiz complete. Add up to 5 images (drag and drop, gallery, or camera) to enrich the Gemini analysis.",
+                            `Quiz complete. Add up to ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} (drag and drop, gallery, or camera) to enrich the Gemini analysis.`,
                     },
                 ]);
             } else {
@@ -380,14 +468,14 @@ export default function QuestionnairePage() {
         const files = Array.from(incomingFiles).filter((f) => f.type.startsWith('image/'));
         if (files.length === 0) return;
 
-        const remaining = 5 - uploadedSurveyImages.length;
+        const remaining = maxSurveyImages - uploadedSurveyImages.length;
         if (remaining <= 0) {
-            toast.error('Maximum 5 images autorisees.');
+            toast.error(`Maximum ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} autorisee(s).`);
             return;
         }
 
         if (files.length > remaining) {
-            toast.warning('Maximum 5 images autorisees. Veuillez retirer des images avant d\'en ajouter.');
+            toast.warning(`Maximum ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} autorisee(s). Veuillez retirer des images avant d'en ajouter.`);
         }
 
         const selected = files.slice(0, remaining);
@@ -399,7 +487,7 @@ export default function QuestionnairePage() {
             if (parsed) converted.push(parsed);
         }
 
-        setUploadedSurveyImages((prev) => [...prev, ...converted].slice(0, 5));
+        setUploadedSurveyImages((prev) => [...prev, ...converted].slice(0, maxSurveyImages));
     };
 
     const onImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -414,11 +502,11 @@ export default function QuestionnairePage() {
         const parsed = dataUrlToInlinePart(dataUrl);
         if (parsed) {
             // Check limits again just in case
-            if (uploadedSurveyImages.length >= 5) {
-                toast.error('Maximum 5 images autorisees.');
+            if (uploadedSurveyImages.length >= maxSurveyImages) {
+                toast.error(`Maximum ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} autorisee(s).`);
                 return;
             }
-            setUploadedSurveyImages((prev) => [...prev, parsed].slice(0, 5));
+            setUploadedSurveyImages((prev) => [...prev, parsed].slice(0, maxSurveyImages));
             toast.success('Photo capturee avec succes !');
         }
     };
@@ -614,13 +702,13 @@ export default function QuestionnairePage() {
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                             Skin Analysis
                         </h2>
-                        {!analysisResult && (
+                        {!analysisResult && analysisAccess.canCreateAnalysis && (
                             <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
                                 {answersSoFar.length + (currentQuestion ? 1 : 0)} Questions
                             </span>
                         )}
                     </div>
-                    {!analysisResult && (
+                    {!analysisResult && analysisAccess.canCreateAnalysis && (
                         <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden dark:bg-gray-800">
                             <motion.div
                                 className="h-full bg-primary"
@@ -632,12 +720,56 @@ export default function QuestionnairePage() {
                     )}
                 </div>
 
+                {!analysisAccess.loading && !analysisResult && !analysisAccess.canCreateAnalysis && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="rounded-3xl border border-amber-200 bg-amber-50/80 dark:bg-amber-900/10 dark:border-amber-800/40 p-6 shadow-sm"
+                    >
+                        <div className="flex items-start gap-4">
+                            <div className="size-11 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                <Lock className="size-5 text-amber-700 dark:text-amber-300" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-base font-black text-amber-900 dark:text-amber-200">Limit reached</h3>
+                                <p className="text-sm mt-1 text-amber-800 dark:text-amber-300">
+                                    You have already used your free analysis in the last 24 hours.
+                                </p>
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-white/80 dark:bg-black/20 text-amber-800 dark:text-amber-200">
+                                        <Clock3 className="size-3.5" />
+                                        Prochaine analyse: {analysisAccess.nextAvailableAt ? new Date(analysisAccess.nextAvailableAt).toLocaleString() : 'dans moins de 24h'}
+                                    </span>
+                                </div>
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => window.location.href = '/user/Analyzes'}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 text-xs font-bold text-amber-900 dark:text-amber-200"
+                                    >
+                                        <History className="size-3.5" />
+                                        Voir mes analyses
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => window.location.href = '/user/billing'}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold"
+                                    >
+                                        <Crown className="size-3.5" />
+                                        Passer Premium
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
                 {/* Chat Area / Analysis Area */}
                 <div
                     ref={scrollRef}
                     className={`space-y-6 pr-2 ${analysisResult
-                            ? "" // let <main> scroll naturally with mouse wheel
-                            : "flex-1 overflow-y-auto pb-64 custom-scrollbar scroll-smooth" // chat mode: inner scroll
+                        ? "" // let <main> scroll naturally with mouse wheel
+                        : "flex-1 overflow-y-auto pb-64 custom-scrollbar scroll-smooth" // chat mode: inner scroll
                         }`}
                 >
                     <AnimatePresence initial={false}>
@@ -854,7 +986,7 @@ export default function QuestionnairePage() {
                             )}
 
                             {/* ── Immediate Recommendations ── */}
-                            {!!analysisResult.recommendations?.immediate?.length && (
+                            {analysisAccess.productRecommendationsEnabled && !!analysisResult.recommendations?.immediate?.length && (
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -956,7 +1088,7 @@ export default function QuestionnairePage() {
                 </div>
 
                 {/* Interaction Overlay (at bottom) */}
-                {!analysisResult && !isAnalyzing && (
+                {!analysisResult && !isAnalyzing && analysisAccess.canCreateAnalysis && (
                     <div className="absolute bottom-0 left-0 right-0 py-10 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent dark:from-[#0b0b0f] dark:via-[#0b0b0f]/95 z-20 pointer-events-none">
                         <div className="max-w-2xl mx-auto flex flex-col items-center gap-6 pointer-events-none">
                             <AnimatePresence mode="wait">
@@ -972,10 +1104,10 @@ export default function QuestionnairePage() {
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
                                                     <h4 className="text-sm font-black text-gray-900 dark:text-white">Add images for Gemini</h4>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Maximum 5 images. Gallery, camera, or drag and drop.</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Maximum {maxSurveyImages} image{maxSurveyImages > 1 ? 's' : ''}. Gallery, camera, or drag and drop.</p>
                                                 </div>
                                                 <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
-                                                    {uploadedSurveyImages.length}/5
+                                                    {uploadedSurveyImages.length}/{maxSurveyImages}
                                                 </span>
                                             </div>
 
@@ -1002,8 +1134,8 @@ export default function QuestionnairePage() {
                                                     }
                                                 }}
                                                 className={`rounded-2xl border-2 border-dashed p-5 transition-colors ${isDraggingImages
-                                                        ? 'border-primary bg-primary/5'
-                                                        : 'border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30'
+                                                    ? 'border-primary bg-primary/5'
+                                                    : 'border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/30'
                                                     }`}
                                             >
                                                 <div className="flex flex-col items-center text-center gap-2">
@@ -1017,7 +1149,7 @@ export default function QuestionnairePage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => imageInputRef.current?.click()}
-                                                    disabled={uploadedSurveyImages.length >= 5}
+                                                    disabled={uploadedSurveyImages.length >= maxSurveyImages}
                                                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
                                                 >
                                                     <Upload className="size-3.5" />
@@ -1026,7 +1158,7 @@ export default function QuestionnairePage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setIsCameraOpen(true)}
-                                                    disabled={uploadedSurveyImages.length >= 5}
+                                                    disabled={uploadedSurveyImages.length >= maxSurveyImages}
                                                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
                                                 >
                                                     <Camera className="size-3.5" />

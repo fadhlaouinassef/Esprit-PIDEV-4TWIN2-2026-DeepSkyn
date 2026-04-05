@@ -2,9 +2,48 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
+import { getAnalysisAccessStatus } from '@/lib/premium-access';
 import { computeAndStoreSkinScoreAnalysis } from '@/services/skinScoreAnalysis.service';
 import { evaluateAndAwardBadgesForUser } from '@/services/badge.service';
 import { createNotification } from '@/services/notification.service';
+
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const sessionUser = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!sessionUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const access = await getAnalysisAccessStatus(sessionUser.id);
+
+    return NextResponse.json({
+      isPremium: access.isPremium,
+      role: access.role,
+      hasActiveSubscription: access.hasActiveSubscription,
+      canCreateAnalysis: access.canCreateAnalysis,
+      lastAnalysisAt: access.lastAnalysisAt,
+      nextAvailableAt: access.nextAvailableAt,
+      remainingMs: access.remainingMs,
+      limits: {
+        maxSurveyImages: access.isPremium ? 5 : 1,
+        autoRoutineEnabled: access.isPremium,
+        productRecommendationsEnabled: access.isPremium,
+      },
+    });
+  } catch (error: unknown) {
+    console.error('Skin score access check error:', error);
+    return NextResponse.json({ error: 'Failed to fetch analysis access status.' }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,6 +71,22 @@ export async function POST(request: NextRequest) {
     const targetUserId = Number(body.userId) || sessionUser.id;
     if (targetUserId !== sessionUser.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const access = await getAnalysisAccessStatus(targetUserId);
+    if (!access.canCreateAnalysis) {
+      return NextResponse.json(
+        {
+          error: 'Daily analysis limit reached for free users. Please try again later.',
+          code: 'ANALYSIS_LIMIT_REACHED',
+          isPremium: access.isPremium,
+          role: access.role,
+          lastAnalysisAt: access.lastAnalysisAt,
+          nextAvailableAt: access.nextAvailableAt,
+          remainingMs: access.remainingMs,
+        },
+        { status: 429 }
+      );
     }
 
     const quizId = body.quizId && Number.isFinite(Number(body.quizId)) ? Number(body.quizId) : undefined;
@@ -65,6 +120,14 @@ export async function POST(request: NextRequest) {
       score: result.score,
       message: 'completed an analysis!',
     });
+
+    if (!access.isPremium) {
+      result.recommendations = {
+        immediate: [],
+        weekly: [],
+        avoid: [],
+      };
+    }
 
     return NextResponse.json(result, { status: 201 });
   } catch (error: unknown) {

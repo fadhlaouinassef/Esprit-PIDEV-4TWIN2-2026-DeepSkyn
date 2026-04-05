@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import cloudinary from '@/lib/cloudinary';
+import { getPremiumAccessStatus } from '@/lib/premium-access';
 
 type UploadBody = {
   userId?: number;
@@ -87,8 +88,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'At least one image is required.' }, { status: 400 });
     }
 
-    if (images.length > 5) {
-      return NextResponse.json({ error: 'Maximum 5 images allowed.' }, { status: 400 });
+    const access = await getPremiumAccessStatus(targetUserId);
+    const maxImages = access.isPremium ? 5 : 1;
+
+    if (images.length > maxImages) {
+      return NextResponse.json({ error: `Maximum ${maxImages} image${maxImages > 1 ? 's' : ''} allowed.` }, { status: 400 });
     }
 
     for (const image of images) {

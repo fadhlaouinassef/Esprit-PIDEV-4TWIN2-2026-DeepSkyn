@@ -6,13 +6,16 @@ import { useRouter } from "next/navigation"
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, Sparkles, ShieldOff, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useAppDispatch } from "@/store/hooks"
 import { setUser } from "@/store/slices/authSlice"
+
+const AUTH_MODE_KEY = 'deepskyn_auth_mode'
 
 export default function SignIn() {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const { data: session, status } = useSession()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
@@ -21,6 +24,7 @@ export default function SignIn() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [shakeField, setShakeField] = useState<string | null>(null)
   const [showBlockedModal, setShowBlockedModal] = useState(false)
+  const [isRedirectingAfterAuth, setIsRedirectingAfterAuth] = useState(false)
 
   // Test toast on mount to verify it works
   useEffect(() => {
@@ -30,6 +34,40 @@ export default function SignIn() {
       duration: 5000,
     });
   }, []);
+
+  useEffect(() => {
+    if (status !== 'authenticated' || !session?.user) return;
+    setIsRedirectingAfterAuth(true);
+
+    const isAdmin = String(session.user.role || '').toUpperCase() === 'ADMIN';
+    const redirectPath = isAdmin ? '/admin' : '/user';
+
+    dispatch(setUser({
+      id: parseInt(String(session.user.id || '0')),
+      nom: session.user.name || '',
+      prenom: '',
+      email: session.user.email || '',
+      photo: session.user.image || '/avatar.png',
+      role: session.user.role || 'user',
+      verified: true,
+    }));
+    localStorage.setItem(AUTH_MODE_KEY, 'oauth');
+
+    router.replace(redirectPath);
+  }, [status, session, dispatch, router]);
+
+  if (isRedirectingAfterAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5f5f7] via-[#fafafa] to-[#f8fafc]">
+        <div className="flex flex-col items-center gap-4 rounded-3xl bg-white/80 backdrop-blur-md border border-gray-200 px-8 py-7 shadow-xl">
+          <Loader2 className="w-8 h-8 animate-spin text-[#156d95]" />
+          <p className="text-sm font-bold text-gray-700 tracking-wide uppercase" style={{ fontFamily: "Figtree" }}>
+            Redirecting to your dashboard...
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -66,7 +104,7 @@ export default function SignIn() {
 
       try {
         console.log('Attempting signin with:', { email });
-        const response = await fetch('/api/auth/signin', {
+        const response = await fetch('/api/local-auth/signin', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -107,6 +145,22 @@ export default function SignIn() {
           return;
         }
 
+        // Redirection basée sur le rôle
+        const isAdmin = data.user.role?.toUpperCase() === 'ADMIN';
+        const redirectPath = isAdmin ? '/admin' : '/user';
+
+        // Establish a real NextAuth session for credentials login
+        const credentialsSession = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+          callbackUrl: redirectPath,
+        });
+
+        if (credentialsSession?.error) {
+          throw new Error('La session n\'a pas pu etre etablie. Veuillez reessayer.');
+        }
+
         // Store user data in Redux store
         const userData = {
           id: data.user.id,
@@ -122,15 +176,12 @@ export default function SignIn() {
         };
 
         dispatch(setUser(userData));
+        localStorage.setItem(AUTH_MODE_KEY, 'credentials')
 
         toast.success('Connexion réussie !', {
           description: 'Vous allez être redirigé...',
           duration: 2000,
         });
-
-        // Redirection basée sur le rôle
-        const isAdmin = data.user.role?.toUpperCase() === 'ADMIN';
-        const redirectPath = isAdmin ? '/admin' : '/user';
 
         console.log(`🚀 [SignIn] Redirection vers ${redirectPath} (Role: ${data.user.role})`);
 
@@ -170,43 +221,9 @@ export default function SignIn() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signIn('google', {
-        callbackUrl: '/user',
-        redirect: false,
+      await signIn('google', {
+        callbackUrl: '/signin',
       });
-
-      if (result?.error) {
-        toast.error('Google Sign-In Failed', {
-          description: result.error,
-        });
-      } else if (result?.ok) {
-        // Fetch user data and store in Redux
-        try {
-          const response = await fetch('/api/auth/session');
-          const session = await response.json();
-
-          if (session?.user) {
-            dispatch(setUser({
-              id: parseInt(session.user.id),
-              nom: session.user.name || '',
-              prenom: '',
-              email: session.user.email,
-              photo: session.user.image || '/avatar.png',
-              role: session.user.role || 'user'
-            }));
-          }
-        } catch (error) {
-          console.error('Error fetching session:', error);
-        }
-
-        toast.success('Login successful!', {
-          description: 'Redirecting...',
-          duration: 2000,
-        });
-        setTimeout(() => {
-          router.push('/user');
-        }, 2000);
-      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
       toast.error('Google Sign-In Failed', {
