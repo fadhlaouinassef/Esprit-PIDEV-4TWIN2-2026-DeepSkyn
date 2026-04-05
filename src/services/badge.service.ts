@@ -100,14 +100,14 @@ export const computeComboRule = (metrics: BadgeRuleMetrics): RuleResult => ({
 
 export const computeReboundRule = (metrics: BadgeRuleMetrics): RuleResult => ({
   badgeLevel: NiveauBadge.SILVER,
-  title: 'Badge de Rebond',
+  title: 'Comeback Badge',
   description: 'Returned after a break and stayed consistent for 2 days.',
   earned: metrics.reboundBadge,
 });
 
 export const computeSecretRule = (metrics: BadgeRuleMetrics): RuleResult => ({
   badgeLevel: NiveauBadge.GOLD,
-  title: 'Badge Secret: Skin Glow',
+  title: 'Secret Badge: Skin Glow',
   description: 'Maintained a high skin score across multiple analyses.',
   earned: metrics.secretBadge,
 });
@@ -403,7 +403,26 @@ export const getMotivationSummary = async (userId: number) => {
   const now = new Date();
   const metrics = await toMetrics(userId, now);
   console.log(`[BadgeService:getMotivationSummary] Metrics done for user ${userId}`);
-  const history = await findBadgesByUserId(userId);
+  const historyRaw = await findBadgesByUserId(userId);
+
+  const translateLegacyBadgeText = (text: string | null | undefined) => {
+    if (!text) return text;
+
+    const map: Record<string, string> = {
+      'Badge de Rebond': 'Comeback Badge',
+      'Badge Secret: Skin Glow': 'Secret Badge: Skin Glow',
+      'Initié de DeepSkyn': 'DeepSkyn Beginner',
+      'Commencez à compléter vos routines pour gagner votre premier badge !': 'Start completing your routines to earn your first badge.',
+    };
+
+    return map[text] ?? text;
+  };
+
+  const history = historyRaw.map((badge) => ({
+    ...badge,
+    titre: translateLegacyBadgeText(badge.titre) ?? badge.titre,
+    description: translateLegacyBadgeText(badge.description) ?? badge.description,
+  }));
   
   // Determine current badge (highest level)
   const levelsOrder = [NiveauBadge.BRONZE, NiveauBadge.SILVER, NiveauBadge.GOLD, NiveauBadge.PLATINUM, NiveauBadge.RUBY_MASTER];
@@ -422,36 +441,36 @@ export const getMotivationSummary = async (userId: number) => {
     const r2 = metrics.combo24h; // Equivalent to logging 2 times and doing both routines
     progressToNext = Math.min((metrics.completedDays7 / 3) * 100, 100);
     activeRequirements = [
-        { text: `Compléter vos routines sur 3 jours (Actuel: ${metrics.completedDays7}/3)`, met: r1 },
-        { text: `Effectuer un Combo 24h (Matin & Soir)`, met: r2 }
+        { text: `Complete your routines on 3 days (Current: ${metrics.completedDays7}/3)`, met: r1 },
+        { text: `Complete a 24h Combo (Morning & Night)`, met: r2 }
     ];
   } else if (nextLevelStr === 'SILVER') {
     const r1 = metrics.streakDays >= 7;
     const r2 = metrics.finalAnalysisCount30d >= 1;
     progressToNext = Math.min(((r1 ? 1 : 0) + (r2 ? 1 : 0)) / 2 * 100, 100);
     activeRequirements = [
-        { text: `Atteindre une série de 7 jours (Série: ${metrics.streakDays}d)`, met: r1 },
-        { text: `Effectuer une analyse de peau complète`, met: r2 }
+        { text: `Reach a 7-day streak (Current streak: ${metrics.streakDays}d)`, met: r1 },
+        { text: `Complete one full skin analysis`, met: r2 }
     ];
   } else if (nextLevelStr === 'GOLD') {
     const r1 = metrics.netScoreImproveLast3 >= GOLD_MIN_NET_IMPROVEMENT;
     progressToNext = Math.min((metrics.netScoreImproveLast3 / Math.max(1, GOLD_MIN_NET_IMPROVEMENT)) * 100, 100);
     activeRequirements = [
-        { text: `Améliorer votre score global de ${GOLD_MIN_NET_IMPROVEMENT} points`, met: r1 }
+        { text: `Improve your overall score by ${GOLD_MIN_NET_IMPROVEMENT} points`, met: r1 }
     ];
   } else if (nextLevelStr === 'PLATINUM') {
     const r1 = metrics.streakDays >= PLATINUM_MIN_STREAK;
     const r2 = metrics.avgHydrationLast5 >= PLATINUM_MIN_HYDRATION;
     progressToNext = Math.min(((metrics.streakDays / PLATINUM_MIN_STREAK) + (metrics.avgHydrationLast5 / PLATINUM_MIN_HYDRATION)) / 2 * 100, 100);
     activeRequirements = [
-        { text: `Atteindre 14 jours de série`, met: r1 },
-        { text: `Maintenir une hydratation stable (>80%)`, met: r2 }
+        { text: `Reach a ${PLATINUM_MIN_STREAK}-day streak`, met: r1 },
+        { text: `Maintain stable hydration (>${PLATINUM_MIN_HYDRATION}%)`, met: r2 }
     ];
   } else if (nextLevelStr === 'RUBY_MASTER') {
     const r1 = metrics.streakDays >= RUBY_MIN_STREAK;
     progressToNext = Math.min((metrics.streakDays / RUBY_MIN_STREAK) * 100, 100);
     activeRequirements = [
-        { text: `Atteindre 30 jours de série (Maître)`, met: r1 }
+        { text: `Reach a ${RUBY_MIN_STREAK}-day streak (Master tier)`, met: r1 }
     ];
   }
 
@@ -471,38 +490,38 @@ export const getMotivationSummary = async (userId: number) => {
     motivationMessage,
     allRules: {
       "BRONZE": {
-        title: 'Niveau Bronze',
+        title: 'Bronze Level',
         conditions: [
-            { text: 'Compléter 3 routines dans la semaine', met: metrics.completedDays7 >= 3 },
-            { text: 'Effectuer un Combo 24h', met: metrics.combo24h }
+            { text: 'Complete 3 routine days this week', met: metrics.completedDays7 >= 3 },
+            { text: 'Complete a 24h Combo', met: metrics.combo24h }
         ]
       },
       "SILVER": {
-        title: 'Niveau Silver',
+        title: 'Silver Level',
         conditions: [
-            { text: 'Atteindre un streak de 7 jours', met: metrics.streakDays >= 7 },
-            { text: 'Effectuer une analyse de peau complète', met: metrics.finalAnalysisCount30d >= 1 }
+            { text: 'Reach a 7-day streak', met: metrics.streakDays >= 7 },
+            { text: 'Complete one full skin analysis', met: metrics.finalAnalysisCount30d >= 1 }
         ]
       },
       "GOLD": {
-        title: 'Niveau Gold',
+        title: 'Gold Level',
         conditions: [
-            { text: `Amélioration de score de +${GOLD_MIN_NET_IMPROVEMENT}`, met: metrics.netScoreImproveLast3 >= GOLD_MIN_NET_IMPROVEMENT },
-            { text: 'Série de 10 jours active', met: metrics.streakDays >= 10 }
+            { text: `Score improvement of +${GOLD_MIN_NET_IMPROVEMENT}`, met: metrics.netScoreImproveLast3 >= GOLD_MIN_NET_IMPROVEMENT },
+            { text: 'Maintain an active 10-day streak', met: metrics.streakDays >= 10 }
         ]
       },
       "PLATINUM": {
-        title: 'Niveau Platinum',
+        title: 'Platinum Level',
         conditions: [
-            { text: 'Atteindre un streak de 14 jours', met: metrics.streakDays >= PLATINUM_MIN_STREAK },
-            { text: 'Hydratation stable > 80%', met: metrics.avgHydrationLast5 >= PLATINUM_MIN_HYDRATION }
+            { text: `Reach a ${PLATINUM_MIN_STREAK}-day streak`, met: metrics.streakDays >= PLATINUM_MIN_STREAK },
+            { text: `Keep hydration stable > ${PLATINUM_MIN_HYDRATION}%`, met: metrics.avgHydrationLast5 >= PLATINUM_MIN_HYDRATION }
         ]
       },
       "RUBY_MASTER": {
-        title: 'Niveau Ruby Master',
+        title: 'Ruby Master Level',
         conditions: [
-            { text: 'Atteindre 30 jours de série', met: metrics.streakDays >= RUBY_MIN_STREAK },
-            { text: 'Analyses régulières sur 6 mois', met: metrics.finalAnalysisCountAll >= RUBY_MIN_FINAL_ANALYSES }
+            { text: `Reach a ${RUBY_MIN_STREAK}-day streak`, met: metrics.streakDays >= RUBY_MIN_STREAK },
+            { text: `Complete at least ${RUBY_MIN_FINAL_ANALYSES} full analyses`, met: metrics.finalAnalysisCountAll >= RUBY_MIN_FINAL_ANALYSES }
         ]
       }
     }

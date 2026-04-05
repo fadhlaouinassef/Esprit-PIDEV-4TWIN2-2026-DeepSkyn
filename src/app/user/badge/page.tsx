@@ -434,8 +434,8 @@ export default function BadgePage() {
                             <UserBadgeCard
                                 userPhoto={session?.user?.image || "/avatar.png"}
                                 userName={session?.user?.name || "DeepSkyn Hero"}
-                                badgeTitle={data?.currentBadge?.titre || "Initié de DeepSkyn"}
-                                description={data?.currentBadge?.description || "Commencez à compléter vos routines pour gagner votre premier badge !"}
+                                badgeTitle={data?.currentBadge?.titre || "DeepSkyn Beginner"}
+                                description={data?.currentBadge?.description || "Start completing your routines to earn your first badge."}
                                 variant={currentVariant as BadgeVariant}
                             />
                             
@@ -444,7 +444,7 @@ export default function BadgePage() {
                                 className="mt-6 w-full flex items-center justify-center gap-3 py-5 px-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-[24px] hover:scale-[1.03] active:scale-[0.97] transition-all shadow-[0_15px_40px_rgba(0,0,0,0.15)] group"
                             >
                                 <Share2 size={18} className="group-hover:rotate-12 transition-transform" />
-                                PARTAGER LE SUCCÈS
+                                SHARE YOUR ACHIEVEMENT
                             </button>
                         </motion.div>
 
@@ -455,18 +455,18 @@ export default function BadgePage() {
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-black text-primary uppercase tracking-widest">
-                                                Objectif Actif
+                                                Active Goal
                                             </div>
                                         </div>
                                         <h3 className="text-3xl font-black flex items-center gap-3 leading-none">
-                                            Vers le niveau {data?.nextBadge?.level || "Maître"}
+                                            Toward {data?.nextBadge?.level || "Master"} level
                                             <TrendingUp className="text-primary animate-bounce shrink-0" size={24} />
                                         </h3>
-                                        <p className="text-gray-500 font-medium mt-1 italic uppercase text-[10px] tracking-widest opacity-70">Suivi détaillé de vos accomplissements</p>
+                                        <p className="text-gray-500 font-medium mt-1 italic uppercase text-[10px] tracking-widest opacity-70">Detailed progress tracking</p>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-5xl font-black text-primary leading-none tracking-tighter">{Math.round(data?.nextBadge?.progress || 0)}%</div>
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Complété</span>
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Completed</span>
                                     </div>
                                 </div>
 
@@ -486,7 +486,7 @@ export default function BadgePage() {
                                             <div className="p-2 bg-primary/20 rounded-xl font-black">
                                                 <Target size={20} className="text-primary" />
                                             </div>
-                                            <h4 className="text-sm font-black text-primary uppercase tracking-[0.1em] italic leading-none">Missions de validation</h4>
+                                            <h4 className="text-sm font-black text-primary uppercase tracking-[0.1em] italic leading-none">Validation tasks</h4>
                                         </div>
 
                                         <div className="space-y-3">
@@ -519,8 +519,8 @@ export default function BadgePage() {
                                                         <Sparkles size={40} className="animate-pulse" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-black uppercase text-xl leading-none mb-1">Badge Prêt!</p>
-                                                        <p className="text-sm font-bold opacity-80 italic">Toutes les missions de ce palier sont validées.</p>
+                                                        <p className="font-black uppercase text-xl leading-none mb-1">Badge Ready!</p>
+                                                        <p className="text-sm font-bold opacity-80 italic">All requirements for this tier are completed.</p>
                                                     </div>
                                                 </div>
                                             )}
@@ -532,7 +532,7 @@ export default function BadgePage() {
                             {/* Horizontal Metrics Section (since we restored the card, let's put metrics horizontally below milestone) */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                 {[
-                                    { label: 'SÉRIE', value: `${data?.metrics?.streakDays ?? 0}J`, color: 'orange', icon: CalendarDays },
+                                    { label: 'STREAK', value: `${data?.metrics?.streakDays ?? 0}d`, color: 'orange', icon: CalendarDays },
                                     { label: 'ANALYSES', value: data?.metrics?.finalAnalysisCountAll ?? 0, color: 'blue', icon: Award },
                                     { label: 'SCORE', value: Math.round(data?.metrics?.lastAnalysisScore || 0), color: 'green', icon: Zap }
                                 ].map((stat, i) => (
@@ -723,10 +723,10 @@ export default function BadgePage() {
                                         <Music2 size={18} /> TikTok
                                     </button>
                                     <button onClick={copyShareLink} className="share-action-btn">
-                                        <Link2 size={18} /> Copier lien
+                                        <Link2 size={18} /> Copy link
                                     </button>
                                     <button onClick={downloadShareImage} className="share-action-btn" disabled={shareBusy}>
-                                        {shareBusy ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Télécharger
+                                        {shareBusy ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Download
                                     </button>
                                 </div>
 
