@@ -75,6 +75,12 @@ const authSlice = createSlice({
     updateUserProfile: (state, action: PayloadAction<Partial<UserData>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
+        
+        // Persist update to localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('deepskyn_user', JSON.stringify(state.user));
+        }
+
         console.log('[Redux] Profil mis à jour :', state.user);
       }
     },

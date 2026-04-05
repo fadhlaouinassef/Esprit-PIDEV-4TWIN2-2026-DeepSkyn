@@ -37,7 +37,10 @@ export async function GET(request: NextRequest) {
         // Remove password and sensitive info
         const { password, otp_code, otp_expiry, ...safeUser } = dbUser;
 
-        return NextResponse.json(safeUser, { status: 200 });
+        return NextResponse.json({
+            ...safeUser,
+            hasPassword: !!password && password.length > 0
+        }, { status: 200 });
     } catch (error: any) {
         console.error('Profile GET error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

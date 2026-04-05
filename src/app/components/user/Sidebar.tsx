@@ -23,7 +23,7 @@ export function Sidebar({ userName: propUserName, userPhoto: propUserPhoto }: Si
     const user = useAppSelector((state) => state.auth.user);
 
     // Use Redux state if available, otherwise fallback to props
-    const userName = user ? `${user.nom || ''} ${user.prenom || ''}`.trim() || "User" : (propUserName || "User");
+    const userName = user ? `${user.prenom || ''} ${user.nom || ''}`.trim() || propUserName || "User" : (propUserName || "User");
     const userPhoto = user?.photo || propUserPhoto;
 
     const toggleExpanded = (title: string) => {

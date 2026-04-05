@@ -24,7 +24,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
     const user = useAppSelector((state) => state.auth.user);
 
     // Use Redux state if available, otherwise fallback to props or defaults
-    const name = user?.nom || propName || "User Name";
+    const name = user ? `${user.prenom || ''} ${user.nom || ''}`.trim() || propName || "User Name" : (propName || "User Name");
     const photo = user?.photo || propPhoto || "/avatar.png";
 
     const handleNavigation = (path: string) => {

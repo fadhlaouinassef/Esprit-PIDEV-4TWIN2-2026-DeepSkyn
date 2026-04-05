@@ -3,7 +3,9 @@
 import { Sidebar } from "@/app/components/user/Sidebar";
 import { Header } from "@/app/components/user/Header";
 import { SidebarProvider, useSidebarContext } from "@/app/components/user/sidebar-context";
-import { useAppSelector } from "@/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { useEffect } from "react";
+import { setUser } from "@/store/slices/authSlice";
 import "@/app/css/satoshi.css";
 
 interface UserLayoutProps {
@@ -16,9 +18,24 @@ interface UserLayoutProps {
 
 function UserLayoutContent({ children }: UserLayoutProps) {
     const { isOpen, isMobile } = useSidebarContext();
-    // Récupérer les données utilisateur depuis Redux
     const user = useAppSelector((state) => state.auth.user);
-    const userName = user ? `${user.nom || ''} ${user.prenom || ''}`.trim() || "User" : "User";
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (!user) {
+            const storedUser = localStorage.getItem('deepskyn_user');
+            if (storedUser) {
+                try {
+                    const parsedUser = JSON.parse(storedUser);
+                    dispatch(setUser(parsedUser));
+                } catch (e) {
+                    console.error("Failed to parse stored user", e);
+                }
+            }
+        }
+    }, [user, dispatch]);
+
+    const userName = user ? `${user.prenom || ''} ${user.nom || ''}`.trim() || "User" : "User";
     const userPhoto = user?.photo || "/avatar.png";
 
     return (

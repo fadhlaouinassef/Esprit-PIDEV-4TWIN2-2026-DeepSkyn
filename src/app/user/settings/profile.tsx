@@ -94,6 +94,8 @@ export default function Profile() {
         sexe: "Male",
     });
 
+    const [hasPassword, setHasPassword] = useState<boolean | null>(null);
+
     const [passwordData, setPasswordData] = useState({
         currentPassword: "",
         newPassword: "",
@@ -116,6 +118,17 @@ export default function Profile() {
                         sexe: data.sexe || "Male",
                     });
                     setUserPhoto(data.image || null);
+                    setHasPassword(data.hasPassword === true);
+
+                    // Sync Redux with fresh DB data
+                    dispatch(updateUserProfile({
+                        nom: data.nom,
+                        prenom: data.prenom,
+                        photo: data.image,
+                        role: data.role,
+                        age: data.age,
+                        sexe: data.sexe,
+                    }));
                 }
             } catch (error) {
                 console.error("Failed to fetch user data", error);
@@ -354,66 +367,68 @@ export default function Profile() {
                         </form>
                     </ShowcaseSection>
 
-                    {/* Security & Password Form */}
-                    <ShowcaseSection title="Security & Password">
-                        <form onSubmit={handleChangePassword}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <InputGroup
-                                    type="password"
-                                    name="currentPassword"
-                                    label="Current Password"
-                                    placeholder="••••••••"
-                                    value={passwordData.currentPassword}
-                                    onChange={handlePasswordChange}
-                                    icon={<Lock size={20} />}
-                                />
-                                <div />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <InputGroup
-                                    type="password"
-                                    name="newPassword"
-                                    label="New Password"
-                                    placeholder="••••••••"
-                                    value={passwordData.newPassword}
-                                    onChange={handlePasswordChange}
-                                    icon={<Lock size={20} />}
-                                />
-                                <InputGroup
-                                    type="password"
-                                    name="confirmNewPassword"
-                                    label="Confirm New Password"
-                                    placeholder="••••••••"
-                                    value={passwordData.confirmNewPassword}
-                                    onChange={handlePasswordChange}
-                                    icon={<Lock size={20} />}
-                                />
-                            </div>
-                            <div className="flex justify-end pt-4">
-                                <button
-                                    className={cn(
-                                        "rounded-xl px-8 py-3.5 text-[15px] font-bold text-white transition-all flex items-center gap-2",
-                                        isSavedPassword ? "bg-emerald-500" : "bg-[#156d95] hover:shadow-lg hover:bg-opacity-95"
-                                    )}
-                                    type="submit"
-                                    disabled={isSavingPassword}
-                                >
-                                    {isSavingPassword ? (
-                                        <Loader2 className="size-4 animate-spin" />
-                                    ) : isSavedPassword ? (
-                                        <>
-                                            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            Saved!
-                                        </>
-                                    ) : (
-                                        "Change Password"
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </ShowcaseSection>
+                    {/* Security & Password Form - Only show for Credentials users */}
+                    {hasPassword === true && (
+                        <ShowcaseSection title="Security & Password">
+                            <form onSubmit={handleChangePassword}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <InputGroup
+                                        type="password"
+                                        name="currentPassword"
+                                        label="Current Password"
+                                        placeholder="••••••••"
+                                        value={passwordData.currentPassword}
+                                        onChange={handlePasswordChange}
+                                        icon={<Lock size={20} />}
+                                    />
+                                    <div />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <InputGroup
+                                        type="password"
+                                        name="newPassword"
+                                        label="New Password"
+                                        placeholder="••••••••"
+                                        value={passwordData.newPassword}
+                                        onChange={handlePasswordChange}
+                                        icon={<Lock size={20} />}
+                                    />
+                                    <InputGroup
+                                        type="password"
+                                        name="confirmNewPassword"
+                                        label="Confirm New Password"
+                                        placeholder="••••••••"
+                                        value={passwordData.confirmNewPassword}
+                                        onChange={handlePasswordChange}
+                                        icon={<Lock size={20} />}
+                                    />
+                                </div>
+                                <div className="flex justify-end pt-4">
+                                    <button
+                                        className={cn(
+                                            "rounded-xl px-8 py-3.5 text-[15px] font-bold text-white transition-all flex items-center gap-2",
+                                            isSavedPassword ? "bg-emerald-500" : "bg-[#156d95] hover:shadow-lg hover:bg-opacity-95"
+                                        )}
+                                        type="submit"
+                                        disabled={isSavingPassword}
+                                    >
+                                        {isSavingPassword ? (
+                                            <Loader2 className="size-4 animate-spin" />
+                                        ) : isSavedPassword ? (
+                                            <>
+                                                <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Saved!
+                                            </>
+                                        ) : (
+                                            "Change Password"
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </ShowcaseSection>
+                    )}
                 </div>
 
                 {/* Right Column: Photo Upload */}
