@@ -6,7 +6,7 @@ import { LoadingLink } from "../LoadingLink";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_DATA } from "./data";
-import { ArrowLeft, ChevronUp } from "lucide-react";
+import { ArrowLeft, ChevronUp, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import Image from "next/image";
@@ -17,6 +17,7 @@ export function Sidebar() {
     const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const user = useAppSelector((state) => state.auth.user);
+    const isCollapsedDesktop = !isMobile && !isOpen;
 
     // Admin display name
     const userName = user ? `${user.nom} ${user.prenom || ''}`.trim() : "Admin User";
@@ -55,41 +56,61 @@ export function Sidebar() {
 
             <aside
                 className={cn(
-                    "max-w-[290px] border-r border-gray-200 bg-white transition-[width] duration-200 ease-linear dark:border-gray-800 dark:bg-gray-dark h-full",
+                    "max-w-72.5 overflow-hidden border-r border-gray-200 bg-white transition-[width,padding] duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-dark h-full",
                     isMobile ? "fixed bottom-0 top-0 z-50 rounded-r-3xl h-screen" : "sticky top-0 h-screen",
-                    isOpen ? "w-[290px]" : "w-0 min-w-0 pr-0 pl-0 border-none",
+                    isMobile
+                        ? (isOpen ? "w-72.5" : "w-0 min-w-0 pr-0 pl-0 border-none")
+                        : (isOpen ? "w-72.5" : "w-22"),
                 )}
                 aria-label="Main navigation"
-                aria-hidden={!isOpen}
+                aria-hidden={isMobile && !isOpen}
             >
-                <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
-                    <div className="relative pr-4.5">
+                <div className={cn("flex h-full flex-col py-6", isCollapsedDesktop ? "px-3" : "pl-6.25 pr-1.75")}>
+                    <div className={cn("relative", isCollapsedDesktop ? "pr-0" : "pr-4.5")}>
                         {/* Admin Profile Header */}
-                        <LoadingLink
-                            href={"/admin/profile"}
-                            onClick={() => isMobile && toggleSidebar()}
-                            className="block mb-8 px-2"
-                        >
-                            <div className="flex items-center gap-3 group">
-                                <div className="size-12 rounded-full overflow-hidden shrink-0 border-2 border-gray-200 dark:border-gray-700 group-hover:border-[#156d95] transition-colors">
-                                    <Image
-                                        src={userPhoto}
-                                        width={48}
-                                        height={48}
-                                        alt={userName}
-                                        className="h-full w-full object-cover"
-                                    />
+                        <div className={cn("mb-8 flex items-center", isCollapsedDesktop ? "justify-center" : "gap-2 px-2")}>
+                            <LoadingLink
+                                href={"/admin/profile"}
+                                onClick={() => isMobile && toggleSidebar()}
+                                className={cn("block", isCollapsedDesktop ? "px-0" : "flex-1")}
+                            >
+                                <div className={cn("flex items-center group", isCollapsedDesktop ? "justify-center" : "gap-3")}>
+                                    <div className="size-12 rounded-full overflow-hidden shrink-0 border-2 border-gray-200 dark:border-gray-700 group-hover:border-[#156d95] transition-colors">
+                                        <Image
+                                            src={userPhoto}
+                                            width={48}
+                                            height={48}
+                                            alt={userName}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    </div>
+                                    {!isCollapsedDesktop && (
+                                        <div className="flex flex-col min-w-0 transition-all duration-300 ease-in-out">
+                                            <span className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#156d95] transition-colors">
+                                                {userName}
+                                            </span>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                {user?.role === 'admin' ? 'Administrator' : 'Admin Account'}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="flex flex-col min-w-0">
-                                    <span className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#156d95] transition-colors">
-                                        {userName}
-                                    </span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                        {user?.role === 'admin' ? 'Administrator' : 'Admin Account'}
-                                    </span>
-                                </div>
-                            </div>
-                        </LoadingLink>
+                            </LoadingLink>
+
+                            {!isMobile && (
+                                <button
+                                    onClick={toggleSidebar}
+                                    className={cn(
+                                        "inline-flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 transition-all duration-300 ease-in-out",
+                                        isCollapsedDesktop ? "size-10 ml-0" : "size-10"
+                                    )}
+                                    title={isOpen ? "Réduire la sidebar" : "Ouvrir la sidebar"}
+                                    aria-label={isOpen ? "Réduire la sidebar" : "Ouvrir la sidebar"}
+                                >
+                                    {isOpen ? <PanelLeftClose className="size-5" /> : <PanelLeftOpen className="size-5" />}
+                                </button>
+                            )}
+                        </div>
 
                         {isMobile && (
                             <button
@@ -103,18 +124,29 @@ export function Sidebar() {
                     </div>
 
                     {/* Navigation */}
-                    <div className="custom-scrollbar flex-1 overflow-y-auto pr-3" data-lenis-prevent>
+                    <div className={cn("custom-scrollbar flex-1 overflow-y-auto", isCollapsedDesktop ? "pr-0" : "pr-3")} data-lenis-prevent>
                         {NAV_DATA.map((section) => (
                             <div key={section.label} className="mb-6">
-                                <h2 className="mb-4 px-3 text-sm font-bold uppercase tracking-widest text-gray-500/70">
-                                    {section.label}
-                                </h2>
+                                {!isCollapsedDesktop && (
+                                    <h2 className="mb-4 px-3 text-sm font-bold uppercase tracking-widest text-gray-500/70">
+                                        {section.label}
+                                    </h2>
+                                )}
 
                                 <nav role="navigation" aria-label={section.label}>
                                     <ul className="space-y-1">
                                         {section.items.map((item) => (
                                             <li key={item.title}>
-                                                {item.items.length > 0 ? (
+                                                {isCollapsedDesktop ? (
+                                                    <MenuItem
+                                                        as="link"
+                                                        href={item.url || item.items?.[0]?.url || "#"}
+                                                        isActive={pathname === (item.url || item.items?.[0]?.url)}
+                                                        className="justify-center px-0"
+                                                    >
+                                                        <item.icon className="size-5 shrink-0" aria-hidden="true" />
+                                                    </MenuItem>
+                                                ) : item.items.length > 0 ? (
                                                     <div>
                                                         <MenuItem
                                                             onClick={() => toggleExpanded(item.title)}
@@ -169,13 +201,13 @@ export function Sidebar() {
                                                                 as="link"
                                                                 href={href}
                                                                 isActive={pathname === href}
+                                                                className={cn(isCollapsedDesktop && "justify-center px-0")}
                                                             >
                                                                 <item.icon
                                                                     className="size-5 shrink-0"
                                                                     aria-hidden="true"
                                                                 />
-
-                                                                <span>{item.title}</span>
+                                                                {!isCollapsedDesktop && <span>{item.title}</span>}
                                                             </MenuItem>
                                                         );
                                                     })()
