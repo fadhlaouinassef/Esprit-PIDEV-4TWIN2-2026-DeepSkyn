@@ -14,15 +14,57 @@ export async function GET(request: NextRequest) {
 
         const dbUser = await prisma.user.findUnique({
             where: { email: session.user.email },
-            include: {
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                created_at: true,
+                nom: true,
+                prenom: true,
+                sexe: true,
+                age: true,
+                skin_type: true,
+                image: true,
+                verified: true,
+                password: true,
+                otp_code: true,
+                otp_expiry: true,
                 badges: {
+                    select: {
+                        id: true,
+                        titre: true,
+                        niveau: true,
+                        description: true,
+                        date: true,
+                    },
                     orderBy: { date: 'desc' },
                     take: 1,
                 },
-                subscriptions: true,
+                subscriptions: {
+                    select: {
+                        id: true,
+                        user_id: true,
+                        plan: true,
+                        date_debut: true,
+                        date_fin: true,
+                    },
+                },
                 skinAnalyses: {
-                    include: {
-                        images: true,
+                    select: {
+                        id: true,
+                        user_id: true,
+                        score_eau: true,
+                        age_peau: true,
+                        date_creation: true,
+                        score: true,
+                        description: true,
+                        images: {
+                            select: {
+                                id: true,
+                                analyse_id: true,
+                                image_url: true,
+                            },
+                        },
                     },
                     orderBy: { date_creation: 'desc' },
                     take: 1,
