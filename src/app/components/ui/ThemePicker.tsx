@@ -4,6 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { SIDEBAR_THEMES, setSidebarTheme } from "@/store/slices/uiThemeSlice";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 interface ThemePickerProps {
   isCollapsed?: boolean;
@@ -12,6 +13,8 @@ interface ThemePickerProps {
 export function ThemePicker({ isCollapsed }: ThemePickerProps) {
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
+  const hydrated = useHydrated();
+  const appliedTheme = hydrated ? currentTheme : SIDEBAR_THEMES[0];
 
   return (
     <div
@@ -28,7 +31,7 @@ export function ThemePicker({ isCollapsed }: ThemePickerProps) {
 
       <div className={cn("flex flex-wrap items-center gap-3", isCollapsed && "flex-col")}> 
         {SIDEBAR_THEMES.map((theme) => {
-          const isActive = currentTheme.name === theme.name;
+          const isActive = appliedTheme.name === theme.name;
           return (
             <button
               key={theme.name}

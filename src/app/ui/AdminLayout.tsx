@@ -7,19 +7,23 @@ import { SidebarProvider, useSidebarContext } from "@/app/components/admin/sideb
 import { useNavigation } from "@/app/components/NavigationProvider";
 import { Loader2 } from "lucide-react";
 import { useAppSelector } from "@/store/hooks";
+import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
+import { useHydrated } from "@/hooks/use-hydrated";
 import "@/app/css/satoshi.css";
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     useSidebarContext();
     const { isLoading } = useNavigation();
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
+    const hydrated = useHydrated();
+    const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
 
     return (
         <div
             className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-lg font-medium"
             style={{
                 fontFamily: "Satoshi, sans-serif",
-                backgroundImage: `radial-gradient(circle at 10% 0%, ${sidebarTheme.color}24 0%, transparent 40%)`,
+                backgroundImage: `radial-gradient(circle at 10% 0%, ${appliedTheme.color}24 0%, transparent 40%)`,
             }}
         >
             <Sidebar />
@@ -30,7 +34,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 <main
                     className="relative flex-1 overflow-auto p-4 md:p-6 lg:p-8"
                     style={{
-                        backgroundImage: `linear-gradient(180deg, ${sidebarTheme.color}12 0%, transparent 220px)`,
+                        backgroundImage: `linear-gradient(180deg, ${appliedTheme.color}12 0%, transparent 220px)`,
                     }}
                 >
                     {isLoading && (

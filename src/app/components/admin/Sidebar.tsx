@@ -12,6 +12,8 @@ import { useSidebarContext } from "./sidebar-context";
 import Image from "next/image";
 import { useAppSelector } from "@/store/hooks";
 import { ThemePicker } from "../ui/ThemePicker";
+import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 type AdminSubItem = { title: string; url: string };
 
@@ -21,6 +23,8 @@ export function Sidebar() {
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const user = useAppSelector((state) => state.auth.user);
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
+    const hydrated = useHydrated();
+    const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
     const isCollapsedDesktop = !isMobile && !isOpen;
     const activeParentTitle = NAV_DATA.flatMap((section) => section.items).find((item) =>
         item.items.some((subItem: AdminSubItem) => subItem.url === pathname)
@@ -54,8 +58,8 @@ export function Sidebar() {
                         : (isOpen ? "w-72.5" : "w-22"),
                 )}
                 style={{
-                    borderRightColor: `${sidebarTheme.color}30`,
-                    backgroundImage: `linear-gradient(180deg, ${sidebarTheme.color}08 0%, transparent 28%)`,
+                    borderRightColor: `${appliedTheme.color}30`,
+                    backgroundImage: `linear-gradient(180deg, ${appliedTheme.color}08 0%, transparent 28%)`,
                 }}
                 aria-label="Main navigation"
                 aria-hidden={isMobile && !isOpen}
@@ -137,7 +141,7 @@ export function Sidebar() {
                                                         as="link"
                                                         href={item.url || item.items?.[0]?.url || "#"}
                                                         isActive={pathname === (item.url || item.items?.[0]?.url)}
-                                                        accentColor={sidebarTheme.color}
+                                                        accentColor={appliedTheme.color}
                                                         className="justify-center px-0"
                                                     >
                                                         <item.icon className="size-5 shrink-0" aria-hidden="true" />
@@ -146,7 +150,7 @@ export function Sidebar() {
                                                     <div>
                                                         <MenuItem
                                                             onClick={() => toggleExpanded(item.title)}
-                                                            accentColor={sidebarTheme.color}
+                                                            accentColor={appliedTheme.color}
                                                             className="w-full cursor-pointer"
                                                         >
                                                             <item.icon
@@ -177,7 +181,7 @@ export function Sidebar() {
                                                                             as="link"
                                                                             href={subItem.url}
                                                                             isActive={pathname === subItem.url}
-                                                                            accentColor={sidebarTheme.color}
+                                                                            accentColor={appliedTheme.color}
                                                                         >
                                                                             <span>{subItem.title}</span>
                                                                         </MenuItem>
@@ -199,7 +203,7 @@ export function Sidebar() {
                                                                 as="link"
                                                                 href={href}
                                                                 isActive={pathname === href}
-                                                                accentColor={sidebarTheme.color}
+                                                                accentColor={appliedTheme.color}
                                                                 className={cn(isCollapsedDesktop && "justify-center px-0")}
                                                             >
                                                                 <item.icon
