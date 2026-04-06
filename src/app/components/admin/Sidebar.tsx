@@ -4,20 +4,27 @@
 import { cn } from "@/lib/utils";
 import { LoadingLink } from "../LoadingLink";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NAV_DATA } from "./data";
 import { ArrowLeft, ChevronUp, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import Image from "next/image";
 import { useAppSelector } from "@/store/hooks";
+import { ThemePicker } from "../ui/ThemePicker";
+
+type AdminSubItem = { title: string; url: string };
 
 export function Sidebar() {
     const pathname = usePathname();
     const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const user = useAppSelector((state) => state.auth.user);
+    const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
     const isCollapsedDesktop = !isMobile && !isOpen;
+    const activeParentTitle = NAV_DATA.flatMap((section) => section.items).find((item) =>
+        item.items.some((subItem: AdminSubItem) => subItem.url === pathname)
+    )?.title;
 
     // Admin display name
     const userName = user ? `${user.nom} ${user.prenom || ''}`.trim() : "Admin User";
@@ -26,22 +33,6 @@ export function Sidebar() {
     const toggleExpanded = (title: string) => {
         setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
     };
-
-    useEffect(() => {
-        // Keep collapsible open, when it's subpage is active
-        NAV_DATA.some((section) => {
-            return section.items.some((item) => {
-                return item.items.some((subItem: any) => {
-                    if (subItem.url === pathname) {
-                        if (!expandedItems.includes(item.title)) {
-                            toggleExpanded(item.title);
-                        }
-                        return true;
-                    }
-                });
-            });
-        });
-    }, [pathname]);
 
     return (
         <>
@@ -62,6 +53,10 @@ export function Sidebar() {
                         ? (isOpen ? "w-72.5" : "w-0 min-w-0 pr-0 pl-0 border-none")
                         : (isOpen ? "w-72.5" : "w-22"),
                 )}
+                style={{
+                    borderRightColor: `${sidebarTheme.color}30`,
+                    backgroundImage: `linear-gradient(180deg, ${sidebarTheme.color}08 0%, transparent 28%)`,
+                }}
                 aria-label="Main navigation"
                 aria-hidden={isMobile && !isOpen}
             >
@@ -142,6 +137,7 @@ export function Sidebar() {
                                                         as="link"
                                                         href={item.url || item.items?.[0]?.url || "#"}
                                                         isActive={pathname === (item.url || item.items?.[0]?.url)}
+                                                        accentColor={sidebarTheme.color}
                                                         className="justify-center px-0"
                                                     >
                                                         <item.icon className="size-5 shrink-0" aria-hidden="true" />
@@ -150,6 +146,7 @@ export function Sidebar() {
                                                     <div>
                                                         <MenuItem
                                                             onClick={() => toggleExpanded(item.title)}
+                                                            accentColor={sidebarTheme.color}
                                                             className="w-full cursor-pointer"
                                                         >
                                                             <item.icon
@@ -169,17 +166,18 @@ export function Sidebar() {
                                                             />
                                                         </MenuItem>
 
-                                                        {expandedItems.includes(item.title) && (
+                                                        {(expandedItems.includes(item.title) || activeParentTitle === item.title) && (
                                                             <ul
                                                                 className="ml-9 mr-0 space-y-1 pt-1"
                                                                 role="menu"
                                                             >
-                                                                {item.items.map((subItem: any) => (
+                                                                {item.items.map((subItem: AdminSubItem) => (
                                                                     <li key={subItem.title} role="none">
                                                                         <MenuItem
                                                                             as="link"
                                                                             href={subItem.url}
                                                                             isActive={pathname === subItem.url}
+                                                                            accentColor={sidebarTheme.color}
                                                                         >
                                                                             <span>{subItem.title}</span>
                                                                         </MenuItem>
@@ -201,6 +199,7 @@ export function Sidebar() {
                                                                 as="link"
                                                                 href={href}
                                                                 isActive={pathname === href}
+                                                                accentColor={sidebarTheme.color}
                                                                 className={cn(isCollapsedDesktop && "justify-center px-0")}
                                                             >
                                                                 <item.icon
@@ -218,6 +217,11 @@ export function Sidebar() {
                                 </nav>
                             </div>
                         ))}
+                    </div>
+
+                    {/* Theme Picker */}
+                    <div className={cn("mt-6 border-t border-gray-200 pt-6 dark:border-gray-800", isCollapsedDesktop ? "px-1" : "px-3")}>
+                        <ThemePicker isCollapsed={isCollapsedDesktop} />
                     </div>
                 </div>
             </aside>

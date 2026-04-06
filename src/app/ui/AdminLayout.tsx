@@ -6,20 +6,33 @@ import { Header } from "@/app/components/admin/Header";
 import { SidebarProvider, useSidebarContext } from "@/app/components/admin/sidebar-context";
 import { useNavigation } from "@/app/components/NavigationProvider";
 import { Loader2 } from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
 import "@/app/css/satoshi.css";
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     useSidebarContext();
     const { isLoading } = useNavigation();
+    const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
 
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-lg font-medium" style={{ fontFamily: "Satoshi, sans-serif" }}>
+        <div
+            className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-lg font-medium"
+            style={{
+                fontFamily: "Satoshi, sans-serif",
+                backgroundImage: `radial-gradient(circle at 10% 0%, ${sidebarTheme.color}24 0%, transparent 40%)`,
+            }}
+        >
             <Sidebar />
 
             <div className="flex-1 flex flex-col min-w-0 transition-all duration-200">
                 <Header />
 
-                <main className="relative flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+                <main
+                    className="relative flex-1 overflow-auto p-4 md:p-6 lg:p-8"
+                    style={{
+                        backgroundImage: `linear-gradient(180deg, ${sidebarTheme.color}12 0%, transparent 220px)`,
+                    }}
+                >
                     {isLoading && (
                         <div className="absolute inset-0 z-20 rounded-2xl bg-gray-50/90 dark:bg-gray-900/85 backdrop-blur-[1px]">
                             <div className="h-full w-full p-4 md:p-6 lg:p-8 animate-pulse space-y-6">
