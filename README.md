@@ -57,18 +57,30 @@ The project follows a layered and modular organization:
 High-level structure:
 
 ```text
-src/
-|- app/            # App Router pages, route groups, API routes
-|- components/     # Shared UI components
-|- services/       # Business services by domain
-|- entities/       # Domain entities/models
-|- lib/            # Technical integrations (DB, Stripe, mail, utils)
-|- hooks/          # Custom React hooks
-|- store/          # State management
-\- types/          # Shared TypeScript types
-prisma/
-|- schema.prisma
-\- migrations/
+deepskyn/
+|- src/
+|  |- app/                 # App Router pages, feature routes, and API endpoints
+|  |- components/          # Shared UI components
+|  |- services/            # Domain services (auth, quiz, subscription, skin analysis, etc.)
+|  |- entities/            # Domain entities/models
+|  |- lib/                 # Integrations and shared utilities (Prisma, Stripe, mail, sockets)
+|  |- hooks/               # Custom React hooks
+|  |- store/               # Client state management
+|  |- types/               # Shared TypeScript types
+|  |- pages/api/           # Legacy API routes (if needed)
+|  \- fonts/              # Local fonts
+|- prisma/
+|  |- schema.prisma        # Prisma data model
+|  |- migrations/          # Database migration history
+|  \- create-db.ts         # DB bootstrap scripts
+|- public/
+|  |- logo.png             # Project logo and static assets
+|  \- uploads/             # Uploaded/generated assets
+|- docs/                   # Project documentation
+|- tmp/                    # Maintenance and database utility scripts
+|- workflow.json           # n8n workflow export
+|- package.json            # Dependencies and scripts
+\- README.md
 ```
 
 ## Contributors
