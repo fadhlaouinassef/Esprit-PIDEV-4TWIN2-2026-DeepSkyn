@@ -10,18 +10,22 @@ import { UserInfo } from "./UserInfo";
 import { cn } from "@/lib/utils";
 import LanguageSwitcher from "../LanguageSwitcher";
 import { useAppSelector } from "@/store/hooks";
+import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 export function Header() {
     const { toggleSidebar, isMobile } = useSidebarContext();
     const [darkMode, setDarkMode] = useState(false);
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
+    const hydrated = useHydrated();
+    const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
 
     return (
         <header
             className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-100 bg-white px-8 py-5 dark:border-gray-800 dark:bg-gray-dark md:px-10"
             style={{
-                borderBottomColor: `${sidebarTheme.color}33`,
-                boxShadow: `inset 0 -1px 0 ${sidebarTheme.color}1F`,
+                borderBottomColor: `${appliedTheme.color}33`,
+                boxShadow: `inset 0 -1px 0 ${appliedTheme.color}1F`,
             }}
         >
             {/* Left side: Dashboard Title */}
@@ -69,7 +73,7 @@ export function Header() {
                         "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
                         darkMode ? "bg-[#156d95] shadow-sm text-white" : "text-gray-400"
                     )}
-                        style={darkMode ? { backgroundColor: sidebarTheme.color } : undefined}
+                        style={darkMode ? { backgroundColor: appliedTheme.color } : undefined}
                     >
                         <Moon className="w-5 h-5" />
                     </div>
