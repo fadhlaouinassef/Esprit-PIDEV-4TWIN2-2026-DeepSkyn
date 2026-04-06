@@ -17,9 +17,9 @@ interface HeaderProps {
 }
 
 const ACCESSIBILITY_MODES = [
-    "Contraste eleve",
-    "Texte agrandi",
-    "Animations reduites",
+    "High Contrast",
+    "Large Text",
+    "Reduced Motion",
 ];
 
 export function Header({ userName, userPhoto }: HeaderProps) {
@@ -59,8 +59,8 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                         <SlidersHorizontal className="h-4 w-4 text-[#156d95] transition-transform group-hover:rotate-12" />
                         <span className="hidden lg:inline-block">
                             {selectedAccessibilityModes.length > 0
-                                ? `${selectedAccessibilityModes.length} mode(s)`
-                                : "Accessibilite"}
+                                ? `${selectedAccessibilityModes.length} mode${selectedAccessibilityModes.length > 1 ? "s" : ""}`
+                                : "Accessibility"}
                         </span>
                         <span className="lg:hidden">Access</span>
                     </button>
