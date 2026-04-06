@@ -6,10 +6,10 @@ export interface SidebarThemeOption {
 }
 
 export const SIDEBAR_THEMES: SidebarThemeOption[] = [
-  { name: 'Vivid Blue', color: '#007AFF' },
-  { name: 'Emerald Green', color: '#34C759' },
-  { name: 'Soft Pink', color: '#FF2D55' },
-  { name: 'Electric Purple', color: '#AF52DE' },
+  { name: 'Accessible Blue', color: '#005FCC' },
+  { name: 'Accessible Green', color: '#1B5E20' },
+  { name: 'Accessible Rose', color: '#A61B47' },
+  { name: 'Accessible Purple', color: '#5B2C83' },
 ];
 
 interface UiThemeState {
