@@ -16,7 +16,9 @@ import {
     Activity,
     Droplets,
     Sparkles,
-    UserCircle
+    UserCircle,
+    Volume2,
+    VolumeX
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -40,6 +42,8 @@ export default function ProfilePage() {
     const { data: session, status } = useSession();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
 
     const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -93,6 +97,83 @@ export default function ProfilePage() {
         }
     }, [status]);
 
+    const stopSpeaking = () => {
+        if (typeof window !== 'undefined') {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakContent = (text: string, id: string) => {
+        if (typeof window === 'undefined') return;
+
+        if (speakingIndex === id) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Dynamic language detection
+        if (/[\u0600-\u06FF]/.test(text)) {
+            utterance.lang = 'ar-SA';
+        } else if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = 'fr-FR';
+        } else {
+            utterance.lang = 'en-US';
+        }
+
+        utterance.rate = 1.1;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+            setSpeakingIndex(null);
+        };
+
+        utterance.onerror = () => {
+            setSpeakingIndex(null);
+        };
+
+        setSpeakingIndex(id);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Auto-read profile summary
+    useEffect(() => {
+        if (autoSpeech && profile) {
+            let fullText = `User Profile for ${profile.nom}. `;
+            fullText += `Member since ${new Date(profile.created_at).toLocaleDateString()}. `;
+            fullText += `Skin type is ${profile.skin_type || 'not yet analyzed'}. `;
+            
+            if (profile.age) fullText += `Age: ${profile.age} years old. `;
+            if (profile.email) fullText += `Email: ${profile.email}. `;
+
+            if (profile.skinAnalyses && profile.skinAnalyses.length > 0) {
+                const latest = profile.skinAnalyses[0];
+                fullText += `Latest skin analysis score is ${latest.score} out of 100 per ${new Date(latest.date_creation).toLocaleDateString()}. `;
+            }
+
+            if (profile.badges && profile.badges.length > 0) {
+                fullText += `Latest achievement: ${profile.badges[0].titre}. `;
+            }
+
+            const id = `profile-full-${profile.id}-${profile.nom}-${profile.skinAnalyses?.length || 0}-${profile.badges?.length || 0}`;
+            if (speakingIndex !== id) {
+                speakContent(fullText, id);
+            }
+        }
+    }, [profile, autoSpeech]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
+
     if (isLoading) {
         return (
             <UserLayout>
@@ -138,12 +219,29 @@ export default function ProfilePage() {
     return (
         <UserLayout userName={profile?.nom} userPhoto={profile?.image}>
             <div className="mx-auto w-full max-w-[1200px] pb-20 space-y-6">
-                {/* Breadcrumb */}
-                <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
-                    <span>User</span>
-                    <ChevronRight size={14} />
-                    <span className="text-foreground font-medium">My Profile</span>
-                </nav>
+                {/* Breadcrumb & Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
+                    <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
+                        <span>User</span>
+                        <ChevronRight size={14} />
+                        <span className="text-foreground font-medium">My Profile</span>
+                    </nav>
+                    <button
+                        onClick={() => {
+                            if (autoSpeech) stopSpeaking();
+                            setAutoSpeech(!autoSpeech);
+                        }}
+                        className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
+                            autoSpeech 
+                            ? "bg-[#156d95] text-white shadow-[#156d95]/20" 
+                            : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
+                        }`}
+                        title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
+                    >
+                        {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Audio Profile</span>
+                    </button>
+                </div>
 
                 <motion.div
 
