@@ -5,15 +5,21 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { LoadingLink } from "../LoadingLink"
 import LanguageSwitcher from "../LanguageSwitcher"
+import { OPEN_DEEPSKYN_EXPERIENCE_MAP_EVENT } from "./DeepSkynExperienceMap"
 
-const navigationLinks = [
+type NavLink = {
+  name: string;
+  href: string;
+};
+
+const navigationLinks: NavLink[] = [
   {
     name: "Products",
     href: "#products",
   },
   {
-    name: "Routine",
-    href: "#routine",
+    name: "Routines",
+    href: "#healthy-steps",
   },
   {
     name: "Testimonials",
@@ -24,15 +30,21 @@ const navigationLinks = [
     href: "#faq",
   },
   {
-    name: "Skin Journey",
+    name: "Journey",
     href: "#healthy-steps",
   },
-] as any[]
+];
 
 // @component: PortfolioNavbar
 export const PortfolioNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+
+  const openExperienceMap = () => {
+    window.dispatchEvent(new Event(OPEN_DEEPSKYN_EXPERIENCE_MAP_EVENT))
+    closeMobileMenu()
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
@@ -63,7 +75,7 @@ export const PortfolioNavbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <button
               onClick={() => handleLinkClick("#home")}
               className="text-2xl font-bold text-foreground hover:text-primary transition-colors duration-200"
@@ -103,9 +115,19 @@ export const PortfolioNavbar = () => {
 
           <div className="hidden md:flex items-center space-x-6">
             <LanguageSwitcher />
+            <button
+              onClick={openExperienceMap}
+              className="rounded-full border border-[#156d95]/35 px-4 py-2 text-sm font-semibold text-[#156d95] transition hover:bg-[#e6f4fb]"
+              style={{
+                fontFamily: "Satoshi",
+              }}
+              aria-label="Ouvrir DeepSkyn Experience Map"
+            >
+              DeepSkyn Map
+            </button>
             <LoadingLink
               href="/signin"
-              className="bg-[#156d95] text-white px-[18px] rounded-full text-base font-semibold hover:bg-[#156d95]/90 transition-all duration-200 hover:rounded-2xl shadow-sm hover:shadow-md whitespace-nowrap leading-4 py-[15px] inline-block"
+              className="bg-[#156d95] text-white px-4.5 rounded-full text-base font-semibold hover:bg-[#156d95]/90 transition-all duration-200 hover:rounded-2xl shadow-sm hover:shadow-md whitespace-nowrap leading-4 py-3.75 inline-block"
               style={{
                 fontFamily: "Plus Jakarta Sans, sans-serif",
               }}
@@ -169,10 +191,21 @@ export const PortfolioNavbar = () => {
                   <span>{link.name}</span>
                 </button>
               ))}
+              <button
+                onClick={openExperienceMap}
+                className="block w-full rounded-xl border border-[#156d95]/30 px-4 py-3 text-left text-base font-medium text-[#156d95] transition-colors hover:bg-[#e6f4fb]"
+                style={{
+                  fontFamily: "Satoshi, sans-serif",
+                  fontWeight: "500",
+                }}
+                aria-label="Ouvrir DeepSkyn Experience Map"
+              >
+                DeepSkyn Map
+              </button>
               <div className="pt-4 border-t border-border">
                 <LoadingLink
                   href="/signin"
-                  className="w-full bg-[#156d95] text-white px-[18px] py-[15px] rounded-full text-base font-semibold hover:bg-[#156d95]/90 transition-all duration-200 block text-center"
+                  className="w-full bg-[#156d95] text-white px-4.5 py-3.75 rounded-full text-base font-semibold hover:bg-[#156d95]/90 transition-all duration-200 block text-center"
                   style={{
                     fontFamily: "Satoshi, sans-serif",
                   }}

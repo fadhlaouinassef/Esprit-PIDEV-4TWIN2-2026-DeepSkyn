@@ -11,6 +11,7 @@ import { PricingSection } from "@/app/components/home_page/PricingSection"
 import { FAQSection } from "@/app/components/home_page/FAQSection"
 import { Footer } from "@/app/components/home_page/Footer"
 import HealthyStepsSection from "@/app/components/home_page/HealthyStepsSection"
+import DeepSkynExperienceMap from "@/app/components/home_page/DeepSkynExperienceMap"
 
 
 
@@ -30,13 +31,14 @@ const staggerContainer = {
 
 export default function HomePage() {
   return (
-    
     <motion.div
       initial="initial"
       animate="animate"
       variants={staggerContainer}
     >
-      <motion.div variants={fadeInUp}>
+      <DeepSkynExperienceMap key="deepskyn-onboarding-main" />
+
+      <motion.div variants={fadeInUp} key="navbar-container">
         <PortfolioNavbar />
       </motion.div>
             
