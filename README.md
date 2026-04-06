@@ -1,154 +1,139 @@
-<h1 align="center">DeepSkyn</h1>
-
 <p align="center">
-	Plateforme skincare intelligente pour l'analyse de peau, les questionnaires utilisateurs et l'automatisation de workflows.
+	<img src="public/logo.png" alt="DeepSkyn Logo" width="140" />
 </p>
 
-<p align="center">
-	<img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" />
-	<img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
-	<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-	<img alt="n8n" src="https://img.shields.io/badge/n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white" />
-	<img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-</p>
+# DeepSkyn - Intelligent Skincare Platform
 
-<p align="center">
-	<strong>Next.js</strong> • <strong>Tailwind CSS</strong> • <strong>PostgreSQL</strong> • <strong>Prisma</strong> • <strong>n8n</strong> • <strong>TypeScript</strong>
-</p>
+## Overview
+This project was developed as part of the PIDEV engineering program at Esprit School of Engineering (Academic Year 2025-2026).
 
----
+DeepSkyn is a full-stack web application dedicated to skincare analysis. It combines user journeys (authentication, surveys, routines), AI-assisted skin data workflows, and premium subscription capabilities in one integrated platform.
 
-## Table des matieres
+Repository public description (GitHub):
+Developed at Esprit School of Engineering - Tunisia | Academic Year 2025-2026 | Main technologies: Next.js, TypeScript, Prisma, PostgreSQL, Stripe, n8n.
 
-- [Description du projet](#description-du-projet)
-- [Fonctionnalites](#fonctionnalites)
-- [Stack technique](#stack-technique)
-- [Demarrage rapide](#demarrage-rapide)
-- [Workflow n8n](#workflow-n8n)
-- [Commandes base de donnees](#commandes-base-de-donnees)
-- [Structure du projet](#structure-du-projet)
+Topics (required project labels):
+- esprit-school-of-engineering
+- academic-project
+- esprit-pidev
+- 2025-2026
+- nextjs
 
-## Description du projet
+## Features
+- Complete authentication flow: sign up, sign in, forgot/reset password, verification steps
+- User skincare questionnaires and survey answer history
+- Skin analysis and image-related workflows
+- Admin dashboard for users, subscriptions, settings, and operational monitoring
+- Premium subscription management with Stripe sync logic
+- Workflow automation support with n8n (importable via workflow.json)
+- Modular service layer for maintainable domain logic
 
-DeepSkyN est un projet skincare construit avec Next.js. L'objectif est de proposer une experience complete de suivi et d'analyse de la peau avec authentification utilisateur, gestion des donnees, quiz/questionnaires, abonnement et integration d'automatisations.
+## Tech Stack
+### Frontend
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
 
-## Fonctionnalites
+### Backend
+- Next.js API Routes
+- Prisma ORM
+- PostgreSQL
+- Stripe API
+- n8n integrations
 
-- Authentification et parcours utilisateur (signup, signin, reset password)
-- Espace admin (analytics, users, subscriptions, products, settings)
-- Quiz/questionnaires utilisateur et suivi des analyses
-- API Next.js pour auth, quiz, user, admin et Stripe
-- Persistance PostgreSQL avec Prisma ORM
-- Workflow n8n importable depuis workflow.json
+## Architecture
+The project follows a layered and modular organization:
 
-### Stack technique
+- Presentation layer:
+	Next.js pages, layouts, and reusable UI components under src/app and src/components
+- Business layer:
+	Domain services under src/services (auth, quiz, subscription, skin analysis, notifications)
+- Data layer:
+	Prisma schema and migrations under prisma, with entity definitions under src/entities
+- Integration layer:
+	External integrations in src/lib (Stripe, Cloudinary, email, sockets, automation helpers)
 
-- Frontend: Next.js + Tailwind CSS + TypeScript
-- Backend: API Routes Next.js + Services metier
-- Base de donnees: PostgreSQL + Prisma
-- Automatisation: n8n (workflow importable via workflow.json)
+High-level structure:
 
-## Demarrage rapide
+```text
+deepskyn/
+|- src/
+|  |- app/                 # App Router pages, feature routes, and API endpoints
+|  |- components/          # Shared UI components
+|  |- services/            # Domain services (auth, quiz, subscription, skin analysis, etc.)
+|  |- entities/            # Domain entities/models
+|  |- lib/                 # Integrations and shared utilities (Prisma, Stripe, mail, sockets)
+|  |- hooks/               # Custom React hooks
+|  |- store/               # Client state management
+|  |- types/               # Shared TypeScript types
+|  |- pages/api/           # Legacy API routes (if needed)
+|  \- fonts/              # Local fonts
+|- prisma/
+|  |- schema.prisma        # Prisma data model
+|  |- migrations/          # Database migration history
+|  \- create-db.ts         # DB bootstrap scripts
+|- public/
+|  |- logo.png             # Project logo and static assets
+|  \- uploads/             # Uploaded/generated assets
+|- docs/                   # Project documentation
+|- tmp/                    # Maintenance and database utility scripts
+|- workflow.json           # n8n workflow export
+|- package.json            # Dependencies and scripts
+\- README.md
+```
 
-### 1) Lancer PostgreSQL
+## Contributors
+- Nassef Fadhlaoui
+- DeepSkyn project team
 
-Ouvrir PowerShell en mode administrateur puis executer :
+## Academic Context
+Developed at Esprit School of Engineering - Tunisia
+PIDEV | Academic Year 2025-2026
+
+Institution naming requirement respected: the keyword Esprit School of Engineering is intentionally used.
+
+## Getting Started
+1. Clone the repository and move to the project folder.
+
+2. Install dependencies:
+
+```bash
+npm install --legacy-peer-deps
+```
+
+3. Configure environment variables in .env (database, Stripe, email, and other required keys).
+
+4. Start PostgreSQL service (Windows example):
 
 ```powershell
 net start postgresql-x64-18
 ```
 
-### 2) Installer les dependances et preparer la base
+5. Prepare database and Prisma artifacts:
 
 ```bash
-npm install --legacy-peer-deps
 npm run db:setup
+npx prisma generate
 ```
 
-### 3) Lancer l'application
+6. Start development server:
 
 ```bash
 npm run dev
 ```
 
-Application disponible sur : http://localhost:3000
+7. Open the application at http://localhost:3000
 
----
-
-## Workflow n8n
-
-### Etapes
-
-1. Installation globale de n8n
+Useful database commands:
 
 ```bash
-npm install n8n -g
+npm run db:create
+npm run db:migrate
+npm run db:studio
 ```
 
-2. Lancement de n8n
-
-```bash
-n8n
-```
-
-3. Import du workflow depuis le fichier workflow.json
-
-Dans l'interface n8n : Import from file puis selectionner workflow.json.
-
-4. Executer le workflow
-
-Verifier que tous les noeuds sont correctement configures puis lancer l'execution.
-
-5. Tester dans les pages user/questionnaires
-
-Verifier le comportement de bout en bout depuis les pages user/questionnaires et valider que le workflow est bien declenche.
-
----
-
-## Commandes base de donnees
-
-```bash
-npm run db:create   # Creer la base
-npm run db:migrate  # Executer les migrations
-npm run db:setup    # Creer + migrer
-npm run db:studio   # Ouvrir Prisma Studio
-npx prisma generate # Regenerer le client Prisma
-```
-
-## Structure du projet
-
-```text
-deepskyn/
-|- src/
-|  |- app/
-|  |  |- admin/         # Pages et sections admin
-|  |  |- api/           # Endpoints API (auth, quiz, user, stripe, admin)
-|  |  |- home/
-|  |  |- signin/
-|  |  |- signup/
-|  |  |- forgot-password/
-|  |  |- reset-password/
-|  |  |- user/
-|  |  |- components/    # Composants app router
-|  |  |- css/           # Styles globaux et pages
-|  |  \- ui/            # UI locale app
-|  |- components/       # Composants partages
-|  |- entities/         # Modeles/entites metier
-|  |- services/         # Services metier
-|  |- lib/              # Prisma, Stripe, utils, helpers
-|  |- store/            # Redux store + slices
-|  |- hooks/            # Hooks custom
-|  |- types/            # Definitions TypeScript
-|  \- fonts/            # Polices locales
-|- prisma/
-|  |- schema.prisma
-|  \- migrations/
-|- public/              # Assets statiques
-|- workflow.json        # Workflow n8n
-\- README.md
-```
-
-## Notes
-
-- Le fichier workflow.json est prevu pour etre importe dans n8n.
-- Pour les tests fonctionnels du workflow, utiliser les parcours dans les pages user/questionnaires.
+## Acknowledgments
+- Esprit School of Engineering
+- PIDEV faculty, supervisors, and academic mentors
+- Open-source communities behind Next.js, Prisma, PostgreSQL, Stripe, and n8n
