@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Menu, Moon, Sun } from "lucide-react";
+import { Search, Menu, Moon, Sun, SlidersHorizontal, Check } from "lucide-react";
 import { useSidebarContext } from "./sidebar-context";
 import { useState } from "react";
 import { UserInfo } from "./UserInfo";
@@ -9,15 +9,24 @@ import LanguageSwitcher from "../LanguageSwitcher";
 import { useAppSelector } from "@/store/hooks";
 import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface HeaderProps {
     userName?: string;
     userPhoto?: string;
 }
 
+const ACCESSIBILITY_MODES = [
+    "Contraste eleve",
+    "Texte agrandi",
+    "Animations reduites",
+];
+
 export function Header({ userName, userPhoto }: HeaderProps) {
     const { toggleSidebar } = useSidebarContext();
     const [darkMode, setDarkMode] = useState(false);
+    const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+    const [selectedAccessibilityModes, setSelectedAccessibilityModes] = useState<string[]>([]);
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
     const hydrated = useHydrated();
     const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
@@ -39,10 +48,65 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                     <span className="sr-only">Toggle Sidebar</span>
                 </button>
 
-                <div className="max-sm:hidden">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        Welcome!
-                    </h1>
+                <div className="relative max-sm:hidden">
+                    <button
+                        onClick={() => setIsAccessibilityOpen((prev) => !prev)}
+                        className={cn(
+                            "group flex items-center gap-2 rounded-full border border-gray-100 bg-white/80 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm transition-all hover:border-gray-200 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/80 dark:text-gray-200",
+                            isAccessibilityOpen && "border-[#156d95] ring-1 ring-[#156d95]"
+                        )}
+                    >
+                        <SlidersHorizontal className="h-4 w-4 text-[#156d95] transition-transform group-hover:rotate-12" />
+                        <span className="hidden lg:inline-block">
+                            {selectedAccessibilityModes.length > 0
+                                ? `${selectedAccessibilityModes.length} mode(s)`
+                                : "Accessibilite"}
+                        </span>
+                        <span className="lg:hidden">Access</span>
+                    </button>
+
+                    <AnimatePresence>
+                        {isAccessibilityOpen && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-40 cursor-default"
+                                    onClick={() => setIsAccessibilityOpen(false)}
+                                />
+
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    transition={{ duration: 0.2, ease: "easeOut" }}
+                                    className="absolute left-0 mt-3 z-50 w-56 origin-top-left rounded-2xl border border-gray-100 bg-white p-2 shadow-2xl backdrop-blur-xl dark:border-gray-800 dark:bg-gray-950"
+                                >
+                                    <div className="space-y-1">
+                                        {ACCESSIBILITY_MODES.map((mode) => (
+                                            <button
+                                                key={mode}
+                                                onClick={() => {
+                                                    setSelectedAccessibilityModes((prev) =>
+                                                        prev.includes(mode)
+                                                            ? prev.filter((item) => item !== mode)
+                                                            : [...prev, mode]
+                                                    );
+                                                }}
+                                                className={cn(
+                                                    "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all",
+                                                    selectedAccessibilityModes.includes(mode)
+                                                        ? "bg-[#156d95]/10 text-[#156d95] font-semibold"
+                                                        : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-900"
+                                                )}
+                                            >
+                                                <span>{mode}</span>
+                                                {selectedAccessibilityModes.includes(mode) && <Check className="h-4 w-4" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
 
