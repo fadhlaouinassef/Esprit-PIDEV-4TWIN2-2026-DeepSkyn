@@ -196,8 +196,7 @@ export default function UserComplaintsPage() {
                     return c;
                 }));
 
-                // Potentially call API to mark as read here if implemented
-                // axios.put(`/api/user/complaints/${selectedComplaint.id}/read`);
+                axios.put(`/api/user/complaints/${selectedComplaint.id}/read`);
             }
         }
     }, [selectedComplaint?.id, selectedComplaint?.messages.length]);
