@@ -19,7 +19,8 @@ import {
     Image as ImageIcon,
     FileText,
     AlertTriangle,
-    Trash2
+    Trash2,
+    Bell
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ComplaintCategory, ChatMessage } from "@/lib/complaintsData";
@@ -77,6 +78,10 @@ export default function UserComplaintsPage() {
 
     useEffect(() => {
         fetchComplaints();
+        const interval = setInterval(() => {
+            fetchComplaints(true);
+        }, 3000);
+        return () => clearInterval(interval);
     }, []);
 
     // Scroll instantly to bottom on selection
@@ -93,13 +98,20 @@ export default function UserComplaintsPage() {
         }
     }, [selectedComplaint?.messages?.length]);
 
-    const fetchComplaints = async () => {
+    const fetchComplaints = async (silent = false) => {
         try {
             const res = await axios.get('/api/user/complaints');
             setComplaints(res.data);
-            setIsLoading(false);
+            if (!silent) setIsLoading(false);
+            
+            // Auto update selected complaint to reflect new messages
+            setSelectedComplaint(prev => {
+                if (!prev) return null;
+                const updated = res.data.find((c: DBComplaint) => c.id === prev.id);
+                return updated || prev;
+            });
         } catch (error) {
-            toast.error("Failed to fetch complaints");
+            if (!silent) toast.error("Failed to fetch complaints");
             setIsLoading(false);
         }
     };
@@ -320,12 +332,10 @@ export default function UserComplaintsPage() {
                                         <div className="flex justify-between items-center text-[11px] font-bold text-gray-400 lowercase italic">
                                             <span>{new Date(c.created_at).toLocaleDateString()}</span>
                                             <span className="flex items-center gap-3">
-                                                <span className="flex items-center gap-1">
-                                                    {c.messages.length} messages
-                                                </span>
                                                 {c.messages.filter(m => m.sender_role === 'ADMIN' && !m.is_read).length > 0 && (
-                                                    <span className="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black animate-pulse">
-                                                        {c.messages.filter(m => m.sender_role === 'ADMIN' && !m.is_read).length} nouveaux
+                                                    <span className="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center gap-1 shadow-md animate-pulse whitespace-nowrap">
+                                                        <Bell className="size-2.5 fill-current" />
+                                                        {c.messages.filter(m => m.sender_role === 'ADMIN' && !m.is_read).length} NEW MESSAGE
                                                     </span>
                                                 )}
                                                 <ChevronRight className="size-3" />
@@ -470,7 +480,7 @@ export default function UserComplaintsPage() {
                                                         <Trash2 className="size-5" />
                                                     </button>
                                                 )}
-                                                <button onClick={() => setSelectedComplaint(null)} className="lg:hidden p-3 bg-gray-100 rounded-full">
+                                                <button onClick={() => setSelectedComplaint(null)} className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 rounded-2xl transition-colors" title="Close discussion">
                                                     <X className="size-6" />
                                                 </button>
                                             </div>

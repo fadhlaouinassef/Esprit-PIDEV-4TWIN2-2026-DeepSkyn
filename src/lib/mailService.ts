@@ -44,3 +44,39 @@ export async function sendAdminComplaintNotification(complaintData: {
         console.error(`[MAIL_ERROR] Failed to send notification for claim #${complaintData.complaintId}`, error);
     }
 }
+
+export async function sendUserStatusUpdateNotification(complaintData: {
+    userName: string;
+    userEmail: string;
+    category: string;
+    status: string;
+    complaintId: number | string;
+}) {
+    const mailOptions = {
+        from: `"Deepskyn Support" <${process.env.EMAIL_USER}>`,
+        to: complaintData.userEmail, 
+        subject: `Update on your Support Claim #${complaintData.complaintId}`,
+        html: `
+            <div style="font-family: sans-serif; padding: 20px; color: #333; max-width: 600px; margin: auto; border: 1px solid #eaeaea; border-radius: 10px;">
+                <h2 style="color: #6366f1; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px;">Ticket Status Updated</h2>
+                <p>Hello <strong>${complaintData.userName}</strong>,</p>
+                <p>The status of your claim (<strong>${complaintData.category}</strong> - Ticket <strong>#${complaintData.complaintId}</strong>) has been updated by our support team.</p>
+                <div style="margin: 20px 0; padding: 15px; border-radius: 8px; background-color: #f8fafc; text-align: center;">
+                    <span style="font-size: 1.1em; font-weight: bold;">New Status: </span>
+                    <strong style="padding: 6px 12px; border-radius: 6px; letter-spacing: 1px; color: #fff; background-color: ${complaintData.status === 'ACCEPT' ? '#10b981' : complaintData.status === 'REJECT' ? '#f43f5e' : '#f59e0b'};">${complaintData.status}</strong>
+                </div>
+                <p style="margin-top: 30px; font-size: 0.9em; color: #666;">
+                    You can view the full discussion or reply by logging into your <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/user/complaints" style="color: #6366f1; text-decoration: underline;">Deepskyn Dashboard</a>.
+                </p>
+                <p style="margin-top: 40px; font-size: 0.85em; color: #999;">Thank you,<br><strong>Deepskyn Support Team</strong></p>
+            </div>
+        `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`[MAIL] Status update sent to user ${complaintData.userEmail} for claim #${complaintData.complaintId}`);
+    } catch (error) {
+        console.error(`[MAIL_ERROR] Failed to send status notification for claim #${complaintData.complaintId}`, error);
+    }
+}

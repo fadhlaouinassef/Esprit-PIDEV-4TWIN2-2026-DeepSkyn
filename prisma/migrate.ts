@@ -514,6 +514,11 @@ async function migrate() {
     await addColumnIfMissing('Complaint', '"category" "ComplaintCategory" DEFAULT \'OTHER\' NOT NULL');
     await addColumnIfMissing('Complaint', '"created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL');
 
+    // Complaint legacy cleanup: remove old columns from initial schema
+    // These can cause P2011 null constraint errors on complaint.create.
+    await prisma.$executeRawUnsafe('ALTER TABLE "Complaint" DROP COLUMN IF EXISTS "nom";');
+    await prisma.$executeRawUnsafe('ALTER TABLE "Complaint" DROP COLUMN IF EXISTS "image";');
+
     // Complaint rename: message -> content
     const contentExists = await columnExists('Complaint', 'content');
     const messageExists = await columnExists('Complaint', 'message');

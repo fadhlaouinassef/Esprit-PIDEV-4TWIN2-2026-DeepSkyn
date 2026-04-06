@@ -6,31 +6,78 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     MessageSquare,
     Search,
-    Filter,
     Send,
     Clock,
-    CheckCircle2,
-    XCircle,
     Paperclip,
     ChevronDown,
     User,
     Calendar,
     ArrowLeft,
-    MoreHorizontal
+    MoreHorizontal,
+    Trash2,
+    Bell,
+    X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Complaint, ComplaintStatus, ComplaintCategory, MOCK_COMPLAINTS, ChatMessage } from "@/lib/complaintsData";
 import { toast } from "sonner";
+import axios from "axios";
+
+type ComplaintCategory = 'Analysis' | 'Routine' | 'Product' | 'Badge' | 'Bug' | 'Payment' | 'Service' | 'Other';
+
+interface DBMessage {
+    id: number | string;
+    sender_role: 'USER' | 'ADMIN';
+    text: string;
+    is_read: boolean;
+    created_at: string;
+}
+
+interface DBComplaint {
+    id: number;
+    user_id: number;
+    user: {
+        id: number;
+        nom?: string | null;
+        prenom?: string | null;
+        email?: string | null;
+    };
+    category: string;
+    content: string;
+    status: 'PENDING' | 'ACCEPT' | 'REJECT';
+    created_at: string;
+    messages: DBMessage[];
+    evidence: { url: string }[];
+}
 
 export default function AdminComplaintsPage() {
-    const [complaints, setComplaints] = useState<Complaint[]>(MOCK_COMPLAINTS);
-    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [complaints, setComplaints] = useState<DBComplaint[]>([]);
+    const [selectedId, setSelectedId] = useState<number | null>(null);
     const [replyText, setReplyText] = useState("");
-    const [filterStatus, setFilterStatus] = useState<ComplaintStatus | 'all'>('all');
+    const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'ACCEPT' | 'REJECT'>('ALL');
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     const selectedComplaint = complaints.find(c => c.id === selectedId);
     const chatEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        fetchComplaints();
+        const interval = setInterval(() => {
+            fetchComplaints(true);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const fetchComplaints = async (silent = false) => {
+        try {
+            const res = await axios.get('/api/admin/complaints');
+            setComplaints(res.data);
+            if (!silent) setIsLoading(false);
+        } catch (error) {
+            if (!silent) toast.error("Failed to fetch complaints");
+            setIsLoading(false);
+        }
+    };
 
     // Scroll instantly to bottom on selection
     useEffect(() => {
@@ -44,79 +91,106 @@ export default function AdminComplaintsPage() {
         if (chatEndRef.current && selectedId) {
             chatEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-
-        // Mark as read when selected
-        if (selectedId) {
-            setComplaints(prev => prev.map(c => {
-                if (c.id === selectedId) {
-                    return {
-                        ...c,
-                        messages: c.messages.map(m =>
-                            m.sender === 'user' ? { ...m, isRead: true } : m
-                        )
-                    };
-                }
-                return c;
-            }));
-        }
     }, [selectedComplaint?.messages?.length]);
 
+    // Mark as read when selected
+    useEffect(() => {
+        if (selectedComplaint && selectedId) {
+            const hasUnread = selectedComplaint.messages.some(m => m.sender_role === 'USER' && !m.is_read);
+            if (hasUnread) {
+                // Optimistic update
+                setComplaints(prev => prev.map(c => {
+                    if (c.id === selectedId) {
+                        return {
+                            ...c,
+                            messages: c.messages.map(m =>
+                                m.sender_role === 'USER' ? { ...m, is_read: true } : m
+                            )
+                        };
+                    }
+                    return c;
+                }));
+
+                axios.put(`/api/admin/complaints/${selectedId}/read`).catch(() => {});
+            }
+        }
+    }, [selectedComplaint?.id, selectedComplaint?.messages?.length]);
+
     const filteredComplaints = complaints.filter(c => {
-        const matchesStatus = filterStatus === 'all' || c.status === filterStatus;
-        const matchesSearch = c.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        const matchesStatus = filterStatus === 'ALL' || c.status === filterStatus;
+        const userName = `${c.user?.nom || ''} ${c.user?.prenom || ''}`.trim() || c.user?.email || 'Unknown User';
+        const matchesSearch = userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             c.content.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesStatus && matchesSearch;
     });
 
-    const handleUpdateStatus = (id: string, newStatus: ComplaintStatus) => {
-        setComplaints(prev => prev.map(c =>
-            c.id === id ? { ...c, status: newStatus } : c
-        ));
-        toast.success(`Ticket status updated to ${newStatus}`);
-    };
-
-    const handleSendReply = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!replyText.trim() || !selectedId) return;
-
-        const newMessage: ChatMessage = {
-            id: `m${Date.now()}`,
-            sender: 'admin',
-            text: replyText,
-            timestamp: new Date().toISOString()
-        };
-
-        const isClosed = newMessage.text.includes("🚨 TICKET CLOSED");
-
-        setComplaints(prev => prev.map(c =>
-            c.id === selectedId
-                ? { 
-                    ...c, 
-                    messages: [...c.messages, newMessage],
-                    status: isClosed ? 'rejected' : c.status
-                  }
-                : c
-        ));
-        setReplyText("");
-    };
-
-    const getStatusStyles = (status: ComplaintStatus) => {
-        switch (status) {
-            case 'pending': return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
-            case 'accepted': return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-            case 'rejected': return "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400";
+    const handleUpdateStatus = async (id: number, newStatus: 'PENDING' | 'ACCEPT' | 'REJECT') => {
+        try {
+            const res = await axios.put(`/api/admin/complaints/${id}/status`, { status: newStatus });
+            setComplaints(prev => prev.map(c =>
+                c.id === id ? { ...c, status: res.data.status } : c
+            ));
+            toast.success(`Ticket status updated to ${newStatus}`);
+        } catch (error) {
+            toast.error("Failed to update status");
         }
     };
 
-    const categories: Record<ComplaintCategory, string> = {
-        'Analysis': '🔍',
-        'Routine': '✨',
-        'Product': '🧴',
-        'Badge': '🏆',
-        'Bug': '🐛',
-        'Payment': '💳',
-        'Service': '⚙️',
-        'Other': '📝'
+    const handleDeleteTicket = async (id: number) => {
+        if (!confirm("Are you sure you want to delete this ticket?")) return;
+        try {
+            await axios.delete(`/api/admin/complaints/${id}`);
+            setComplaints(prev => prev.filter(c => c.id !== id));
+            if (selectedId === id) setSelectedId(null);
+            toast.success("Ticket deleted successfully.");
+        } catch (error) {
+            toast.error("Failed to delete ticket");
+        }
+    };
+
+    const handleSendReply = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!replyText.trim() || !selectedId || !selectedComplaint) return;
+
+        try {
+            const res = await axios.post(`/api/admin/complaints/${selectedId}/messages`, { text: replyText });
+            const isClosed = replyText.includes("🚨 TICKET CLOSED");
+
+            const newMessage = res.data;
+
+            setComplaints(prev => prev.map(c =>
+                c.id === selectedId
+                    ? { 
+                        ...c, 
+                        messages: [...c.messages, newMessage],
+                        status: isClosed && c.status !== 'REJECT' ? 'REJECT' : c.status
+                      }
+                    : c
+            ));
+            setReplyText("");
+        } catch (error: any) {
+            toast.error(error.response?.data?.error || "Failed to send message");
+        }
+    };
+
+    const getStatusStyles = (status: string) => {
+        switch (status) {
+            case 'PENDING': return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+            case 'ACCEPT': return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+            case 'REJECT': return "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400";
+            default: return "";
+        }
+    };
+
+    const categories: Record<string, string> = {
+        'ANALYSIS': '🔍',
+        'ROUTINE': '✨',
+        'PRODUCT': '🧴',
+        'BADGE': '🏆',
+        'BUG': '🐛',
+        'PAYMENT': '💳',
+        'SERVICE': '⚙️',
+        'OTHER': '📝'
     };
 
     return (
@@ -143,7 +217,7 @@ export default function AdminComplaintsPage() {
                             />
                         </div>
                         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                            {['all', 'pending', 'accepted', 'rejected'].map((s) => (
+                            {['ALL', 'PENDING', 'ACCEPT', 'REJECT'].map((s) => (
                                 <button
                                     key={s}
                                     onClick={() => setFilterStatus(s as any)}
@@ -154,7 +228,7 @@ export default function AdminComplaintsPage() {
                                             : "bg-gray-100 dark:bg-gray-900 text-gray-500 hover:bg-gray-200"
                                     )}
                                 >
-                                    {s}
+                                    {s.toLowerCase()}
                                 </button>
                             ))}
                         </div>
@@ -164,95 +238,104 @@ export default function AdminComplaintsPage() {
                         className="flex-1 overflow-y-auto custom-scrollbar scrollbar-hide"
                         data-lenis-prevent
                     >
-                        {filteredComplaints.length === 0 ? (
+                        {isLoading ? (
+                            <div className="p-12 text-center">
+                                <span className="loading loading-spinner text-primary text-3xl"></span>
+                            </div>
+                        ) : filteredComplaints.length === 0 ? (
                             <div className="p-12 text-center text-gray-400">
                                 <MessageSquare className="size-12 mx-auto mb-4 opacity-20" />
                                 <p className="text-sm">No results found</p>
                             </div>
                         ) : (
-                            filteredComplaints.map((c) => (
-                                <div
-                                    key={c.id}
-                                    onClick={() => setSelectedId(c.id)}
-                                    className={cn(
-                                        "p-6 border-b border-gray-50 dark:border-gray-700/50 cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-900/50 relative group rounded-3xl mx-2 mb-2",
-                                        selectedId === c.id ? "bg-white dark:bg-gray-800 shadow-lg border-primary/20" : "bg-transparent"
-                                    )}
-                                >
-                                    {/* Top Row: Category and Status */}
-                                    <div className="flex justify-between items-center mb-4">
-                                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-gray-100 dark:bg-gray-900 text-[10px] font-bold text-gray-500">
-                                            <span className="text-sm">{categories[c.category]}</span>
-                                            <span className="uppercase tracking-widest">{c.category}</span>
+                            filteredComplaints.map((c) => {
+                                const userName = `${c.user?.nom || ''} ${c.user?.prenom || ''}`.trim() || c.user?.email || 'Unknown User';
+                                return (
+                                    <div
+                                        key={c.id}
+                                        onClick={() => setSelectedId(c.id)}
+                                        className={cn(
+                                            "p-6 border-b border-gray-50 dark:border-gray-700/50 cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-900/50 relative group rounded-3xl mx-2 mb-2",
+                                            selectedId === c.id ? "bg-white dark:bg-gray-800 shadow-lg border-primary/20" : "bg-transparent"
+                                        )}
+                                    >
+                                        {/* Top Row: Category and Status */}
+                                        <div className="flex justify-between items-center mb-4">
+                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-gray-100 dark:bg-gray-900 text-[10px] font-bold text-gray-500">
+                                                <span className="text-sm">{categories[c.category?.toUpperCase()] || '📝'}</span>
+                                                <span className="uppercase tracking-widest">{c.category}</span>
+                                            </div>
+                                            <div className={cn("px-3 py-1.5 rounded-3xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-sm border", 
+                                                c.status === 'PENDING' ? "bg-amber-50 text-amber-600 border-amber-100" :
+                                                c.status === 'ACCEPT' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                                "bg-rose-50 text-rose-600 border-rose-100"
+                                            )}>
+                                                <Clock className="size-3" />
+                                                {c.status.toLowerCase()}
+                                            </div>
                                         </div>
-                                        <div className={cn("px-3 py-1.5 rounded-3xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-sm border", 
-                                            c.status === 'pending' ? "bg-amber-50 text-amber-600 border-amber-100" :
-                                            c.status === 'accepted' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                                            "bg-rose-50 text-rose-600 border-rose-100"
-                                        )}>
-                                            <Clock className="size-3" />
-                                            {c.status}
+
+                                        {/* Middle Row: Title/Content (Last Message Preview) */}
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <div className={cn("size-2 rounded-full shrink-0", 
+                                                c.messages[c.messages.length-1]?.sender_role === 'USER' ? "bg-primary" : "bg-gray-300"
+                                            )} />
+                                            <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 text-sm">
+                                                {c.messages[c.messages.length - 1]?.text || c.content}
+                                            </h3>
                                         </div>
-                                    </div>
 
-                                    {/* Middle Row: Title/Content (Last Message Preview) */}
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <div className={cn("size-2 rounded-full shrink-0", 
-                                            c.messages[c.messages.length-1]?.sender === 'user' ? "bg-primary" : "bg-gray-300"
-                                        )} />
-                                        <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 text-sm">
-                                            {c.messages[c.messages.length - 1]?.text || c.content}
-                                        </h3>
-                                    </div>
-
-                                    {/* Bottom Row: Date and Stats */}
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-[11px] text-gray-400 font-medium">
-                                            {new Date(c.createdAt).toLocaleDateString()}
-                                        </span>
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-bold group-hover:text-primary transition-colors">
-                                                <span className="italic">{c.messages.length} replies</span>
-                                                {c.messages.filter(m => m.sender === 'user' && !m.isRead).length > 0 && (
-                                                    <span className="text-rose-500 ml-1 font-extrabold underline decoration-rose-500/30">
-                                                        ({c.messages.filter(m => m.sender === 'user' && !m.isRead).length} unread)
-                                                    </span>
-                                                )}
-                                                <ChevronDown className="size-3 -rotate-90" />
+                                        {/* Bottom Row: Date and Stats */}
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[11px] text-gray-400 font-medium">
+                                                {new Date(c.created_at).toLocaleDateString()}
+                                            </span>
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-bold group-hover:text-primary transition-colors">
+                                                    {c.messages.filter(m => m.sender_role === 'USER' && !m.is_read).length > 0 && (
+                                                        <span className="px-2 py-0.5 rounded-lg bg-rose-500 text-white text-[9px] font-black flex items-center gap-1 shadow-md animate-pulse whitespace-nowrap">
+                                                            <Bell className="size-2.5 fill-current" />
+                                                            {c.messages.filter(m => m.sender_role === 'USER' && !m.is_read).length} NEW MESSAGE
+                                                        </span>
+                                                    )}
+                                                    <ChevronDown className="size-3 -rotate-90" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                )
+                            })
                         )}
                     </div>
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 flex flex-col min-w-0 bg-gray-50/30 dark:bg-gray-900/10">
+                <div className="flex-1 flex flex-col min-w-0 bg-gray-50/30 dark:bg-gray-900/10 relative overflow-hidden">
                     {selectedComplaint ? (
                         <>
                             {/* Chat Header */}
-                            <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800">
+                            <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800 z-10 shadow-sm shrink-0">
                                 <div className="flex items-center gap-4">
                                     <button onClick={() => setSelectedId(null)} className="md:hidden p-2 hover:bg-gray-100 rounded-full">
                                         <ArrowLeft className="size-5" />
                                     </button>
                                     <div className="size-12 rounded-2xl bg-primary/5 flex items-center justify-center text-2xl">
-                                        {categories[selectedComplaint.category]}
+                                        {categories[selectedComplaint.category?.toUpperCase()] || '📝'}
                                     </div>
                                     <div>
-                                        <h2 className="font-bold text-lg">{selectedComplaint.userName}</h2>
+                                        <h2 className="font-bold text-lg">
+                                            {`${selectedComplaint.user?.nom || ''} ${selectedComplaint.user?.prenom || ''}`.trim() || selectedComplaint.user?.email || 'Unknown User'}
+                                        </h2>
                                         <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-400 font-medium">
-                                            <span className="flex items-center gap-1"><User className="size-3" /> User ID: #{selectedComplaint.userId}</span>
-                                            <span className="flex items-center gap-1"><Calendar className="size-3" /> {new Date(selectedComplaint.createdAt).toLocaleString()}</span>
+                                            <span className="flex items-center gap-1"><User className="size-3" /> User ID: #{selectedComplaint.user_id}</span>
+                                            <span className="flex items-center gap-1"><Calendar className="size-3" /> {new Date(selectedComplaint.created_at).toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-2">
                                     <div className="hidden lg:flex bg-gray-100 dark:bg-gray-900 p-1 rounded-xl">
-                                        {(['pending', 'accepted', 'rejected'] as ComplaintStatus[]).map((s) => (
+                                        {(['PENDING', 'ACCEPT', 'REJECT'] as ('PENDING' | 'ACCEPT' | 'REJECT')[]).map((s) => (
                                             <button
                                                 key={s}
                                                 onClick={() => handleUpdateStatus(selectedComplaint.id, s)}
@@ -263,12 +346,15 @@ export default function AdminComplaintsPage() {
                                                         : "text-gray-400 hover:text-gray-600"
                                                 )}
                                             >
-                                                {s}
+                                                {s.toLowerCase()}
                                             </button>
                                         ))}
                                     </div>
-                                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg">
-                                        <MoreHorizontal className="size-5 text-gray-400" />
+                                    <button onClick={() => handleDeleteTicket(selectedComplaint.id)} className="p-2 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-900/30 rounded-lg text-gray-400 transition-colors" title="Delete Ticket">
+                                        <Trash2 className="size-5" />
+                                    </button>
+                                    <button onClick={() => setSelectedId(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-400 transition-colors" title="Close discussion">
+                                        <X className="size-5" />
                                     </button>
                                 </div>
                             </div>
@@ -279,32 +365,32 @@ export default function AdminComplaintsPage() {
                                 data-lenis-prevent
                             >
                                 <div ref={chatEndRef} />
-                                {[...selectedComplaint.messages].reverse().map((msg) => (
+                                {[...selectedComplaint.messages].reverse().map((msg, index, arr) => (
                                     <div key={msg.id} className={cn(
                                         "flex flex-col max-w-[80%]",
-                                        msg.sender === 'admin' ? "ml-auto items-end" : "mr-auto items-start"
+                                        msg.sender_role === 'ADMIN' ? "ml-auto items-end" : "mr-auto items-start"
                                     )}>
                                         <div className="flex items-center gap-2 mb-2 px-2">
                                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                                {msg.sender === 'admin' ? 'Support Agent' : 'User'}
+                                                {msg.sender_role === 'ADMIN' ? 'Team Support Deepskyn' : 'User'}
                                             </span>
                                             <span className="text-[10px] text-gray-500">
-                                                {new Date(msg.timestamp).toLocaleTimeString()}
+                                                {new Date(msg.created_at).toLocaleTimeString()}
                                             </span>
                                         </div>
                                         <div className={cn(
                                             "p-3 px-5 rounded-2xl text-[13px] shadow-sm",
-                                            msg.sender === 'admin'
+                                            msg.sender_role === 'ADMIN'
                                                 ? "bg-primary text-white rounded-tr-none shadow-primary/10"
                                                 : "bg-white dark:bg-gray-800 dark:text-white rounded-tl-none border border-gray-100 dark:border-gray-700"
                                         )}>
                                             {msg.text}
                                         </div>
-                                        {msg.sender === 'user' && selectedComplaint.evidence && selectedComplaint.evidence.length > 0 && selectedComplaint.messages[0].id === msg.id && (
+                                        {msg.sender_role === 'USER' && selectedComplaint.evidence && selectedComplaint.evidence.length > 0 && index === arr.length - 1 && (
                                             <div className="mt-4 flex flex-wrap gap-2">
-                                                {selectedComplaint.evidence.map((url, i) => (
+                                                {selectedComplaint.evidence.map((ev, i) => (
                                                     <div key={i} className="size-32 rounded-xl overflow-hidden border-2 border-primary/10 hover:border-primary transition-all cursor-zoom-in shadow-md">
-                                                        <img src={url} alt="Evidence" className="size-full object-cover" />
+                                                        <img src={ev.url} alt="Evidence" className="size-full object-cover" />
                                                     </div>
                                                 ))}
                                             </div>
@@ -314,8 +400,8 @@ export default function AdminComplaintsPage() {
                             </div>
 
                             {/* Footer Interaction */}
-                            <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
-                                <form onSubmit={handleSendReply} className="flex gap-4">
+                            <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shrink-0">
+                                <form onSubmit={handleSendReply} className="flex gap-4 w-full">
                                     <div className="flex-1 relative">
                                         <input
                                             type="text"
