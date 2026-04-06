@@ -11,6 +11,7 @@ interface MenuItemProps {
     as?: "link" | "button";
     href?: string;
     isActive?: boolean;
+    accentColor?: string;
 }
 
 export function MenuItem({
@@ -20,10 +21,11 @@ export function MenuItem({
     as = "button",
     href = "#",
     isActive = false,
+    accentColor = "#156d95",
 }: MenuItemProps) {
     const baseStyles = "flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200";
     const activeStyles = isActive
-        ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-white"
+        ? "dark:bg-opacity-20"
         : "text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900/50 dark:hover:text-white";
 
     if (as === "link") {
@@ -31,6 +33,7 @@ export function MenuItem({
             <LoadingLink
                 href={href}
                 className={cn(baseStyles, activeStyles, className)}
+                style={isActive ? { backgroundColor: `${accentColor}1A`, color: accentColor } : undefined}
             >
                 {children}
             </LoadingLink>
@@ -41,6 +44,7 @@ export function MenuItem({
         <button
             onClick={onClick}
             className={cn(baseStyles, activeStyles, className)}
+            style={isActive ? { backgroundColor: `${accentColor}1A`, color: accentColor } : undefined}
         >
             {children}
         </button>

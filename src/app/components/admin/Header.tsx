@@ -9,13 +9,21 @@ import { Notification } from "./Notification";
 import { UserInfo } from "./UserInfo";
 import { cn } from "@/lib/utils";
 import LanguageSwitcher from "../LanguageSwitcher";
+import { useAppSelector } from "@/store/hooks";
 
 export function Header() {
     const { toggleSidebar, isMobile } = useSidebarContext();
     const [darkMode, setDarkMode] = useState(false);
+    const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
 
     return (
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-100 bg-white px-8 py-5 dark:border-gray-800 dark:bg-gray-dark md:px-10">
+        <header
+            className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-100 bg-white px-8 py-5 dark:border-gray-800 dark:bg-gray-dark md:px-10"
+            style={{
+                borderBottomColor: `${sidebarTheme.color}33`,
+                boxShadow: `inset 0 -1px 0 ${sidebarTheme.color}1F`,
+            }}
+        >
             {/* Left side: Dashboard Title */}
             <div className="flex items-center gap-4">
                 <button
@@ -60,7 +68,9 @@ export function Header() {
                     <div className={cn(
                         "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
                         darkMode ? "bg-[#156d95] shadow-sm text-white" : "text-gray-400"
-                    )}>
+                    )}
+                        style={darkMode ? { backgroundColor: sidebarTheme.color } : undefined}
+                    >
                         <Moon className="w-5 h-5" />
                     </div>
                 </div>

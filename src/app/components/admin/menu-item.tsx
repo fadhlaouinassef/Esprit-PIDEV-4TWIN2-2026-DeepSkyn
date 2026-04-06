@@ -11,6 +11,7 @@ interface MenuItemProps {
     onClick?: () => void;
     as?: "button" | "link" | "div";
     href?: string;
+    accentColor?: string;
 }
 
 export function MenuItem({
@@ -20,6 +21,7 @@ export function MenuItem({
     onClick,
     as = "div",
     href,
+    accentColor = "#156d95",
 }: MenuItemProps) {
     const Comp = as === "link" && href ? LoadingLink : (as === "button" ? "button" : "div");
 
@@ -33,10 +35,11 @@ export function MenuItem({
             className={cn(
                 "flex items-center gap-3 rounded-xl px-4 py-2.5 text-base font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
                 isActive
-                    ? "bg-[#156d95]/10 text-[#156d95] dark:bg-[#156d95]/20"
+                    ? "dark:bg-opacity-20"
                     : "text-gray-600 dark:text-gray-400",
                 className
             )}
+            style={isActive ? { backgroundColor: `${accentColor}1A`, color: accentColor } : undefined}
         >
             {children}
         </Comp>
