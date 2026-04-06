@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="/logo.png" alt="DeepSkyn Logo" width="140" />
+	<img src="public/logo.png" alt="DeepSkyn Logo" width="140" />
 </p>
 
 # DeepSkyn - Intelligent Skincare Platform
