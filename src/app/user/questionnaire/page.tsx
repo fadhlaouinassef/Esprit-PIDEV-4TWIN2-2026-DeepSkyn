@@ -356,14 +356,17 @@ export default function QuestionnairePage() {
         stopSpeaking();
 
         const utterance = new SpeechSynthesisUtterance(text);
-        
-        // Dynamic language detection (basic)
-        const isFrench = /[éèàùâêîôûëïü]/.test(text.toLowerCase()) || 
-                         text.toLowerCase().includes('votre') || 
-                         text.toLowerCase().includes('analyse');
-        
-        utterance.lang = isFrench ? 'fr-FR' : 'en-US';
-        utterance.rate = 1.0;
+
+        // Dynamic language detection
+        if (/[\u0600-\u06FF]/.test(text)) {
+            utterance.lang = 'ar-SA';
+        } else if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = 'fr-FR';
+        } else {
+            utterance.lang = 'en-US';
+        }
+
+        utterance.rate = 1.0; // Slightly faster for a modern feel
         utterance.pitch = 1.0;
 
         utterance.onend = () => {
@@ -382,13 +385,13 @@ export default function QuestionnairePage() {
     useEffect(() => {
         if (autoSpeech && currentQuestion && !analysisResult) {
             let fullText = currentQuestion.text;
-            
+
             // Read options if they exist
             if (currentQuestion.type === "choice" && currentQuestion.options && currentQuestion.options.length > 0) {
-                const isFrench = /[éèàùâêîôûëïü]/.test(fullText.toLowerCase()) || 
-                                 fullText.toLowerCase().includes('votre') || 
-                                 fullText.toLowerCase().includes('analyse');
-                                 
+                const isFrench = /[éèàùâêîôûëïü]/.test(fullText.toLowerCase()) ||
+                    fullText.toLowerCase().includes('votre') ||
+                    fullText.toLowerCase().includes('analyse');
+
                 const prefix = isFrench ? ". Suggestions : " : ". Suggestions are: ";
                 const optionsText = currentQuestion.options.map(opt => opt.text).join(", ");
                 fullText += prefix + optionsText;
@@ -787,11 +790,10 @@ export default function QuestionnairePage() {
                                     if (autoSpeech) stopSpeaking();
                                     setAutoSpeech(!autoSpeech);
                                 }}
-                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
-                                    autoSpeech 
-                                    ? "bg-primary text-white shadow-primary/20" 
-                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
-                                }`}
+                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${autoSpeech
+                                        ? "bg-primary text-white shadow-primary/20"
+                                        : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
+                                    }`}
                                 title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
                             >
                                 {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}

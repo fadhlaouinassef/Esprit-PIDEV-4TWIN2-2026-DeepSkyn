@@ -19,6 +19,8 @@ import {
     Plus,
     Trash2,
     ChevronRight,
+    Volume2,
+    VolumeX,
 } from "lucide-react";
 
 import { UserLayout } from "@/app/ui/UserLayout";
@@ -178,6 +180,8 @@ export default function RoutinePage() {
     const [consistencyLoading, setConsistencyLoading] = useState(false);
     const [isPremiumUser, setIsPremiumUser] = useState(false);
     const [isScrapingEnabled, setIsScrapingEnabled] = useState(true);
+    const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
 
     // Fetch user and routines
     useEffect(() => {
@@ -309,6 +313,81 @@ export default function RoutinePage() {
         }
     };
 
+    const stopSpeaking = () => {
+        if (typeof window !== 'undefined') {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakText = (text: string, id: string) => {
+        if (typeof window === 'undefined') return;
+
+        if (speakingIndex === id) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Dynamic language detection
+        if (/[\u0600-\u06FF]/.test(text)) {
+            utterance.lang = 'ar-SA';
+        } else if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = 'fr-FR';
+        } else {
+            utterance.lang = 'en-US';
+        }
+
+        utterance.rate = 1.1; // Slightly faster for a modern feel
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+            setSpeakingIndex(null);
+        };
+
+        utterance.onerror = () => {
+            setSpeakingIndex(null);
+        };
+
+        setSpeakingIndex(id);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Auto-read routine when tab changes or autoSpeech toggled
+    useEffect(() => {
+        if (autoSpeech && currentRoutines.length > 0) {
+            // Let's build a clean descriptive text
+            let fullText = `Hello ${userName}. Your ${activeTab} routine has ${currentSteps.length} steps. `;
+            const percentage = currentSteps.length > 0 ? Math.round((completedCount / currentSteps.length) * 100) : 0;
+            fullText += `You are currently ${percentage}% complete. `;
+            
+            if (consistency) {
+                fullText += `Your current streak is ${consistency.streak} days. `;
+            }
+
+            fullText += "Guidelines for today: ";
+            currentSteps.forEach((step, idx) => {
+                fullText += `Step ${idx + 1}: ${step.action}. `;
+            });
+
+            const id = `routine-full-${activeTab}-${currentSteps.length}-${completedCount}-${consistency?.streak || 0}`;
+            if (speakingIndex !== id) {
+                speakText(fullText, id);
+            }
+        }
+    }, [activeTab, autoSpeech, currentRoutines.length, completedCount, consistency?.streak]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
+
     return (
         <UserLayout userName={userName} userPhoto="/avatar.png">
             <div className="min-h-full py-6 px-4 md:px-8 max-w-[1200px] mx-auto relative space-y-6">
@@ -328,9 +407,26 @@ export default function RoutinePage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="space-y-3"
                     >
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground">
-                            Hello, {userName}
-                        </h1>
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground">
+                                Hello, {userName}
+                            </h1>
+                            <button
+                                onClick={() => {
+                                    if (autoSpeech) stopSpeaking();
+                                    setAutoSpeech(!autoSpeech);
+                                }}
+                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
+                                    autoSpeech 
+                                    ? "bg-primary text-white shadow-primary/20" 
+                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
+                                }`}
+                                title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
+                            >
+                                {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                                <span className="text-[10px] font-bold uppercase tracking-wider">Audio</span>
+                            </button>
+                        </div>
                         <div className="flex flex-wrap gap-2 pt-1">
                             {["Dry", "Sensitive", "Eco-Conscious"].map(tag => (
                                 <span key={tag} className="px-3 py-1 bg-primary/5 text-primary border border-primary/10 rounded-full text-[10px] font-black uppercase tracking-wider">

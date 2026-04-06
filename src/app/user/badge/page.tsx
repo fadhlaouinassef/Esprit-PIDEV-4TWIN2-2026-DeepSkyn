@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { UserBadgeCard, BadgeVariant } from "@/app/components/user/UserBadgeCard";
-import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays, Facebook, Instagram, Music2, Link2, Download, X, Loader2 } from "lucide-react";
+import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays, Facebook, Instagram, Music2, Link2, Download, X, Loader2, Volume2, VolumeX } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -51,6 +51,8 @@ export default function BadgePage() {
     const [loading, setLoading] = useState(true);
     const [shareMenuOpen, setShareMenuOpen] = useState(false);
     const [shareBusy, setShareBusy] = useState(false);
+    const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
 
     useEffect(() => {
         fetch("/api/user/motivation")
@@ -366,6 +368,93 @@ export default function BadgePage() {
         }
     };
 
+    const stopSpeaking = () => {
+        if (typeof window !== 'undefined') {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakContent = (text: string, id: string) => {
+        if (typeof window === 'undefined') return;
+
+        if (speakingIndex === id) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Dynamic language detection
+        if (/[\u0600-\u06FF]/.test(text)) {
+            utterance.lang = 'ar-SA';
+        } else if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = 'fr-FR';
+        } else {
+            utterance.lang = 'en-US';
+        }
+
+        utterance.rate = 1.1;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+            setSpeakingIndex(null);
+        };
+
+        utterance.onerror = () => {
+            setSpeakingIndex(null);
+        };
+
+        setSpeakingIndex(id);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Auto-read achievements summary
+    useEffect(() => {
+        if (autoSpeech && data) {
+            let fullText = `Achievements summary. `;
+            if (data.currentBadge) {
+                fullText += `Your current badge is ${data.currentBadge.titre}. ${data.currentBadge.description}. `;
+            } else {
+                fullText += `You haven't earned a badge yet. `;
+            }
+
+            if (data.nextBadge) {
+                fullText += `You are ${Math.round(data.nextBadge.progress)}% of the way to the ${data.nextBadge.level} level. `;
+                
+                if (data.activeRequirements && data.activeRequirements.length > 0) {
+                    fullText += "To reach the next level, you need to: ";
+                    data.activeRequirements.forEach((req: any) => {
+                        fullText += `${req.text}. `;
+                    });
+                }
+            }
+
+            if (data.metrics) {
+                fullText += `Metrics summary: ${data.metrics.streakDays} days streak. Full score: ${Math.round(data.metrics.lastAnalysisScore || 0)}. Total analyses: ${data.metrics.finalAnalysisCountAll || 0}. `;
+            }
+
+            if (data.motivationMessage) {
+                fullText += `Daily motivation: ${data.motivationMessage}. `;
+            }
+
+            const id = `badges-full-${data.currentBadge?.id || 'none'}-${data.nextBadge?.progress || 0}-${data.metrics?.streakDays || 0}`;
+            if (speakingIndex !== id) {
+                speakContent(fullText, id);
+            }
+        }
+    }, [data, autoSpeech]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
+
     if (loading) {
         return (
             <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
@@ -412,12 +501,29 @@ export default function BadgePage() {
         <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
             <div className="mx-auto w-full max-w-[1000px] flex flex-col items-center space-y-8 py-10 px-4">
                 
-                {/* Breadcrumb */}
-                <nav className="flex items-center gap-2 text-sm text-gray-400 w-full mb-2">
-                    <span className="cursor-pointer hover:text-primary">User</span>
-                    <ChevronRight size={14} />
-                    <span className="text-gray-900 dark:text-white font-medium">Badges & Achievements</span>
-                </nav>
+                {/* Breadcrumb & Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
+                    <nav className="flex items-center gap-2 text-sm text-gray-400">
+                        <span className="cursor-pointer hover:text-primary">User</span>
+                        <ChevronRight size={14} />
+                        <span className="text-gray-900 dark:text-white font-medium">Badges & Achievements</span>
+                    </nav>
+                    <button
+                        onClick={() => {
+                            if (autoSpeech) stopSpeaking();
+                            setAutoSpeech(!autoSpeech);
+                        }}
+                        className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
+                            autoSpeech 
+                            ? "bg-primary text-white shadow-primary/20" 
+                            : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
+                        }`}
+                        title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
+                    >
+                        {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Audio Mode</span>
+                    </button>
+                </div>
 
                 <div className="w-full space-y-10">
                     

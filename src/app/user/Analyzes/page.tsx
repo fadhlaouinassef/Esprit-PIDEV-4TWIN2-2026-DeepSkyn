@@ -20,7 +20,9 @@ import {
     ArrowRight,
     Search,
     ClipboardList,
-    Sparkles
+    Sparkles,
+    Volume2,
+    VolumeX
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -440,6 +442,8 @@ export default function AnalyzesPage() {
     const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
+    const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
 
     useEffect(() => {
         async function fetchAnalyses() {
@@ -456,6 +460,86 @@ export default function AnalyzesPage() {
             }
         }
         fetchAnalyses();
+    }, []);
+
+    const stopSpeaking = () => {
+        if (typeof window !== 'undefined') {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakContent = (text: string, id: string) => {
+        if (typeof window === 'undefined') return;
+
+        if (speakingIndex === id) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Dynamic language detection
+        if (/[\u0600-\u06FF]/.test(text)) {
+            utterance.lang = 'ar-SA';
+        } else if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = 'fr-FR';
+        } else {
+            utterance.lang = 'en-US';
+        }
+
+        utterance.rate = 1.1;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+            setSpeakingIndex(null);
+        };
+
+        utterance.onerror = () => {
+            setSpeakingIndex(null);
+        };
+
+        setSpeakingIndex(id);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Auto-read when an analysis is selected
+    useEffect(() => {
+        if (autoSpeech && selectedAnalysis) {
+            let fullText = `Detailed Analysis for ${selectedAnalysis.date}. `;
+            fullText += `Skin Health Score is ${selectedAnalysis.score} out of 100. `;
+            fullText += `Skin type is ${selectedAnalysis.skinType} with ${selectedAnalysis.sensitivity} sensitivity. `;
+            
+            if (selectedAnalysis.summary) {
+                fullText += `Summary: ${selectedAnalysis.summary}. `;
+            }
+
+            const recs = Array.isArray(selectedAnalysis.recommendations)
+                ? selectedAnalysis.recommendations
+                : selectedAnalysis.recommendations?.immediate
+                    ? [...(selectedAnalysis.recommendations.immediate || []), ...(selectedAnalysis.recommendations.weekly || [])]
+                    : [];
+            
+            if (recs.length > 0) {
+                fullText += "Top Recommendations: " + recs.slice(0, 3).join(". ") + ".";
+            }
+
+            speakContent(fullText, `analysis-${selectedAnalysis.id}`);
+        } else if (autoSpeech && !selectedAnalysis && analyses.length > 0) {
+            const latest = analyses[0];
+            const text = `Skin Analysis History. You have ${analyses.length} reports. Your latest score was ${latest.score} for ${latest.skinType} skin.`;
+            speakContent(text, "history-summary");
+        }
+    }, [selectedAnalysis, autoSpeech, analyses.length]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.speechSynthesis.cancel();
+            }
+        };
     }, []);
 
     const filteredAnalyses = analyses.filter(analysis => {
@@ -476,13 +560,30 @@ export default function AnalyzesPage() {
             <div className="mx-auto w-full max-w-[1400px]">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-                    <div>
+                    <div className="flex flex-col">
                         <span className="text-[11px] font-bold text-[#156d95] uppercase tracking-[3px] mb-2 block font-mono">
                             Clinical History
                         </span>
-                        <h1 className="text-5xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight">
-                            Skin Analysis History
-                        </h1>
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-5xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight">
+                                Skin Analysis History
+                            </h1>
+                            <button
+                                onClick={() => {
+                                    if (autoSpeech) stopSpeaking();
+                                    setAutoSpeech(!autoSpeech);
+                                }}
+                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
+                                    autoSpeech 
+                                    ? "bg-[#156d95] text-white shadow-[#156d95]/20" 
+                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
+                                }`}
+                                title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
+                            >
+                                {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                                <span className="text-[10px] font-bold uppercase tracking-wider">Audio</span>
+                            </button>
+                        </div>
                         <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg max-w-xl font-medium">
                             View and track your skin progress over time through our diagnostic lens.
                         </p>
