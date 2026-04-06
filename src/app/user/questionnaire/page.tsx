@@ -5,7 +5,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3 } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { CameraModal } from "@/app/components/user/CameraModal";
@@ -181,6 +181,8 @@ export default function QuestionnairePage() {
     const [answersSoFar, setAnswersSoFar] = useState<{ questionId: number; answer: string }[]>([]);
     const [quizId, setQuizId] = useState<number>(1);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const [speakingIndex, setSpeakingIndex] = useState<number | string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
     const [analysisAccess, setAnalysisAccess] = useState<AnalysisAccess>({
         loading: true,
         isPremium: false,
@@ -335,6 +337,83 @@ export default function QuestionnairePage() {
             setIsAnalyzing(false);
         }
     };
+
+    const stopSpeaking = () => {
+        if (typeof window !== 'undefined') {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakQuestion = (text: string, index: number | string) => {
+        if (typeof window === 'undefined') return;
+
+        if (speakingIndex === index) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Dynamic language detection (basic)
+        const isFrench = /[éèàùâêîôûëïü]/.test(text.toLowerCase()) || 
+                         text.toLowerCase().includes('votre') || 
+                         text.toLowerCase().includes('analyse');
+        
+        utterance.lang = isFrench ? 'fr-FR' : 'en-US';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+            setSpeakingIndex(null);
+        };
+
+        utterance.onerror = () => {
+            setSpeakingIndex(null);
+        };
+
+        setSpeakingIndex(index);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    // Auto-read new question and its suggestions/options if enabled
+    useEffect(() => {
+        if (autoSpeech && currentQuestion && !analysisResult) {
+            let fullText = currentQuestion.text;
+            
+            // Read options if they exist
+            if (currentQuestion.type === "choice" && currentQuestion.options && currentQuestion.options.length > 0) {
+                const isFrench = /[éèàùâêîôûëïü]/.test(fullText.toLowerCase()) || 
+                                 fullText.toLowerCase().includes('votre') || 
+                                 fullText.toLowerCase().includes('analyse');
+                                 
+                const prefix = isFrench ? ". Suggestions : " : ". Suggestions are: ";
+                const optionsText = currentQuestion.options.map(opt => opt.text).join(", ");
+                fullText += prefix + optionsText;
+            }
+
+            if (speakingIndex !== `q-${currentQuestion.id}`) {
+                speakQuestion(fullText, `q-${currentQuestion.id}`);
+            }
+        }
+    }, [currentQuestion, autoSpeech, analysisResult]);
+
+    // Read analysis automatically if it just appeared
+    useEffect(() => {
+        if (autoSpeech && analysisResult && analysisResult.analysis && speakingIndex !== "analysis") {
+            speakQuestion(analysisResult.analysis, "analysis");
+        }
+    }, [analysisResult, autoSpeech]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     // Initial call to get the first question
     useEffect(() => {
@@ -699,9 +778,26 @@ export default function QuestionnairePage() {
                 {/* Header with Progress */}
                 <div className="mb-6 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            Skin Analysis
-                        </h2>
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                Skin Analysis
+                            </h2>
+                            <button
+                                onClick={() => {
+                                    if (autoSpeech) stopSpeaking();
+                                    setAutoSpeech(!autoSpeech);
+                                }}
+                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
+                                    autoSpeech 
+                                    ? "bg-primary text-white shadow-primary/20" 
+                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
+                                }`}
+                                title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
+                            >
+                                {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                                <span className="text-[10px] font-bold uppercase tracking-wider">Audio</span>
+                            </button>
+                        </div>
                         {!analysisResult && analysisAccess.canCreateAnalysis && (
                             <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
                                 {answersSoFar.length + (currentQuestion ? 1 : 0)} Questions
@@ -925,9 +1021,11 @@ export default function QuestionnairePage() {
                             {/* ── Personalized Analysis Text ── */}
                             {analysisResult.analysis && (
                                 <div className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <Award className="size-5 text-primary" />
-                                        <h4 className="font-bold text-gray-900 dark:text-white text-base">Your Personalized Analysis</h4>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <Award className="size-5 text-primary" />
+                                            <h4 className="font-bold text-gray-900 dark:text-white text-base">Your Personalized Analysis</h4>
+                                        </div>
                                     </div>
                                     <div className="space-y-2">
                                         {analysisResult.analysis.split('\n').filter(l => l.trim()).map((line, i) => (
