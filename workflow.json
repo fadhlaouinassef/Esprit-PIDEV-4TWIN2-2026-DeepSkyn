@@ -225,7 +225,7 @@
         "url": "http://localhost:3000/api/quiz/send-analysis-email",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ {\n  userId: Number(($node[\"Quiz Webhook\"].json.body?.userId ?? $node[\"Quiz Webhook\"].json.userId) || 0),\n  userEmail: String(($node[\"Quiz Webhook\"].json.body?.userEmail ?? $node[\"Quiz Webhook\"].json.userEmail ?? '') || ''),\n  userName: String(($node[\"Quiz Webhook\"].json.body?.userName ?? $node[\"Quiz Webhook\"].json.userName ?? 'User') || 'User'),\n  status: 'complete',\n  analysis: String($node[\"Parser Analyse Finale\"].json.analysis || ''),\n  score: Number($node[\"Parser Analyse Finale\"].json.score || 0),\n  smtpUser: 'nasseffadhlaoui@gmail.com',\n  smtpPass: 'xnye onep frrg swzp'\n} }}"
+        "jsonBody": "={{ {\n  userId: Number(($node[\"Quiz Webhook\"].json.body?.userId ?? $node[\"Quiz Webhook\"].json.userId) || 0),\n  userEmail: String(($node[\"Quiz Webhook\"].json.body?.userEmail ?? $node[\"Quiz Webhook\"].json.userEmail ?? '') || ''),\n  userName: String(($node[\"Quiz Webhook\"].json.body?.userName ?? $node[\"Quiz Webhook\"].json.userName ?? 'User') || 'User'),\n  status: 'complete',\n  analysis: String($node[\"Parser Analyse Finale\"].json.analysis || ''),\n  score: Number($node[\"Parser Analyse Finale\"].json.score || 0),\n  smtpUser: 'deepskynvortex@gmail.com',\n  smtpPass: 'xiyq yyfi avow ghkh'\n} }}"
       }
     },
     {
