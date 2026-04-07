@@ -5,10 +5,11 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3, Volume2, VolumeX } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3 } from "lucide-react";
 import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { CameraModal } from "@/app/components/user/CameraModal";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 
 interface Question {
     id: number;
@@ -785,20 +786,13 @@ export default function QuestionnairePage() {
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                                 Skin Analysis
                             </h2>
-                            <button
-                                onClick={() => {
+                            <AudioToggleButton
+                                enabled={autoSpeech}
+                                onToggle={() => {
                                     if (autoSpeech) stopSpeaking();
                                     setAutoSpeech(!autoSpeech);
                                 }}
-                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${autoSpeech
-                                        ? "bg-primary text-white shadow-primary/20"
-                                        : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
-                                    }`}
-                                title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                            >
-                                {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                                <span className="text-[10px] font-bold uppercase tracking-wider">Audio</span>
-                            </button>
+                            />
                         </div>
                         {!analysisResult && analysisAccess.canCreateAnalysis && (
                             <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">

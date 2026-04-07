@@ -16,13 +16,12 @@ import {
     ArrowRight,
     Plus,
     Shield,
-    Zap,
-    Volume2,
-    VolumeX
+    Zap
 } from "lucide-react";
 
 import { toast } from "sonner";
 import { UserLayout } from "@/app/ui/UserLayout";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 import type { PlanKey } from "@/lib/stripe";
 
 // --- Types ---
@@ -356,21 +355,15 @@ export default function BillingPage() {
                             </p>
                         </motion.div>
 
-                        <button
-                            onClick={() => {
+                        <AudioToggleButton
+                            enabled={autoSpeech}
+                            onToggle={() => {
                                 if (autoSpeech) stopSpeaking();
                                 setAutoSpeech(!autoSpeech);
                             }}
-                            className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 self-start ${
-                                autoSpeech
-                                    ? "bg-[#156d95] text-white shadow-[#156d95]/20"
-                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
-                            }`}
-                            title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                        >
-                            {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                            <span className="text-[10px] font-bold uppercase tracking-wider">Audio Billing</span>
-                        </button>
+                            label="Audio Billing"
+                            className="self-start"
+                        />
                         </div>
                     </header>
 

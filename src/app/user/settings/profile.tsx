@@ -2,13 +2,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle, Loader2, Volume2, VolumeX } from "lucide-react";
+import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { updateUserProfile } from "@/store/slices/authSlice";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 
 // --- Internal Helper Components ---
 
@@ -357,21 +358,14 @@ export default function Profile() {
     return (
         <div className="mx-auto w-full max-w-[1200px] mb-12">
             <div className="flex justify-end mb-4">
-                <button
-                    onClick={() => {
+                <AudioToggleButton
+                    enabled={autoSpeech}
+                    onToggle={() => {
                         if (autoSpeech) stopSpeaking();
                         setAutoSpeech(!autoSpeech);
                     }}
-                    className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
-                        autoSpeech
-                            ? "bg-[#156d95] text-white shadow-[#156d95]/20"
-                            : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
-                    }`}
-                    title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                >
-                    {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Audio Settings</span>
-                </button>
+                    label="Audio Settings"
+                />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
                 {/* Left Column: Forms */}

@@ -20,14 +20,13 @@ import {
     FileText,
     AlertTriangle,
     Trash2,
-    Bell,
-    Volume2,
-    VolumeX
+    Bell
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ComplaintCategory, ChatMessage } from "@/lib/complaintsData";
 import { toast } from "sonner";
 import axios from "axios";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 
 // Status in DB: PENDING, ACCEPT, REJECT
 // Category in DB: ANALYSIS, ROUTINE, PRODUCT, BADGE, BUG, PAYMENT, SERVICE, OTHER
@@ -345,21 +344,14 @@ export default function UserComplaintsPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => {
+                        <AudioToggleButton
+                            enabled={autoSpeech}
+                            onToggle={() => {
                                 if (autoSpeech) stopSpeaking();
                                 setAutoSpeech(!autoSpeech);
                             }}
-                            className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
-                                autoSpeech
-                                    ? "bg-[#156d95] text-white shadow-[#156d95]/20"
-                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
-                            }`}
-                            title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                        >
-                            {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                            <span className="text-[10px] font-bold uppercase tracking-wider">Audio Complaints</span>
-                        </button>
+                            label="Audio Complaints"
+                        />
                         {!isAddingNew && (
                             <motion.button
                                 whileHover={{ scale: 1.02 }}

@@ -21,13 +21,12 @@ import {
     Search,
     ClipboardList,
     Sparkles,
-    Volume2,
-    VolumeX
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 
 // --- COMPONENTS ---
 
@@ -568,21 +567,13 @@ export default function AnalyzesPage() {
                             <h1 className="text-5xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight">
                                 Skin Analysis History
                             </h1>
-                            <button
-                                onClick={() => {
+                            <AudioToggleButton
+                                enabled={autoSpeech}
+                                onToggle={() => {
                                     if (autoSpeech) stopSpeaking();
                                     setAutoSpeech(!autoSpeech);
                                 }}
-                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
-                                    autoSpeech 
-                                    ? "bg-[#156d95] text-white shadow-[#156d95]/20" 
-                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
-                                }`}
-                                title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                            >
-                                {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                                <span className="text-[10px] font-bold uppercase tracking-wider">Audio</span>
-                            </button>
+                            />
                         </div>
                         <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg max-w-xl font-medium">
                             View and track your skin progress over time through our diagnostic lens.

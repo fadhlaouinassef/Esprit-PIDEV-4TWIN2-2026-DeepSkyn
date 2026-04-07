@@ -19,13 +19,12 @@ import {
     Plus,
     Trash2,
     ChevronRight,
-    Volume2,
-    VolumeX,
 } from "lucide-react";
 
 import { UserLayout } from "@/app/ui/UserLayout";
 import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { deleteRoutine, fetchUserRoutines, markStepCompleted, toggleStepCompletedLocally } from "@/store/slices/routineSlice";
 import { AddRoutineModal } from "@/app/components/user/AddRoutineModal";
@@ -411,21 +410,13 @@ export default function RoutinePage() {
                             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground">
                                 Hello, {userName}
                             </h1>
-                            <button
-                                onClick={() => {
+                            <AudioToggleButton
+                                enabled={autoSpeech}
+                                onToggle={() => {
                                     if (autoSpeech) stopSpeaking();
                                     setAutoSpeech(!autoSpeech);
                                 }}
-                                className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
-                                    autoSpeech 
-                                    ? "bg-primary text-white shadow-primary/20" 
-                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
-                                }`}
-                                title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                            >
-                                {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                                <span className="text-[10px] font-bold uppercase tracking-wider">Audio</span>
-                            </button>
+                            />
                         </div>
                         <div className="flex flex-wrap gap-2 pt-1">
                             {["Dry", "Sensitive", "Eco-Conscious"].map(tag => (
