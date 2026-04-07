@@ -16,14 +16,13 @@ import {
     Activity,
     Droplets,
     Sparkles,
-    UserCircle,
-    Volume2,
-    VolumeX
+    UserCircle
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 
 interface UserProfile {
     id: number;
@@ -226,21 +225,14 @@ export default function ProfilePage() {
                         <ChevronRight size={14} />
                         <span className="text-foreground font-medium">My Profile</span>
                     </nav>
-                    <button
-                        onClick={() => {
+                    <AudioToggleButton
+                        enabled={autoSpeech}
+                        onToggle={() => {
                             if (autoSpeech) stopSpeaking();
                             setAutoSpeech(!autoSpeech);
                         }}
-                        className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
-                            autoSpeech 
-                            ? "bg-[#156d95] text-white shadow-[#156d95]/20" 
-                            : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
-                        }`}
-                        title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                    >
-                        {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Audio Profile</span>
-                    </button>
+                        label="Audio Profile"
+                    />
                 </div>
 
                 <motion.div

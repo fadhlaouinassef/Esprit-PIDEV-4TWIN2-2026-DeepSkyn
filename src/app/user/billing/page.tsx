@@ -21,6 +21,7 @@ import {
 
 import { toast } from "sonner";
 import { UserLayout } from "@/app/ui/UserLayout";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 import type { PlanKey } from "@/lib/stripe";
 
 // --- Types ---
@@ -112,6 +113,8 @@ export default function BillingPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
     const [selectedPlan, setSelectedPlan] = useState<PlanKey>("premium_yearly");
+    const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
 
     useEffect(() => {
         const fetchSubscription = async () => {
@@ -171,6 +174,93 @@ export default function BillingPage() {
 
 
     const isRenewalRequired = currentStatus === "expiring" || currentStatus === "expired";
+
+    const stopSpeaking = () => {
+        if (typeof window !== "undefined") {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakContent = (text: string, id: string) => {
+        if (typeof window === "undefined") return;
+
+        if (speakingIndex === id) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = "fr-FR";
+        } else {
+            utterance.lang = "en-US";
+        }
+
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => {
+            setSpeakingIndex(null);
+        };
+
+        utterance.onerror = () => {
+            setSpeakingIndex(null);
+        };
+
+        setSpeakingIndex(id);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    useEffect(() => {
+        if (autoSpeech) {
+            let fullText = `Subscription and billing overview. Current plan is ${subscription.planName}. `;
+            fullText += `Status is ${currentStatus}. `;
+
+            if (subscription.planName !== "Free Plan") {
+                fullText += `Billing cycle is ${subscription.billingCycle}. `;
+                fullText += `Amount is ${subscription.amount ?? subscription.price} Tunisian dinars. `;
+                fullText += `Next renewal date is ${subscription.expiryDate}. `;
+            } else {
+                fullText += `You are currently on the free plan. `;
+            }
+
+            if (currentStatus === "expiring") {
+                fullText += `Your subscription expires in ${remainingDays} days. `;
+            }
+
+            if (isRenewalRequired || subscription.planName === "Free Plan") {
+                fullText += `You can choose between premium monthly and premium yearly plans in the payment section. `;
+            }
+
+            const id = `billing-${subscription.planName}-${subscription.billingCycle}-${subscription.expiryDate}-${currentStatus}-${selectedPlan}`;
+            if (speakingIndex !== id) {
+                speakContent(fullText, id);
+            }
+        }
+    }, [
+        autoSpeech,
+        subscription.planName,
+        subscription.billingCycle,
+        subscription.amount,
+        subscription.price,
+        subscription.expiryDate,
+        currentStatus,
+        remainingDays,
+        isRenewalRequired,
+        selectedPlan,
+    ]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== "undefined") {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     // Calculer le prix selon le plan sélectionné
     const getPlanPrice = () => {
@@ -251,7 +341,7 @@ export default function BillingPage() {
                     </nav>
 
                     <header className="mb-12">
-
+                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -264,6 +354,17 @@ export default function BillingPage() {
                                 Seamlessly manage your premium access and payment preferences from one elegant dashboard.
                             </p>
                         </motion.div>
+
+                        <AudioToggleButton
+                            enabled={autoSpeech}
+                            onToggle={() => {
+                                if (autoSpeech) stopSpeaking();
+                                setAutoSpeech(!autoSpeech);
+                            }}
+                            label="Audio Billing"
+                            className="self-start"
+                        />
+                        </div>
                     </header>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">

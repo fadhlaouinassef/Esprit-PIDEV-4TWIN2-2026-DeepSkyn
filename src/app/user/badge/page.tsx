@@ -3,10 +3,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { UserBadgeCard, BadgeVariant } from "@/app/components/user/UserBadgeCard";
-import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays, Facebook, Instagram, Music2, Link2, Download, X, Loader2, Volume2, VolumeX } from "lucide-react";
+import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays, Facebook, Instagram, Music2, Link2, Download, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 
 type MotivationSummary = {
     currentBadge: {
@@ -508,21 +509,14 @@ export default function BadgePage() {
                         <ChevronRight size={14} />
                         <span className="text-gray-900 dark:text-white font-medium">Badges & Achievements</span>
                     </nav>
-                    <button
-                        onClick={() => {
+                    <AudioToggleButton
+                        enabled={autoSpeech}
+                        onToggle={() => {
                             if (autoSpeech) stopSpeaking();
                             setAutoSpeech(!autoSpeech);
                         }}
-                        className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
-                            autoSpeech 
-                            ? "bg-primary text-white shadow-primary/20" 
-                            : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-primary"
-                        }`}
-                        title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
-                    >
-                        {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Audio Mode</span>
-                    </button>
+                        label="Audio Mode"
+                    />
                 </div>
 
                 <div className="w-full space-y-10">
