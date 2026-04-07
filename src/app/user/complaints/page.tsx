@@ -20,7 +20,9 @@ import {
     FileText,
     AlertTriangle,
     Trash2,
-    Bell
+    Bell,
+    Volume2,
+    VolumeX
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ComplaintCategory, ChatMessage } from "@/lib/complaintsData";
@@ -61,6 +63,8 @@ export default function UserComplaintsPage() {
     const [replyText, setReplyText] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [isSending, setIsSending] = useState(false);
+    const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const chatEndRef = useRef<HTMLDivElement>(null);
@@ -234,6 +238,91 @@ export default function UserComplaintsPage() {
         c.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const stopSpeaking = () => {
+        if (typeof window !== "undefined") {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakContent = (text: string, id: string) => {
+        if (typeof window === "undefined") return;
+
+        if (speakingIndex === id) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = "fr-FR";
+        } else {
+            utterance.lang = "en-US";
+        }
+
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => setSpeakingIndex(null);
+        utterance.onerror = () => setSpeakingIndex(null);
+
+        setSpeakingIndex(id);
+        window.speechSynthesis.speak(utterance);
+    };
+
+    useEffect(() => {
+        if (autoSpeech && !isLoading) {
+            const pendingCount = complaints.filter(c => c.status === "PENDING").length;
+            const closedCount = complaints.filter(c => c.status === "REJECT").length;
+            const acceptedCount = complaints.filter(c => c.status === "ACCEPT").length;
+
+            let fullText = "Complaints and feedback interface. ";
+            fullText += `You have ${complaints.length} total claims. `;
+            fullText += `${pendingCount} pending, ${acceptedCount} accepted, and ${closedCount} closed. `;
+
+            if (searchQuery.trim()) {
+                fullText += `Search filter is active with keyword ${searchQuery}. `;
+                fullText += `${filteredComplaints.length} claims match your search. `;
+            }
+
+            if (isAddingNew) {
+                fullText += "New claim form is open. Select category, write details, and optionally upload evidence before submitting. ";
+            } else if (selectedComplaint) {
+                fullText += `Selected claim category is ${selectedComplaint.category}. `;
+                fullText += `Status is ${selectedComplaint.status}. `;
+                fullText += `This ticket currently has ${selectedComplaint.messages.length} messages. `;
+                if (selectedComplaint.status === "REJECT") {
+                    fullText += "This ticket is officially closed. ";
+                }
+            } else {
+                fullText += "No claim is selected. You can open a conversation from the list or create a new claim. ";
+            }
+
+            const id = `complaints-${complaints.length}-${pendingCount}-${acceptedCount}-${closedCount}-${selectedComplaint?.id ?? "none"}-${isAddingNew}-${searchQuery}-${filteredComplaints.length}`;
+            if (speakingIndex !== id) {
+                speakContent(fullText, id);
+            }
+        }
+    }, [
+        autoSpeech,
+        isLoading,
+        complaints,
+        selectedComplaint,
+        isAddingNew,
+        searchQuery,
+        filteredComplaints.length,
+    ]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== "undefined") {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
+
     return (
         <UserLayout>
             {/* Background Decor */}
@@ -255,17 +344,34 @@ export default function UserComplaintsPage() {
                             Your voice matters. Track and manage your reports in real-time.
                         </p>
                     </div>
-                    {!isAddingNew && (
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setIsAddingNew(true)}
-                            className="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-2xl font-bold shadow-2xl transition-all active:scale-95"
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => {
+                                if (autoSpeech) stopSpeaking();
+                                setAutoSpeech(!autoSpeech);
+                            }}
+                            className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
+                                autoSpeech
+                                    ? "bg-[#156d95] text-white shadow-[#156d95]/20"
+                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
+                            }`}
+                            title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
                         >
-                            <Plus className="size-5" />
-                            New Claim
-                        </motion.button>
-                    )}
+                            {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Audio Complaints</span>
+                        </button>
+                        {!isAddingNew && (
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => setIsAddingNew(true)}
+                                className="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-2xl font-bold shadow-2xl transition-all active:scale-95"
+                            >
+                                <Plus className="size-5" />
+                                New Claim
+                            </motion.button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">

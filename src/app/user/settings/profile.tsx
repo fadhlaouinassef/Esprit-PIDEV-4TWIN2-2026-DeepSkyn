@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle, Loader2 } from "lucide-react";
+import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle, Loader2, Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -85,6 +85,8 @@ export default function Profile() {
     const [isSavingPassword, setIsSavingPassword] = useState(false);
     const [isSavedPassword, setIsSavedPassword] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
+    const [autoSpeech, setAutoSpeech] = useState(false);
 
     const [formValues, setFormValues] = useState({
         nom: "",
@@ -103,6 +105,40 @@ export default function Profile() {
     });
 
     const [userPhoto, setUserPhoto] = useState<string | null>(null);
+
+    const stopSpeaking = () => {
+        if (typeof window !== "undefined") {
+            window.speechSynthesis.cancel();
+            setSpeakingIndex(null);
+        }
+    };
+
+    const speakContent = (text: string, id: string) => {
+        if (typeof window === "undefined") return;
+
+        if (speakingIndex === id) {
+            stopSpeaking();
+            return;
+        }
+
+        stopSpeaking();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (/[éèàùâêîôûëïü]/.test(text.toLowerCase())) {
+            utterance.lang = "fr-FR";
+        } else {
+            utterance.lang = "en-US";
+        }
+
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+
+        utterance.onend = () => setSpeakingIndex(null);
+        utterance.onerror = () => setSpeakingIndex(null);
+
+        setSpeakingIndex(id);
+        window.speechSynthesis.speak(utterance);
+    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -143,6 +179,56 @@ export default function Profile() {
             setIsLoading(false);
         }
     }, [status]);
+
+    useEffect(() => {
+        if (autoSpeech && !isLoading) {
+            let fullText = "Account settings interface. ";
+            fullText += `Personal information section for ${formValues.prenom || "user"} ${formValues.nom || ""}. `;
+
+            if (formValues.email) {
+                fullText += `Email is ${formValues.email}. `;
+            }
+
+            if (formValues.age) {
+                fullText += `Age is ${formValues.age}. `;
+            }
+
+            fullText += `Gender is ${formValues.sexe || "not specified"}. `;
+
+            if (hasPassword === true) {
+                fullText += "Security and password section is available to update your password. ";
+            } else {
+                fullText += "Security password section is not available for this account. ";
+            }
+
+            fullText += userPhoto
+                ? "Profile photo is set and can be updated from the photo panel. "
+                : "No profile photo yet. You can upload one from the photo panel. ";
+
+            const id = `settings-${formValues.nom}-${formValues.prenom}-${formValues.email}-${formValues.age}-${formValues.sexe}-${hasPassword}-${Boolean(userPhoto)}`;
+            if (speakingIndex !== id) {
+                speakContent(fullText, id);
+            }
+        }
+    }, [
+        autoSpeech,
+        isLoading,
+        formValues.nom,
+        formValues.prenom,
+        formValues.email,
+        formValues.age,
+        formValues.sexe,
+        hasPassword,
+        userPhoto,
+    ]);
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== "undefined") {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -270,6 +356,23 @@ export default function Profile() {
 
     return (
         <div className="mx-auto w-full max-w-[1200px] mb-12">
+            <div className="flex justify-end mb-4">
+                <button
+                    onClick={() => {
+                        if (autoSpeech) stopSpeaking();
+                        setAutoSpeech(!autoSpeech);
+                    }}
+                    className={`p-2 rounded-xl transition-all shadow-sm flex items-center gap-2 ${
+                        autoSpeech
+                            ? "bg-[#156d95] text-white shadow-[#156d95]/20"
+                            : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-400 hover:text-[#156d95]"
+                    }`}
+                    title={autoSpeech ? "Désactiver la lecture automatique" : "Activer la lecture automatique"}
+                >
+                    {autoSpeech ? <Volume2 size={18} /> : <VolumeX size={18} />}
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Audio Settings</span>
+                </button>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
                 {/* Left Column: Forms */}
                 <div className="lg:col-span-3 flex flex-col gap-8">
