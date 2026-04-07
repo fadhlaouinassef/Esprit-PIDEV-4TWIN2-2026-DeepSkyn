@@ -343,17 +343,6 @@ export default function UserComplaintsPage() {
                             Your voice matters. Track and manage your reports in real-time.
                         </p>
                     </div>
-                    {!isAddingNew && (
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setIsAddingNew(true)}
-                            className="complaints-new-claim-btn flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-2xl font-bold shadow-2xl transition-all active:scale-95"
-                        >
-                            <Plus className="size-5" />
-                            New Claim
-                        </motion.button>
-                    )}
                     <div className="flex items-center gap-3">
                         <AudioToggleButton
                             enabled={autoSpeech}

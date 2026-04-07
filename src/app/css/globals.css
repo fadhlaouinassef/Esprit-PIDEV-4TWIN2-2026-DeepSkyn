@@ -411,6 +411,12 @@
     color: var(--hc-accent-light) !important;
   }
 
+  .user-high-contrast a.profile-edit-link,
+  .user-high-contrast a.profile-edit-link:hover,
+  .user-high-contrast a.profile-edit-link:focus-visible {
+    text-decoration: none !important;
+  }
+
   /* Keep sidebar/navigation cleaner while preserving discoverability */
   .user-high-contrast nav a,
   .user-high-contrast aside a {

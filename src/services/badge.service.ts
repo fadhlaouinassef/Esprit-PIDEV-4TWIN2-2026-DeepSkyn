@@ -363,8 +363,14 @@ const awardBadgeIfMissing = async (data: {
 }) => {
   await prisma.$executeRaw`
     INSERT INTO "Badge" ("user_id", "titre", "description", "niveau", "date")
-    VALUES (${data.userId}, ${data.title}, ${data.description}, ${data.level}, ${data.at})
-    ON CONFLICT ("user_id", "niveau", "titre") DO NOTHING;
+    SELECT ${data.userId}, ${data.title}, ${data.description}, ${data.level}::"NiveauBadge", ${data.at}
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM "Badge"
+      WHERE "user_id" = ${data.userId}
+        AND "titre" = ${data.title}
+        AND "niveau"::text = ${data.level}
+    );
   `;
 };
 
