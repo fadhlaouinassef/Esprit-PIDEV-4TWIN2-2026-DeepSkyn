@@ -242,7 +242,7 @@ export default function UserComplaintsPage() {
                 <div className="absolute top-[20%] -right-[5%] size-[30%] rounded-full bg-purple-500/5 blur-[100px]" />
             </div>
 
-            <div className="mx-auto w-full max-w-[1300px] p-4 md:p-8 space-y-8">
+            <div className="user-complaints-page mx-auto w-full max-w-[1300px] p-4 md:p-8 space-y-8">
                 <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                     <div className="space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
@@ -260,7 +260,7 @@ export default function UserComplaintsPage() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setIsAddingNew(true)}
-                            className="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-2xl font-bold shadow-2xl transition-all active:scale-95"
+                            className="complaints-new-claim-btn flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-2xl font-bold shadow-2xl transition-all active:scale-95"
                         >
                             <Plus className="size-5" />
                             New Claim

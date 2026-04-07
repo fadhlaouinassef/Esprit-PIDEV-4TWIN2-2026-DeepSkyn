@@ -71,7 +71,7 @@ const CATEGORIES: Category[] = [
     value: "sunscreen",
     label: "Sunscreen / SPF",
     icon: <Sun className="size-4" />,
-    color: "from-amber-400 to-orange-500",
+    color: "from-amber-600 to-orange-700",
     examples: ["Altruist SPF 50", "EltaMD UV Clear", "Biore UV Aqua Rich"],
   },
   {
@@ -230,7 +230,7 @@ export default function ProductsPage() {
 
   return (
     <UserLayout>
-      <div className="mx-auto w-full max-w-[920px] flex flex-col gap-6">
+      <div className="user-products-page mx-auto w-full max-w-[920px] flex flex-col gap-6">
 
         {/* ── Breadcrumb ── */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
@@ -240,7 +240,7 @@ export default function ProductsPage() {
         </nav>
 
         {/* ── Hero Banner ── */}
-        <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${selectedCategory.color} p-6 shadow-2xl transition-all duration-500`}>
+        <div className={`products-hero relative overflow-hidden rounded-3xl bg-gradient-to-br ${selectedCategory.color} p-6 shadow-2xl transition-all duration-500`}>
           <div className="pointer-events-none absolute -top-10 -right-10 size-52 rounded-full bg-white/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-8 -left-8 size-40 rounded-full bg-white/10 blur-2xl" />
           <div className="relative flex items-center gap-5">
@@ -250,14 +250,14 @@ export default function ProductsPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Sparkles className="size-4 text-yellow-200" />
-                <span className="text-xs font-bold text-white/60 uppercase tracking-widest">
+                <span className="hero-kicker text-xs font-bold text-white/60 uppercase tracking-widest">
                   Powered by Apify
                 </span>
               </div>
               <h1 className="text-2xl font-black text-white leading-tight">
                 Cosmetic &amp; Medical Product Scraper
               </h1>
-              <p className="mt-1 text-sm text-white/70">
+              <p className="hero-subtitle mt-1 text-sm text-white/70">
                 Scrape Google for cosmetic and pharmaceutical products, ingredients, and formulations.
               </p>
             </div>
