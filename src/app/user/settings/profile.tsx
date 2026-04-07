@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { updateUserProfile } from "@/store/slices/authSlice";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
+import { useRouter } from "next/navigation";
 
 // --- Internal Helper Components ---
 
@@ -77,8 +78,9 @@ function InputGroup({
 
 // --- Main Components ---
 
-export default function Profile() {
+export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: string }) {
     const { data: session, status, update } = useSession();
+    const router = useRouter();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -272,6 +274,10 @@ export default function Profile() {
             }));
 
             setIsSaved(true);
+            if (redirectOnSaveTo) {
+                router.push(redirectOnSaveTo);
+                return;
+            }
             setTimeout(() => setIsSaved(false), 3000);
         } catch (error) {
             toast.error("Error updating profile");

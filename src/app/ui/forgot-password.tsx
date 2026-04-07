@@ -10,15 +10,29 @@ import { toast } from "sonner"
 export default function ForgotPassword() {
     const router = useRouter() // Initialisation ajoutée
     const [email, setEmail] = useState("")
+    const [emailError, setEmailError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
+
+    const validateEmail = (value: string) => {
+        const trimmed = value.trim()
+        if (!trimmed) {
+            return "L'email est requis."
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(trimmed)) {
+            return "Veuillez entrer un email valide."
+        }
+
+        return ""
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        if (!email.trim()) {
-            toast.error("Email requis", {
-                description: "Veuillez entrer votre adresse email pour continuer."
-            })
+        const validationError = validateEmail(email)
+        setEmailError(validationError)
+        if (validationError) {
             return
         }
 
@@ -114,6 +128,7 @@ export default function ForgotPassword() {
                         transition={{ delay: 0.4, duration: 0.5 }}
                         onSubmit={handleSubmit}
                         className="space-y-6"
+                        noValidate
                     >
                         <div>
                             <label htmlFor="email" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
@@ -124,13 +139,26 @@ export default function ForgotPassword() {
                                     id="email"
                                     type="email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value)
+                                        if (emailError) {
+                                            setEmailError(validateEmail(e.target.value))
+                                        }
+                                    }}
+                                    onBlur={() => setEmailError(validateEmail(email))}
                                     placeholder="name@company.com"
-                                    className="w-full px-4 py-3.5 pr-10 border-2 border-[#e0e0e0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#156d95] focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white"
+                                    className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white ${emailError ? 'border-red-400 focus:ring-red-300' : 'border-[#e0e0e0] focus:ring-[#156d95]'}`}
                                     style={{ fontFamily: "Figtree" }}
+                                    aria-invalid={!!emailError}
+                                    aria-describedby={emailError ? "email-error" : undefined}
                                 />
                                 <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#999999] group-focus-within:text-[#156d95] transition-colors duration-300" />
                             </div>
+                            {emailError && (
+                                <p id="email-error" className="mt-2 text-sm font-medium text-red-500" style={{ fontFamily: "Figtree" }}>
+                                    {emailError}
+                                </p>
+                            )}
                         </div>
 
                         <motion.button

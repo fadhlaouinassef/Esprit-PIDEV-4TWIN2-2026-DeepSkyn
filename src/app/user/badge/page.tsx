@@ -500,7 +500,7 @@ export default function BadgePage() {
 
     return (
         <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
-            <div className="mx-auto w-full max-w-[1000px] flex flex-col items-center space-y-8 py-10 px-4">
+            <div className="user-badge-page mx-auto w-full max-w-[1000px] flex flex-col items-center space-y-8 py-10 px-4">
                 
                 {/* Breadcrumb & Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">

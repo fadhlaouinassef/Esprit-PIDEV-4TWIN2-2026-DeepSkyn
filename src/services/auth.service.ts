@@ -170,11 +170,15 @@ export const signin = async (data: SigninData) => {
       };
     }
 
-    await trackLoginActivity(user.id, 'credentials');
-    await evaluateAndAwardBadgesForUser({
-      userId: user.id,
-      trigger: 'login',
-    });
+    try {
+      await trackLoginActivity(user.id, 'credentials');
+      await evaluateAndAwardBadgesForUser({
+        userId: user.id,
+        trigger: 'login',
+      });
+    } catch (sideEffectError) {
+      console.error('Signin side-effect error (non-blocking):', sideEffectError);
+    }
 
     return {
       success: true,

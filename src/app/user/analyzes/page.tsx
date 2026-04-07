@@ -556,7 +556,7 @@ export default function AnalyzesPage() {
 
     return (
         <UserLayout>
-            <div className="mx-auto w-full max-w-[1400px]">
+            <div className="user-analyzes-page mx-auto w-full max-w-[1400px]">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div className="flex flex-col">

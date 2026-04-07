@@ -389,7 +389,7 @@ export default function RoutinePage() {
 
     return (
         <UserLayout userName={userName} userPhoto="/avatar.png">
-            <div className="min-h-full py-6 px-4 md:px-8 max-w-[1200px] mx-auto relative space-y-6">
+            <div className="user-routines-page min-h-full py-6 px-4 md:px-8 max-w-[1200px] mx-auto relative space-y-6">
 
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">

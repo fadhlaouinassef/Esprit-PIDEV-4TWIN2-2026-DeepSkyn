@@ -10,7 +10,7 @@ export default function UserDashboard() {
 
     return (
         <UserLayout>
-            <div className="mx-auto w-full max-w-[1200px]">
+            <div className="user-dashboard-page mx-auto w-full max-w-[1200px]">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                         Welcome back, {displayName}!

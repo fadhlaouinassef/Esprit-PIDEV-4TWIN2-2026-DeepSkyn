@@ -289,7 +289,7 @@ export default function ProfilePage() {
                                 </p>
 
                                 <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-4">
-                                    <Link href="/user/settings" className="flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-[#156d95] font-bold shadow-xl hover:scale-105 active:scale-95 transition-all">
+                                    <Link href="/user/settings" className="profile-edit-link flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-[#156d95] font-bold shadow-xl hover:scale-105 active:scale-95 transition-all">
                                         <Settings size={18} />
                                         Edit Profile
                                     </Link>

@@ -261,6 +261,12 @@
 
   /* High Contrast Mode: enforce strong foreground/background separation */
   .user-high-contrast {
+    --hc-accent: var(--hc-theme-accent, var(--app-accent, #005fcc));
+    --hc-accent-soft: var(--hc-theme-accent-soft, #dbeafe);
+    --hc-accent-soft-strong: var(--hc-theme-accent-soft-strong, #bfdbfe);
+    --hc-accent-ink: var(--hc-theme-accent-ink, #1e3a8a);
+    --hc-accent-dark: var(--hc-theme-accent-dark, #1d4ed8);
+    --hc-accent-light: var(--hc-theme-accent-light, #93c5fd);
     --background: oklch(1 0 0);
     --foreground: oklch(0 0 0);
     --card: oklch(1 0 0);
@@ -395,14 +401,20 @@
   }
 
   .user-high-contrast a {
-    color: #0b57d0 !important;
+    color: var(--hc-accent-ink) !important;
     text-decoration: underline;
     text-underline-offset: 2px;
     font-weight: 600;
   }
 
   .dark .user-high-contrast a {
-    color: #9ed0ff !important;
+    color: var(--hc-accent-light) !important;
+  }
+
+  .user-high-contrast a.profile-edit-link,
+  .user-high-contrast a.profile-edit-link:hover,
+  .user-high-contrast a.profile-edit-link:focus-visible {
+    text-decoration: none !important;
   }
 
   /* Keep sidebar/navigation cleaner while preserving discoverability */
@@ -513,12 +525,12 @@
   .user-high-contrast [class*="bg-primary/5"],
   .user-high-contrast [class*="bg-primary/10"],
   .user-high-contrast [class*="bg-primary/20"] {
-    background-color: #dbeafe !important;
+    background-color: var(--hc-accent-soft) !important;
   }
 
   .user-high-contrast [class*="text-primary/"],
   .user-high-contrast [class*="text-primary"] {
-    color: #1e3a8a !important;
+    color: var(--hc-accent-ink) !important;
   }
 
   /* Semantic colors kept vivid and readable in high contrast mode */
@@ -575,8 +587,8 @@
 
   .user-high-contrast .bg-blue-50,
   .user-high-contrast .bg-blue-500\/5,
-  .user-high-contrast .bg-blue-500\/10 { background-color: #dbeafe !important; color: #1e3a8a !important; }
-  .user-high-contrast .bg-blue-600 { background-color: #2563eb !important; color: #ffffff !important; }
+  .user-high-contrast .bg-blue-500\/10 { background-color: var(--hc-accent-soft) !important; color: var(--hc-accent-ink) !important; }
+  .user-high-contrast .bg-blue-600 { background-color: var(--hc-accent-dark) !important; color: #ffffff !important; }
   .user-high-contrast .bg-indigo-500,
   .user-high-contrast .bg-indigo-500\/10 { background-color: #4f46e5 !important; color: #ffffff !important; }
   .user-high-contrast .bg-purple-500,
@@ -613,6 +625,146 @@
   .dark .user-high-contrast .dark\:border-emerald-800,
   .dark .user-high-contrast .dark\:border-green-800 {
     border-color: #64748b !important;
+  }
+
+  /* Dashboard (user) first-screen tuning: strong contrast, no borders */
+  .user-high-contrast .user-dashboard-page {
+    color: #0f172a;
+  }
+
+  .user-high-contrast .user-dashboard-page .text-gray-500,
+  .user-high-contrast .user-dashboard-page .text-gray-400 {
+    color: #475569 !important;
+  }
+
+  .user-high-contrast .user-dashboard-page .rounded-2xl {
+    border-color: transparent !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  .user-high-contrast .user-dashboard-page .bg-white,
+  .user-high-contrast .user-dashboard-page .bg-gray-50 {
+    background-color: #ffffff !important;
+  }
+
+  .user-high-contrast .user-dashboard-page button.bg-primary {
+    background-color: var(--hc-accent-dark) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+  }
+
+  /* Routines (user) high-contrast tuning: no borders, clearer hierarchy */
+  .user-high-contrast .user-routines-page {
+    color: #0f172a;
+  }
+
+  .user-high-contrast .user-routines-page [class*="border-"] {
+    border-color: transparent !important;
+  }
+
+  .user-high-contrast .user-routines-page .bg-card,
+  .user-high-contrast .user-routines-page .bg-white,
+  .user-high-contrast .user-routines-page .bg-muted,
+  .user-high-contrast .user-routines-page .bg-muted\/30,
+  .user-high-contrast .user-routines-page .bg-muted\/50 {
+    background-color: #ffffff !important;
+  }
+
+  .user-high-contrast .user-routines-page [class*="text-muted-foreground"],
+  .user-high-contrast .user-routines-page .text-gray-500,
+  .user-high-contrast .user-routines-page .text-gray-400 {
+    color: #475569 !important;
+  }
+
+  .user-high-contrast .user-routines-page .text-primary,
+  .user-high-contrast .user-routines-page [class*="text-primary"]:not([class*="text-primary-foreground"]) {
+    color: var(--hc-accent-ink) !important;
+  }
+
+  .user-high-contrast .user-routines-page [class*="text-primary-foreground"] {
+    color: #ffffff !important;
+  }
+
+  .user-high-contrast .user-routines-page .bg-primary,
+  .user-high-contrast .user-routines-page [class~="bg-primary"] {
+    background-color: var(--hc-accent-dark) !important;
+    color: #ffffff !important;
+  }
+
+  .user-high-contrast .user-routines-page [class*="bg-primary/5"],
+  .user-high-contrast .user-routines-page [class*="bg-primary/10"],
+  .user-high-contrast .user-routines-page [class*="bg-primary/20"] {
+    background-color: var(--hc-accent-soft-strong) !important;
+    color: var(--hc-accent-ink) !important;
+  }
+
+  .user-high-contrast .user-routines-page .bg-slate-900 .text-slate-300,
+  .user-high-contrast .user-routines-page .bg-slate-900 [class*="text-slate-300"] {
+    color: #e2e8f0 !important;
+  }
+
+  .user-high-contrast .user-routines-page .bg-slate-900 .text-primary,
+  .user-high-contrast .user-routines-page .bg-slate-900 [class*="text-primary"] {
+    color: var(--hc-accent-light) !important;
+  }
+
+  .user-high-contrast .user-routines-page .shadow-sm,
+  .user-high-contrast .user-routines-page .shadow,
+  .user-high-contrast .user-routines-page .shadow-md,
+  .user-high-contrast .user-routines-page .shadow-lg,
+  .user-high-contrast .user-routines-page .shadow-xl,
+  .user-high-contrast .user-routines-page .shadow-2xl {
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  /* Analyzes (user) high-contrast tuning */
+  .user-high-contrast .user-analyzes-page [class*="border-"] {
+    border-color: transparent !important;
+  }
+
+  .user-high-contrast .user-analyzes-page .bg-\[\#156d95\],
+  .user-high-contrast .user-analyzes-page .hover\:bg-\[\#115a7b\]:hover {
+    background-color: #156d95 !important;
+  }
+
+
+  /* Complaints (user): keep New Claim CTA readable in high contrast */
+  .user-high-contrast .user-complaints-page .complaints-new-claim-btn {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+  }
+
+  .user-high-contrast .user-complaints-page .complaints-new-claim-btn * {
+    color: #ffffff !important;
+  }
+  .user-high-contrast .user-analyzes-page a.bg-\[\#156d95\],
+  .user-high-contrast .user-analyzes-page a.bg-\[\#156d95\] * {
+    color: #ffffff !important;
+    text-decoration: none !important;
+  }
+
+  /* Badge (user): keep white text on dark CTA buttons */
+  .user-high-contrast .user-badge-page button.bg-gray-900,
+  .user-high-contrast .user-badge-page button.bg-slate-900,
+  .user-high-contrast .user-badge-page button[class*="bg-gray-900"],
+  .user-high-contrast .user-badge-page button[class*="bg-slate-900"] {
+    color: #ffffff !important;
+  }
+
+  .user-high-contrast .user-badge-page button.bg-gray-900 *,
+  .user-high-contrast .user-badge-page button.bg-slate-900 *,
+  .user-high-contrast .user-badge-page button[class*="bg-gray-900"] *,
+  .user-high-contrast .user-badge-page button[class*="bg-slate-900"] * {
+    color: #ffffff !important;
+  }
+
+  /* Products page keeps its category color (including orange) in high contrast mode. */
+  .user-high-contrast .user-products-page .products-hero .hero-kicker {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .user-high-contrast .user-products-page .products-hero .hero-subtitle {
+    color: rgba(255, 255, 255, 0.95) !important;
   }
 
   .user-high-contrast [class*="backdrop-blur"] {
