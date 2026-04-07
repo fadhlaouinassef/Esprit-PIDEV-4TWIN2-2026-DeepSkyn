@@ -25,6 +25,7 @@ function UserLayoutContent({ children }: UserLayoutProps) {
     const { isLoading } = useNavigation();
     const user = useAppSelector((state) => state.auth.user);
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
+    const highContrastMode = useAppSelector((state) => state.uiTheme.highContrastMode);
     const hydrated = useHydrated();
     const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
     const dispatch = useAppDispatch();
@@ -48,7 +49,7 @@ function UserLayoutContent({ children }: UserLayoutProps) {
 
     return (
         <div
-            className="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-lg font-medium"
+            className={`flex min-h-screen bg-gray-50 dark:bg-gray-900 text-lg font-medium ${highContrastMode ? "user-high-contrast" : ""}`}
             style={{
                 fontFamily: "Satoshi, sans-serif",
                 backgroundImage: `radial-gradient(circle at 10% 0%, ${appliedTheme.color}24 0%, transparent 40%)`,

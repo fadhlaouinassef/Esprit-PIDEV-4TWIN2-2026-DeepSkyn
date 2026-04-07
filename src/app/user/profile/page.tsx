@@ -251,7 +251,7 @@ export default function ProfilePage() {
                     className="space-y-8"
                 >
                     {/* Hero Section */}
-                    <motion.div variants={itemVariants} className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#156d95] to-[#0d4a6b] p-8 md:p-12 text-white shadow-2xl">
+                    <motion.div variants={itemVariants} className="hc-keep-gradient relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#156d95] to-[#0d4a6b] p-8 md:p-12 text-white shadow-2xl">
                         <div className="absolute -right-20 -top-20 size-80 rounded-full bg-white/5 blur-3xl opacity-50"></div>
                         <div className="absolute right-20 bottom-0 size-60 rounded-full bg-blue-400/10 blur-3xl opacity-30"></div>
 
@@ -440,7 +440,7 @@ export default function ProfilePage() {
                                 <div className="flex flex-col items-center">
                                     {profile?.badges && profile.badges.length > 0 ? (
                                         <div className="flex flex-col items-center text-center group">
-                                            <div className="size-24 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 p-1 mb-3 shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                                            <div className="hc-keep-gradient size-24 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-600 p-1 mb-3 shadow-lg group-hover:rotate-12 transition-transform duration-300">
                                                 <div className="size-full bg-white dark:bg-gray-900 rounded-xl flex items-center justify-center">
                                                     <Sparkles className="text-yellow-600" size={32} />
                                                 </div>

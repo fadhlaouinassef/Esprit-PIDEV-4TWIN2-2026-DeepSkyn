@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { store } from './index';
 import { ReactNode, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from './hooks';
-import { setSidebarTheme } from './slices/uiThemeSlice';
+import { setSidebarTheme, setHighContrastMode } from './slices/uiThemeSlice';
 
 const SIDEBAR_THEME_STORAGE_KEY = 'deepskyn_sidebar_theme';
 
@@ -30,8 +30,10 @@ function ThemeStorageSync() {
       if (storedTheme) {
         dispatch(setSidebarTheme(JSON.parse(storedTheme)));
       }
+      // High contrast is now opt-in per session and should only be enabled by explicit click.
+      dispatch(setHighContrastMode(false));
     } catch (error) {
-      console.error('Failed to load sidebar theme from localStorage', error);
+      console.error('Failed to load theme state from localStorage', error);
     } finally {
       hasLoadedFromStorage.current = true;
     }
@@ -43,7 +45,7 @@ function ThemeStorageSync() {
     try {
       localStorage.setItem(SIDEBAR_THEME_STORAGE_KEY, JSON.stringify(sidebarTheme));
     } catch (error) {
-      console.error('Failed to store sidebar theme in localStorage', error);
+      console.error('Failed to store theme state in localStorage', error);
     }
   }, [sidebarTheme]);
 
@@ -56,6 +58,7 @@ function ThemeStorageSync() {
     root.style.setProperty('--primary', sidebarTheme.color);
     root.style.setProperty('--ring', sidebarTheme.color);
     root.style.setProperty('--sidebar-primary', sidebarTheme.color);
+
   }, [sidebarTheme]);
 
   return null;

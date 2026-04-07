@@ -6,8 +6,8 @@ import { useState } from "react";
 import { UserInfo } from "./UserInfo";
 import { cn } from "@/lib/utils";
 import LanguageSwitcher from "../LanguageSwitcher";
-import { useAppSelector } from "@/store/hooks";
-import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { SIDEBAR_THEMES, toggleHighContrastMode } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -27,7 +27,11 @@ export function Header({ userName, userPhoto }: HeaderProps) {
     const [darkMode, setDarkMode] = useState(false);
     const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
     const [selectedAccessibilityModes, setSelectedAccessibilityModes] = useState<string[]>([]);
+    
+    const dispatch = useAppDispatch();
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
+    const highContrastMode = useAppSelector((state) => state.uiTheme.highContrastMode);
+    
     const hydrated = useHydrated();
     const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
 
@@ -58,9 +62,11 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                     >
                         <SlidersHorizontal className="h-4 w-4 text-[#156d95] transition-transform group-hover:rotate-12" />
                         <span className="hidden lg:inline-block">
-                            {selectedAccessibilityModes.length > 0
-                                ? `${selectedAccessibilityModes.length} mode${selectedAccessibilityModes.length > 1 ? "s" : ""}`
-                                : "Accessibility"}
+                            {(() => {
+                                const totalModes = selectedAccessibilityModes.length + (highContrastMode ? 1 : 0);
+                                if (totalModes > 0) return `${totalModes} mode${totalModes > 1 ? 's' : ''}`;
+                                return "Accessibility";
+                            })()}
                         </span>
                         <span className="lg:hidden">Access</span>
                     </button>
@@ -81,27 +87,36 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                                     className="absolute left-0 mt-3 z-50 w-56 origin-top-left rounded-2xl border border-gray-100 bg-white p-2 shadow-2xl backdrop-blur-xl dark:border-gray-800 dark:bg-gray-950"
                                 >
                                     <div className="space-y-1">
-                                        {ACCESSIBILITY_MODES.map((mode) => (
-                                            <button
-                                                key={mode}
-                                                onClick={() => {
-                                                    setSelectedAccessibilityModes((prev) =>
-                                                        prev.includes(mode)
-                                                            ? prev.filter((item) => item !== mode)
-                                                            : [...prev, mode]
-                                                    );
-                                                }}
-                                                className={cn(
-                                                    "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all",
-                                                    selectedAccessibilityModes.includes(mode)
-                                                        ? "bg-[#156d95]/10 text-[#156d95] font-semibold"
-                                                        : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-900"
-                                                )}
-                                            >
-                                                <span>{mode}</span>
-                                                {selectedAccessibilityModes.includes(mode) && <Check className="h-4 w-4" />}
-                                            </button>
-                                        ))}
+                                        {ACCESSIBILITY_MODES.map((mode) => {
+                                            const isActive = mode === "High Contrast" 
+                                                ? highContrastMode 
+                                                : selectedAccessibilityModes.includes(mode);
+                                            return (
+                                                <button
+                                                    key={mode}
+                                                    onClick={() => {
+                                                        if (mode === "High Contrast") {
+                                                            dispatch(toggleHighContrastMode());
+                                                        } else {
+                                                            setSelectedAccessibilityModes((prev) =>
+                                                                prev.includes(mode)
+                                                                    ? prev.filter((item) => item !== mode)
+                                                                    : [...prev, mode]
+                                                            );
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                        "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all",
+                                                        isActive
+                                                            ? "bg-[#156d95]/10 text-[#156d95] font-semibold"
+                                                            : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-900"
+                                                    )}
+                                                >
+                                                    <span>{mode}</span>
+                                                    {isActive && <Check className="h-4 w-4" />}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </motion.div>
                             </>

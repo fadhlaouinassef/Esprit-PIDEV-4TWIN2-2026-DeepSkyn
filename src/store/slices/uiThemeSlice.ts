@@ -14,10 +14,12 @@ export const SIDEBAR_THEMES: SidebarThemeOption[] = [
 
 interface UiThemeState {
   sidebarTheme: SidebarThemeOption;
+  highContrastMode: boolean;
 }
 
 const initialState: UiThemeState = {
   sidebarTheme: SIDEBAR_THEMES[0],
+  highContrastMode: false,
 };
 
 const isKnownTheme = (theme: SidebarThemeOption) => {
@@ -33,8 +35,14 @@ const uiThemeSlice = createSlice({
         state.sidebarTheme = action.payload;
       }
     },
+    toggleHighContrastMode: (state) => {
+      state.highContrastMode = !state.highContrastMode;
+    },
+    setHighContrastMode: (state, action: PayloadAction<boolean>) => {
+      state.highContrastMode = action.payload;
+    }
   },
 });
 
-export const { setSidebarTheme } = uiThemeSlice.actions;
+export const { setSidebarTheme, toggleHighContrastMode, setHighContrastMode } = uiThemeSlice.actions;
 export default uiThemeSlice.reducer;

@@ -202,7 +202,15 @@
     @apply border-border outline-none;
   }
 
-  *:focus, *:focus-visible {
+  *,
+  *::before,
+  *::after {
+    border-width: 0 !important;
+    border-color: transparent !important;
+  }
+
+  *:focus,
+  *:focus-visible {
     @apply outline-none ring-0 ring-offset-0;
     box-shadow: none !important;
   }
@@ -249,6 +257,366 @@
     html {
       scroll-behavior: auto;
     }
+  }
+
+  /* High Contrast Mode: enforce strong foreground/background separation */
+  .user-high-contrast {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0 0 0);
+    --muted: oklch(0.95 0 0);
+    --muted-foreground: oklch(0.2 0 0);
+    --border: oklch(0.72 0 0);
+    --input: oklch(0.72 0 0);
+    --ring: oklch(0 0 0);
+  }
+
+  .dark .user-high-contrast {
+    --background: oklch(0.07 0 0);
+    --foreground: oklch(1 0 0);
+    --card: oklch(0.1 0 0);
+    --card-foreground: oklch(1 0 0);
+    --popover: oklch(0.1 0 0);
+    --popover-foreground: oklch(1 0 0);
+    --muted: oklch(0.18 0 0);
+    --muted-foreground: oklch(0.94 0 0);
+    --border: oklch(0.5 0 0);
+    --input: oklch(0.5 0 0);
+    --ring: oklch(1 0 0);
+  }
+
+  .user-high-contrast {
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+  }
+
+  .user-high-contrast .bg-white,
+  .user-high-contrast .bg-gray-50,
+  .user-high-contrast .bg-gray-100,
+  .user-high-contrast .bg-slate-50 {
+    background-color: #ffffff !important;
+  }
+
+  .dark .user-high-contrast .dark\:bg-gray-900,
+  .dark .user-high-contrast .dark\:bg-gray-950,
+  .dark .user-high-contrast .dark\:bg-gray-dark,
+  .dark .user-high-contrast .dark\:bg-gray-800 {
+    background-color: #111111 !important;
+  }
+
+  .user-high-contrast .text-gray-400,
+  .user-high-contrast .text-gray-500,
+  .user-high-contrast .text-gray-600,
+  .user-high-contrast .text-gray-700,
+  .user-high-contrast .text-slate-500,
+  .user-high-contrast .text-slate-600 {
+    color: #111111 !important;
+  }
+
+  .dark .user-high-contrast .dark\:text-gray-400,
+  .dark .user-high-contrast .dark\:text-gray-500,
+  .dark .user-high-contrast .dark\:text-gray-300,
+  .dark .user-high-contrast .dark\:text-slate-400 {
+    color: #ffffff !important;
+  }
+
+  .user-high-contrast .border-gray-50,
+  .user-high-contrast .border-gray-100,
+  .user-high-contrast .border-gray-200,
+  .user-high-contrast .border-slate-200 {
+    border-color: #94a3b8 !important;
+  }
+
+  .dark .user-high-contrast .dark\:border-gray-700,
+  .dark .user-high-contrast .dark\:border-gray-800,
+  .dark .user-high-contrast .dark\:border-slate-700 {
+    border-color: #64748b !important;
+  }
+
+  .user-high-contrast input,
+  .user-high-contrast textarea,
+  .user-high-contrast select {
+    background-color: var(--card) !important;
+    color: var(--foreground) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  .user-high-contrast input:focus-visible,
+  .user-high-contrast textarea:focus-visible,
+  .user-high-contrast select:focus-visible {
+    border-color: var(--ring) !important;
+  }
+
+  .user-high-contrast input::placeholder,
+  .user-high-contrast textarea::placeholder {
+    color: #404040 !important;
+    opacity: 1;
+  }
+
+  .dark .user-high-contrast input::placeholder,
+  .dark .user-high-contrast textarea::placeholder {
+    color: #e5e5e5 !important;
+  }
+
+  .user-high-contrast *:focus-visible {
+    outline: 3px solid var(--ring) !important;
+    outline-offset: 2px;
+    box-shadow: none !important;
+  }
+
+  .user-high-contrast .shadow-sm,
+  .user-high-contrast .shadow,
+  .user-high-contrast .shadow-md,
+  .user-high-contrast .shadow-lg,
+  .user-high-contrast .shadow-xl,
+  .user-high-contrast .shadow-2xl {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08) !important;
+    border-color: var(--border) !important;
+  }
+
+  /* Site-wide enforcement for nested content */
+  .user-high-contrast,
+  .user-high-contrast * {
+    text-shadow: none !important;
+  }
+
+  .user-high-contrast [class*="bg-white/"],
+  .user-high-contrast [class*="bg-gray-"],
+  .user-high-contrast [class*="bg-slate-"] {
+    background-image: none !important;
+  }
+
+  .user-high-contrast [class*="text-zinc-"],
+  .user-high-contrast [class*="text-neutral-"] {
+    color: var(--foreground) !important;
+  }
+
+  .user-high-contrast a {
+    color: #0b57d0 !important;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 600;
+  }
+
+  .dark .user-high-contrast a {
+    color: #9ed0ff !important;
+  }
+
+  /* Keep sidebar/navigation cleaner while preserving discoverability */
+  .user-high-contrast nav a,
+  .user-high-contrast aside a {
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .user-high-contrast nav a:hover,
+  .user-high-contrast nav a:focus-visible,
+  .user-high-contrast aside a:hover,
+  .user-high-contrast aside a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .user-high-contrast button,
+  .user-high-contrast [role="button"],
+  .user-high-contrast [type="button"],
+  .user-high-contrast [type="submit"] {
+    color: var(--foreground) !important;
+    border-color: var(--border) !important;
+  }
+
+  .user-high-contrast .bg-primary,
+  .user-high-contrast [class*="bg-primary"] {
+    color: #ffffff !important;
+    border-color: transparent !important;
+  }
+
+  .user-high-contrast .border,
+  .user-high-contrast [class*="border-"] {
+    border-color: var(--border) !important;
+  }
+
+  .user-high-contrast button:disabled,
+  .user-high-contrast [role="button"][aria-disabled="true"] {
+    opacity: 0.7 !important;
+  }
+
+  .user-high-contrast table,
+  .user-high-contrast th,
+  .user-high-contrast td {
+    border-color: var(--border) !important;
+    color: var(--foreground) !important;
+  }
+
+  .user-high-contrast th {
+    background-color: var(--muted) !important;
+  }
+
+  .user-high-contrast .rounded-2xl,
+  .user-high-contrast .rounded-3xl,
+  .user-high-contrast .rounded-\[2rem\],
+  .user-high-contrast .rounded-\[32px\],
+  .user-high-contrast .rounded-\[40px\] {
+    border-color: var(--border) !important;
+  }
+
+  .user-high-contrast hr {
+    border-color: var(--border) !important;
+  }
+
+  .user-high-contrast svg,
+  .user-high-contrast i {
+    color: currentColor !important;
+  }
+
+  .user-high-contrast .ring-0,
+  .user-high-contrast .ring-1,
+  .user-high-contrast .ring-2,
+  .user-high-contrast .ring,
+  .user-high-contrast [class*="ring-"] {
+    --tw-ring-color: var(--ring) !important;
+  }
+
+  /* Prevent washed-out UI in routines and other user pages */
+  .user-high-contrast [class*="opacity-30"],
+  .user-high-contrast [class*="opacity-40"],
+  .user-high-contrast [class*="opacity-50"],
+  .user-high-contrast [class*="opacity-60"] {
+    opacity: 1 !important;
+  }
+
+  .user-high-contrast [class*="text-muted-foreground"],
+  .user-high-contrast [class*="text-gray-300"],
+  .user-high-contrast [class*="text-gray-400"] {
+    color: #334155 !important;
+  }
+
+  .dark .user-high-contrast [class*="dark:text-gray-300"],
+  .dark .user-high-contrast [class*="dark:text-gray-400"],
+  .dark .user-high-contrast [class*="dark:text-slate-300"],
+  .dark .user-high-contrast [class*="dark:text-slate-400"] {
+    color: #e2e8f0 !important;
+  }
+
+  .user-high-contrast [class*="bg-muted/"] {
+    background-color: #f1f5f9 !important;
+  }
+
+  .dark .user-high-contrast [class*="dark:bg-gray-800"],
+  .dark .user-high-contrast [class*="dark:bg-gray-900"] {
+    background-color: #1f2937 !important;
+  }
+
+  .user-high-contrast [class*="bg-primary/5"],
+  .user-high-contrast [class*="bg-primary/10"],
+  .user-high-contrast [class*="bg-primary/20"] {
+    background-color: #dbeafe !important;
+  }
+
+  .user-high-contrast [class*="text-primary/"],
+  .user-high-contrast [class*="text-primary"] {
+    color: #1e3a8a !important;
+  }
+
+  /* Semantic colors kept vivid and readable in high contrast mode */
+  .user-high-contrast .text-green-500,
+  .user-high-contrast .text-green-600,
+  .user-high-contrast .text-green-700 { color: #166534 !important; }
+  .dark .user-high-contrast .dark\:text-green-400,
+  .dark .user-high-contrast .dark\:text-green-500 { color: #86efac !important; }
+
+  .user-high-contrast .text-red-500,
+  .user-high-contrast .text-red-600,
+  .user-high-contrast .text-red-700 { color: #b91c1c !important; }
+  .dark .user-high-contrast .dark\:text-red-400,
+  .dark .user-high-contrast .dark\:text-red-500 { color: #fca5a5 !important; }
+
+  .user-high-contrast .text-amber-500,
+  .user-high-contrast .text-amber-600,
+  .user-high-contrast .text-yellow-600 { color: #92400e !important; }
+  .dark .user-high-contrast .dark\:text-amber-400,
+  .dark .user-high-contrast .dark\:text-yellow-400 { color: #fcd34d !important; }
+
+  .user-high-contrast .text-blue-500,
+  .user-high-contrast .text-blue-600,
+  .user-high-contrast .text-blue-700,
+  .user-high-contrast .text-blue-900,
+  .user-high-contrast .text-indigo-500,
+  .user-high-contrast .text-indigo-600,
+  .user-high-contrast .text-purple-500,
+  .user-high-contrast .text-purple-600,
+  .user-high-contrast .text-rose-500,
+  .user-high-contrast .text-rose-600,
+  .user-high-contrast .text-rose-700,
+  .user-high-contrast .text-emerald-500,
+  .user-high-contrast .text-emerald-600,
+  .user-high-contrast .text-emerald-700 {
+    color: #0f172a !important;
+  }
+
+  .dark .user-high-contrast .dark\:text-blue-300,
+  .dark .user-high-contrast .dark\:text-blue-400,
+  .dark .user-high-contrast .dark\:text-indigo-400,
+  .dark .user-high-contrast .dark\:text-purple-400,
+  .dark .user-high-contrast .dark\:text-rose-400,
+  .dark .user-high-contrast .dark\:text-emerald-400 {
+    color: #e2e8f0 !important;
+  }
+
+  .user-high-contrast .bg-green-100,
+  .user-high-contrast .bg-green-500\/10 { background-color: #dcfce7 !important; color: #14532d !important; }
+  .user-high-contrast .bg-red-100,
+  .user-high-contrast .bg-red-500\/10 { background-color: #fee2e2 !important; color: #7f1d1d !important; }
+  .user-high-contrast .bg-amber-100,
+  .user-high-contrast .bg-yellow-100 { background-color: #fef3c7 !important; color: #78350f !important; }
+
+  .user-high-contrast .bg-blue-50,
+  .user-high-contrast .bg-blue-500\/5,
+  .user-high-contrast .bg-blue-500\/10 { background-color: #dbeafe !important; color: #1e3a8a !important; }
+  .user-high-contrast .bg-blue-600 { background-color: #2563eb !important; color: #ffffff !important; }
+  .user-high-contrast .bg-indigo-500,
+  .user-high-contrast .bg-indigo-500\/10 { background-color: #4f46e5 !important; color: #ffffff !important; }
+  .user-high-contrast .bg-purple-500,
+  .user-high-contrast .bg-purple-500\/10 { background-color: #7c3aed !important; color: #ffffff !important; }
+  .user-high-contrast .bg-rose-500,
+  .user-high-contrast .bg-rose-500\/10 { background-color: #e11d48 !important; color: #ffffff !important; }
+  .user-high-contrast .bg-emerald-500,
+  .user-high-contrast .bg-emerald-500\/10 { background-color: #059669 !important; color: #ffffff !important; }
+
+  .dark .user-high-contrast .dark\:bg-blue-900\/20,
+  .dark .user-high-contrast .dark\:bg-blue-900\/30,
+  .dark .user-high-contrast .dark\:bg-indigo-900\/20,
+  .dark .user-high-contrast .dark\:bg-purple-900\/20,
+  .dark .user-high-contrast .dark\:bg-rose-900\/20,
+  .dark .user-high-contrast .dark\:bg-emerald-900\/20 {
+    background-color: #1f2937 !important;
+    color: #f8fafc !important;
+  }
+
+  .user-high-contrast .border-blue-100,
+  .user-high-contrast .border-blue-200,
+  .user-high-contrast .border-blue-300,
+  .user-high-contrast .border-rose-100,
+  .user-high-contrast .border-rose-200,
+  .user-high-contrast .border-amber-200,
+  .user-high-contrast .border-emerald-200,
+  .user-high-contrast .border-green-200 {
+    border-color: #94a3b8 !important;
+  }
+
+  .dark .user-high-contrast .dark\:border-blue-700,
+  .dark .user-high-contrast .dark\:border-rose-800,
+  .dark .user-high-contrast .dark\:border-amber-800,
+  .dark .user-high-contrast .dark\:border-emerald-800,
+  .dark .user-high-contrast .dark\:border-green-800 {
+    border-color: #64748b !important;
+  }
+
+  .user-high-contrast [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
   }
 
   /* Composer Animations */
@@ -321,6 +689,7 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
