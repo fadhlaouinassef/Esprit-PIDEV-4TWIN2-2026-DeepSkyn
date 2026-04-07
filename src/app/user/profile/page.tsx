@@ -345,7 +345,7 @@ export default function ProfilePage() {
                                         <Sparkles className="text-[#156d95]" size={22} />
                                         Latest Skin Analysis
                                     </h3>
-                                    <Link href="/user/Analyzes" className="text-sm font-bold text-[#156d95] hover:underline flex items-center gap-1 uppercase tracking-wider">
+                                    <Link href="/user/analyzes" className="text-sm font-bold text-[#156d95] hover:underline flex items-center gap-1 uppercase tracking-wider">
                                         View History <ChevronRight size={14} />
                                     </Link>
                                 </div>

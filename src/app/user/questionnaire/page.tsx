@@ -836,7 +836,7 @@ export default function QuestionnairePage() {
                                 <div className="mt-4 flex flex-wrap gap-2">
                                     <button
                                         type="button"
-                                        onClick={() => window.location.href = '/user/Analyzes'}
+                                        onClick={() => window.location.href = '/user/analyzes'}
                                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 text-xs font-bold text-amber-900 dark:text-amber-200"
                                     >
                                         <History className="size-3.5" />
@@ -1168,7 +1168,7 @@ export default function QuestionnairePage() {
                                     <ArrowRight className="size-5" />
                                 </motion.button>
                                 <motion.button
-                                    onClick={() => window.location.href = "/user/Analyzes"}
+                                    onClick={() => window.location.href = "/user/analyzes"}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="flex-1 flex items-center justify-center gap-3 py-4 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 text-gray-900 dark:text-white font-bold rounded-2xl transition-all shadow-lg text-base"

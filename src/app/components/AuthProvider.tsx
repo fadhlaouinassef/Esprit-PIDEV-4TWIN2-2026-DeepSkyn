@@ -61,6 +61,38 @@ function SessionSync() {
     }
   }, [session, status, dispatch]);
 
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+
+    const syncFromDatabaseProfile = async () => {
+      try {
+        const res = await fetch('/api/user/profile', { cache: 'no-store' });
+        if (!res.ok) return;
+
+        const profile = await res.json();
+        const storedUserRaw = localStorage.getItem('deepskyn_user');
+        const storedUser = storedUserRaw ? JSON.parse(storedUserRaw) : null;
+
+        dispatch(setUser({
+          id: Number(profile.id ?? session?.user?.id ?? storedUser?.id ?? 0),
+          nom: profile.nom ?? storedUser?.nom ?? session?.user?.name ?? '',
+          prenom: profile.prenom ?? storedUser?.prenom ?? '',
+          email: profile.email ?? storedUser?.email ?? session?.user?.email ?? '',
+          photo: profile.image ?? storedUser?.photo ?? session?.user?.image ?? '/avatar.png',
+          role: profile.role ?? storedUser?.role ?? session?.user?.role ?? 'user',
+          verified: typeof profile.verified === 'boolean' ? profile.verified : (storedUser?.verified ?? true),
+          age: profile.age ?? storedUser?.age,
+          sexe: profile.sexe ?? storedUser?.sexe,
+          skin_type: profile.skin_type ?? storedUser?.skin_type,
+        }));
+      } catch (error) {
+        console.error('[AuthSync] Impossible de synchroniser le profil DB', error);
+      }
+    };
+
+    syncFromDatabaseProfile();
+  }, [status, session?.user?.email, session?.user?.id, session?.user?.image, session?.user?.name, session?.user?.role, dispatch]);
+
   return null;
 }
 

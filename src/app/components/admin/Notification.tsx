@@ -55,7 +55,7 @@ export function Notification() {
                             time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                             date: now.toLocaleDateString(),
                             isNew: !n.is_read,
-                            link: n.type === 'signup' ? '/admin/users' : n.type === 'verify' ? '/admin/users' : `/admin/Analyzes?search=${encodeURIComponent(n.title.split(' completed')[0])}`
+                            link: n.type === 'signup' ? '/admin/users' : n.type === 'verify' ? '/admin/users' : `/admin/analyzes?search=${encodeURIComponent(n.title.split(' completed')[0])}`
                         };
                     });
                     setNotifications(formatted);
@@ -126,7 +126,7 @@ export function Notification() {
                         time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                         date: now.toLocaleDateString(),
                         isNew: true,
-                        link: `/admin/Analyzes?search=${encodeURIComponent(data.nom || '')}`
+                        link: `/admin/analyzes?search=${encodeURIComponent(data.nom || '')}`
                     };
 
                     setNotifications(prev => [newNotif, ...prev].slice(0, 50));
