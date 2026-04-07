@@ -14,9 +14,9 @@ export async function proxy(request: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL('/signin', request.url));
     }
-    // if (token.role === 'ADMIN') {
-    //   return NextResponse.redirect(new URL('/admin', request.url));
-    // }
+    if (token.role === 'ADMIN') {
+    return NextResponse.redirect(new URL('/admin', request.url));
+    }
   }
 
   // Routes protégées pour les admins
@@ -24,9 +24,9 @@ export async function proxy(request: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL('/signin', request.url));
     }
-    // if (token.role !== 'ADMIN') {
-    //   return NextResponse.redirect(new URL('/user', request.url));
-    // }
+    if (token.role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/user', request.url));
+    }
   }
 
   return NextResponse.next();

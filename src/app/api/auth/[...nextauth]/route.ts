@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       try {
         console.log('[AuthSign] Process started for:', user.email);
         if (account?.provider === 'google') {
@@ -87,19 +87,31 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
     },
-    async session({ session }) {
+    async jwt({ token, user }) {
+      try {
+        if (user?.email) {
+          const dbUser = await findUserByEmail(user.email);
+          if (dbUser) {
+            token.id = dbUser.id.toString();
+            token.role = dbUser.role;
+          }
+        }
+      } catch (error) {
+        console.error('[AuthJwt] Failed to enrich JWT from database:', error);
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
       if (!session.user?.email) {
         return session;
       }
 
-      try {
-        const dbUser = await findUserByEmail(session.user.email);
-        if (dbUser) {
-          session.user.id = dbUser.id.toString();
-          session.user.role = dbUser.role;
-        }
-      } catch (error) {
-        console.error('[AuthSession] Failed to enrich session from database:', error);
+      if (token?.id) {
+        session.user.id = String(token.id);
+      }
+      if (token?.role) {
+        session.user.role = token.role as typeof session.user.role;
       }
 
       return session;
