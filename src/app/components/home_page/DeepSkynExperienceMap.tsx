@@ -75,7 +75,7 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
     description:
       "Access key indicators (hydration, sensitivity, radiance). Track your skin's evolution with our high-definition scans.",
     ctaLabel: "View My Analysis",
-    ctaHref: "/user/Analyzes",
+    ctaHref: "/user/analyzes",
     gradient: "from-sky-400 via-blue-500 to-cyan-600",
     accentColor: "#38bdf8",
     backgroundImage: "/home-guide/step-3-analysis.jpg",

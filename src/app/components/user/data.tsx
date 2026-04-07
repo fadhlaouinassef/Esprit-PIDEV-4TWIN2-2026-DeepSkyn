@@ -41,7 +41,7 @@ export const USER_NAV_DATA = [
             {
                 title: "Analyzes",
                 icon: BarChart2,
-                url: "/user/Analyzes",
+                url: "/user/analyzes",
                 items: []
             },
             {

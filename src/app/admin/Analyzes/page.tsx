@@ -342,7 +342,7 @@ export default function AdminAnalyzesPage() {
                 {/* Header Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                     {[
-                        { label: "Total Analyses", value: totalAnalyses.toString(), icon: Activity, color: "text-blue-600", bg: "bg-blue-50" },
+                        { label: "Total Analyzes", value: totalAnalyses.toString(), icon: Activity, color: "text-blue-600", bg: "bg-blue-50" },
                         { label: "Active Users", value: Array.from(new Set(analyses.map(a => a.userId))).length.toString(), icon: UsersIcon, color: "text-emerald-600", bg: "bg-emerald-50" },
                         { label: "Avg. Score", value: avgScore, icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50" },
                         { label: "New Today", value: "New", icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
@@ -366,8 +366,8 @@ export default function AdminAnalyzesPage() {
                 <div className="bg-white dark:bg-gray-800 rounded-[32px] border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
                     <div className="p-8 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Recent Analyses</h2>
-                            <p className="text-gray-400 text-sm mt-1">Manage and review all system analyses from users.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Recent Analyzes</h2>
+                            <p className="text-gray-400 text-sm mt-1">Manage and review all system analyzes from users.</p>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="relative">
@@ -453,7 +453,7 @@ export default function AdminAnalyzesPage() {
                     )}
                     
                     <div className="p-8 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                        <p className="text-xs text-gray-400 font-medium">Showing {filteredAnalyses.length} of {analyses.length} analyses</p>
+                        <p className="text-xs text-gray-400 font-medium">Showing {filteredAnalyses.length} of {analyses.length} analyzes</p>
                         <div className="flex items-center gap-2">
                             <button className="px-4 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-400 opacity-50 cursor-not-allowed">Previous</button>
                             <button className="px-4 py-2 border border-blue-500 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold cursor-not-allowed">Next</button>
