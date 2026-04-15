@@ -20,48 +20,54 @@ function NavigationHandler({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const prevPathnameRef = useRef(pathname);
-  const loadingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hideTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const failSafeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const manualLoadingRef = useRef(false);
 
   const startLoading = () => {
     manualLoadingRef.current = true;
     setIsLoading(true);
+
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+    }
+    if (failSafeTimerRef.current) {
+      clearTimeout(failSafeTimerRef.current);
+    }
+
+    // Failsafe: stop spinner if navigation does not complete for any reason.
+    failSafeTimerRef.current = setTimeout(() => {
+      setIsLoading(false);
+      manualLoadingRef.current = false;
+    }, 10000);
   };
 
   useEffect(() => {
-    // Détecte le changement de route
-    if (pathname !== prevPathnameRef.current) {
-      // Si le loader n'est pas déjà actif manuellement, l'activer maintenant
-      if (!manualLoadingRef.current) {
-        setIsLoading(true);
+    // Route changed/settled: hide loader quickly instead of enforcing an artificial delay.
+    if (manualLoadingRef.current || isLoading) {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
       }
-
-      // Clear any existing timer
-      if (loadingTimerRef.current) {
-        clearTimeout(loadingTimerRef.current);
-      }
-
-      // Garde le loader visible pendant au moins 500ms pour une meilleure UX
-      loadingTimerRef.current = setTimeout(() => {
-        prevPathnameRef.current = pathname;
+      hideTimerRef.current = setTimeout(() => {
         setIsLoading(false);
         manualLoadingRef.current = false;
-      }, 500);
+      }, 80);
 
-      return () => {
-        if (loadingTimerRef.current) {
-          clearTimeout(loadingTimerRef.current);
-        }
-      };
-    } else if (manualLoadingRef.current) {
-      // Si on est sur la même page mais le loading manuel est actif, on l'arrête après un délai
-      loadingTimerRef.current = setTimeout(() => {
-        setIsLoading(false);
-        manualLoadingRef.current = false;
-      }, 500);
+      if (failSafeTimerRef.current) {
+        clearTimeout(failSafeTimerRef.current);
+        failSafeTimerRef.current = null;
+      }
     }
-  }, [pathname, searchParams]);
+
+    return () => {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      if (failSafeTimerRef.current) {
+        clearTimeout(failSafeTimerRef.current);
+      }
+    };
+  }, [pathname, searchParams, isLoading]);
 
   return (
     <NavigationContext.Provider value={{ startLoading, isLoading }}>

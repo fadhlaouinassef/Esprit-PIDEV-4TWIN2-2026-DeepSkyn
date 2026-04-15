@@ -1510,7 +1510,25 @@
       }
     },
     "actions": {
-      "newAnalysis": "تحليل جديد"
+      "newAnalysis": "تحليل جديد",
+      "exportCsv": "تصدير CSV",
+      "exportPdf": "تصدير PDF"
+    },
+    "export": {
+      "pdfTitle": "تصدير تحاليل البشرة - DeepSkyn",
+      "generatedOn": "تم الإنشاء في {date}",
+      "records": "سجلات",
+      "popupBlocked": "تم حظر نافذة الطباعة من المتصفح. اسمح بالنوافذ المنبثقة ثم أعد المحاولة.",
+      "columns": {
+        "date": "التاريخ",
+        "score": "الدرجة",
+        "skinType": "نوع البشرة",
+        "status": "الحالة",
+        "hydration": "الترطيب",
+        "oilProduction": "إفراز الزيوت",
+        "sensitivity": "الحساسية",
+        "concerns": "المشكلات"
+      }
     },
     "empty": {
       "title": "لم يتم العثور على تحاليل",
@@ -1999,6 +2017,7 @@
     "shortTitle": "وصول",
     "modesCount": "{count, plural, zero {لا أوضاع} one {وضع واحد} two {وضعان} few {# أوضاع} many {# وضعًا} other {# وضع}}",
     "highContrast": "تباين عالٍ",
+    "dyslexiaFont": "خط لعسر القراءة",
     "largeText": "نص كبير",
     "reducedMotion": "تقليل الحركة",
     "colorAssist": "مساعدة الألوان",

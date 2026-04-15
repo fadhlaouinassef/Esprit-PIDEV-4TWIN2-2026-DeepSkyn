@@ -289,7 +289,7 @@ export default function QuizzesPage() {
         }));
     };
 
-    const getCategoryLabel = (type: string, t: any) => {
+    const getCategoryLabel = (type: string) => {
         switch (type) {
             case 'droplets': return t('categories.skinType');
             case 'sparkles': return t('categories.skinGlow');

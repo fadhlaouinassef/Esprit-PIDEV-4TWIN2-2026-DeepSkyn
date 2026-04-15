@@ -7,7 +7,7 @@ import { UserInfo } from "./UserInfo";
 import { cn } from "@/lib/utils";
 import LanguageSwitcher from "../LanguageSwitcher";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setColorBlindAssistMode, SIDEBAR_THEMES, toggleHighContrastMode } from "@/store/slices/uiThemeSlice";
+import { setColorBlindAssistMode, SIDEBAR_THEMES, toggleDyslexiaMode, toggleHighContrastMode } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -19,6 +19,7 @@ interface HeaderProps {
 
 const ACCESSIBILITY_MODES = [
     "High Contrast",
+    "Dyslexia Friendly",
     "Large Text",
     "Reduced Motion",
 ];
@@ -42,6 +43,7 @@ export function Header({ userName, userPhoto }: HeaderProps) {
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
     const highContrastMode = useAppSelector((state) => state.uiTheme.highContrastMode);
     const colorBlindAssistMode = useAppSelector((state) => state.uiTheme.colorBlindAssistMode);
+    const dyslexiaMode = useAppSelector((state) => state.uiTheme.dyslexiaMode);
     
     const hydrated = useHydrated();
     const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
@@ -75,7 +77,8 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                         <span className="hidden lg:inline-block">
                             {(() => {
                                 const totalModes = selectedAccessibilityModes.length + (highContrastMode ? 1 : 0);
-                                if (totalModes > 0) return t('accessibility.modesCount', { count: totalModes });
+                                const total = totalModes + (dyslexiaMode ? 1 : 0);
+                                if (total > 0) return t('accessibility.modesCount', { count: total });
                                 return t('accessibility.title');
                             })()}
                         </span>
@@ -99,14 +102,19 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                                 >
                                     <div className="space-y-1">
                                         {ACCESSIBILITY_MODES.map((mode) => {
-                                            const isActive = mode === "High Contrast" 
-                                                ? highContrastMode 
-                                                : selectedAccessibilityModes.includes(mode);
+                                            const isActive =
+                                                mode === "High Contrast"
+                                                    ? highContrastMode
+                                                    : mode === "Dyslexia Friendly"
+                                                        ? dyslexiaMode
+                                                        : selectedAccessibilityModes.includes(mode);
 
                                             const label = (() => {
                                                 switch (mode) {
                                                     case 'High Contrast':
                                                         return t('accessibility.highContrast');
+                                                    case 'Dyslexia Friendly':
+                                                        return t('accessibility.dyslexiaFont');
                                                     case 'Large Text':
                                                         return t('accessibility.largeText');
                                                     case 'Reduced Motion':
@@ -121,6 +129,8 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                                                     onClick={() => {
                                                         if (mode === "High Contrast") {
                                                             dispatch(toggleHighContrastMode());
+                                                        } else if (mode === "Dyslexia Friendly") {
+                                                            dispatch(toggleDyslexiaMode());
                                                         } else {
                                                             setSelectedAccessibilityModes((prev) =>
                                                                 prev.includes(mode)
@@ -161,8 +171,6 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                                                         return t('accessibility.deutan');
                                                     case 'tritanopia':
                                                         return t('accessibility.tritan');
-                                                    default:
-                                                        return opt.label;
                                                 }
                                             })();
                                             return (

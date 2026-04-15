@@ -578,6 +578,176 @@ export default function AnalyzesPage() {
         { value: "Worse", label: t("filters.status.worse") },
     ];
 
+    const csvEscape = (value: string | number) => {
+        const text = String(value ?? "");
+        return `"${text.replace(/"/g, '""')}"`;
+    };
+
+    const exportCsv = () => {
+        const rows = filteredAnalyses.map((analysis) => ({
+            date: analysis.date,
+            score: analysis.score,
+            skinType: analysis.skinType,
+            status: analysis.status,
+            hydration: analysis.hydration,
+            oilProduction: analysis.oilProduction,
+            sensitivity: analysis.sensitivity,
+            concerns: Array.isArray(analysis.concerns) ? analysis.concerns.join(" | ") : "",
+        }));
+
+        const headers = [
+            t("export.columns.date"),
+            t("export.columns.score"),
+            t("export.columns.skinType"),
+            t("export.columns.status"),
+            t("export.columns.hydration"),
+            t("export.columns.oilProduction"),
+            t("export.columns.sensitivity"),
+            t("export.columns.concerns"),
+        ];
+
+        const body = rows.map((row) => [
+            csvEscape(row.date),
+            csvEscape(row.score),
+            csvEscape(row.skinType),
+            csvEscape(row.status),
+            csvEscape(`${row.hydration}%`),
+            csvEscape(`${row.oilProduction}%`),
+            csvEscape(row.sensitivity),
+            csvEscape(row.concerns),
+        ].join(","));
+
+        const csvContent = [headers.map(csvEscape).join(","), ...body].join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const stamp = new Date().toISOString().slice(0, 10);
+        link.href = url;
+        link.setAttribute("download", `deepskyn-analyses-${stamp}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const exportPdf = async () => {
+        const { jsPDF } = await import("jspdf");
+        const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+        const stamp = new Date().toLocaleDateString();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 24;
+        const lineHeight = 18;
+
+        const toDataUrl = async (url: string): Promise<string> => {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            return await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(String(reader.result));
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        };
+
+        try {
+            const logoDataUrl = await toDataUrl("/logo.png");
+            doc.addImage(logoDataUrl, "PNG", margin, margin - 4, 34, 34);
+        } catch {
+            // Continue without logo if loading fails.
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text(t("export.pdfTitle"), margin + 42, margin + 14);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(`${t("export.generatedOn", { date: stamp })} • ${filteredAnalyses.length} ${t("export.records")}`, margin + 42, margin + 30);
+
+        const columns = [
+            t("export.columns.date"),
+            t("export.columns.score"),
+            t("export.columns.skinType"),
+            t("export.columns.status"),
+            t("export.columns.hydration"),
+            t("export.columns.oilProduction"),
+            t("export.columns.sensitivity"),
+            t("export.columns.concerns"),
+        ];
+
+        const colWidths = [98, 48, 62, 58, 52, 58, 58, pageWidth - margin * 2 - (98 + 48 + 62 + 58 + 52 + 58 + 58)];
+        const maxChars = [16, 7, 10, 10, 8, 8, 10, 28];
+
+        let y = margin + 48;
+
+        const drawHeader = () => {
+            let x = margin;
+            doc.setDrawColor(229, 231, 235);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8);
+            columns.forEach((col, idx) => {
+                doc.setFillColor(239, 246, 255);
+                doc.rect(x, y, colWidths[idx], lineHeight + 4, "FD");
+                doc.text(col, x + 4, y + 13);
+                x += colWidths[idx];
+            });
+            y += lineHeight + 4;
+        };
+
+        drawHeader();
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+
+        const compactDate = (raw: string) => {
+            const parsed = new Date(raw);
+            if (Number.isNaN(parsed.getTime())) return raw;
+            const date = parsed.toLocaleDateString();
+            const hh = String(parsed.getHours()).padStart(2, "0");
+            const mm = String(parsed.getMinutes()).padStart(2, "0");
+            return `${date} ${hh}:${mm}`;
+        };
+
+        for (const analysis of filteredAnalyses) {
+            const concerns = Array.isArray(analysis.concerns) ? analysis.concerns.join(", ") : "-";
+            const row = [
+                compactDate(String(analysis.date || "-")),
+                `${analysis.score ?? "-"}/100`,
+                String(analysis.skinType || "-"),
+                String(analysis.status || "-"),
+                `${analysis.hydration ?? "-"}%`,
+                `${analysis.oilProduction ?? "-"}%`,
+                String(analysis.sensitivity || "-"),
+                concerns,
+            ];
+
+            const rowHeight = lineHeight;
+            if (y + rowHeight > pageHeight - margin) {
+                doc.addPage();
+                y = margin;
+                drawHeader();
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+            }
+
+            let x = margin;
+            doc.setDrawColor(229, 231, 235);
+
+            row.forEach((cell, idx) => {
+                doc.rect(x, y, colWidths[idx], rowHeight, "S");
+                const max = maxChars[idx] ?? 16;
+                const truncated = cell.length > max ? `${cell.slice(0, max - 1)}...` : cell;
+                doc.text(truncated, x + 4, y + 12);
+                x += colWidths[idx];
+            });
+
+            y += rowHeight;
+        }
+
+        const filename = `deepskyn-analyses-${new Date().toISOString().slice(0, 10)}.pdf`;
+        doc.save(filename);
+    };
+
     return (
         <UserLayout>
             <div className="user-analyzes-page mx-auto w-full max-w-[1400px]">
@@ -605,6 +775,18 @@ export default function AnalyzesPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <button
+                            onClick={exportCsv}
+                            className="px-5 py-3 rounded-2xl border border-[#156d95]/30 text-[#156d95] bg-white dark:bg-gray-900 dark:text-blue-300 dark:border-blue-400/30 font-bold hover:bg-[#156d95]/5 transition-all"
+                        >
+                            {t("actions.exportCsv")}
+                        </button>
+                        <button
+                            onClick={exportPdf}
+                            className="px-5 py-3 rounded-2xl border border-emerald-500/30 text-emerald-700 bg-white dark:bg-gray-900 dark:text-emerald-300 dark:border-emerald-400/30 font-bold hover:bg-emerald-500/5 transition-all"
+                        >
+                            {t("actions.exportPdf")}
+                        </button>
                         <div className="relative hidden md:block">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 size-4" />
                             <input

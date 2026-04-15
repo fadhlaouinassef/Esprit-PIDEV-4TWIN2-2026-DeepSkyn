@@ -1510,7 +1510,25 @@
       }
     },
     "actions": {
-      "newAnalysis": "Nouvelle analyse"
+      "newAnalysis": "Nouvelle analyse",
+      "exportCsv": "Exporter CSV",
+      "exportPdf": "Exporter PDF"
+    },
+    "export": {
+      "pdfTitle": "Export des analyses de peau - DeepSkyn",
+      "generatedOn": "Généré le {date}",
+      "records": "enregistrements",
+      "popupBlocked": "Le navigateur a bloqué la fenêtre d’impression. Autorisez les popups puis réessayez.",
+      "columns": {
+        "date": "Date",
+        "score": "Score",
+        "skinType": "Type de peau",
+        "status": "Statut",
+        "hydration": "Hydratation",
+        "oilProduction": "Production de sébum",
+        "sensitivity": "Sensibilité",
+        "concerns": "Préoccupations"
+      }
     },
     "empty": {
       "title": "Aucune analyse trouvée",
@@ -1999,6 +2017,7 @@
     "shortTitle": "Accès",
     "modesCount": "{count, plural, one {# mode} other {# modes}}",
     "highContrast": "Contraste élevé",
+    "dyslexiaFont": "Police dyslexie",
     "largeText": "Texte agrandi",
     "reducedMotion": "Animations réduites",
     "colorAssist": "Aide couleurs",
