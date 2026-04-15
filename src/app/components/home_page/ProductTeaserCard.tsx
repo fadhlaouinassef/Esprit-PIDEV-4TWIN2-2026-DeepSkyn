@@ -2,6 +2,7 @@
 import { motion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 import HeroSection from "./HeroSection"
+import { useTranslations } from "next-intl"
 type ProductTeaserCardProps = {
   dailyVolume?: string
   dailyVolumeLabel?: string
@@ -18,17 +19,18 @@ type ProductTeaserCardProps = {
 
 // @component: ProductTeaserCard
 export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
+  const t = useTranslations()
   const {
     dailyVolume = "50,000+",
-    dailyVolumeLabel = "HAPPY CUSTOMERS",
-    headline = "Your Personalized Skincare Routine",
-    subheadline = "DeepSkyn offers a complete range of skincare products for men and women. Cleansers, moisturizers, serums, and masks tailored to all skin types.",
-    description = "Trusted by thousands of users, DeepSkyn provides dermatologically tested skincare, formulated with natural ingredients for radiant skin.",
+    dailyVolumeLabel = t('home.product.dailyVolumeLabel'),
+    headline = t('home.product.headline'),
+    subheadline = t('home.product.subheadline'),
+    description = t('home.product.description'),
     videoSrc = "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&h=800&fit=crop",
     posterSrc = "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&h=800&fit=crop",
-    primaryButtonText = "My Routine",
+    primaryButtonText = t('home.product.primaryCta'),
     primaryButtonHref = "#routine",
-    secondaryButtonText = "View Products",
+    secondaryButtonText = t('home.product.secondaryCta'),
     secondaryButtonHref = "#products",
   } = props
 

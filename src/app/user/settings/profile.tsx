@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User, Mail, Edit, Upload, Lock, Calendar, UserCircle, Loader2 } from "lucide-react";
+import { User, Mail, Upload, Lock, Calendar, UserCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { updateUserProfile } from "@/store/slices/authSlice";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 // --- Internal Helper Components ---
 
@@ -79,7 +80,8 @@ function InputGroup({
 // --- Main Components ---
 
 export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: string }) {
-    const { data: session, status, update } = useSession();
+    const t = useTranslations();
+    const { status, update } = useSession();
     const router = useRouter();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
@@ -279,8 +281,8 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                 return;
             }
             setTimeout(() => setIsSaved(false), 3000);
-        } catch (error) {
-            toast.error("Error updating profile");
+        } catch {
+            toast.error(t("userSettingsProfile.toasts.updateProfileError"));
         } finally {
             setIsSaving(false);
         }
@@ -289,7 +291,7 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault();
         if (passwordData.newPassword !== passwordData.confirmNewPassword) {
-            toast.error("Passwords do not match");
+            toast.error(t("userSettingsProfile.toasts.passwordMismatch"));
             return;
         }
 
@@ -311,8 +313,9 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
             setIsSavedPassword(true);
             setPasswordData({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
             setTimeout(() => setIsSavedPassword(false), 3000);
-        } catch (error: any) {
-            toast.error(error.message || "Error changing password");
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : t("userSettingsProfile.toasts.changePasswordError");
+            toast.error(message);
         } finally {
             setIsSavingPassword(false);
         }
@@ -323,7 +326,7 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
         if (!file) return;
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Image too large (max 5MB)");
+            toast.error(t("userSettingsProfile.toasts.imageTooLarge"));
             return;
         }
 
@@ -344,8 +347,8 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                 update({ image: base64String });
                 // Update Redux
                 dispatch(updateUserProfile({ photo: base64String }));
-            } catch (error) {
-                toast.error("Error updating photo");
+            } catch {
+                toast.error(t("userSettingsProfile.toasts.updatePhotoError"));
             } finally {
                 setIsUploading(false);
             }
@@ -370,21 +373,21 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                         if (autoSpeech) stopSpeaking();
                         setAutoSpeech(!autoSpeech);
                     }}
-                    label="Audio Settings"
+                    label={t("userSettingsProfile.audioLabel")}
                 />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
                 {/* Left Column: Forms */}
                 <div className="lg:col-span-3 flex flex-col gap-8">
                     {/* Personal Information Form */}
-                    <ShowcaseSection title="Personal Information">
+                    <ShowcaseSection title={t("userSettingsProfile.sections.personalInformation")}>
                         <form onSubmit={handleUpdateProfile}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputGroup
                                     type="text"
                                     name="nom"
-                                    label="Last Name"
-                                    placeholder="Nom"
+                                    label={t("userSettingsProfile.fields.lastName")}
+                                    placeholder={t("userSettingsProfile.fields.lastNamePlaceholder")}
                                     value={formValues.nom}
                                     onChange={handleFormChange}
                                     icon={<User size={20} />}
@@ -392,8 +395,8 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                 <InputGroup
                                     type="text"
                                     name="prenom"
-                                    label="First Name"
-                                    placeholder="Prenom"
+                                    label={t("userSettingsProfile.fields.firstName")}
+                                    placeholder={t("userSettingsProfile.fields.firstNamePlaceholder")}
                                     value={formValues.prenom}
                                     onChange={handleFormChange}
                                     icon={<User size={20} />}
@@ -404,8 +407,8 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                 <InputGroup
                                     type="email"
                                     name="email"
-                                    label="Email Address"
-                                    placeholder="email@example.com"
+                                    label={t("userSettingsProfile.fields.email")}
+                                    placeholder={t("userSettingsProfile.fields.emailPlaceholder")}
                                     value={formValues.email}
                                     readOnly={true}
                                     icon={<Mail size={20} />}
@@ -413,8 +416,8 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                 <InputGroup
                                     type="number"
                                     name="age"
-                                    label="Age"
-                                    placeholder="Age"
+                                    label={t("userSettingsProfile.fields.age")}
+                                    placeholder={t("userSettingsProfile.fields.agePlaceholder")}
                                     value={formValues.age}
                                     onChange={handleFormChange}
                                     icon={<Calendar size={20} />}
@@ -424,7 +427,7 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="mb-6">
                                     <label className="mb-3 block text-[13px] font-medium text-gray-900 dark:text-white">
-                                        Sex (Gender)
+                                        {t("userSettingsProfile.fields.gender")}
                                     </label>
                                     <div className="relative">
                                         <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
@@ -436,9 +439,9 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                             onChange={handleFormChange}
                                             className="w-full appearance-none rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-5 text-[15px] font-medium text-gray-900 outline-none transition-all focus:border-[#156d95] dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-[#156d95]"
                                         >
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
+                                            <option value="Male">{t("userSettingsProfile.genderOptions.male")}</option>
+                                            <option value="Female">{t("userSettingsProfile.genderOptions.female")}</option>
+                                            <option value="Other">{t("userSettingsProfile.genderOptions.other")}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -460,10 +463,10 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                             <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                             </svg>
-                                            Saved!
+                                            {t("userSettingsProfile.actions.saved")}
                                         </>
                                     ) : (
-                                        "Update Profile"
+                                        t("userSettingsProfile.actions.updateProfile")
                                     )}
                                 </button>
                             </div>
@@ -472,13 +475,13 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
 
                     {/* Security & Password Form - Only show for Credentials users */}
                     {hasPassword === true && (
-                        <ShowcaseSection title="Security & Password">
+                        <ShowcaseSection title={t("userSettingsProfile.sections.security")}> 
                             <form onSubmit={handleChangePassword}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <InputGroup
                                         type="password"
                                         name="currentPassword"
-                                        label="Current Password"
+                                        label={t("userSettingsProfile.fields.currentPassword")}
                                         placeholder="••••••••"
                                         value={passwordData.currentPassword}
                                         onChange={handlePasswordChange}
@@ -490,7 +493,7 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                     <InputGroup
                                         type="password"
                                         name="newPassword"
-                                        label="New Password"
+                                        label={t("userSettingsProfile.fields.newPassword")}
                                         placeholder="••••••••"
                                         value={passwordData.newPassword}
                                         onChange={handlePasswordChange}
@@ -499,7 +502,7 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                     <InputGroup
                                         type="password"
                                         name="confirmNewPassword"
-                                        label="Confirm New Password"
+                                        label={t("userSettingsProfile.fields.confirmNewPassword")}
                                         placeholder="••••••••"
                                         value={passwordData.confirmNewPassword}
                                         onChange={handlePasswordChange}
@@ -522,10 +525,10 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                                 <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                 </svg>
-                                                Saved!
+                                                {t("userSettingsProfile.actions.saved")}
                                             </>
                                         ) : (
-                                            "Change Password"
+                                            t("userSettingsProfile.actions.changePassword")
                                         )}
                                     </button>
                                 </div>
@@ -536,7 +539,7 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
 
                 {/* Right Column: Photo Upload */}
                 <div className="lg:col-span-2">
-                    <ShowcaseSection title="Your Photo">
+                    <ShowcaseSection title={t("userSettingsProfile.sections.photo")}>
                         <div className="flex h-full flex-col">
                             <div className="mb-7 flex items-center gap-4">
                                 <div className="relative size-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-[#156d95]/20 dark:bg-gray-700 dark:border-gray-600">
@@ -549,10 +552,10 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
 
                                 <div>
                                     <span className="mb-2 block text-lg font-bold text-gray-900 dark:text-white">
-                                        Profile Avatar
+                                        {t("userSettingsProfile.photo.avatarTitle")}
                                     </span>
                                     <p className="text-sm text-gray-500">
-                                        Update your personal photo
+                                        {t("userSettingsProfile.photo.avatarDescription")}
                                     </p>
                                 </div>
                             </div>
@@ -578,11 +581,11 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                                     </div>
 
                                     <p className="mb-2 text-base font-medium text-gray-900 dark:text-white text-center">
-                                        <span className="text-[#156d95]">Click to upload</span> or drag and drop
+                                        <span className="text-[#156d95]">{t("userSettingsProfile.photo.clickToUpload")}</span> {t("userSettingsProfile.photo.orDragDrop")}
                                     </p>
 
                                     <p className="text-sm text-gray-400 text-center">
-                                        PNG, JPG (max 5MB)
+                                        {t("userSettingsProfile.photo.formatHint")}
                                     </p>
                                 </div>
                             </div>

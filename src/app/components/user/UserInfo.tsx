@@ -9,6 +9,7 @@ import { Dropdown, DropdownContent, DropdownTrigger } from "./dropdown";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { clearUser } from "@/store/slices/authSlice";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 const AUTH_MODE_KEY = 'deepskyn_auth_mode';
 
@@ -18,13 +19,13 @@ interface UserInfoProps {
 }
 
 export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
+    const t = useTranslations();
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
 
-    // Use Redux state if available, otherwise fallback to props or defaults
-    const name = user ? `${user.prenom || ''} ${user.nom || ''}`.trim() || propName || "User Name" : (propName || "User Name");
+    const name = user ? `${user.prenom || ''} ${user.nom || ''}`.trim() || propName || t('components.userInfo.defaultName') : (propName || t('components.userInfo.defaultName'));
     const photo = user?.photo || propPhoto || "/avatar.png";
 
     const handleNavigation = (path: string) => {
@@ -46,7 +47,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
                 onClick={() => setIsOpen(!isOpen)}
                 className="rounded-lg align-middle outline-none transition-all hover:bg-gray-100 dark:hover:bg-gray-800 p-1 cursor-pointer"
             >
-                <span className="sr-only">My Account</span>
+                <span className="sr-only">{t('components.userInfo.srMyAccount')}</span>
 
                 <figure className="flex items-center gap-3">
                     <div className="size-11 rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700">
@@ -77,7 +78,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
                 className="border border-gray-100 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800 min-w-[280px] mt-2"
                 align="end"
             >
-                <h2 className="sr-only">User information</h2>
+                <h2 className="sr-only">{t('components.userInfo.srUserInformation')}</h2>
 
                 <figure className="flex items-center gap-3.5 px-5 py-4">
                     <div className="size-12 rounded-full overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -95,7 +96,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
                             {name}
                         </span>
                         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            User Account
+                            {t('components.userInfo.account')}
                         </span>
                     </figcaption>
                 </figure>
@@ -108,7 +109,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-primary dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-white transition-all cursor-pointer"
                     >
                         <User className="w-4 h-4" />
-                        <span>View profile</span>
+                        <span>{t('components.userInfo.viewProfile')}</span>
                     </button>
 
                     <button
@@ -116,7 +117,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-primary dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-white transition-all cursor-pointer"
                     >
                         <Settings className="w-4 h-4" />
-                        <span>Account Settings</span>
+                        <span>{t('components.userInfo.accountSettings')}</span>
                     </button>
                 </div>
 
@@ -128,7 +129,7 @@ export function UserInfo({ name: propName, photo: propPhoto }: UserInfoProps) {
                         onClick={handleLogout}
                     >
                         <LogOut className="w-4 h-4" />
-                        <span>Log out</span>
+                        <span>{t('components.userInfo.logout')}</span>
                     </button>
                 </div>
             </DropdownContent>

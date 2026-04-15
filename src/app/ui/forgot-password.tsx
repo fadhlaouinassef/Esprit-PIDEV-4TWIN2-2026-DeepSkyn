@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation" // Import corrigé
 import { Mail, ArrowLeft, Send } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 export default function ForgotPassword() {
     const router = useRouter() // Initialisation ajoutée
+    const t = useTranslations()
     const [email, setEmail] = useState("")
     const [emailError, setEmailError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -16,12 +18,12 @@ export default function ForgotPassword() {
     const validateEmail = (value: string) => {
         const trimmed = value.trim()
         if (!trimmed) {
-            return "L'email est requis."
+            return t('auth.forgotPassword.errors.emailRequired')
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(trimmed)) {
-            return "Veuillez entrer un email valide."
+            return t('auth.forgotPassword.errors.emailInvalid')
         }
 
         return ""
@@ -47,7 +49,7 @@ export default function ForgotPassword() {
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.error || 'Erreur lors de l\'envoi')
+                throw new Error(data.error || t('auth.forgotPassword.errors.sendFailed'))
             }
 
             // Stocker les infos pour l'écran de vérification
@@ -55,14 +57,14 @@ export default function ForgotPassword() {
             sessionStorage.setItem('pendingUserId', data.userId.toString())
             sessionStorage.setItem('verificationType', 'reset-password')
 
-            toast.success("Code envoyé !", {
-                description: "Vérifiez votre boîte mail pour le code de réinitialisation."
+            toast.success(t('auth.forgotPassword.success.title'), {
+                description: t('auth.forgotPassword.success.description')
             })
 
             router.push("/verify-code")
         } catch (error: any) {
-            toast.error("Erreur", {
-                description: error.message || "Une erreur est survenue"
+            toast.error(t('auth.forgotPassword.error.title'), {
+                description: error.message || t('auth.forgotPassword.error.description')
             })
         } finally {
             setIsLoading(false)
@@ -92,7 +94,7 @@ export default function ForgotPassword() {
                         <motion.div whileHover={{ x: -4 }} transition={{ type: "spring", stiffness: 400 }}>
                             <ArrowLeft className="w-5 h-5" />
                         </motion.div>
-                        <span className="text-sm font-medium">Back to Login</span>
+                        <span className="text-sm font-medium">{t('auth.forgotPassword.backToLogin')}</span>
                     </Link>
 
                     {/* Icon et reste de l'UI... */}
@@ -115,10 +117,10 @@ export default function ForgotPassword() {
                         className="text-center mb-8"
                     >
                         <h1 className="text-3xl font-bold text-[#202020] mb-3 bg-gradient-to-r from-[#202020] to-[#156d95] bg-clip-text text-transparent" style={{ fontFamily: "Figtree" }}>
-                            Reset Password
+                            {t('auth.forgotPassword.title')}
                         </h1>
                         <p className="text-sm text-[#666666] leading-relaxed" style={{ fontFamily: "Figtree" }}>
-                            Enter your email address and we'll send you a link to reset your password.
+                            {t('auth.forgotPassword.description')}
                         </p>
                     </motion.div>
 
@@ -132,7 +134,7 @@ export default function ForgotPassword() {
                     >
                         <div>
                             <label htmlFor="email" className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
-                                Email address
+                                {t('auth.forgotPassword.emailLabel')}
                             </label>
                             <div className="relative group">
                                 <input
@@ -146,7 +148,7 @@ export default function ForgotPassword() {
                                         }
                                     }}
                                     onBlur={() => setEmailError(validateEmail(email))}
-                                    placeholder="name@company.com"
+                                    placeholder={t('auth.forgotPassword.emailPlaceholder')}
                                     className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300 bg-[#fafafa] hover:bg-white ${emailError ? 'border-red-400 focus:ring-red-300' : 'border-[#e0e0e0] focus:ring-[#156d95]'}`}
                                     style={{ fontFamily: "Figtree" }}
                                     aria-invalid={!!emailError}
@@ -169,7 +171,7 @@ export default function ForgotPassword() {
                             className="w-full bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white py-3.5 rounded-xl font-semibold hover:from-[#0d4a6b] hover:to-[#156d95] transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
                             style={{ fontFamily: "Figtree" }}
                         >
-                            {isLoading ? "Sending..." : "Send Reset Link"}
+                            {isLoading ? t('auth.forgotPassword.sending') : t('auth.forgotPassword.submit')}
                             {!isLoading && <Send className="w-4 h-4" />}
                         </motion.button>
                     </motion.form>

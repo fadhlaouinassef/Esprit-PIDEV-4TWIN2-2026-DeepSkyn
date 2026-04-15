@@ -2,6 +2,7 @@
 
 import React from "react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 export type BadgeVariant = "silver" | "gold" | "platinum" | "platinium" | "bronze" | "ruby"
 
@@ -53,6 +54,7 @@ export function UserBadgeCard({
     description,
     variant = "silver"
 }: UserBadgeCardProps) {
+    const t = useTranslations();
 
     // Get colors based on variant
     const colors = VARIANT_COLORS[variant] || VARIANT_COLORS.silver;
@@ -143,7 +145,7 @@ export function UserBadgeCard({
                             className="badge-label-glass"
                             style={{ borderColor: `${colors.primary}33` }}
                         >
-                            DeepSkyn Certified
+                            {t('components.userBadgeCard.certifiedLabel')}
                         </div>
                         <p
                             className="badge-title"

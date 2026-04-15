@@ -19,6 +19,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { updateUserProfile } from "@/store/slices/authSlice";
+import { useTranslations } from "next-intl";
 
 interface AdminProfile {
     id: number;
@@ -29,11 +30,12 @@ interface AdminProfile {
     sexe?: string;
     skin_type?: string;
     created_at: string;
-    badges?: any[];
-    skinAnalyses?: any[];
+    badges?: Array<Record<string, unknown>>;
+    skinAnalyses?: Array<Record<string, unknown>>;
 }
 
 export default function Profile() {
+    const t = useTranslations();
     const dispatch = useDispatch();
     const [profile, setProfile] = useState<AdminProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +45,7 @@ export default function Profile() {
         if (!file) return;
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Image too large (max 5MB)");
+            toast.error(t("adminProfile.toasts.imageTooLarge"));
             return;
         }
 
@@ -61,9 +63,9 @@ export default function Profile() {
 
                 setProfile((prev) => (prev ? { ...prev, image: base64String } : null));
                 dispatch(updateUserProfile({ photo: base64String }));
-                toast.success("Photo updated successfully!");
+                toast.success(t("adminProfile.toasts.photoUpdated"));
             } catch {
-                toast.error("Error updating photo");
+                toast.error(t("adminProfile.toasts.updatePhotoError"));
             }
         };
         reader.readAsDataURL(file);
@@ -89,7 +91,7 @@ export default function Profile() {
                 );
             } catch (error) {
                 console.error("Error fetching profile:", error);
-                toast.error("Error loading profile data");
+                toast.error(t("adminProfile.toasts.loadProfileError"));
             } finally {
                 setIsLoading(false);
             }
@@ -126,9 +128,9 @@ export default function Profile() {
     return (
         <div className="mx-auto w-full max-w-[1200px] pb-20 space-y-6">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
-                <span>Admin</span>
+                <span>{t("adminProfile.breadcrumb.admin")}</span>
                 <ChevronRight size={14} />
-                <span className="text-foreground font-medium">My Profile</span>
+                <span className="text-foreground font-medium">{t("adminProfile.breadcrumb.profile")}</span>
             </nav>
 
             <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
@@ -166,16 +168,16 @@ export default function Profile() {
 
                         <div className="flex-1 text-center md:text-left">
                             <h1 className="mt-4 text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                                {profile?.nom || "Admin User"}
+                                {profile?.nom || t("adminProfile.fallbacks.adminUser")}
                             </h1>
                             <p className="mt-2 text-white/70 text-lg font-medium">
-                                Member since{" "}
+                                {t("adminProfile.memberSince")}{" "}
                                 {profile?.created_at
                                     ? new Date(profile.created_at).toLocaleDateString("fr-FR", {
                                           month: "long",
                                           year: "numeric",
                                       })
-                                    : "Unknown"}
+                                    : t("adminProfile.fallbacks.unknown")}
                             </p>
 
                             <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-4">
@@ -184,7 +186,7 @@ export default function Profile() {
                                     className="flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-[#156d95] font-bold shadow-xl hover:scale-105 active:scale-95 transition-all"
                                 >
                                     <Settings size={18} />
-                                    Edit Profile
+                                    {t("adminProfile.actions.editProfile")}
                                 </Link>
                             </div>
                         </div>
@@ -196,27 +198,27 @@ export default function Profile() {
                         <motion.div variants={itemVariants} className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                             <h3 className="mb-8 text-xl font-bold flex items-center gap-3">
                                 <Activity className="text-[#156d95]" size={22} />
-                                Personal Details
+                                {t("adminProfile.sections.personalDetails")}
                             </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <Mail size={12} /> Email Address
+                                        <Mail size={12} /> {t("adminProfile.fields.email")}
                                     </label>
                                     <p className="text-lg font-bold text-gray-900 dark:text-white truncate">{profile?.email}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <Calendar size={12} /> Age
+                                        <Calendar size={12} /> {t("adminProfile.fields.age")}
                                     </label>
-                                    <p className="text-lg font-bold text-gray-900 dark:text-white">{profile?.age ? `${profile.age} years old` : "Not set"}</p>
+                                    <p className="text-lg font-bold text-gray-900 dark:text-white">{profile?.age ? t("adminProfile.fields.ageYears", { age: profile.age }) : t("adminProfile.fallbacks.notSet")}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <UserCircle size={12} /> Gender
+                                        <UserCircle size={12} /> {t("adminProfile.fields.gender")}
                                     </label>
-                                    <p className="text-lg font-bold text-gray-900 dark:text-white capitalize">{profile?.sexe || "Not set"}</p>
+                                    <p className="text-lg font-bold text-gray-900 dark:text-white capitalize">{profile?.sexe || t("adminProfile.fallbacks.notSet")}</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -229,9 +231,9 @@ export default function Profile() {
                                     <Shield className="text-white" size={20} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-emerald-900 dark:text-emerald-400">Admin Account Secured</h4>
+                                    <h4 className="font-bold text-emerald-900 dark:text-emerald-400">{t("adminProfile.security.title")}</h4>
                                     <p className="mt-1 text-sm text-emerald-700/80 dark:text-emerald-500/80">
-                                        Your administrative session is protected and monitored by DeepSkyn security policies.
+                                        {t("adminProfile.security.description")}
                                     </p>
                                 </div>
                             </div>

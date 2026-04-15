@@ -24,6 +24,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 // --- MOCK DATA FOR ADMIN ---
 const ALL_ANALYSES = [
@@ -151,6 +152,7 @@ const CircularScore = ({ score, size = "md" }: { score: number; size?: "sm" | "m
 };
 
 const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: () => void }) => {
+    const tm = useTranslations("userAnalyzes.modal");
     if (!analysis) return null;
 
     return (
@@ -165,7 +167,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                             </div>
                             <div>
                                 <span className="text-[10px] font-bold text-[#156d95] uppercase tracking-[3px] mb-1 block font-mono">
-                                    Patient Analysis Report
+                                    {tm("report")}
                                 </span>
                                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                                     {analysis.userName} - {analysis.date}
@@ -182,28 +184,28 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                             <div className="lg:col-span-4 space-y-6">
                                 <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-[32px] p-8 flex flex-col items-center text-center border border-gray-100 dark:border-gray-700">
                                     <CircularScore score={analysis.score} size="lg" />
-                                    <h3 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">Overall Health Score</h3>
+                                    <h3 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">{tm("overallHealthScore")}</h3>
                                     <p className="mt-2 text-sm text-gray-500 leading-relaxed max-w-[200px]">
-                                        Analysis for user {analysis.userName} calculated based on clinical parameters.
+                                        {tm("analysisDescription", { userName: analysis.userName })}
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
-                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Skin Type</span>
+                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{tm("skinType")}</span>
                                         <p className="font-bold text-gray-900 dark:text-white">{analysis.skinType}</p>
                                     </div>
                                     <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
-                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Sensitivity</span>
+                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{tm("sensitivity")}</span>
                                         <p className="font-bold text-gray-900 dark:text-white">{analysis.sensitivity}</p>
                                     </div>
                                 </div>
                                 <div className="space-y-6 pt-4">
                                     <div>
-                                        <div className="flex justify-between text-[11px] font-bold mb-2"><span className="text-gray-400 uppercase tracking-wider">Hydration</span><span className="text-[#156d95]">{analysis.hydration}%</span></div>
+                                        <div className="flex justify-between text-[11px] font-bold mb-2"><span className="text-gray-400 uppercase tracking-wider">{tm("hydration")}</span><span className="text-[#156d95]">{analysis.hydration}%</span></div>
                                         <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div className="h-full bg-[#156d95]" style={{ width: `${analysis.hydration}%` }} /></div>
                                     </div>
                                     <div>
-                                        <div className="flex justify-between text-[11px] font-bold mb-2"><span className="text-gray-400 uppercase tracking-wider">Oil Balance</span><span className="text-blue-300">{analysis.oilProduction}%</span></div>
+                                        <div className="flex justify-between text-[11px] font-bold mb-2"><span className="text-gray-400 uppercase tracking-wider">{tm("oilBalance")}</span><span className="text-blue-300">{analysis.oilProduction}%</span></div>
                                         <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div className="h-full bg-[#3d98c2]" style={{ width: `${analysis.oilProduction}%` }} /></div>
                                     </div>
                                 </div>
@@ -219,18 +221,18 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         </div>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-bold text-[#156d95] dark:text-blue-300">AI Patient Profile</h4>
+                                        <h4 className="font-bold text-[#156d95] dark:text-blue-300">{tm("aiVision")}</h4>
                                         <div className="flex items-center gap-4 mt-1">
-                                            <div className="text-xs text-[#156d95]/70 dark:text-blue-400 font-medium">Skin Age: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.skinAge}</span> (Actual: {analysis.actualAge})</div>
+                                            <div className="text-xs text-[#156d95]/70 dark:text-blue-400 font-medium">{tm("skinAge")}: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.skinAge}</span> ({tm("actual")}: {analysis.actualAge})</div>
                                             <div className="w-px h-3 bg-[#156d95]/20" />
-                                            <div className="text-xs text-[#156d95]/70 dark:text-blue-400 font-medium">Risk: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.riskFactor}</span></div>
+                                            <div className="text-xs text-[#156d95]/70 dark:text-blue-400 font-medium">{tm("riskFactor")}: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.riskFactor}</span></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 mb-4">
                                         <div className="size-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-[#156d95]"><ClipboardList size={18} /></div>
-                                        <h4 className="font-bold text-gray-900 dark:text-white">Recommendations Provided</h4>
+                                        <h4 className="font-bold text-gray-900 dark:text-white">{tm("targetedRecommendations")}</h4>
                                     </div>
                                     <div className="bg-gray-50/50 dark:bg-gray-800 rounded-[32px] p-8 border border-gray-100 dark:border-gray-700">
                                         <ul className="space-y-4">
@@ -254,16 +256,16 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                 <div>
                                     <div className="flex items-center gap-2 mb-6">
                                         <div className="size-8 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-500"><Sparkles size={18} /></div>
-                                        <h4 className="font-bold text-gray-900 dark:text-white">System Routine</h4>
+                                        <h4 className="font-bold text-gray-900 dark:text-white">{tm("prescribedRoutine")}</h4>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-4">
-                                            <div className="flex items-center gap-2 text-amber-500"><Sun size={18} /><span className="text-xs font-bold uppercase tracking-widest">Morning</span></div>
+                                            <div className="flex items-center gap-2 text-amber-500"><Sun size={18} /><span className="text-xs font-bold uppercase tracking-widest">{tm("morningRoutine")}</span></div>
                                             <div className="space-y-3">
                                                 {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => (
                                                     <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{tm("step", { number: item.step || idx + 1 })}</span>
                                                             <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
                                                         </div>
                                                     </div>
@@ -271,12 +273,12 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                             </div>
                                         </div>
                                         <div className="space-y-4">
-                                            <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400"><Moon size={18} /><span className="text-xs font-bold uppercase tracking-widest">Night</span></div>
+                                            <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400"><Moon size={18} /><span className="text-xs font-bold uppercase tracking-widest">{tm("nightRoutine")}</span></div>
                                             <div className="space-y-3">
                                                 {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => (
                                                     <div key={idx} className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {item.step || idx + 1}</span>
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{tm("step", { number: item.step || idx + 1 })}</span>
                                                             <span className="font-bold text-gray-900 dark:text-white text-sm">{typeof item === 'string' ? item : item.name}</span>
                                                         </div>
                                                     </div>
@@ -297,6 +299,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
 // --- MAIN ADMIN PAGE ---
 
 export default function AdminAnalyzesPage() {
+    const t = useTranslations("adminAnalyzes");
     const [analyses, setAnalyses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
@@ -342,10 +345,10 @@ export default function AdminAnalyzesPage() {
                 {/* Header Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                     {[
-                        { label: "Total Analyzes", value: totalAnalyses.toString(), icon: Activity, color: "text-blue-600", bg: "bg-blue-50" },
-                        { label: "Active Users", value: Array.from(new Set(analyses.map(a => a.userId))).length.toString(), icon: UsersIcon, color: "text-emerald-600", bg: "bg-emerald-50" },
-                        { label: "Avg. Score", value: avgScore, icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50" },
-                        { label: "New Today", value: "New", icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
+                        { label: t("stats.totalAnalyzes"), value: totalAnalyses.toString(), icon: Activity, color: "text-blue-600", bg: "bg-blue-50" },
+                        { label: t("stats.activeUsers"), value: Array.from(new Set(analyses.map(a => a.userId))).length.toString(), icon: UsersIcon, color: "text-emerald-600", bg: "bg-emerald-50" },
+                        { label: t("stats.avgScore"), value: avgScore, icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50" },
+                        { label: t("stats.newToday"), value: t("stats.newValue"), icon: Calendar, color: "text-purple-600", bg: "bg-purple-50" },
                     ].map((stat, i) => (
                         <motion.div 
                             key={i}
@@ -366,15 +369,15 @@ export default function AdminAnalyzesPage() {
                 <div className="bg-white dark:bg-gray-800 rounded-[32px] border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
                     <div className="p-8 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Recent Analyzes</h2>
-                            <p className="text-gray-400 text-sm mt-1">Manage and review all system analyzes from users.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t("header.title")}</h2>
+                            <p className="text-gray-400 text-sm mt-1">{t("header.subtitle")}</p>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 size-4" />
                                 <input 
                                     type="text"
-                                    placeholder="Search user or date..."
+                                    placeholder={t("header.searchPlaceholder")}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="pl-11 pr-4 py-2.5 bg-gray-50 dark:bg-gray-900 rounded-xl border-none text-sm w-64 focus:ring-2 focus:ring-[#156d95]/50 transition-all font-medium"
@@ -392,11 +395,11 @@ export default function AdminAnalyzesPage() {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="text-[10px] font-bold text-gray-400 uppercase tracking-[2px] border-b border-gray-50 dark:border-gray-700/50">
-                                        <th className="px-8 py-5">User</th>
-                                        <th className="px-8 py-5">Date</th>
-                                        <th className="px-8 py-5">Summary</th>
-                                        <th className="px-8 py-5">Score</th>
-                                        <th className="px-8 py-5 text-right whitespace-nowrap">Details</th>
+                                        <th className="px-8 py-5">{t("table.user")}</th>
+                                        <th className="px-8 py-5">{t("table.date")}</th>
+                                        <th className="px-8 py-5">{t("table.summary")}</th>
+                                        <th className="px-8 py-5">{t("table.score")}</th>
+                                        <th className="px-8 py-5 text-right whitespace-nowrap">{t("table.details")}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
@@ -424,7 +427,7 @@ export default function AdminAnalyzesPage() {
                                             </td>
                                             <td className="px-8 py-4">
                                                 <div className="space-y-1">
-                                                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.skinType} Type</p>
+                                                    <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{t("table.skinTypeType", { skinType: item.skinType })}</p>
                                                     <div className="flex gap-1 flex-wrap">
                                                         {item.concerns.map((c: string) => (
                                                             <span key={c} className="text-[8px] bg-rose-50 text-rose-500 px-1.5 rounded uppercase font-bold">{c}</span>
@@ -453,10 +456,10 @@ export default function AdminAnalyzesPage() {
                     )}
                     
                     <div className="p-8 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                        <p className="text-xs text-gray-400 font-medium">Showing {filteredAnalyses.length} of {analyses.length} analyzes</p>
+                        <p className="text-xs text-gray-400 font-medium">{t("pagination.showing", { filtered: filteredAnalyses.length, total: analyses.length })}</p>
                         <div className="flex items-center gap-2">
-                            <button className="px-4 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-400 opacity-50 cursor-not-allowed">Previous</button>
-                            <button className="px-4 py-2 border border-blue-500 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold cursor-not-allowed">Next</button>
+                            <button className="px-4 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-400 opacity-50 cursor-not-allowed">{t("pagination.previous")}</button>
+                            <button className="px-4 py-2 border border-blue-500 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold cursor-not-allowed">{t("pagination.next")}</button>
                         </div>
                     </div>
                 </div>

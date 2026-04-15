@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 type IntegrationApp = {
   name: string
   logo: string
@@ -117,13 +118,17 @@ const defaultBottomRowApps: IntegrationApp[] = [
 
 // @component: IntegrationCarousel
 export const IntegrationCarousel = ({
-  buttonText = "Our Partners",
+  buttonText,
   buttonHref = "#partners",
-  title = "Trusted beauty partnerships worldwide",
-  subtitle = "DeepSkyn collaborates with leading dermatological labs and premium brands to deliver exceptional skincare quality.",
+  title,
+  subtitle,
   topRowApps = defaultTopRowApps,
   bottomRowApps = defaultBottomRowApps,
 }: IntegrationCarouselProps) => {
+  const t = useTranslations()
+  const resolvedButtonText = buttonText ?? t("home.integrations.buttonText")
+  const resolvedTitle = title ?? t("home.integrations.title")
+  const resolvedSubtitle = subtitle ?? t("home.integrations.subtitle")
   const topRowRef = useRef<HTMLDivElement>(null)
   const bottomRowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -179,7 +184,7 @@ export const IntegrationCarousel = ({
                 fontSize: "40px",
               }}
             >
-              {title}
+              {resolvedTitle}
             </h2>
             <p
               className="text-lg leading-7 text-[#666666] text-center max-w-[600px] mt-2"
@@ -187,7 +192,7 @@ export const IntegrationCarousel = ({
                 fontFamily: "Satoshi",
               }}
             >
-              {subtitle}
+              {resolvedSubtitle}
             </p>
           </div>
           <motion.div
@@ -211,7 +216,7 @@ export const IntegrationCarousel = ({
                 backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.06) 80%, rgba(255, 255, 255, 0.12))",
               }}
             >
-              {buttonText}
+              {resolvedButtonText}
             </button>
           </motion.div>
         </motion.div>

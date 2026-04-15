@@ -3,16 +3,31 @@
 import * as React from "react"
 import { CheckIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 type PlanLevel = "starter" | "pro" | "enterprise"
 
 interface PricingFeature {
-  name: string
+  id:
+    | "basicRoutine"
+    | "threeProducts"
+    | "onlineConsultation"
+    | "usageGuide"
+    | "completeRoutine"
+    | "sixProducts"
+    | "monthlyFollowUp"
+    | "priorityShipping"
+    | "customFormulas"
+    | "unlimitedProducts"
+    | "dermatologist247"
+    | "homeSpa"
+    | "aiAnalysis"
+    | "mobileApp"
   included: PlanLevel | "all"
 }
 
 interface PricingPlan {
-  name: string
+  id: "essential" | "premium" | "luxury"
   level: PlanLevel
   price: {
     monthly: number
@@ -22,36 +37,36 @@ interface PricingPlan {
 }
 
 const features: PricingFeature[] = [
-  { name: "Basic skincare routine (AM/PM)", included: "starter" },
-  { name: "3 essential products", included: "starter" },
-  { name: "Online consultation", included: "starter" },
-  { name: "Usage guide & tips", included: "starter" },
-  { name: "Complete personalized routine", included: "pro" },
-  { name: "6 premium products", included: "pro" },
-  { name: "Monthly dermatologist follow-up", included: "pro" },
-  { name: "Free priority shipping", included: "pro" },
-  { name: "Exclusive custom formulas", included: "enterprise" },
-  { name: "Unlimited products", included: "enterprise" },
-  { name: "Dedicated dermatologist 24/7", included: "enterprise" },
-  { name: "Monthly at-home spa treatment", included: "enterprise" },
-  { name: "AI skin analysis", included: "all" },
-  { name: "Mobile app access", included: "all" },
+  { id: "basicRoutine", included: "starter" },
+  { id: "threeProducts", included: "starter" },
+  { id: "onlineConsultation", included: "starter" },
+  { id: "usageGuide", included: "starter" },
+  { id: "completeRoutine", included: "pro" },
+  { id: "sixProducts", included: "pro" },
+  { id: "monthlyFollowUp", included: "pro" },
+  { id: "priorityShipping", included: "pro" },
+  { id: "customFormulas", included: "enterprise" },
+  { id: "unlimitedProducts", included: "enterprise" },
+  { id: "dermatologist247", included: "enterprise" },
+  { id: "homeSpa", included: "enterprise" },
+  { id: "aiAnalysis", included: "all" },
+  { id: "mobileApp", included: "all" },
 ]
 
 const plans: PricingPlan[] = [
   {
-    name: "Essential",
+    id: "essential",
     price: { monthly: 39, yearly: 390 },
     level: "starter",
   },
   {
-    name: "Premium",
+    id: "premium",
     price: { monthly: 89, yearly: 890 },
     level: "pro",
     popular: true,
   },
   {
-    name: "Luxury",
+    id: "luxury",
     price: { monthly: 199, yearly: 1990 },
     level: "enterprise",
   },
@@ -68,15 +83,18 @@ function shouldShowCheck(included: PricingFeature["included"], level: PlanLevel)
 export function PricingSection() {
   const [isYearly, setIsYearly] = React.useState(false)
   const [selectedPlan, setSelectedPlan] = React.useState<PlanLevel>("pro")
+  const t = useTranslations()
 
   return (
     <section className="py-24 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="font-figtree text-[40px] font-normal leading-tight mb-4" style={{ fontFamily: "Satoshi" }}>Choose Your Plan</h2>
+          <h2 className="font-figtree text-[40px] font-normal leading-tight mb-4" style={{ fontFamily: "Satoshi" }}>
+            {t('home.pricing.title')}
+          </h2>
           <p className="font-figtree text-lg text-muted-foreground max-w-2xl mx-auto" style={{ fontFamily: "Satoshi" }}>
-            Discover our skincare subscriptions tailored to your needs. All plans include AI skin analysis and mobile app access.
+            {t('home.pricing.subtitle')}
           </p>
         </div>
 
@@ -92,7 +110,7 @@ export function PricingSection() {
               )}
               style={{ fontFamily: "Satoshi" }}
             >
-              Monthly
+              {t('home.pricing.monthly')}
             </button>
             <button
               type="button"
@@ -103,8 +121,8 @@ export function PricingSection() {
               )}
               style={{ fontFamily: "Satoshi" }}
             >
-              Yearly
-              <span className="ml-2 text-sm text-[#156d95]">Save 17%</span>
+              {t('home.pricing.yearly')}
+              <span className="ml-2 text-sm text-[#156d95]">{t('home.pricing.savePercent', { percent: 17 })}</span>
             </button>
           </div>
         </div>
@@ -113,7 +131,7 @@ export function PricingSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {plans.map((plan) => (
             <button
-              key={plan.name}
+              key={plan.id}
               type="button"
               onClick={() => setSelectedPlan(plan.level)}
               className={cn(
@@ -125,16 +143,16 @@ export function PricingSection() {
             >
               {plan.popular && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#156d95] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: "Satoshi" }}>
-                  Most Popular
+                  {t('home.pricing.mostPopular')}
                 </span>
               )}
               <div className="mb-6">
-                <h3 className="font-figtree text-2xl font-medium mb-2">{plan.name}</h3>
+                <h3 className="font-figtree text-2xl font-medium mb-2">{t(`home.pricing.plans.${plan.id}`)}</h3>
                 <div className="flex items-baseline gap-1">
                   <span className="font-figtree text-4xl font-medium">
                     ${isYearly ? plan.price.yearly : plan.price.monthly}
                   </span>
-                  <span className="font-figtree text-lg text-muted-foreground">/{isYearly ? "year" : "month"}</span>
+                  <span className="font-figtree text-lg text-muted-foreground">/{isYearly ? t('home.pricing.perYear') : t('home.pricing.perMonth')}</span>
                 </div>
               </div>
               <div
@@ -144,7 +162,7 @@ export function PricingSection() {
                 )}
                 style={{ fontFamily: "Satoshi" }}
               >
-                {selectedPlan === plan.level ? "Selected" : "Select Plan"}
+                {selectedPlan === plan.level ? t('home.pricing.selected') : t('home.pricing.selectPlan')}
               </div>
             </button>
           ))}
@@ -157,12 +175,12 @@ export function PricingSection() {
               {/* Table Header */}
               <div className="flex items-center p-6 bg-secondary border-b border-border">
                 <div className="flex-1">
-                  <h3 className="text-xl font-medium" style={{ fontFamily: "Satoshi" }}>Features</h3>
+                  <h3 className="text-xl font-medium" style={{ fontFamily: "Satoshi" }}>{t('home.pricing.features')}</h3>
                 </div>
                 <div className="flex items-center gap-8">
                   {plans.map((plan) => (
                     <div key={plan.level} className="w-24 text-center font-figtree text-lg font-medium">
-                      {plan.name}
+                      {t(`home.pricing.plans.${plan.id}`)}
                     </div>
                   ))}
                 </div>
@@ -171,7 +189,7 @@ export function PricingSection() {
               {/* Feature Rows */}
               {features.map((feature, index) => (
                 <div
-                  key={feature.name}
+                  key={feature.id}
                   className={cn(
                     "flex items-center p-6 transition-colors",
                     index % 2 === 0 ? "bg-background" : "bg-secondary/30",
@@ -179,7 +197,7 @@ export function PricingSection() {
                   )}
                 >
                   <div className="flex-1">
-                    <span className="font-figtree text-lg">{feature.name}</span>
+                    <span className="font-figtree text-lg">{t(`home.pricing.featuresList.${feature.id}`)}</span>
                   </div>
                   <div className="flex items-center gap-8">
                     {plans.map((plan) => (
@@ -211,7 +229,7 @@ export function PricingSection() {
             }}
             className="bg-[#156d95] text-white px-[18px] py-[15px] rounded-full text-lg hover:rounded-2xl transition-all"
             style={{ fontFamily: "Satoshi" }}>
-            Get Started with {plans.find((p) => p.level === selectedPlan)?.name}
+            {t('home.pricing.getStartedWith', { plan: t(`home.pricing.plans.${plans.find((p) => p.level === selectedPlan)?.id || 'premium'}`) })}
           </button>
         </div>
       </div>

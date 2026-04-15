@@ -1,6 +1,7 @@
 "use client"
 import { Github, Twitter, Linkedin, Mail } from "lucide-react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 type FooterLink = {
   label: string
@@ -25,53 +26,55 @@ type FooterProps = {
   copyrightText?: string
 }
 
-const defaultSections: FooterSection[] = [
-  {
-    title: "Products",
-    links: [
-      { label: "Cleansers", href: "#products" },
-      { label: "Moisturizers", href: "#products" },
-      { label: "Serums", href: "#products" },
-      { label: "Masks", href: "#products" },
-      { label: "Gift Sets", href: "#products" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "#about" },
-      { label: "Careers", href: "#careers" },
-      { label: "Beauty Blog", href: "#blog" },
-      { label: "Press", href: "#press" },
-      { label: "Contact", href: "#contact" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Skincare Guide", href: "#routine" },
-      { label: "Help Center", href: "#help" },
-      { label: "Community", href: "#community" },
-      { label: "Testimonials", href: "#testimonials" },
-      { label: "Tutorials", href: "#tutorials" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy Policy", href: "#privacy" },
-      { label: "Terms of Service", href: "#terms" },
-      { label: "Shipping", href: "#shipping" },
-      { label: "Returns", href: "#returns" },
-      { label: "Cookies", href: "#cookies" },
-    ],
-  },
-]
+function getDefaultSections(t: ReturnType<typeof useTranslations>): FooterSection[] {
+  return [
+    {
+      title: t('home.footer.sections.products.title'),
+      links: [
+        { label: t('home.footer.sections.products.cleansers'), href: "#products" },
+        { label: t('home.footer.sections.products.moisturizers'), href: "#products" },
+        { label: t('home.footer.sections.products.serums'), href: "#products" },
+        { label: t('home.footer.sections.products.masks'), href: "#products" },
+        { label: t('home.footer.sections.products.giftSets'), href: "#products" },
+      ],
+    },
+    {
+      title: t('home.footer.sections.company.title'),
+      links: [
+        { label: t('home.footer.sections.company.about'), href: "#about" },
+        { label: t('home.footer.sections.company.careers'), href: "#careers" },
+        { label: t('home.footer.sections.company.beautyBlog'), href: "#blog" },
+        { label: t('home.footer.sections.company.press'), href: "#press" },
+        { label: t('home.footer.sections.company.contact'), href: "#contact" },
+      ],
+    },
+    {
+      title: t('home.footer.sections.resources.title'),
+      links: [
+        { label: t('home.footer.sections.resources.skincareGuide'), href: "#routine" },
+        { label: t('home.footer.sections.resources.helpCenter'), href: "#help" },
+        { label: t('home.footer.sections.resources.community'), href: "#community" },
+        { label: t('home.footer.sections.resources.testimonials'), href: "#testimonials" },
+        { label: t('home.footer.sections.resources.tutorials'), href: "#tutorials" },
+      ],
+    },
+    {
+      title: t('home.footer.sections.legal.title'),
+      links: [
+        { label: t('home.footer.sections.legal.privacyPolicy'), href: "#privacy" },
+        { label: t('home.footer.sections.legal.termsOfService'), href: "#terms" },
+        { label: t('home.footer.sections.legal.shipping'), href: "#shipping" },
+        { label: t('home.footer.sections.legal.returns'), href: "#returns" },
+        { label: t('home.footer.sections.legal.cookies'), href: "#cookies" },
+      ],
+    },
+  ]
+}
 
 export const Footer = ({
   companyName = "DeepSkyn",
-  tagline = "Your personalized skincare routine for men and women",
-  sections = defaultSections,
+  tagline,
+  sections,
   socialLinks = {
     twitter: "https://twitter.com",
     linkedin: "https://linkedin.com",
@@ -80,8 +83,12 @@ export const Footer = ({
   },
   copyrightText,
 }: FooterProps) => {
+  const t = useTranslations()
   const currentYear = new Date().getFullYear()
-  const copyright = copyrightText || `© ${currentYear} ${companyName}. All rights reserved.`
+  const resolvedTagline = tagline ?? t('home.footer.tagline')
+  const resolvedSections = sections ?? getDefaultSections(t)
+  const copyright =
+    copyrightText ?? t('home.footer.copyright', { year: currentYear, company: companyName })
   return (
     <footer className="w-full bg-[#fafafa] border-t border-[#e5e5e5]">
       <div className="max-w-[1200px] mx-auto px-8 py-16">
@@ -103,7 +110,7 @@ export const Footer = ({
                 {companyName}
               </h3>
               <p className="text-sm leading-5 text-[#666666] max-w-xs" style={{ fontFamily: "Satoshi" }}>
-                {tagline}
+                {resolvedTagline}
               </p>
             </div>
 
@@ -149,7 +156,7 @@ export const Footer = ({
           </motion.div>
 
           {/* Link Sections */}
-          {sections.map((section, index) => (
+          {resolvedSections.map((section, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -199,14 +206,14 @@ export const Footer = ({
                 className="text-sm text-[#666666] hover:text-[#202020] transition-colors duration-150"
                 style={{ fontFamily: "Satoshi" }}
               >
-                Status
+                {t('home.footer.status')}
               </a>
               <a
                 href="#sitemap"
                 className="text-sm text-[#666666] hover:text-[#202020] transition-colors duration-150"
                 style={{ fontFamily: "Satoshi" }}
               >
-                Sitemap
+                {t('home.footer.sitemap')}
               </a>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, Sparkles, Shi
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { signIn, useSession } from "next-auth/react"
+import { useTranslations } from "next-intl"
 import { useAppDispatch } from "@/store/hooks"
 import { setUser } from "@/store/slices/authSlice"
 
@@ -15,6 +16,7 @@ const AUTH_MODE_KEY = 'deepskyn_auth_mode'
 export default function SignIn() {
   const router = useRouter()
   const dispatch = useAppDispatch()
+  const t = useTranslations()
   const { data: session, status } = useSession()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -29,8 +31,8 @@ export default function SignIn() {
   // Test toast on mount to verify it works
   useEffect(() => {
     console.log('SignIn component mounted, toast available:', typeof toast);
-    toast.info('DeepSkyn System', {
-      description: 'Notifications are now configured for Top-Center.',
+    toast.info(t('auth.signin.testToast.title'), {
+      description: t('auth.signin.testToast.description'),
       duration: 5000,
     });
   }, []);
@@ -62,7 +64,7 @@ export default function SignIn() {
         <div className="flex flex-col items-center gap-4 rounded-3xl bg-white/80 backdrop-blur-md border border-gray-200 px-8 py-7 shadow-xl">
           <Loader2 className="w-8 h-8 animate-spin text-[#156d95]" />
           <p className="text-sm font-bold text-gray-700 tracking-wide uppercase" style={{ fontFamily: "Figtree" }}>
-            Redirecting to your dashboard...
+            {t('auth.signin.redirecting')}
           </p>
         </div>
       </div>
@@ -73,18 +75,18 @@ export default function SignIn() {
     const newErrors: Record<string, string> = {}
 
     if (!email.trim()) {
-      newErrors.email = "Email is required"
+      newErrors.email = t('auth.signin.errors.emailRequired')
     } else {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
       if (!emailRegex.test(email)) {
-        newErrors.email = "Invalid email format"
+        newErrors.email = t('auth.signin.errors.emailInvalid')
       }
     }
 
     if (!password) {
-      newErrors.password = "Password is required"
+      newErrors.password = t('auth.signin.errors.passwordRequired')
     } else if (password.length < 8) {
-      newErrors.password = "Invalid password (min. 8 characters)"
+      newErrors.password = t('auth.signin.errors.passwordInvalid')
     }
 
     setErrors(newErrors)
@@ -119,7 +121,7 @@ export default function SignIn() {
         console.log('Signin response:', data, 'Status:', response.status);
 
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to sign in');
+          throw new Error(data.error || t('auth.signin.errors.signinFailed'));
         }
 
         if (data.unverified) {
@@ -128,8 +130,8 @@ export default function SignIn() {
           sessionStorage.setItem('pendingUserId', data.userId.toString());
           sessionStorage.setItem('pendingUserEmail', data.email);
 
-          toast.info('Vérification requise', {
-            description: data.message,
+          toast.info(t('auth.signin.unverifiedToast.title'), {
+            description: data.message || t('auth.signin.unverifiedToast.description'),
             duration: 5000,
           });
 
@@ -158,7 +160,7 @@ export default function SignIn() {
         });
 
         if (credentialsSession?.error) {
-          throw new Error('La session n\'a pas pu etre etablie. Veuillez reessayer.');
+          throw new Error(t('auth.signin.errors.sessionNotEstablished'));
         }
 
         // Store user data in Redux store
@@ -178,8 +180,8 @@ export default function SignIn() {
         dispatch(setUser(userData));
         localStorage.setItem(AUTH_MODE_KEY, 'credentials')
 
-        toast.success('Connexion réussie !', {
-          description: 'Vous allez être redirigé...',
+        toast.success(t('auth.signin.success.title'), {
+          description: t('auth.signin.success.description'),
           duration: 2000,
         });
 
@@ -190,18 +192,18 @@ export default function SignIn() {
         }, 2000);
       } catch (error) {
         console.error('❌ Signin error caught:', error);
-        const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+        const errorMessage = error instanceof Error ? error.message : t('auth.signin.error.generic');
         console.log('📢 Attempting to show toast with message:', errorMessage);
 
         if (errorMessage.includes('verify your account')) {
-          const result = toast.error('Account Not Verified', {
+          const result = toast.error(t('auth.signin.error.accountNotVerifiedTitle'), {
             description: errorMessage,
             duration: 5000,
           });
           console.log('Toast result (verify):', result);
         } else {
-          const result = toast.error('Login Failed', {
-            description: errorMessage || 'Invalid email or password',
+          const result = toast.error(t('auth.signin.error.loginFailedTitle'), {
+            description: errorMessage || t('auth.signin.error.invalidCredentialsDescription'),
             duration: 5000,
           });
           console.log('Toast result (error):', result);
@@ -211,8 +213,8 @@ export default function SignIn() {
       }
     } else {
       console.log('❌ Form validation failed');
-      const result = toast.error("Login Failed", {
-        description: "Please check the fields in red",
+      const result = toast.error(t('auth.signin.error.loginFailedTitle'), {
+        description: t('auth.signin.validationFailed.description'),
         duration: 5000,
       });
       console.log('Toast result (validation):', result);
@@ -225,8 +227,8 @@ export default function SignIn() {
         callbackUrl: '/signin',
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
-      toast.error('Google Sign-In Failed', {
+      const errorMessage = error instanceof Error ? error.message : t('auth.signin.error.googleGeneric');
+      toast.error(t('auth.signin.googleError.title'), {
         description: errorMessage,
       });
     }
@@ -280,12 +282,12 @@ export default function SignIn() {
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-gray-900 tracking-tight" style={{ fontFamily: "Figtree" }}>
-                    Compte désactivé
+                    {t('auth.signin.blocked.title')}
                   </h3>
                   <p className="mt-2 text-sm text-gray-500 leading-relaxed" style={{ fontFamily: "Figtree" }}>
-                    Votre compte a été désactivé par l&#39;administration.
+                    {t('auth.signin.blocked.descriptionTop')}
                     <br />
-                    <strong className="text-gray-700">Veuillez contacter l&apos;administration de l&apos;application</strong> pour plus d&#39;informations.
+                    <strong className="text-gray-700">{t('auth.signin.blocked.descriptionBold')}</strong> {t('auth.signin.blocked.descriptionBottom')}
                   </p>
                 </div>
                 <a
@@ -293,14 +295,14 @@ export default function SignIn() {
                   className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#156d95] to-[#0d4a6b] px-4 py-3 text-sm font-black uppercase tracking-widest text-white shadow-lg hover:opacity-90 transition-opacity"
                   style={{ fontFamily: "Figtree" }}
                 >
-                  Contacter l&apos;administration
+                  {t('auth.signin.blocked.contactButton')}
                 </a>
                 <button
                   onClick={() => setShowBlockedModal(false)}
                   className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors"
                   style={{ fontFamily: "Figtree" }}
                 >
-                  Fermer
+                  {t('auth.signin.blocked.closeButton')}
                 </button>
               </div>
             </motion.div>
@@ -332,7 +334,7 @@ export default function SignIn() {
               <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl group-hover:bg-[#156d95]/10 transition-colors">
                 <ArrowLeft className="w-4 h-4" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>Back to Home</span>
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>{t('auth.signin.backToHome')}</span>
             </Link>
           </motion.div>
 
@@ -360,7 +362,7 @@ export default function SignIn() {
               Deep<span className="text-[#156d95]">SkyN</span>
             </h1>
             <p className="text-[#666666] dark:text-gray-400 mt-1 font-medium text-sm" style={{ fontFamily: "Figtree" }}>
-              Sign in to your account
+              {t('auth.signin.subtitle')}
             </p>
           </motion.div>
 
@@ -370,7 +372,7 @@ export default function SignIn() {
             <motion.div variants={itemVariants}>
               <div className="flex justify-between items-center mb-2 px-1">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>
-                  Email Address
+                  {t('auth.signin.emailLabel')}
                 </label>
               </div>
               <motion.div
@@ -391,7 +393,7 @@ export default function SignIn() {
                     ? "border-red-500 bg-red-50/30 ring-4 ring-red-500/10"
                     : "border-transparent focus:border-[#156d95] focus:bg-white dark:focus:bg-gray-800 focus:ring-4 focus:ring-[#156d95]/10"
                     }`}
-                  placeholder="Name@deepskyn.com"
+                  placeholder={t('auth.signin.emailPlaceholder')}
                   style={{ fontFamily: "Figtree" }}
                 />
                 <AnimatePresence>
@@ -423,10 +425,10 @@ export default function SignIn() {
             <motion.div variants={itemVariants}>
               <div className="flex justify-between items-center mb-2 px-1">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>
-                  Password
+                  {t('auth.signin.passwordLabel')}
                 </label>
                 <Link href="/forgot-password" className="text-[10px] font-black text-[#156d95] uppercase tracking-widest hover:underline">
-                  Forgot?
+                  {t('auth.signin.forgotLink')}
                 </Link>
               </div>
               <motion.div
@@ -486,7 +488,7 @@ export default function SignIn() {
                   />
                 </div>
                 <span className="ml-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest group-hover:text-gray-900 transition-colors" style={{ fontFamily: "Figtree" }}>
-                  Remember me
+                  {t('auth.signin.rememberMe')}
                 </span>
               </label>
             </motion.div>
@@ -504,7 +506,7 @@ export default function SignIn() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      Sign in
+                      {t('auth.signin.submit')}
                       <Sparkles className="w-3.5 h-3.5" />
                     </>
                   )}
@@ -518,7 +520,7 @@ export default function SignIn() {
                 <div className="w-full border-t border-gray-200 dark:border-gray-800" />
               </div>
               <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
-                <span className="px-3 bg-white dark:bg-black/40 text-gray-400">Or continue with</span>
+                <span className="px-3 bg-white dark:bg-black/40 text-gray-400">{t('auth.signin.divider')}</span>
               </div>
             </motion.div>
 
@@ -548,7 +550,7 @@ export default function SignIn() {
                     fill="#EB4335"
                   />
                 </svg>
-                <span className="text-gray-700 dark:text-gray-300 font-semibold text-sm">Sign in with Google</span>
+                <span className="text-gray-700 dark:text-gray-300 font-semibold text-sm">{t('auth.signin.googleButton')}</span>
               </button>
             </motion.div>
           </form>
@@ -559,9 +561,9 @@ export default function SignIn() {
             className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 text-center"
           >
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>
-              New user?{" "}
+              {t('auth.signin.footer.newUser')} {" "}
               <Link href="/signup" className="text-[#156d95] hover:underline decoration-2 underline-offset-4">
-                Create Account
+                {t('auth.signin.footer.createAccount')}
               </Link>
             </p>
           </motion.div>
@@ -574,7 +576,7 @@ export default function SignIn() {
           transition={{ delay: 1.5 }}
           className="mt-4 text-center text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]"
         >
-          © 2026 DEEPSKYN LTD • PRIVACY PROTECTED
+          {t('auth.signin.footer.copyright')}
         </motion.p>
       </motion.div>
     </div>

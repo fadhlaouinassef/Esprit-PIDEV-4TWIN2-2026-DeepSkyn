@@ -29,6 +29,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import Image from "next/image";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 
 // --- Types ---
 type VerificationStatus = "PENDING" | "ACCEPTED" | "REJECTED";
@@ -71,6 +72,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export default function UserVerificationPage() {
+    const t = useTranslations();
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -85,7 +87,7 @@ export default function UserVerificationPage() {
             setUsers(response.data);
         } catch (error) {
             console.error("Failed to fetch users:", error);
-            toast.error("Failed to load users");
+            toast.error(t("adminVerification.toasts.loadUsersFailed"));
         } finally {
             setLoading(false);
         }
@@ -102,7 +104,7 @@ export default function UserVerificationPage() {
             setActionLoading(true);
             await axios.patch(`/api/admin/users/verify/${selectedUser.id}`, { status });
 
-            toast.success(`User ${status === "ACCEPTED" ? "approved" : "rejected"} successfully!`);
+            toast.success(t("adminVerification.toasts.userStatusUpdated", { status: status === "ACCEPTED" ? t("adminVerification.status.approved") : t("adminVerification.status.rejected") }));
 
             if (status === "ACCEPTED") {
                 // If accepted, they move to All Users table, so remove from this page
@@ -117,7 +119,7 @@ export default function UserVerificationPage() {
             }
         } catch (error) {
             console.error("Action error:", error);
-            toast.error(`Failed to ${status.toLowerCase()} user`);
+            toast.error(t("adminVerification.toasts.actionFailed", { action: status.toLowerCase() }));
         } finally {
             setActionLoading(false);
         }
@@ -140,9 +142,9 @@ export default function UserVerificationPage() {
             <div className="space-y-6 pb-6 lg:pb-0">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-gray-400">
-                    <span>Admin</span>
+                    <span>{t("adminVerification.breadcrumb.admin")}</span>
                     <ChevronRight size={14} />
-                    <span className="text-gray-700 dark:text-gray-200 font-medium">Verification Center</span>
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">{t("adminVerification.breadcrumb.center")}</span>
                 </nav>
 
                 <div className="flex h-[calc(100vh-180px)] gap-6 antialiased">
@@ -151,7 +153,7 @@ export default function UserVerificationPage() {
                     {/* Left Sidebar: User List */}
                     <div className="w-80 lg:w-96 flex flex-col bg-white dark:bg-gray-800 rounded-[32px] border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-gray-50 dark:border-gray-700">
-                            <h2 className="text-xl font-black text-gray-900 dark:text-white mb-4">Verification Center</h2>
+                            <h2 className="text-xl font-black text-gray-900 dark:text-white mb-4">{t("adminVerification.title")}</h2>
 
                             {/* Tabs */}
                             <div className="flex p-1 bg-gray-100 dark:bg-gray-900/50 rounded-2xl mb-4 border border-gray-100 dark:border-gray-700">
@@ -161,7 +163,7 @@ export default function UserVerificationPage() {
                                         onClick={() => setFilterTab(tab)}
                                         className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${filterTab === tab ? 'bg-white dark:bg-gray-800 text-indigo-500 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
                                     >
-                                        {tab === "PENDING" ? "Requests" : "Rejected"}
+                                        {tab === "PENDING" ? t("adminVerification.tabs.requests") : t("adminVerification.tabs.rejected")}
                                     </button>
                                 ))}
                             </div>
@@ -170,7 +172,7 @@ export default function UserVerificationPage() {
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <input
                                     type="text"
-                                    placeholder={`Search ${filterTab.toLowerCase()} users...`}
+                                    placeholder={t("adminVerification.searchPlaceholder", { tab: filterTab.toLowerCase() })}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
@@ -182,12 +184,12 @@ export default function UserVerificationPage() {
                             {loading ? (
                                 <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                                     <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                                    <p className="text-xs font-bold uppercase tracking-widest">Loading Users...</p>
+                                    <p className="text-xs font-bold uppercase tracking-widest">{t("adminVerification.loading")}</p>
                                 </div>
                             ) : filteredUsers.length === 0 ? (
                                 <div className="text-center py-12">
                                     <AlertCircle className="w-10 h-10 text-gray-200 dark:text-gray-700 mx-auto mb-3" />
-                                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">No {filterTab.toLowerCase()} users</p>
+                                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">{t("adminVerification.noUsers", { tab: filterTab.toLowerCase() })}</p>
                                 </div>
                             ) : (
                                 filteredUsers.map((user) => (
@@ -222,7 +224,7 @@ export default function UserVerificationPage() {
 
                         <div className="p-4 bg-gray-50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
                             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                <span>Total {filterTab === "PENDING" ? "Pending" : "Rejected"}</span>
+                                <span>{t("adminVerification.total", { tab: filterTab === "PENDING" ? t("adminVerification.tabs.pending") : t("adminVerification.tabs.rejected") })}</span>
                                 <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded-lg border border-gray-100 dark:border-gray-700 text-indigo-500">
                                     {filteredUsers.length}
                                 </span>
@@ -274,7 +276,7 @@ export default function UserVerificationPage() {
                                                 className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-50"
                                             >
                                                 {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                                                Approve
+                                                {t("adminVerification.actions.approve")}
                                             </button>
                                             {selectedUser.status === "PENDING" && (
                                                 <button
@@ -283,7 +285,7 @@ export default function UserVerificationPage() {
                                                     className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-red-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-50"
                                                 >
                                                     {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-4 h-4" />}
-                                                    Reject
+                                                    {t("adminVerification.actions.reject")}
                                                 </button>
                                             )}
                                             <div className="w-px h-8 bg-gray-100 dark:bg-gray-700 mx-2" />
@@ -299,14 +301,14 @@ export default function UserVerificationPage() {
                                             {/* Basic Info Card */}
                                             <div className="bg-gray-50 dark:bg-gray-900/30 rounded-[32px] p-6 border border-gray-100 dark:border-gray-700">
                                                 <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                                                    <UserIcon className="w-4 h-4 text-indigo-500" /> Personal Identity
+                                                    <UserIcon className="w-4 h-4 text-indigo-500" /> {t("adminVerification.cards.personalIdentity")}
                                                 </h3>
                                                 <div className="space-y-4">
                                                     {[
-                                                        { label: "Nom Complet", val: `${selectedUser.nom || ""} ${selectedUser.prenom || ""}`.trim() || selectedUser.email },
-                                                        { label: "Genre", val: selectedUser.sexe || "N/A" },
-                                                        { label: "Âge", val: selectedUser.age ? `${selectedUser.age} ans` : "N/A" },
-                                                        { label: "Joined", val: new Date(selectedUser.created_at).toLocaleDateString('fr-FR') },
+                                                        { label: t("adminVerification.fields.fullName"), val: `${selectedUser.nom || ""} ${selectedUser.prenom || ""}`.trim() || selectedUser.email },
+                                                        { label: t("adminVerification.fields.gender"), val: selectedUser.sexe || t("adminVerification.fields.notAvailable") },
+                                                        { label: t("adminVerification.fields.age"), val: selectedUser.age ? t("adminVerification.fields.ageValue", { age: selectedUser.age }) : t("adminVerification.fields.notAvailable") },
+                                                        { label: t("adminVerification.fields.joined"), val: new Date(selectedUser.created_at).toLocaleDateString('fr-FR') },
                                                     ].map((item, i) => (
                                                         <div key={i} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
                                                             <span className="text-xs font-bold text-gray-400 uppercase">{item.label}</span>
@@ -319,12 +321,12 @@ export default function UserVerificationPage() {
                                             {/* Image Verification Card */}
                                             <div className="bg-gray-50/50 dark:bg-gray-900/30 rounded-[32px] p-6 border border-gray-100 dark:border-gray-700 flex flex-col">
                                                 <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                                                    <ImageIcon className="w-4 h-4 text-indigo-500" /> Verification Image
+                                                    <ImageIcon className="w-4 h-4 text-indigo-500" /> {t("adminVerification.cards.verificationImage")}
                                                 </h3>
                                                 <div className="flex-1 relative min-h-[200px] rounded-2xl overflow-hidden bg-gray-200 dark:bg-black group shadow-inner">
                                                     {selectedUser.image ? (
                                                         <>
-                                                            <Image src={selectedUser.image} layout="fill" objectFit="contain" alt="Identity Preview" className="p-2" />
+                                                            <Image src={selectedUser.image} layout="fill" objectFit="contain" alt={t("adminVerification.cards.identityPreview")} className="p-2" />
                                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
                                                                 <button className="p-3 bg-white rounded-2xl shadow-xl hover:scale-110 transition-transform">
                                                                     <ZoomIn className="w-6 h-6 text-gray-900" />
@@ -333,7 +335,7 @@ export default function UserVerificationPage() {
                                                         </>
                                                     ) : (
                                                         <div className="absolute inset-0 flex items-center justify-center text-gray-400 italic text-xs">
-                                                            No image provided for verification
+                                                            {t("adminVerification.noImage")}
                                                         </div>
                                                     )}
                                                 </div>
@@ -348,13 +350,13 @@ export default function UserVerificationPage() {
                                             <ShieldCheck className="w-8 h-8" />
                                         </div>
                                     </div>
-                                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">Select a verification request</h2>
+                                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">{t("adminVerification.emptyTitle")}</h2>
                                     <p className="max-w-md text-gray-400 font-bold text-sm uppercase leading-relaxed tracking-wider">
-                                        Browse the list of pending users on the left to consult their information and manage their identity verification.
+                                        {t("adminVerification.emptyDescription")}
                                     </p>
                                     <div className="mt-12 flex gap-4">
-                                        <div className="px-4 py-2 bg-emerald-500/5 text-emerald-500 rounded-full border border-emerald-500/10 text-[10px] font-black uppercase tracking-widest">Efficiency Focus</div>
-                                        <div className="px-4 py-2 bg-indigo-500/5 text-indigo-500 rounded-full border border-indigo-500/10 text-[10px] font-black uppercase tracking-widest">Real-time sync</div>
+                                        <div className="px-4 py-2 bg-emerald-500/5 text-emerald-500 rounded-full border border-emerald-500/10 text-[10px] font-black uppercase tracking-widest">{t("adminVerification.badges.efficiency")}</div>
+                                        <div className="px-4 py-2 bg-indigo-500/5 text-indigo-500 rounded-full border border-indigo-500/10 text-[10px] font-black uppercase tracking-widest">{t("adminVerification.badges.realtime")}</div>
                                     </div>
                                 </div>
                             )}

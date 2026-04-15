@@ -3,6 +3,7 @@
 
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 
 type PropsType = {
     data: {
@@ -16,6 +17,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function WeeksProfitChart({ data }: PropsType) {
+    const t = useTranslations();
     const options: ApexOptions = {
         colors: ["#5750F1", "#0ABEF9"],
         chart: {
@@ -93,7 +95,7 @@ export function WeeksProfitChart({ data }: PropsType) {
             opacity: 1,
         },
     };
-    if (!data) return <div className="h-[370px] flex items-center justify-center text-sm italic text-gray-400">Loading data...</div>;
+    if (!data) return <div className="h-[370px] flex items-center justify-center text-sm italic text-gray-400">{t('components.weeksProfitChart.loadingData')}</div>;
 
     return (
         <div className="-ml-3.5 mt-3">
@@ -101,11 +103,11 @@ export function WeeksProfitChart({ data }: PropsType) {
                 options={options}
                 series={[
                     {
-                        name: "Sales",
+                        name: t('components.weeksProfitChart.series.sales'),
                         data: data.sales || [],
                     },
                     {
-                        name: "Revenue",
+                        name: t('components.weeksProfitChart.series.revenue'),
                         data: data.revenue || [],
                     },
                 ]}

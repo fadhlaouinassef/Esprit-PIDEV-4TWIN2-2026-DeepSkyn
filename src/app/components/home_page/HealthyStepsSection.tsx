@@ -2,54 +2,42 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 const stepsData = [
   {
-    title: "Take the quiz",
-    description:
-      "Answer a few smart questions to help us understand your skin type and concerns.",
-    previewTitle: "Skin Assessment",
-    previewText: "Quiz completed successfully",
+    id: "quiz",
     score: 20,
   },
   {
-    title: "Analyze your quiz results",
-    description:
-      "Our AI evaluates your answers to build your personalized skin profile.",
-    previewTitle: "AI Analysis",
-    previewText: "Analyzing hydration & sensitivity...",
+    id: "analysis",
     score: 45,
   },
   {
-    title: "Get personalized AI advice",
-    description:
-      "Receive tailored skincare recommendations powered by advanced AI.",
-    previewTitle: "AI Recommendations",
-    previewText: "Custom skincare insights ready",
+    id: "advice",
     score: 65,
   },
   {
-    title: "Get your routine",
-    description:
-      "Access a customized daily skincare routine designed just for you.",
-    previewTitle: "Daily Routine",
-    previewText: "AM & PM routine generated",
+    id: "routine",
     score: 80,
   },
   {
-    title: "Track and share your results",
-    description:
-      "Monitor your progress over time and share improvements with confidence.",
-    previewTitle: "Progress Tracking",
-    previewText: "Skin health improving steadily",
+    id: "progress",
     score: 92,
   },
 ]
 
 export default function HealthyStepsSection() {
+  const t = useTranslations()
   const [activeStep, setActiveStep] = useState<number | null>(null)
 
   const current = activeStep !== null ? stepsData[activeStep] : null
+  const currentPreviewTitle = current
+    ? t(`home.healthySteps.steps.${current.id}.previewTitle`)
+    : t("home.healthySteps.preview.defaultTitle")
+  const currentPreviewText = current
+    ? t(`home.healthySteps.steps.${current.id}.previewText`)
+    : t("home.healthySteps.preview.defaultText")
 
   return (
     <section
@@ -61,7 +49,7 @@ export default function HealthyStepsSection() {
         {/* LEFT SIDE (UNCHANGED) */}
         <div>
           <h2 className="text-4xl lg:text-5xl font-extrabold text-[#3b3572] leading-tight">
-            Simple steps to make your skin healthier
+            {t("home.healthySteps.title")}
           </h2>
 
           <div className="mt-12 space-y-8">
@@ -80,11 +68,11 @@ export default function HealthyStepsSection() {
                       <span className="text-[#3b3572]">
                         {index + 1} -
                       </span>{" "}
-                      {step.title}
+                      {t(`home.healthySteps.steps.${step.id}.title`)}
                     </p>
 
                     <p className="text-gray-600 text-sm mt-2 opacity-0 max-h-0 overflow-hidden transition-all duration-300 group-hover:opacity-100 group-hover:max-h-40">
-                      {step.description}
+                      {t(`home.healthySteps.steps.${step.id}.description`)}
                     </p>
                   </div>
                 </div>
@@ -165,24 +153,23 @@ export default function HealthyStepsSection() {
             >
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-bold text-[#3b3572]">
-                  {current?.previewTitle || "Skin Profile"}
+                  {currentPreviewTitle}
                 </h3>
 
                 <span className="text-xs bg-[#3b3572] text-white px-3 py-1 rounded-full">
-                  AI Powered
+                  {t("home.healthySteps.preview.aiPowered")}
                 </span>
               </div>
 
               <div className="bg-[#f3f1fa] rounded-2xl p-5 mb-6">
                 <p className="text-sm text-gray-600">
-                  {current?.previewText ||
-                    "Start your journey to healthier skin today."}
+                  {currentPreviewText}
                 </p>
               </div>
 
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-2">
-                  Skin Health Score
+                  {t("home.healthySteps.preview.scoreLabel")}
                 </p>
 
                 <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">

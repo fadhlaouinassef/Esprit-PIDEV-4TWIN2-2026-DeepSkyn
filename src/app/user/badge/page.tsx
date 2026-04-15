@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
+import { useTranslations } from "next-intl";
 
 type MotivationSummary = {
     currentBadge: {
@@ -47,6 +48,7 @@ const LEVEL_ICONS: Record<string, any> = {
 };
 
 export default function BadgePage() {
+    const t = useTranslations();
     const { data: session } = useSession();
     const [data, setData] = useState<MotivationSummary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ export default function BadgePage() {
             .then(async (res) => {
                 if (!res.ok) {
                     const err = await res.json();
-                    throw new Error(err.error || "Failed to fetch motivation data");
+                    throw new Error(err.error || t("userBadge.errors.fetchMotivationData"));
                 }
                 return res.json();
             })
@@ -80,9 +82,9 @@ export default function BadgePage() {
     }, []);
 
     const shareText = useMemo(() => {
-        const badgeTitle = data?.currentBadge?.titre || "my latest DeepSkyn badge";
-        return `I just earned ${badgeTitle} on DeepSkyn. Consistency pays off. #DeepSkyn #SkinHero`;
-    }, [data?.currentBadge?.titre]);
+        const badgeTitle = data?.currentBadge?.titre || t("userBadge.shareDefaults.badgeTitle");
+        return t("userBadge.shareDefaults.shareText", { badgeTitle });
+    }, [data?.currentBadge?.titre, t]);
 
     const renderShareImageBlob = async (): Promise<Blob> => {
         const width = 1080;
@@ -92,7 +94,7 @@ export default function BadgePage() {
         canvas.height = height;
 
         const ctx = canvas.getContext("2d");
-        if (!ctx) throw new Error("Unable to initialize image canvas");
+        if (!ctx) throw new Error(t("userBadge.errors.initImageCanvas"));
 
         const gradient = ctx.createLinearGradient(0, 0, width, height);
         gradient.addColorStop(0, "#f8fafc");
@@ -151,16 +153,16 @@ export default function BadgePage() {
 
         ctx.fillStyle = "#0f172a";
         ctx.font = "900 40px Satoshi, Arial, sans-serif";
-        ctx.fillText("DEEPSKYN BADGE", cardX + 56, cardY + 96);
+        ctx.fillText(t("userBadge.shareCard.badgeLabel"), cardX + 56, cardY + 96);
 
         ctx.fillStyle = "#0f172a";
         ctx.font = "900 84px Satoshi, Arial, sans-serif";
-        drawWrappedText(data?.currentBadge?.titre || "DeepSkyn Hero", cardX + 56, cardY + 220, cardW - 112, 92, 2);
+        drawWrappedText(data?.currentBadge?.titre || t("userBadge.shareDefaults.heroTitle"), cardX + 56, cardY + 220, cardW - 112, 92, 2);
 
         ctx.fillStyle = "#475569";
         ctx.font = "600 38px Satoshi, Arial, sans-serif";
         drawWrappedText(
-            data?.currentBadge?.description || "Consistency and skin progress unlocked a new achievement.",
+            data?.currentBadge?.description || t("userBadge.shareDefaults.description"),
             cardX + 56,
             cardY + 430,
             cardW - 112,
@@ -180,13 +182,13 @@ export default function BadgePage() {
 
         ctx.fillStyle = "#64748b";
         ctx.font = "700 22px Satoshi, Arial, sans-serif";
-        ctx.fillText("LEVEL", footerX + 32, footerY + 44);
-        ctx.fillText("USER", footerX + footerW - 260, footerY + 44);
+        ctx.fillText(t("userBadge.shareCard.level"), footerX + 32, footerY + 44);
+        ctx.fillText(t("userBadge.shareCard.user"), footerX + footerW - 260, footerY + 44);
 
         ctx.fillStyle = "#0f172a";
         ctx.font = "900 46px Satoshi, Arial, sans-serif";
-        ctx.fillText((data?.currentBadge?.niveau || "BRONZE").replace("_", " "), footerX + 32, footerY + 104);
-        ctx.fillText(session?.user?.name || "DeepSkyn User", footerX + footerW - 260, footerY + 104);
+        ctx.fillText((data?.currentBadge?.niveau || t("userBadge.shareDefaults.level")).replace("_", " "), footerX + 32, footerY + 104);
+        ctx.fillText(session?.user?.name || t("userBadge.shareDefaults.userName"), footerX + footerW - 260, footerY + 104);
 
         const avatarSrc = session?.user?.image;
         if (avatarSrc) {
@@ -223,7 +225,7 @@ export default function BadgePage() {
         ctx.fillStyle = "#64748b";
         ctx.font = "700 26px Satoshi, Arial, sans-serif";
         ctx.fillText(new Date().toLocaleDateString(), cardX + 56, cardY + cardH - 40);
-        ctx.fillText("deepskyn.app", cardX + cardW - 220, cardY + cardH - 40);
+        ctx.fillText(t("userBadge.shareCard.domain"), cardX + cardW - 220, cardY + cardH - 40);
 
         const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
         if (!blob) throw new Error("Unable to generate share image");
@@ -252,10 +254,10 @@ export default function BadgePage() {
         try {
             const blob = await renderShareImageBlob();
             downloadBlob(blob, `deepskyn-badge-${(data?.currentBadge?.niveau || "hero").toLowerCase()}.png`);
-            toast.success("Badge image downloaded");
+            toast.success(t("userBadge.toasts.imageDownloaded"));
         } catch (error) {
             console.error(error);
-            toast.error("Unable to generate badge image");
+            toast.error(t("userBadge.toasts.generateImageFailed"));
         } finally {
             setShareBusy(false);
         }
@@ -264,18 +266,18 @@ export default function BadgePage() {
     const copyShareLink = async () => {
         try {
             await navigator.clipboard.writeText(shareUrl || window.location.href);
-            toast.success("Badge link copied");
+            toast.success(t("userBadge.toasts.linkCopied"));
         } catch {
-            toast.error("Failed to copy link");
+            toast.error(t("userBadge.toasts.copyLinkFailed"));
         }
     };
 
     const copyCaption = async () => {
         try {
             await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-            toast.success("Caption copied");
+            toast.success(t("userBadge.toasts.captionCopied"));
         } catch {
-            toast.error("Failed to copy caption");
+            toast.error(t("userBadge.toasts.copyCaptionFailed"));
         }
     };
 
@@ -285,10 +287,10 @@ export default function BadgePage() {
             await prepareSocialAsset();
             const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
             window.open(url, "_blank", "noopener,noreferrer");
-            toast("Facebook opened. Your badge image and caption are ready to paste.");
+            toast(t("userBadge.toasts.facebookReady"));
         } catch (error) {
             console.error(error);
-            toast.error("Facebook share preparation failed");
+            toast.error(t("userBadge.toasts.facebookFailed"));
         } finally {
             setShareBusy(false);
         }
@@ -312,10 +314,10 @@ export default function BadgePage() {
         try {
             await prepareSocialAsset();
             window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-            toast("Instagram opened. Upload the downloaded badge and paste the copied caption.");
+            toast(t("userBadge.toasts.instagramReady"));
         } catch (error) {
             console.error(error);
-            toast.error("Instagram share preparation failed");
+            toast.error(t("userBadge.toasts.instagramFailed"));
         } finally {
             setShareBusy(false);
         }
@@ -326,10 +328,10 @@ export default function BadgePage() {
         try {
             await prepareSocialAsset();
             window.open("https://www.tiktok.com/upload", "_blank", "noopener,noreferrer");
-            toast("TikTok opened. Upload the downloaded badge and paste the copied caption.");
+            toast(t("userBadge.toasts.tiktokReady"));
         } catch (error) {
             console.error(error);
-            toast.error("TikTok share preparation failed");
+            toast.error(t("userBadge.toasts.tiktokFailed"));
         } finally {
             setShareBusy(false);
         }
@@ -337,7 +339,7 @@ export default function BadgePage() {
 
     const shareNatively = async () => {
         if (!navigator.share) {
-            toast.error("Native share is not available on this device");
+            toast.error(t("userBadge.toasts.nativeShareUnavailable"));
             return;
         }
 
@@ -348,13 +350,13 @@ export default function BadgePage() {
 
             if (navigator.canShare?.({ files: [file] })) {
                 await navigator.share({
-                    title: "My DeepSkyn badge",
+                    title: t("userBadge.shareTitle"),
                     text: shareText,
                     files: [file],
                 });
             } else {
                 await navigator.share({
-                    title: "My DeepSkyn badge",
+                    title: t("userBadge.shareTitle"),
                     text: shareText,
                     url: shareUrl,
                 });
@@ -362,7 +364,7 @@ export default function BadgePage() {
         } catch (error) {
             if ((error as Error)?.name !== "AbortError") {
                 console.error(error);
-                toast.error("Share failed");
+                toast.error(t("userBadge.toasts.shareFailed"));
             }
         } finally {
             setShareBusy(false);
@@ -458,7 +460,7 @@ export default function BadgePage() {
 
     if (loading) {
         return (
-            <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
+            <UserLayout userName={session?.user?.name || t("userBadge.shareDefaults.user")} userPhoto={session?.user?.image || "/avatar.png"}>
                 <div id="loading-skeleton" className="mx-auto w-full max-w-[1000px] py-10 space-y-8 animate-pulse">
                    <div className="h-6 w-32 bg-gray-200 rounded"></div>
                    <div className="h-10 w-64 bg-gray-200 rounded mx-auto"></div>
@@ -476,20 +478,20 @@ export default function BadgePage() {
 
     if (!data && !loading) {
         return (
-            <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
+            <UserLayout userName={session?.user?.name || t("userBadge.shareDefaults.user")} userPhoto={session?.user?.image || "/avatar.png"}>
                 <div className="mx-auto w-full max-w-[1000px] py-20 flex flex-col items-center text-center space-y-4">
                     <div className="p-4 bg-red-100 text-red-600 rounded-full mb-4">
                         <Lock size={32} />
                     </div>
-                    <h2 className="text-2xl font-bold">Motivation Data Unavailable</h2>
+                    <h2 className="text-2xl font-bold">{t("userBadge.empty.title")}</h2>
                     <p className="text-gray-500 max-w-md">
-                        We were unable to load your achievement data. Please ensure you are logged in and have completed your initial profile.
+                        {t("userBadge.empty.description")}
                     </p>
                     <button 
                         onClick={() => window.location.reload()}
                         className="px-6 py-2 bg-primary text-white font-bold rounded-lg mt-4"
                     >
-                        Retry Loading
+                        {t("userBadge.empty.retry")}
                     </button>
                 </div>
             </UserLayout>
@@ -499,15 +501,15 @@ export default function BadgePage() {
     const currentVariant = data?.currentBadge ? NIVEAU_TO_VARIANT[data.currentBadge.niveau] : 'bronze';
 
     return (
-        <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
+        <UserLayout userName={session?.user?.name || t("userBadge.shareDefaults.user")} userPhoto={session?.user?.image || "/avatar.png"}>
             <div className="user-badge-page mx-auto w-full max-w-[1000px] flex flex-col items-center space-y-8 py-10 px-4">
                 
                 {/* Breadcrumb & Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
                     <nav className="flex items-center gap-2 text-sm text-gray-400">
-                        <span className="cursor-pointer hover:text-primary">User</span>
+                        <span className="cursor-pointer hover:text-primary">{t("userBadge.breadcrumb.user")}</span>
                         <ChevronRight size={14} />
-                        <span className="text-gray-900 dark:text-white font-medium">Badges & Achievements</span>
+                        <span className="text-gray-900 dark:text-white font-medium">{t("userBadge.breadcrumb.title")}</span>
                     </nav>
                     <AudioToggleButton
                         enabled={autoSpeech}
@@ -515,7 +517,7 @@ export default function BadgePage() {
                             if (autoSpeech) stopSpeaking();
                             setAutoSpeech(!autoSpeech);
                         }}
-                        label="Audio Mode"
+                        label={t("userBadge.audioLabel")}
                     />
                 </div>
 
@@ -533,9 +535,9 @@ export default function BadgePage() {
                         >
                             <UserBadgeCard
                                 userPhoto={session?.user?.image || "/avatar.png"}
-                                userName={session?.user?.name || "DeepSkyn Hero"}
-                                badgeTitle={data?.currentBadge?.titre || "DeepSkyn Beginner"}
-                                description={data?.currentBadge?.description || "Start completing your routines to earn your first badge."}
+                                userName={session?.user?.name || t("userBadge.shareDefaults.heroTitle")}
+                                badgeTitle={data?.currentBadge?.titre || t("userBadge.shareDefaults.beginnerTitle")}
+                                description={data?.currentBadge?.description || t("userBadge.shareDefaults.beginnerDescription")}
                                 variant={currentVariant as BadgeVariant}
                             />
                             
@@ -544,7 +546,7 @@ export default function BadgePage() {
                                 className="mt-6 w-full flex items-center justify-center gap-3 py-5 px-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-[24px] hover:scale-[1.03] active:scale-[0.97] transition-all shadow-[0_15px_40px_rgba(0,0,0,0.15)] group"
                             >
                                 <Share2 size={18} className="group-hover:rotate-12 transition-transform" />
-                                SHARE YOUR ACHIEVEMENT
+                                {t("userBadge.labels.shareAchievement")}
                             </button>
                         </motion.div>
 
@@ -555,18 +557,18 @@ export default function BadgePage() {
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-black text-primary uppercase tracking-widest">
-                                                Active Goal
+                                                {t("userBadge.labels.activeGoal")}
                                             </div>
                                         </div>
                                         <h3 className="text-3xl font-black flex items-center gap-3 leading-none">
-                                            Toward {data?.nextBadge?.level || "Master"} level
+                                            {t("userBadge.labels.towardLevel", { level: data?.nextBadge?.level || t("userBadge.labels.master") })}
                                             <TrendingUp className="text-primary animate-bounce shrink-0" size={24} />
                                         </h3>
-                                        <p className="text-gray-500 font-medium mt-1 italic uppercase text-[10px] tracking-widest opacity-70">Detailed progress tracking</p>
+                                        <p className="text-gray-500 font-medium mt-1 italic uppercase text-[10px] tracking-widest opacity-70">{t("userBadge.labels.detailedProgress")}</p>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-5xl font-black text-primary leading-none tracking-tighter">{Math.round(data?.nextBadge?.progress || 0)}%</div>
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Completed</span>
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{t("userBadge.labels.completed")}</span>
                                     </div>
                                 </div>
 
@@ -586,7 +588,7 @@ export default function BadgePage() {
                                             <div className="p-2 bg-primary/20 rounded-xl font-black">
                                                 <Target size={20} className="text-primary" />
                                             </div>
-                                            <h4 className="text-sm font-black text-primary uppercase tracking-[0.1em] italic leading-none">Validation tasks</h4>
+                                            <h4 className="text-sm font-black text-primary uppercase tracking-[0.1em] italic leading-none">{t("userBadge.labels.validationTasks")}</h4>
                                         </div>
 
                                         <div className="space-y-3">
@@ -619,8 +621,8 @@ export default function BadgePage() {
                                                         <Sparkles size={40} className="animate-pulse" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-black uppercase text-xl leading-none mb-1">Badge Ready!</p>
-                                                        <p className="text-sm font-bold opacity-80 italic">All requirements for this tier are completed.</p>
+                                                        <p className="font-black uppercase text-xl leading-none mb-1">{t("userBadge.labels.badgeReady")}</p>
+                                                        <p className="text-sm font-bold opacity-80 italic">{t("userBadge.labels.requirementsCompleted")}</p>
                                                     </div>
                                                 </div>
                                             )}
@@ -632,9 +634,9 @@ export default function BadgePage() {
                             {/* Horizontal Metrics Section (since we restored the card, let's put metrics horizontally below milestone) */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                 {[
-                                    { label: 'STREAK', value: `${data?.metrics?.streakDays ?? 0}d`, color: 'orange', icon: CalendarDays },
-                                    { label: 'ANALYSES', value: data?.metrics?.finalAnalysisCountAll ?? 0, color: 'blue', icon: Award },
-                                    { label: 'SCORE', value: Math.round(data?.metrics?.lastAnalysisScore || 0), color: 'green', icon: Zap }
+                                    { label: t('userBadge.stats.streak'), value: `${data?.metrics?.streakDays ?? 0}d`, color: 'orange', icon: CalendarDays },
+                                    { label: t('userBadge.stats.analyses'), value: data?.metrics?.finalAnalysisCountAll ?? 0, color: 'blue', icon: Award },
+                                    { label: t('userBadge.stats.score'), value: Math.round(data?.metrics?.lastAnalysisScore || 0), color: 'green', icon: Zap }
                                 ].map((stat, i) => (
                                     <motion.div 
                                         key={i}
@@ -657,8 +659,8 @@ export default function BadgePage() {
                 <div className="w-full mt-10">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h3 className="text-3xl font-black">Roadmap to Mastery</h3>
-                            <p className="text-gray-500">Track your path from beginner to expert</p>
+                            <h3 className="text-3xl font-black">{t("userBadge.labels.roadmapTitle")}</h3>
+                            <p className="text-gray-500">{t("userBadge.labels.roadmapSubtitle")}</p>
                         </div>
                     </div>
 
@@ -709,7 +711,7 @@ export default function BadgePage() {
                                             <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full inline-block mb-3 ${
                                                 isEarned ? 'bg-green-100 text-green-700' : isNext ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-gray-200 text-gray-600'
                                             }`}>
-                                                {isEarned ? 'Earned' : isNext ? 'Target' : 'Locked'}
+                                                {isEarned ? t("userBadge.labels.earned") : isNext ? t("userBadge.labels.target") : t("userBadge.labels.locked")}
                                             </span>
                                             <h4 className="text-2xl font-black uppercase tracking-tight">{level.replace('_', ' ')}</h4>
                                         </div>
@@ -721,12 +723,12 @@ export default function BadgePage() {
                                             <div className="flex items-center gap-3">
                                                 <div className="h-2 w-10 rounded-full bg-primary/20" />
                                                 <h5 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">
-                                                    Mission Parameters
+                                                    {t("userBadge.labels.missionParameters")}
                                                 </h5>
                                             </div>
                                             {isEarned && (
                                                 <p className="text-[10px] text-green-600 font-black flex items-center gap-2 bg-green-100 px-3 py-1 rounded-full uppercase tracking-widest">
-                                                    Mission Complete
+                                                    {t("userBadge.labels.missionComplete")}
                                                 </p>
                                             )}
                                         </div>
@@ -749,7 +751,7 @@ export default function BadgePage() {
                                                 </div>
                                             )) : (
                                                 <div className="col-span-full py-8 text-center text-gray-400 text-sm font-medium italic opacity-50">
-                                                    Missions classified. Reach previous level to reveal.
+                                                    {t("userBadge.labels.missionsClassified")}
                                                 </div>
                                             )}
                                         </div>
@@ -757,8 +759,8 @@ export default function BadgePage() {
                                             <div className="pt-4 px-2">
                                                 <div className="flex justify-between items-end mb-3">
                                                     <div>
-                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Your Trajectory</span>
-                                                        <span className="text-xl font-black text-primary italic">Almost there...</span>
+                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">{t("userBadge.labels.yourTrajectory")}</span>
+                                                        <span className="text-xl font-black text-primary italic">{t("userBadge.labels.almostThere")}</span>
                                                     </div>
                                                     <span className="text-3xl font-black text-primary italic">{Math.round(data?.nextBadge?.progress || 0)}%</span>
                                                 </div>
@@ -805,8 +807,8 @@ export default function BadgePage() {
                                 className="w-full max-w-[560px] rounded-[32px] border border-white/20 bg-white dark:bg-gray-900 p-6 shadow-2xl"
                             >
                                 <div className="mb-5">
-                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white">Share Your Badge</h3>
-                                    <p className="text-sm text-gray-500 mt-1">Post your achievement on social media with a generated DeepSkyn card.</p>
+                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white">{t("userBadge.shareModal.title")}</h3>
+                                    <p className="text-sm text-gray-500 mt-1">{t("userBadge.shareModal.description")}</p>
                                 </div>
 
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -835,14 +837,14 @@ export default function BadgePage() {
                                     disabled={shareBusy}
                                     className="mt-4 w-full py-3 rounded-2xl bg-primary text-white font-black hover:bg-primary/90 disabled:opacity-60"
                                 >
-                                    Share via device apps
+                                    {t("userBadge.shareModal.shareViaDevice")}
                                 </button>
 
                                 <button
                                     onClick={() => setShareMenuOpen(false)}
                                     className="mt-3 w-full py-3 rounded-2xl border border-gray-200 dark:border-white/10 font-bold text-gray-700 dark:text-gray-200"
                                 >
-                                    Close
+                                    {t("userBadge.shareModal.close")}
                                 </button>
                             </motion.div>
                         </motion.div>

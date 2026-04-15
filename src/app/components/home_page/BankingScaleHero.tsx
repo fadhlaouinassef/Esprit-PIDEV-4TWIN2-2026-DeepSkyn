@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 type StatItem = {
+  id: "happyCustomers" | "satisfactionRate" | "customerSupport" | "premiumProducts"
   value: string
-  description: string
   delay: number
 }
 type DataPoint = {
@@ -18,23 +19,23 @@ type DataPoint = {
 }
 const stats: StatItem[] = [
   {
+    id: "happyCustomers",
     value: "50K+",
-    description: "Happy customers\nworldwide",
     delay: 0,
   },
   {
+    id: "satisfactionRate",
     value: "99%",
-    description: "Satisfaction\nrate",
     delay: 0.2,
   },
   {
+    id: "customerSupport",
     value: "24/7",
-    description: "Customer\nsupport",
     delay: 0.4,
   },
   {
+    id: "premiumProducts",
     value: "300+",
-    description: "Premium skincare\nproducts",
     delay: 0.6,
   },
 ]
@@ -60,6 +61,7 @@ const generateDataPoints = (): DataPoint[] => {
 
 // @component: BankingScaleHero
 export const BankingScaleHero = () => {
+  const t = useTranslations()
   const [isVisible, setIsVisible] = useState(false)
   const [dataPoints, setDataPoints] = useState<DataPoint[]>([])
   const [typingComplete, setTypingComplete] = useState(false)
@@ -102,7 +104,7 @@ export const BankingScaleHero = () => {
                     color: "#146e96",
                   }}
                 >
-                  Premium skincare solutions
+                  {t("home.bankingHero.tagline")}
                 </motion.span>
                 <motion.span
                   initial={{
@@ -132,7 +134,7 @@ export const BankingScaleHero = () => {
                 fontWeight: "400",
               }}
             >
-              Tailored skincare for every skin type{" "}
+              {t("home.bankingHero.titleMain")}{" "}
               <span
                 className="opacity-40"
                 style={{
@@ -140,7 +142,7 @@ export const BankingScaleHero = () => {
                   fontSize: "40px",
                 }}
               >
-                designed to enhance natural beauty for both men and women.
+                {t("home.bankingHero.titleMuted")}
               </span>
             </h2>
 
@@ -150,7 +152,7 @@ export const BankingScaleHero = () => {
                 fontFamily: "Satoshi",
               }}
             >
-              Discover our premium skincare collection, formulated with natural ingredients for radiant, healthy skin.
+              {t("home.bankingHero.subtitle")}
             </p>
 
             <button 
@@ -162,7 +164,7 @@ export const BankingScaleHero = () => {
               }}
               className="relative inline-flex justify-center items-center leading-4 text-center cursor-pointer whitespace-nowrap outline-none font-medium h-9 text-[#232730] bg-white/50 backdrop-blur-sm shadow-[0_1px_1px_0_rgba(255,255,255,0),0_0_0_1px_rgba(87,90,100,0.12)] transition-all duration-200 ease-in-out rounded-lg px-4 mt-5 text-sm group hover:shadow-[0_1px_2px_0_rgba(0,0,0,0.05),0_0_0_1px_rgba(87,90,100,0.18)]" style={{ fontFamily: "Satoshi" }}>
               <span className="relative z-10 flex items-center gap-1">
-                Explore Our Products
+                {t("home.bankingHero.ctaExploreProducts")}
                 <ArrowRight className="w-4 h-4 -mr-1 transition-transform duration-150 group-hover:translate-x-1" />
               </span>
             </button>
@@ -266,7 +268,7 @@ export const BankingScaleHero = () => {
                         {stat.value}
                       </span>
                       <p className="text-xs leading-[13.2px] text-[#7C7F88] m-0 whitespace-pre-line">
-                        {stat.description}
+                        {t(`home.bankingHero.stats.${stat.id}`)}
                       </p>
                     </motion.div>
                   </div>

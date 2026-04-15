@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import { AdminLayout } from "@/app/ui/AdminLayout";
+import { useTranslations } from "next-intl";
 import {
   CreditCard,
   Search,
@@ -319,7 +320,7 @@ const ITEMS_PER_PAGE = 8;
 // ─────────────────────────────────────────────
 // Badge components
 // ─────────────────────────────────────────────
-function PaymentBadge({ status }: { status: PaymentStatus }) {
+function PaymentBadge({ status, labels }: { status: PaymentStatus; labels: Record<PaymentStatus, string> }) {
   const map: Record<PaymentStatus, { cls: string; icon: React.ReactNode }> = {
     Paid:     { cls: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200", icon: <CheckCircle size={12} /> },
     Expiring: { cls: "bg-amber-50  text-amber-700  ring-1 ring-amber-200",    icon: <Clock size={12} /> },
@@ -328,7 +329,7 @@ function PaymentBadge({ status }: { status: PaymentStatus }) {
   const { cls, icon } = map[status];
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${cls}`}>
-      {icon} {status}
+      {icon} {labels[status]}
     </span>
   );
 }
@@ -396,9 +397,28 @@ function SummaryCard({
 function DetailModal({
   sub,
   onClose,
+  labels,
 }: {
   sub: SubscriptionRow;
   onClose: () => void;
+  labels: {
+    tabs: { info: string; history: string };
+    fields: {
+      fullName: string;
+      email: string;
+      plan: string;
+      startDate: string;
+      endDate: string;
+      paymentStatus: string;
+      renewal: string;
+      amount: string;
+      yearly: string;
+      subscriptionStarted: string;
+      close: string;
+      renewSubscription: string;
+    };
+    paymentStatus: Record<PaymentStatus, string>;
+  };
 }) {
   const [tab, setTab] = useState<"info" | "history">("info");
 
@@ -434,7 +454,6 @@ function DetailModal({
         {/* Tabs */}
         <div className="flex border-b border-gray-100 dark:border-gray-700 px-6">
           {(["info", "history"] as const).map((t) => {
-            const labels = { info: "Subscription Info", history: "History" };
             const icons = {
               info: <BadgeCheck size={14} />,
               history: <History size={14} />,
@@ -449,7 +468,7 @@ function DetailModal({
                     : "border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
-                {icons[t]} {labels[t]}
+                {icons[t]} {labels.tabs[t]}
               </button>
             );
           })}
@@ -461,18 +480,18 @@ function DetailModal({
           {tab === "info" && (
             <div className="grid grid-cols-2 gap-4">
               {[
-                { label: "Full Name",       value: sub.userName,                          icon: <User       size={14} /> },
-                { label: "Email",           value: sub.email,                             icon: <Mail       size={14} /> },
-                { label: "Plan",            value: <PlanBadge plan={sub.plan} />,         icon: <Package    size={14} /> },
-                { label: "Start Date",      value: formatDate(sub.date_debut),            icon: <Calendar   size={14} /> },
-                { label: "End Date",        value: formatDate(sub.date_fin),              icon: <Calendar   size={14} /> },
+                { label: labels.fields.fullName,       value: sub.userName,                          icon: <User       size={14} /> },
+                { label: labels.fields.email,          value: sub.email,                             icon: <Mail       size={14} /> },
+                { label: labels.fields.plan,           value: <PlanBadge plan={sub.plan} />,         icon: <Package    size={14} /> },
+                { label: labels.fields.startDate,      value: formatDate(sub.date_debut),            icon: <Calendar   size={14} /> },
+                { label: labels.fields.endDate,        value: formatDate(sub.date_fin),              icon: <Calendar   size={14} /> },
                 {
-                  label: "Payment Status",
-                  value: <PaymentBadge status={sub.paymentStatus} />,
+                  label: labels.fields.paymentStatus,
+                  value: <PaymentBadge status={sub.paymentStatus} labels={labels.paymentStatus} />,
                   icon: <CreditCard size={14} />,
                 },
-                { label: "Renewal", value: "Yearly",                                     icon: <RefreshCw  size={14} /> },
-                { label: "Amount",  value: `$${sub.amount.toFixed(2)}`,                   icon: <DollarSign size={14} /> },
+                { label: labels.fields.renewal, value: labels.fields.yearly,                              icon: <RefreshCw  size={14} /> },
+                { label: labels.fields.amount,  value: `$${sub.amount.toFixed(2)}`,                      icon: <DollarSign size={14} /> },
               ].map(({ label, value, icon }) => (
                 <div
                   key={label}
@@ -499,7 +518,7 @@ function DetailModal({
                   <div className="absolute -left-1 top-1.5 size-2.5 rounded-full bg-[#156d95] ring-2 ring-white dark:ring-gray-800" />
                   <p className="text-xs text-gray-400 font-medium">{formatDate(sub.date_debut)}</p>
                   <p className="text-sm text-gray-700 dark:text-gray-200 font-medium mt-0.5">
-                    Subscription started – {sub.plan} Plan
+                    {labels.fields.subscriptionStarted} - {sub.plan} {labels.fields.plan}
                   </p>
                 </li>
               </ul>
@@ -514,11 +533,11 @@ function DetailModal({
             onClick={onClose}
             className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
-            Close
+            {labels.fields.close}
           </button>
           <div className="flex gap-2">
             <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors shadow-sm">
-              <RefreshCw size={14} /> Renew Subscription
+              <RefreshCw size={14} /> {labels.fields.renewSubscription}
             </button>
           </div>
         </div>
@@ -533,6 +552,7 @@ function DetailModal({
 // Main Page
 // ─────────────────────────────────────────────
 export default function SubscriptionsPage() {
+  const t = useTranslations("adminSubscriptions");
   const [subscriptions, setSubscriptions] = useState<SubscriptionRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -588,7 +608,15 @@ export default function SubscriptionsPage() {
   const handleFilterChange = () => setPage(1);
 
   const exportToCSV = () => {
-    const headers = ["User Name", "Email", "Plan", "Start Date", "End Date", "Payment Status", "Amount"];
+    const headers = [
+      t("csv.userName"),
+      t("csv.email"),
+      t("csv.plan"),
+      t("csv.startDate"),
+      t("csv.endDate"),
+      t("csv.paymentStatus"),
+      t("csv.amount"),
+    ];
     const rows = filtered.map((s) => [
       s.userName,
       s.email,
@@ -596,7 +624,7 @@ export default function SubscriptionsPage() {
       formatDate(s.date_debut),
       formatDate(s.date_fin),
       s.paymentStatus,
-      `${s.amount.toFixed(2)} TND (${s.billingCycle === "yearly" ? "Year" : "Month"})`,
+      `${s.amount.toFixed(2)} TND (${s.billingCycle === "yearly" ? t("billing.year") : t("billing.month")})`,
     ]);
     const csv = [headers, ...rows]
       .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
@@ -615,54 +643,54 @@ export default function SubscriptionsPage() {
       <div className="space-y-6" style={{ fontFamily: "Satoshi, sans-serif" }}>
         {/* ── Breadcrumb ── */}
         <nav className="flex items-center gap-2 text-sm text-gray-400">
-          <span>Admin</span>
+          <span>{t("breadcrumb.admin")}</span>
           <ChevronRight size={14} />
-          <span className="text-gray-700 dark:text-gray-200 font-medium">Subscriptions</span>
+          <span className="text-gray-700 dark:text-gray-200 font-medium">{t("breadcrumb.subscriptions")}</span>
         </nav>
 
         {/* ── Page Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Subscriptions Management
+              {t("header.title")}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Monitor and manage all user subscription plans
+              {t("header.subtitle")}
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-lg">
             <Calendar size={13} />
-            Last updated: March 2, 2026
+            {t("header.lastUpdated")}: March 2, 2026
           </div>
         </div>
 
         {/* ── Summary Cards ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <SummaryCard
-            title="Total Subscriptions"
+            title={t("summary.totalSubscriptions")}
             value={total}
-            sub={`${filtered.length} matching current filters`}
+            sub={t("summary.matchingFilters", { count: filtered.length })}
             icon={<Users size={22} className="text-[#156d95]" />}
             accent="bg-[#eaf4f9] dark:bg-[#156d95]/20"
           />
           <SummaryCard
-            title="Active Subscriptions"
+            title={t("summary.activeSubscriptions")}
             value={active}
-            sub={total > 0 ? `${((active / total) * 100).toFixed(0)}% of all subscriptions` : "–"}
+            sub={total > 0 ? t("summary.activeRatio", { ratio: ((active / total) * 100).toFixed(0) }) : "-"}
             icon={<CheckCircle size={22} className="text-emerald-600" />}
             accent="bg-emerald-50 dark:bg-emerald-900/20"
           />
           <SummaryCard
-            title="Expired Subscriptions"
+            title={t("summary.expiredSubscriptions")}
             value={expired}
-            sub="Require renewal attention"
+            sub={t("summary.expiredHint")}
             icon={<AlertCircle size={22} className="text-orange-500" />}
             accent="bg-orange-50 dark:bg-orange-900/20"
           />
           <SummaryCard
-            title="Monthly Revenue"
+            title={t("summary.monthlyRevenue")}
             value={`${monthlyRevenue} TND`}
-            sub="From active subscriptions"
+            sub={t("summary.monthlyRevenueHint")}
             icon={<TrendingUp size={22} className="text-violet-600" />}
             accent="bg-violet-50 dark:bg-violet-900/20"
           />
@@ -681,7 +709,7 @@ export default function SubscriptionsPage() {
                 />
                 <input
                   type="text"
-                  placeholder="Search by name or email…"
+                  placeholder={t("filters.searchPlaceholder")}
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); handleFilterChange(); }}
                   className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#156d95]/30 focus:border-[#156d95] transition"
@@ -698,7 +726,7 @@ export default function SubscriptionsPage() {
                   }`}
                 >
                   <Filter size={14} />
-                  Filters
+                  {t("filters.button")}
                   <ChevronDown
                     size={13}
                     className={`transition-transform ${showFilters ? "rotate-180" : ""}`}
@@ -710,9 +738,9 @@ export default function SubscriptionsPage() {
                 <button
                   onClick={exportToCSV}
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
-                  title="Export filtered results to CSV"
+                  title={t("filters.exportTitle")}
                 >
-                  <Download size={14} /> Export CSV
+                  <Download size={14} /> {t("filters.export")}
                 </button>
               </div>
             </div>
@@ -723,31 +751,31 @@ export default function SubscriptionsPage() {
                 {/* Payment Status */}
                 <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 block">
-                    Payment Status
+                    {t("filters.paymentStatus")}
                   </label>
                   <select
                     value={paymentFilter}
                     onChange={(e) => { setPaymentFilter(e.target.value as PaymentStatus | "All"); handleFilterChange(); }}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#156d95]/30 focus:border-[#156d95] transition"
                   >
-                    <option value="All">All Statuses</option>
-                    <option value="Paid">Paid</option>
-                    <option value="Expiring">Expiring</option>
-                    <option value="Expired">Expired</option>
+                    <option value="All">{t("filters.allStatuses")}</option>
+                    <option value="Paid">{t("statuses.paid")}</option>
+                    <option value="Expiring">{t("statuses.expiring")}</option>
+                    <option value="Expired">{t("statuses.expired")}</option>
                   </select>
                 </div>
 
                 {/* Plan */}
                 <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 block">
-                    Plan
+                    {t("filters.plan")}
                   </label>
                   <select
                     value={planFilter}
                     onChange={(e) => { setPlanFilter(e.target.value); handleFilterChange(); }}
                     className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#156d95]/30 focus:border-[#156d95] transition"
                   >
-                    <option value="All">All Plans</option>
+                    <option value="All">{t("filters.allPlans")}</option>
                     {uniquePlans.map((p) => (
                       <option key={p} value={p}>
                         {p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()}
@@ -759,7 +787,7 @@ export default function SubscriptionsPage() {
                 {/* Date From */}
                 <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 block">
-                    Start Date From
+                    {t("filters.startDateFrom")}
                   </label>
                   <input
                     type="date"
@@ -772,7 +800,7 @@ export default function SubscriptionsPage() {
                 {/* Date To */}
                 <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 block">
-                    End Date To
+                    {t("filters.endDateTo")}
                   </label>
                   <input
                     type="date"
@@ -791,18 +819,18 @@ export default function SubscriptionsPage() {
               <thead>
                 <tr className="bg-gray-50/80 dark:bg-gray-700/30">
                   {[
-                    "User",
-                    "Plan",
-                    "Start Date",
-                    "End Date",
-                    "Payment",
-                    "Amount",
-                    "Actions",
+                    t("table.user"),
+                    t("table.plan"),
+                    t("table.startDate"),
+                    t("table.endDate"),
+                    t("table.payment"),
+                    t("table.amount"),
+                    t("table.actions"),
                   ].map((h) => (
                     <th
                       key={h}
                       className={`px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap ${
-                        h === "Actions" ? "text-right" : "text-left"
+                        h === t("table.actions") ? "text-right" : "text-left"
                       }`}
                     >
                       {h}
@@ -815,14 +843,14 @@ export default function SubscriptionsPage() {
                   <tr>
                     <td colSpan={7} className="text-center py-16 text-gray-400">
                       <RefreshCw size={28} className="mx-auto mb-3 opacity-30 animate-spin" />
-                      <p className="text-sm font-medium">Loading subscriptions…</p>
+                      <p className="text-sm font-medium">{t("states.loading")}</p>
                     </td>
                   </tr>
                 ) : paginated.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-16 text-gray-400 dark:text-gray-500">
                       <Search size={36} className="mx-auto mb-3 opacity-25" />
-                      <p className="text-sm font-medium">No subscriptions match your filters</p>
+                      <p className="text-sm font-medium">{t("states.noMatch")}</p>
                     </td>
                   </tr>
                 ) : (
@@ -861,14 +889,14 @@ export default function SubscriptionsPage() {
 
                       {/* Payment */}
                       <td className="px-4 py-3.5">
-                        <PaymentBadge status={sub.paymentStatus} />
+                        <PaymentBadge status={sub.paymentStatus} labels={{ Paid: t("statuses.paid"), Expiring: t("statuses.expiring"), Expired: t("statuses.expired") }} />
                       </td>
 
                       {/* Amount */}
                       <td className="px-4 py-3.5 font-semibold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                         {sub.amount.toFixed(2)} TND
                         <span className="ml-1 text-xs text-gray-400 font-normal">
-                          /{sub.billingCycle === "yearly" ? "Year" : "Month"}
+                          /{sub.billingCycle === "yearly" ? t("billing.year") : t("billing.month")}
                         </span>
                       </td>
 
@@ -878,10 +906,10 @@ export default function SubscriptionsPage() {
                           {/* View Details */}
                           <button
                             onClick={() => setSelectedSub(sub)}
-                            title="View Details"
+                            title={t("actions.viewDetails")}
                             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#156d95] bg-[#eaf4f9] dark:bg-[#156d95]/20 hover:bg-[#156d95] hover:text-white transition-colors"
                           >
-                            <Eye size={13} /> View
+                            <Eye size={13} /> {t("actions.view")}
                           </button>
                         </div>
                       </td>
@@ -895,19 +923,18 @@ export default function SubscriptionsPage() {
           {/* Pagination */}
           <div className="px-5 py-4 border-t border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Showing{" "}
+              {t("pagination.showing")}{" "}
               <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {filtered.length === 0 ? 0 : (page - 1) * ITEMS_PER_PAGE + 1}
               </span>{" "}
-              –{" "}
+              -{" "}
               <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {Math.min(page * ITEMS_PER_PAGE, filtered.length)}
               </span>{" "}
-              of{" "}
+              {t("pagination.of")}{" "}
               <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {filtered.length}
-              </span>{" "}
-              subscriptions
+              </span>{" "}{t("pagination.subscriptions")}
             </p>
 
             <div className="flex items-center gap-1">
@@ -947,7 +974,32 @@ export default function SubscriptionsPage() {
 
       {/* ── Modals ── */}
       {selectedSub && (
-        <DetailModal sub={selectedSub} onClose={() => setSelectedSub(null)} />
+        <DetailModal
+          sub={selectedSub}
+          onClose={() => setSelectedSub(null)}
+          labels={{
+            tabs: { info: t("detail.tabs.info"), history: t("detail.tabs.history") },
+            fields: {
+              fullName: t("detail.fields.fullName"),
+              email: t("detail.fields.email"),
+              plan: t("detail.fields.plan"),
+              startDate: t("detail.fields.startDate"),
+              endDate: t("detail.fields.endDate"),
+              paymentStatus: t("detail.fields.paymentStatus"),
+              renewal: t("detail.fields.renewal"),
+              amount: t("detail.fields.amount"),
+              yearly: t("detail.fields.yearly"),
+              subscriptionStarted: t("detail.fields.subscriptionStarted"),
+              close: t("detail.fields.close"),
+              renewSubscription: t("detail.fields.renewSubscription"),
+            },
+            paymentStatus: {
+              Paid: t("statuses.paid"),
+              Expiring: t("statuses.expiring"),
+              Expired: t("statuses.expired"),
+            },
+          }}
+        />
       )}
 
     </AdminLayout>

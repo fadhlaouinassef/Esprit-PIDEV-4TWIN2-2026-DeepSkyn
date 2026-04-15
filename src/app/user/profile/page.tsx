@@ -23,6 +23,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
+import { useTranslations } from "next-intl";
 
 interface UserProfile {
     id: number;
@@ -33,11 +34,30 @@ interface UserProfile {
     sexe?: string;
     skin_type?: string;
     created_at: string;
-    badges?: any[];
-    skinAnalyses?: any[];
+    badges?: UserBadge[];
+    skinAnalyses?: SkinAnalysis[];
+}
+
+interface UserBadge {
+    titre: string;
+    description?: string;
+}
+
+interface SkinAnalysisImage {
+    image_url?: string;
+}
+
+interface SkinAnalysis {
+    score?: number;
+    date_creation: string;
+    description?: string;
+    score_eau?: number;
+    age_peau?: number;
+    images?: SkinAnalysisImage[];
 }
 
 export default function ProfilePage() {
+    const t = useTranslations();
     const { data: session, status } = useSession();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +69,7 @@ export default function ProfilePage() {
         if (!file) return;
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Image too large (max 5MB)");
+            toast.error(t("userProfile.toasts.imageTooLarge"));
             return;
         }
 
@@ -66,9 +86,9 @@ export default function ProfilePage() {
                 if (!response.ok) throw new Error('Failed to update photo');
 
                 setProfile(prev => prev ? { ...prev, image: base64String } : null);
-                toast.success("Photo updated successfully!");
-            } catch (error) {
-                toast.error("Error updating photo");
+                toast.success(t("userProfile.toasts.photoUpdated"));
+            } catch {
+                toast.error(t("userProfile.toasts.updatePhotoError"));
             }
         };
         reader.readAsDataURL(file);
@@ -83,7 +103,7 @@ export default function ProfilePage() {
                 setProfile(data);
             } catch (error) {
                 console.error('Error fetching profile:', error);
-                toast.error('Error loading profile data');
+                toast.error(t('userProfile.toasts.loadProfileError'));
             } finally {
                 setIsLoading(false);
             }
@@ -142,20 +162,20 @@ export default function ProfilePage() {
     // Auto-read profile summary
     useEffect(() => {
         if (autoSpeech && profile) {
-            let fullText = `User Profile for ${profile.nom}. `;
-            fullText += `Member since ${new Date(profile.created_at).toLocaleDateString()}. `;
-            fullText += `Skin type is ${profile.skin_type || 'not yet analyzed'}. `;
+            let fullText = t("userProfile.speech.profileFor", { name: profile.nom });
+            fullText += t("userProfile.speech.memberSince", { date: new Date(profile.created_at).toLocaleDateString() });
+            fullText += t("userProfile.speech.skinType", { skinType: profile.skin_type || t("userProfile.fallbacks.notAnalyzed") });
             
-            if (profile.age) fullText += `Age: ${profile.age} years old. `;
-            if (profile.email) fullText += `Email: ${profile.email}. `;
+            if (profile.age) fullText += t("userProfile.speech.age", { age: profile.age });
+            if (profile.email) fullText += t("userProfile.speech.email", { email: profile.email });
 
             if (profile.skinAnalyses && profile.skinAnalyses.length > 0) {
                 const latest = profile.skinAnalyses[0];
-                fullText += `Latest skin analysis score is ${latest.score} out of 100 per ${new Date(latest.date_creation).toLocaleDateString()}. `;
+                fullText += t("userProfile.speech.latestScore", { score: latest.score, date: new Date(latest.date_creation).toLocaleDateString() });
             }
 
             if (profile.badges && profile.badges.length > 0) {
-                fullText += `Latest achievement: ${profile.badges[0].titre}. `;
+                fullText += t("userProfile.speech.latestAchievement", { badge: profile.badges[0].titre });
             }
 
             const id = `profile-full-${profile.id}-${profile.nom}-${profile.skinAnalyses?.length || 0}-${profile.badges?.length || 0}`;
@@ -188,10 +208,10 @@ export default function ProfilePage() {
             <UserLayout>
                 <div className="flex h-[60vh] flex-col items-center justify-center text-center">
                     <Shield className="mb-4 size-16 text-gray-300" />
-                    <h2 className="text-2xl font-bold">Please log in</h2>
-                    <p className="text-gray-500">You must be authenticated to view this page.</p>
+                    <h2 className="text-2xl font-bold">{t("userProfile.authRequired.title")}</h2>
+                    <p className="text-gray-500">{t("userProfile.authRequired.description")}</p>
                     <Link href="/signin" className="mt-6 rounded-xl bg-[#156d95] px-8 py-3 text-white font-bold">
-                        Go to Sign In
+                        {t("userProfile.authRequired.cta")}
                     </Link>
                 </div>
             </UserLayout>
@@ -221,9 +241,9 @@ export default function ProfilePage() {
                 {/* Breadcrumb & Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
                     <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
-                        <span>User</span>
+                        <span>{t("userProfile.breadcrumb.user")}</span>
                         <ChevronRight size={14} />
-                        <span className="text-foreground font-medium">My Profile</span>
+                        <span className="text-foreground font-medium">{t("userProfile.breadcrumb.profile")}</span>
                     </nav>
                     <AudioToggleButton
                         enabled={autoSpeech}
@@ -231,7 +251,7 @@ export default function ProfilePage() {
                             if (autoSpeech) stopSpeaking();
                             setAutoSpeech(!autoSpeech);
                         }}
-                        label="Audio Profile"
+                        label={t("userProfile.audioLabel")}
                     />
                 </div>
 
@@ -279,23 +299,23 @@ export default function ProfilePage() {
 
                             <div className="flex-1 text-center md:text-left">
                                 <span className="inline-block rounded-full bg-white/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
-                                    {profile?.skin_type || 'New User'}
+                                    {profile?.skin_type || t('userProfile.fallbacks.newUser')}
                                 </span>
                                 <h1 className="mt-4 text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                                    {profile?.nom || 'User Name'}
+                                    {profile?.nom || t('userProfile.fallbacks.userName')}
                                 </h1>
                                 <p className="mt-2 text-white/70 text-lg font-medium">
-                                    Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : 'Unknown'}
+                                    {t("userProfile.memberSince")} {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : t('userProfile.fallbacks.unknown')}
                                 </p>
 
                                 <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-4">
                                     <Link href="/user/settings" className="profile-edit-link flex items-center gap-2 rounded-2xl bg-white px-6 py-3 text-[#156d95] font-bold shadow-xl hover:scale-105 active:scale-95 transition-all">
                                         <Settings size={18} />
-                                        Edit Profile
+                                        {t("userProfile.actions.editProfile")}
                                     </Link>
                                     <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-6 py-3 text-white font-bold backdrop-blur-md border border-white/20">
                                         <Award size={18} className="text-yellow-400" />
-                                        Latest Badge: {profile?.badges?.[0]?.titre || "Newbie"}
+                                        {t("userProfile.latestBadgeLabel")} {profile?.badges?.[0]?.titre || t("userProfile.fallbacks.newbie")}
                                     </div>
                                 </div>
                             </div>
@@ -308,33 +328,33 @@ export default function ProfilePage() {
                             <motion.div variants={itemVariants} className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                 <h3 className="mb-8 text-xl font-bold flex items-center gap-3">
                                     <Activity className="text-[#156d95]" size={22} />
-                                    Personal Details
+                                    {t("userProfile.sections.personalDetails")}
                                 </h3>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                            <Mail size={12} /> Email Address
+                                            <Mail size={12} /> {t("userProfile.fields.email")}
                                         </label>
                                         <p className="text-lg font-bold text-gray-900 dark:text-white truncate">{profile?.email}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                            <Calendar size={12} /> Age
+                                            <Calendar size={12} /> {t("userProfile.fields.age")}
                                         </label>
-                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{profile?.age ? `${profile.age} years old` : 'Not set'}</p>
+                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{profile?.age ? t("userProfile.fields.ageYears", { age: profile.age }) : t("userProfile.fallbacks.notSet")}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                            <UserCircle size={12} /> Gender
+                                            <UserCircle size={12} /> {t("userProfile.fields.gender")}
                                         </label>
-                                        <p className="text-lg font-bold text-gray-900 dark:text-white capitalize">{profile?.sexe || 'Not set'}</p>
+                                        <p className="text-lg font-bold text-gray-900 dark:text-white capitalize">{profile?.sexe || t("userProfile.fallbacks.notSet")}</p>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                            <Droplets size={12} /> Skin Type
+                                            <Droplets size={12} /> {t("userProfile.fields.skinType")}
                                         </label>
-                                        <p className="text-lg font-bold text-[#156d95]">{profile?.skin_type || 'Not analyzed yet'}</p>
+                                        <p className="text-lg font-bold text-[#156d95]">{profile?.skin_type || t("userProfile.fallbacks.notAnalyzed")}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -343,10 +363,10 @@ export default function ProfilePage() {
                                 <div className="flex justify-between items-center mb-8">
                                     <h3 className="text-xl font-bold flex items-center gap-3">
                                         <Sparkles className="text-[#156d95]" size={22} />
-                                        Latest Skin Analysis
+                                        {t("userProfile.sections.latestAnalysis")}
                                     </h3>
                                     <Link href="/user/analyzes" className="text-sm font-bold text-[#156d95] hover:underline flex items-center gap-1 uppercase tracking-wider">
-                                        View History <ChevronRight size={14} />
+                                        {t("userProfile.actions.viewHistory")} <ChevronRight size={14} />
                                     </Link>
                                 </div>
 
@@ -380,7 +400,7 @@ export default function ProfilePage() {
                                                 <div className="flex items-center justify-between gap-4 mb-3">
                                                     <div className="truncate">
                                                         <h4 className="text-lg font-black text-gray-900 dark:text-white truncate">
-                                                            {profile.skinAnalyses[0].description || "General Analysis"}
+                                                            {profile.skinAnalyses[0].description || t("userProfile.fallbacks.generalAnalysis")}
                                                         </h4>
                                                         <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-1 mt-0.5">
                                                             <Clock size={10} /> {new Date(profile.skinAnalyses[0].date_creation).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
@@ -401,7 +421,7 @@ export default function ProfilePage() {
                                                     </div>
                                                     <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-100 dark:border-gray-700/30">
                                                         <Sparkles size={12} className="text-indigo-500" />
-                                                        <span className="text-xs font-black text-gray-700 dark:text-gray-300">{profile.skinAnalyses[0].age_peau || "24"} yrs</span>
+                                                        <span className="text-xs font-black text-gray-700 dark:text-gray-300">{t("userProfile.fields.ageYearsShort", { age: profile.skinAnalyses[0].age_peau || "24" })}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -412,9 +432,9 @@ export default function ProfilePage() {
                                         <div className="size-16 rounded-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center mb-4">
                                             <Camera size={30} className="text-gray-400" />
                                         </div>
-                                        <p className="text-gray-500 font-medium">No analysis performed yet.</p>
+                                        <p className="text-gray-500 font-medium">{t("userProfile.states.noAnalysis")}</p>
                                         <Link href="/user/questionnaire" className="mt-4 text-[#156d95] font-bold hover:underline">
-                                            Start your first analysis
+                                            {t("userProfile.actions.startFirstAnalysis")}
                                         </Link>
                                     </div>
                                 )}
@@ -426,7 +446,7 @@ export default function ProfilePage() {
                             <motion.div variants={itemVariants} className="rounded-[32px] border border-gray-100 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                 <h3 className="mb-6 text-xl font-bold flex items-center gap-3">
                                     <Award className="text-yellow-500" size={22} />
-                                    Recent Badge
+                                    {t("userProfile.sections.recentBadge")}
                                 </h3>
 
                                 <div className="flex flex-col items-center">
@@ -438,17 +458,17 @@ export default function ProfilePage() {
                                                 </div>
                                             </div>
                                             <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{profile.badges[0].titre}</p>
-                                            <p className="text-xs text-gray-500 mt-1">{profile.badges[0].description || "Achievement Earned"}</p>
+                                            <p className="text-xs text-gray-500 mt-1">{profile.badges[0].description || t("userProfile.fallbacks.achievementEarned")}</p>
                                         </div>
                                     ) : (
                                         <div className="py-6 text-center">
-                                            <p className="text-sm text-gray-400 font-medium">Earn badges by completing routines and scans.</p>
+                                            <p className="text-sm text-gray-400 font-medium">{t("userProfile.noBadgesHint")}</p>
                                         </div>
                                     )}
                                 </div>
 
                                 <Link href="/user/badge" className="mt-8 block text-center rounded-2xl border-2 border-[#156d95]/20 py-3 text-[#156d95] font-bold hover:bg-[#156d95]/5 transition-all uppercase text-[10px] tracking-[0.2em]">
-                                    View Achievement Gallery
+                                    {t("userProfile.actions.viewGallery")}
                                 </Link>
                             </motion.div>
 
@@ -459,9 +479,9 @@ export default function ProfilePage() {
                                         <Shield className="text-white" size={20} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-emerald-900 dark:text-emerald-400">Account Secured</h4>
+                                        <h4 className="font-bold text-emerald-900 dark:text-emerald-400">{t("userProfile.security.title")}</h4>
                                         <p className="mt-1 text-sm text-emerald-700/80 dark:text-emerald-500/80">
-                                            Your data is protected with 128-bit encryption and DeepSkyn Privacy Protocol.
+                                            {t("userProfile.security.description")}
                                         </p>
                                     </div>
                                 </div>

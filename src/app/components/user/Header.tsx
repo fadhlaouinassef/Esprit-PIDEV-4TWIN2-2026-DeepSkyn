@@ -7,9 +7,10 @@ import { UserInfo } from "./UserInfo";
 import { cn } from "@/lib/utils";
 import LanguageSwitcher from "../LanguageSwitcher";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { SIDEBAR_THEMES, toggleHighContrastMode } from "@/store/slices/uiThemeSlice";
+import { setColorBlindAssistMode, SIDEBAR_THEMES, toggleHighContrastMode } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 interface HeaderProps {
     userName?: string;
@@ -22,15 +23,25 @@ const ACCESSIBILITY_MODES = [
     "Reduced Motion",
 ];
 
+const COLOR_ASSIST_OPTIONS = [
+    { label: "Off", value: "none" },
+    { label: "Protan (rouge)", value: "protanopia" },
+    { label: "Deutan (vert)", value: "deuteranopia" },
+    { label: "Tritan (bleu)", value: "tritanopia" },
+] as const;
+
 export function Header({ userName, userPhoto }: HeaderProps) {
     const { toggleSidebar } = useSidebarContext();
     const [darkMode, setDarkMode] = useState(false);
     const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
     const [selectedAccessibilityModes, setSelectedAccessibilityModes] = useState<string[]>([]);
+
+    const t = useTranslations();
     
     const dispatch = useAppDispatch();
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
     const highContrastMode = useAppSelector((state) => state.uiTheme.highContrastMode);
+    const colorBlindAssistMode = useAppSelector((state) => state.uiTheme.colorBlindAssistMode);
     
     const hydrated = useHydrated();
     const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
@@ -49,7 +60,7 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                     className="rounded-lg border border-gray-100 p-1.5 dark:border-gray-700 dark:bg-gray-900 transition-colors hover:bg-gray-50 lg:hidden"
                 >
                     <Menu className="w-6 h-6" />
-                    <span className="sr-only">Toggle Sidebar</span>
+                    <span className="sr-only">{t('common.toggleSidebar')}</span>
                 </button>
 
                 <div className="relative max-sm:hidden">
@@ -64,11 +75,11 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                         <span className="hidden lg:inline-block">
                             {(() => {
                                 const totalModes = selectedAccessibilityModes.length + (highContrastMode ? 1 : 0);
-                                if (totalModes > 0) return `${totalModes} mode${totalModes > 1 ? 's' : ''}`;
-                                return "Accessibility";
+                                if (totalModes > 0) return t('accessibility.modesCount', { count: totalModes });
+                                return t('accessibility.title');
                             })()}
                         </span>
-                        <span className="lg:hidden">Access</span>
+                        <span className="lg:hidden">{t('accessibility.shortTitle')}</span>
                     </button>
 
                     <AnimatePresence>
@@ -91,6 +102,19 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                                             const isActive = mode === "High Contrast" 
                                                 ? highContrastMode 
                                                 : selectedAccessibilityModes.includes(mode);
+
+                                            const label = (() => {
+                                                switch (mode) {
+                                                    case 'High Contrast':
+                                                        return t('accessibility.highContrast');
+                                                    case 'Large Text':
+                                                        return t('accessibility.largeText');
+                                                    case 'Reduced Motion':
+                                                        return t('accessibility.reducedMotion');
+                                                    default:
+                                                        return mode;
+                                                }
+                                            })();
                                             return (
                                                 <button
                                                     key={mode}
@@ -112,7 +136,47 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                                                             : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-900"
                                                     )}
                                                 >
-                                                    <span>{mode}</span>
+                                                    <span>{label}</span>
+                                                    {isActive && <Check className="h-4 w-4" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <div className="my-2 h-px bg-gray-100 dark:bg-gray-800" />
+
+                                    <div className="space-y-1">
+                                        <div className="px-3 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                            {t('accessibility.colorAssist')}
+                                        </div>
+                                        {COLOR_ASSIST_OPTIONS.map((opt) => {
+                                            const isActive = colorBlindAssistMode === opt.value;
+                                            const label = (() => {
+                                                switch (opt.value) {
+                                                    case 'none':
+                                                        return t('accessibility.off');
+                                                    case 'protanopia':
+                                                        return t('accessibility.protan');
+                                                    case 'deuteranopia':
+                                                        return t('accessibility.deutan');
+                                                    case 'tritanopia':
+                                                        return t('accessibility.tritan');
+                                                    default:
+                                                        return opt.label;
+                                                }
+                                            })();
+                                            return (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => dispatch(setColorBlindAssistMode(opt.value))}
+                                                    className={cn(
+                                                        "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-all",
+                                                        isActive
+                                                            ? "bg-[#156d95]/10 text-[#156d95] font-semibold"
+                                                            : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-900"
+                                                    )}
+                                                >
+                                                    <span>{label}</span>
                                                     {isActive && <Check className="h-4 w-4" />}
                                                 </button>
                                             );
@@ -130,7 +194,7 @@ export function Header({ userName, userPhoto }: HeaderProps) {
                 <div className="relative hidden md:block w-70">
                     <input
                         type="search"
-                        placeholder="Search"
+                        placeholder={t('common.search')}
                         className="w-full rounded-full border-none bg-gray-50 py-3 pl-12 pr-5 text-sm outline-none transition-all focus:ring-1 focus:ring-gray-200 dark:bg-gray-900/50 dark:text-white dark:focus:ring-gray-700"
                     />
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

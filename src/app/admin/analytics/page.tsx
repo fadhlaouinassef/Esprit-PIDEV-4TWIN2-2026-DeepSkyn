@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import {
     Users,
     UserCheck,
@@ -190,6 +191,7 @@ const StatCard = ({ stat, index }: { stat: typeof KPI_STATS[0], index: number })
 );
 
 export default function AnalyticsPage() {
+    const t = useTranslations("adminAnalytics");
     const [dateRange] = useState("Last 30 Days");
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -212,40 +214,40 @@ export default function AnalyticsPage() {
 
     const kpiStats = [
         {
-            label: "Total Users",
+            label: t("kpis.totalUsers.label"),
             value: stats?.totalUsers?.toLocaleString() || "0",
             trend: "+12.5%",
             isPositive: true,
             icon: Users,
             color: "bg-blue-500",
-            description: "Total registered accounts"
+            description: t("kpis.totalUsers.description")
         },
         {
-            label: "Active Users",
+            label: t("kpis.activeUsers.label"),
             value: (stats?.totalUsers ? Math.floor(stats.totalUsers * 0.2) : 28).toLocaleString(),
             trend: "+3.2%",
             isPositive: true,
             icon: UserCheck,
             color: "bg-emerald-500",
-            description: "DAU: Daily Active Users"
+            description: t("kpis.activeUsers.description")
         },
         {
-            label: "Monthly Revenue",
+            label: t("kpis.monthlyRevenue.label"),
             value: `$${(stats?.totalSubscriptions ? stats.totalSubscriptions * 89 : 42670).toLocaleString()}`,
             trend: "+18.4%",
             isPositive: true,
             icon: DollarSign,
             color: "bg-violet-500",
-            description: "Subscription & One-time revenue"
+            description: t("kpis.monthlyRevenue.description")
         },
         {
-            label: "Conversion Rate",
+            label: t("kpis.conversionRate.label"),
             value: "4.2%",
             trend: "-0.5%",
             isPositive: false,
             icon: Activity,
             color: "bg-amber-500",
-            description: "Visitor to Premium conversion"
+            description: t("kpis.conversionRate.description")
         },
     ];
 
@@ -265,17 +267,17 @@ export default function AnalyticsPage() {
 
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-gray-400">
-                    <span>Admin</span>
+                    <span>{t("breadcrumb.admin")}</span>
                     <ChevronRight size={14} />
-                    <span className="text-gray-700 dark:text-gray-200 font-medium">Platform Analytics</span>
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">{t("breadcrumb.platformAnalytics")}</span>
                 </nav>
 
 
                 {/* Header & Global Filters */}
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white dark:bg-gray-800 p-8 rounded-[32px] border border-gray-100 dark:border-gray-700 shadow-sm">
                     <div>
-                        <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">Platform Analytics</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium italic">Comprehensive insights into DeepSkyn network performance.</p>
+                        <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">{t("header.title")}</h1>
+                        <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium italic">{t("header.subtitle")}</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
@@ -288,11 +290,11 @@ export default function AnalyticsPage() {
                         </div>
                         <button className="flex items-center gap-2 px-5 py-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition-all">
                             <Filter className="w-4 h-4 text-amber-500" />
-                            More Filters
+                            {t("header.moreFilters")}
                         </button>
                         <button className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:scale-[1.05] active:scale-[0.95] transition-all">
                             <Download className="w-4 h-4" />
-                            Export
+                            {t("header.export")}
                         </button>
                     </div>
                 </div>
@@ -312,12 +314,12 @@ export default function AnalyticsPage() {
                         <div className="bg-white dark:bg-gray-800 p-8 rounded-[40px] border border-gray-100 dark:border-gray-700 shadow-sm">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
-                                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">User Growth Trends</h2>
-                                    <p className="text-sm text-gray-400 font-bold mt-0.5 uppercase tracking-tighter">Engagement vs New Acquisition</p>
+                                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">{t("sections.userGrowth.title")}</h2>
+                                    <p className="text-sm text-gray-400 font-bold mt-0.5 uppercase tracking-tighter">{t("sections.userGrowth.subtitle")}</p>
                                 </div>
                                 <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest">
-                                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-indigo-500" /> New</div>
-                                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Active</div>
+                                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-indigo-500" /> {t("sections.userGrowth.new")}</div>
+                                    <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-emerald-500" /> {t("sections.userGrowth.active")}</div>
                                 </div>
                             </div>
                             <div className="h-[400px]">
@@ -332,7 +334,7 @@ export default function AnalyticsPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="bg-white dark:bg-gray-800 p-8 rounded-[40px] border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6">Subscriptions</h3>
+                                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6">{t("sections.subscriptions.title")}</h3>
                                 <div className="h-[300px]">
                                     {(stats?.subscriptionDistribution?.reduce((a: number, b: number) => a + b, 0) || 0) > 0 ? (
                                         <Chart
@@ -343,7 +345,7 @@ export default function AnalyticsPage() {
                                         />
                                     ) : (
                                         <div className="h-full flex items-center justify-center text-gray-400 italic font-medium">
-                                            No subscription data found
+                                            {t("sections.subscriptions.noData")}
                                         </div>
                                     )}
                                 </div>
@@ -356,12 +358,12 @@ export default function AnalyticsPage() {
                                     <div className="p-3 bg-white/10 w-fit rounded-2xl mb-6">
                                         <Zap className="w-6 h-6 text-amber-400" />
                                     </div>
-                                    <h3 className="text-3xl font-black text-white leading-tight">AI Success Insight</h3>
+                                    <h3 className="text-3xl font-black text-white leading-tight">{t("sections.aiInsight.title")}</h3>
                                     <p className="text-indigo-200 mt-4 text-lg font-medium leading-relaxed">
-                                        Personalized routine recommendations led to a <span className="text-white font-black underline">14.2% increase</span> in user retention this month.
+                                        {t("sections.aiInsight.textBefore")} <span className="text-white font-black underline">14.2%</span> {t("sections.aiInsight.textAfter")}
                                     </p>
                                     <button className="mt-8 flex items-center gap-2 text-white font-black uppercase tracking-widest text-xs hover:gap-4 transition-all group-hover:text-amber-400">
-                                        Full AI Report <ArrowUpRight className="w-4 h-4" />
+                                        {t("sections.aiInsight.fullReport")} <ArrowUpRight className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -375,15 +377,15 @@ export default function AnalyticsPage() {
                         <div className="bg-white dark:bg-gray-800 p-8 rounded-[40px] border border-gray-100 dark:border-gray-700 shadow-sm">
                             <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
                                 <ShieldCheck className="w-6 h-6 text-indigo-500" />
-                                System Health
+                                {t("sections.systemHealth.title")}
                             </h3>
 
                             <div className="space-y-6">
                                 {[
-                                    { label: "API Gateway", status: "Operational", color: "text-emerald-500", icon: Activity },
-                                    { label: "AI Model Sync", status: "Operational", color: "text-emerald-500", icon: Zap },
-                                    { label: "Database Latency", status: "32ms", color: "text-blue-500", icon: Activity },
-                                    { label: "Worker Jobs", status: "Active (24)", color: "text-amber-500", icon: Activity },
+                                    { label: t("sections.systemHealth.items.apiGateway"), status: t("sections.systemHealth.status.operational"), color: "text-emerald-500", icon: Activity },
+                                    { label: t("sections.systemHealth.items.aiSync"), status: t("sections.systemHealth.status.operational"), color: "text-emerald-500", icon: Zap },
+                                    { label: t("sections.systemHealth.items.dbLatency"), status: "32ms", color: "text-blue-500", icon: Activity },
+                                    { label: t("sections.systemHealth.items.workerJobs"), status: t("sections.systemHealth.status.active24"), color: "text-amber-500", icon: Activity },
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl group hover:bg-white dark:hover:bg-gray-700 transition-all border border-transparent hover:border-gray-100 dark:hover:border-gray-600">
                                         <div className="flex items-center gap-3">
@@ -401,26 +403,26 @@ export default function AnalyticsPage() {
                         {/* Smart Alerts */}
                         <div className="bg-amber-500/5 border border-amber-500/10 rounded-[40px] p-8">
                             <h3 className="text-sm font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                                <AlertCircle className="w-5 h-5" /> Critical Alerts (2)
+                                <AlertCircle className="w-5 h-5" /> {t("sections.alerts.title")}
                             </h3>
 
                             <div className="space-y-4">
                                 <div className="p-4 bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-900/50 rounded-[24px] shadow-sm">
                                     <div className="flex justify-between items-start mb-2">
-                                        <span className="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">High Churn</span>
-                                        <span className="text-[10px] text-gray-400 font-bold">2h ago</span>
+                                        <span className="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">{t("sections.alerts.highChurn")}</span>
+                                        <span className="text-[10px] text-gray-400 font-bold">{t("sections.alerts.twoHoursAgo")}</span>
                                     </div>
-                                    <p className="text-xs font-bold text-gray-900 dark:text-white">Churn rate increased by 2.4% for 'Expert Plan' users in Germany.</p>
-                                    <button className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mt-3 hover:underline">Investigate Case</button>
+                                    <p className="text-xs font-bold text-gray-900 dark:text-white">{t("sections.alerts.highChurnDescription")}</p>
+                                    <button className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mt-3 hover:underline">{t("sections.alerts.investigate")}</button>
                                 </div>
 
                                 <div className="p-4 bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-900/50 rounded-[24px] shadow-sm">
                                     <div className="flex justify-between items-start mb-2">
-                                        <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">Payment Fail</span>
-                                        <span className="text-[10px] text-gray-400 font-bold">4h ago</span>
+                                        <span className="text-[10px] bg-amber-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">{t("sections.alerts.paymentFail")}</span>
+                                        <span className="text-[10px] text-gray-400 font-bold">{t("sections.alerts.fourHoursAgo")}</span>
                                     </div>
-                                    <p className="text-xs font-bold text-gray-900 dark:text-white">Increased Stripe errors detected for EU transactions.</p>
-                                    <button className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mt-3 hover:underline">Check Logs</button>
+                                    <p className="text-xs font-bold text-gray-900 dark:text-white">{t("sections.alerts.paymentFailDescription")}</p>
+                                    <button className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mt-3 hover:underline">{t("sections.alerts.checkLogs")}</button>
                                 </div>
                             </div>
                         </div>
@@ -428,14 +430,14 @@ export default function AnalyticsPage() {
                         {/* Platform Engagement Table Card (Preview) */}
                         <div className="bg-white dark:bg-gray-800 p-8 rounded-[40px] border border-gray-100 dark:border-gray-700 shadow-sm">
                             <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-black text-gray-900 dark:text-white">Live Activity</h3>
+                                <h3 className="text-xl font-black text-gray-900 dark:text-white">{t("sections.liveActivity.title")}</h3>
                                 <MoreVertical className="w-5 h-5 text-gray-300" />
                             </div>
                             <div className="space-y-4">
                                 {[
-                                    { user: "User #1293", action: "Completed Morning Routine", time: "Just now" },
-                                    { user: "User #8821", action: "Upgraded to Pro", time: "3m ago" },
-                                    { user: "User #4502", action: "Added New Product", time: "8m ago" },
+                                    { user: t("sections.liveActivity.user1"), action: t("sections.liveActivity.action1"), time: t("sections.liveActivity.justNow") },
+                                    { user: t("sections.liveActivity.user2"), action: t("sections.liveActivity.action2"), time: t("sections.liveActivity.threeMinAgo") },
+                                    { user: t("sections.liveActivity.user3"), action: t("sections.liveActivity.action3"), time: t("sections.liveActivity.eightMinAgo") },
                                 ].map((act, i) => (
                                     <div key={i} className="flex items-center justify-between text-xs pb-4 border-b border-gray-50 last:border-0 last:pb-0">
                                         <div>

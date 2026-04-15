@@ -4,6 +4,7 @@
 import { compactFormat } from "@/lib/format-number";
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 
 type PropsType = {
     data: { name: string; amount: number }[];
@@ -14,7 +15,9 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function DonutChart({ data }: PropsType) {
-    if (!data || data.length === 0) return <div className="h-[300px] flex items-center justify-center text-gray-400 italic">No data available</div>;
+    const t = useTranslations();
+
+    if (!data || data.length === 0) return <div className="h-[300px] flex items-center justify-center text-gray-400 italic">{t('components.donutChart.noData')}</div>;
 
     const chartOptions: ApexOptions = {
 
@@ -47,7 +50,7 @@ export function DonutChart({ data }: PropsType) {
                         total: {
                             show: true,
                             showAlways: true,
-                            label: "Visitors",
+                            label: t('components.donutChart.visitors'),
                             fontSize: "16px",
                             fontWeight: "400",
                         },

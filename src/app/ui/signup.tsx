@@ -7,9 +7,11 @@ import { Mail, Eye, EyeOff, User, ArrowLeft, Calendar, AlertCircle, Loader2, Spa
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
+import { useTranslations } from "next-intl"
 
 export default function SignUp() {
   const router = useRouter()
+  const t = useTranslations()
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -55,52 +57,52 @@ export default function SignUp() {
     const newErrors: Record<string, string> = {}
 
     if (!fullName.trim()) {
-      newErrors.fullName = "Full name is required"
+      newErrors.fullName = t('auth.signup.errors.fullNameRequired')
     } else {
       const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/
       if (!nameRegex.test(fullName.trim())) {
-        newErrors.fullName = "Name should only contain letters (2-50 characters)"
+        newErrors.fullName = t('auth.signup.errors.fullNameInvalid')
       }
     }
 
     if (!email.trim()) {
-      newErrors.email = "Email address is required"
+      newErrors.email = t('auth.signup.errors.emailRequired')
     } else {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
       if (!emailRegex.test(email)) {
-        newErrors.email = "Please enter a valid email address"
+        newErrors.email = t('auth.signup.errors.emailInvalid')
       }
     }
 
     if (!birthDate) {
-      newErrors.birthDate = "Birth date is required"
+      newErrors.birthDate = t('auth.signup.errors.birthDateRequired')
     } else {
       const selectedDate = new Date(birthDate)
       const today = new Date()
       if (selectedDate > today) {
-        newErrors.birthDate = "Birth date cannot be in the future"
+        newErrors.birthDate = t('auth.signup.errors.birthDateFuture')
       } else if (age !== null && age < 13) {
-        newErrors.birthDate = "You must be at least 13 years old"
+        newErrors.birthDate = t('auth.signup.errors.birthDateTooYoung')
       }
     }
 
     if (!gender) {
-      newErrors.gender = "Please select your gender"
+      newErrors.gender = t('auth.signup.errors.genderRequired')
     }
 
     if (!password) {
-      newErrors.password = "Password is required"
+      newErrors.password = t('auth.signup.errors.passwordRequired')
     } else {
       const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/
       if (!passwordRegex.test(password)) {
-        newErrors.password = "Must be 8+ chars with a number and special char"
+        newErrors.password = t('auth.signup.errors.passwordInvalid')
       }
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password"
+      newErrors.confirmPassword = t('auth.signup.errors.confirmPasswordRequired')
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match"
+      newErrors.confirmPassword = t('auth.signup.errors.passwordMismatch')
     }
 
     setErrors(newErrors)
@@ -118,8 +120,8 @@ export default function SignUp() {
     if (validateForm()) {
       confirmSignup()
     } else {
-      toast.error("Validation Error", {
-        description: "Please check the fields in red"
+      toast.error(t('auth.signup.validationFailed.title'), {
+        description: t('auth.signup.validationFailed.description')
       })
     }
   }
@@ -145,13 +147,13 @@ export default function SignUp() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create account');
+        throw new Error(data.error || t('auth.signup.error.createAccountFailed'));
       }
 
       // Handle existing unverified account
       if (data.unverified) {
-        toast.warning("Compte non vérifié", {
-          description: data.message,
+        toast.warning(t('auth.signup.unverifiedToast.title'), {
+          description: data.message || t('auth.signup.unverifiedToast.description'),
           duration: 5000,
         });
 
@@ -170,8 +172,8 @@ export default function SignUp() {
       sessionStorage.setItem('pendingUserId', data.userId.toString());
       sessionStorage.setItem('pendingUserEmail', email);
 
-      toast.success('Account Created!', {
-        description: 'Please check your email for the verification code',
+      toast.success(t('auth.signup.success.title'), {
+        description: t('auth.signup.success.description'),
       });
 
       // Redirect to verify-code page
@@ -179,8 +181,8 @@ export default function SignUp() {
         router.push('/verify-code');
       }, 1000);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
-      toast.error('Signup Failed', {
+      const errorMessage = error instanceof Error ? error.message : t('auth.signup.error.generic');
+      toast.error(t('auth.signup.error.signupFailedTitle'), {
         description: errorMessage,
       });
     } finally {
@@ -196,18 +198,18 @@ export default function SignUp() {
       });
 
       if (result?.error) {
-        toast.error('Google Sign-Up Failed', {
+        toast.error(t('auth.signup.error.googleFailedTitle'), {
           description: result.error,
         });
       } else if (result?.ok) {
-        toast.success('Sign-up successful!', {
-          description: 'Welcome to DeepSkyn!',
+        toast.success(t('auth.signup.googleSuccess.title'), {
+          description: t('auth.signup.googleSuccess.description'),
         });
         router.push('/user');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign up';
-      toast.error('Google Sign-Up Failed', {
+      const errorMessage = error instanceof Error ? error.message : t('auth.signup.error.generic');
+      toast.error(t('auth.signup.error.googleFailedTitle'), {
         description: errorMessage,
       });
     }
@@ -240,7 +242,7 @@ export default function SignUp() {
               <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl group-hover:bg-[#156d95]/10 transition-colors">
                 <ArrowLeft className="w-4 h-4" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>Return to entry</span>
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>{t('auth.signup.backToEntry')}</span>
             </Link>
           </motion.div>
 
@@ -268,7 +270,7 @@ export default function SignUp() {
               Deep<span className="text-[#156d95]">SkyN</span>
             </h1>
             <p className="text-[#666666] dark:text-gray-400 mt-1 font-medium text-sm" style={{ fontFamily: "Figtree" }}>
-              Create your account
+              {t('auth.signup.subtitle')}
             </p>
           </motion.div>
 
@@ -298,7 +300,7 @@ export default function SignUp() {
                   fill="#EB4335"
                 />
               </svg>
-              <span className="text-[#202020] font-semibold">Sign up with Google</span>
+              <span className="text-[#202020] font-semibold">{t('auth.signup.googleButton')}</span>
             </button>
           </motion.div>
 
@@ -314,7 +316,7 @@ export default function SignUp() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white text-[#999999]" style={{ fontFamily: "Figtree" }}>
-                Or continue with
+                {t('auth.signup.divider')}
               </span>
             </div>
           </motion.div>
@@ -324,7 +326,7 @@ export default function SignUp() {
             {/* Full Name */}
             <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="fullName" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
-                Full Name
+                {t('auth.signup.fullNameLabel')}
               </label>
               <motion.div
                 className="relative group"
@@ -341,7 +343,7 @@ export default function SignUp() {
                     setFullName(e.target.value)
                     if (errors.fullName) setErrors({ ...errors, fullName: "" })
                   }}
-                  placeholder="John Doe"
+                  placeholder={t('auth.signup.fullNamePlaceholder')}
                   className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.fullName
                     ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
                     : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
@@ -374,7 +376,7 @@ export default function SignUp() {
             {/* Email */}
             <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="email" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
-                Email Address
+                {t('auth.signup.emailLabel')}
               </label>
               <motion.div
                 className="relative group"
@@ -390,7 +392,7 @@ export default function SignUp() {
                     setEmail(e.target.value)
                     if (errors.email) setErrors({ ...errors, email: "" })
                   }}
-                  placeholder="Name@deepskyn.com"
+                  placeholder={t('auth.signup.emailPlaceholder')}
                   className={`w-full px-4 py-3.5 pr-10 border-2 rounded-xl focus:outline-none transition-all duration-300 bg-[#fafafa] hover:bg-white ${errors.email
                     ? "border-red-500 bg-red-50/30 shadow-[0_0_15px_rgba(239,68,68,0.15)] focus:ring-2 focus:ring-red-200"
                     : "border-[#e0e0e0] focus:ring-2 focus:ring-[#156d95] focus:border-transparent"
@@ -424,7 +426,7 @@ export default function SignUp() {
             <motion.div variants={itemVariants} className="md:col-span-1 flex gap-3">
               <div className="flex-[2] relative">
                 <label htmlFor="birthDate" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
-                  Date of Birth
+                  {t('auth.signup.birthDateLabel')}
                 </label>
                 <motion.div
                   className="relative group"
@@ -463,14 +465,14 @@ export default function SignUp() {
               </div>
               <div className="flex-1 text-center">
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2" style={{ fontFamily: "Figtree" }}>
-                  Age
+                  {t('auth.signup.ageLabel')}
                 </label>
                 <div className="relative">
                   <div
                     className="w-full h-[54px] flex items-center justify-center border-2 border-[#e0e0e0] rounded-xl bg-[#f0f0f0] text-[#156d95] font-black text-xs cursor-default"
                     style={{ fontFamily: "Figtree" }}
                   >
-                    {age !== null ? `${age} YRS` : "--"}
+                    {age !== null ? t('auth.signup.ageYears', { age }) : "--"}
                   </div>
                 </div>
               </div>
@@ -479,18 +481,22 @@ export default function SignUp() {
             {/* Gender/Sexe */}
             <motion.div variants={itemVariants} className="md:col-span-1 text-center">
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2" style={{ fontFamily: "Figtree" }}>
-                GENDER
+                {t('auth.signup.genderLabel')}
               </label>
               <div className="grid grid-cols-3 gap-2">
-                {['Male', 'Female', 'Other'].map((option) => (
+                {([
+                  { id: 'Male', label: t('auth.signup.genderOptions.male') },
+                  { id: 'Female', label: t('auth.signup.genderOptions.female') },
+                  { id: 'Other', label: t('auth.signup.genderOptions.other') },
+                ] as const).map((option) => (
                   <button
-                    key={option}
+                    key={option.id}
                     type="button"
                     onClick={() => {
-                      setGender(option)
+                      setGender(option.id)
                       if (errors.gender) setErrors({ ...errors, gender: "" })
                     }}
-                    className={`h-[54px] rounded-xl border-2 transition-all duration-300 text-[10px] font-black uppercase tracking-widest ${gender === option
+                    className={`h-[54px] rounded-xl border-2 transition-all duration-300 text-[10px] font-black uppercase tracking-widest ${gender === option.id
                       ? "border-[#156d95] bg-[#156d95]/5 text-[#156d95] shadow-inner"
                       : errors.gender
                         ? "border-red-500 text-red-500 bg-red-50/50"
@@ -498,7 +504,7 @@ export default function SignUp() {
                       }`}
                     style={{ fontFamily: "Figtree" }}
                   >
-                    {option}
+                    {option.label}
                   </button>
                 ))}
               </div>
@@ -517,7 +523,7 @@ export default function SignUp() {
             {/* Password */}
             <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="password" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
-                Password
+                {t('auth.signup.passwordLabel')}
               </label>
               <motion.div
                 className="relative group"
@@ -559,7 +565,7 @@ export default function SignUp() {
                   </motion.p>
                 ) : (
                   <p className="mt-2 text-[10px] text-[#999999] font-bold uppercase tracking-widest ml-1" style={{ fontFamily: "Figtree" }}>
-                    Min. 8 chars (1 Num, 1 Spec)
+                    {t('auth.signup.passwordHint')}
                   </p>
                 )}
               </AnimatePresence>
@@ -568,7 +574,7 @@ export default function SignUp() {
             {/* Confirm Password */}
             <motion.div variants={itemVariants} className="md:col-span-1">
               <label htmlFor="confirmPassword" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1" style={{ fontFamily: "Figtree" }}>
-                Confirm Password
+                {t('auth.signup.confirmPasswordLabel')}
               </label>
               <motion.div
                 className="relative group"
@@ -624,7 +630,7 @@ export default function SignUp() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      Create account
+                      {t('auth.signup.submit')}
                       <Sparkles className="w-4 h-4" />
                     </>
                   )}
@@ -639,13 +645,13 @@ export default function SignUp() {
             className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 text-center md:col-span-2"
           >
             <p className="text-[10px] font-bold text-[#999999] uppercase tracking-[0.2em] mb-4" style={{ fontFamily: "Figtree" }}>
-              By creating an account, you accept our <br />
-              <Link href="/terms" className="text-[#156d95] hover:underline">Terms</Link> & <Link href="/privacy" className="text-[#156d95] hover:underline">Privacy</Link>
+              {t('auth.signup.footer.acceptPrefix')} <br />
+              <Link href="/terms" className="text-[#156d95] hover:underline">{t('auth.signup.footer.terms')}</Link> & <Link href="/privacy" className="text-[#156d95] hover:underline">{t('auth.signup.footer.privacy')}</Link>
             </p>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest" style={{ fontFamily: "Figtree" }}>
-              Already registered?{" "}
+              {t('auth.signup.footer.alreadyRegistered')} {" "}
               <Link href="/signin" className="text-[#156d95] hover:underline decoration-2 underline-offset-4">
-                Log Into Portal
+                {t('auth.signup.footer.loginLink')}
               </Link>
             </p>
           </motion.div>
@@ -658,7 +664,7 @@ export default function SignUp() {
           transition={{ delay: 1.5 }}
           className="mt-6 text-center text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]"
         >
-          © 2026 DEEPSKYN LTD • ENCRYPTED SESSION
+          {t('auth.signup.footer.copyright')}
         </motion.p>
       </motion.div>
     </div>

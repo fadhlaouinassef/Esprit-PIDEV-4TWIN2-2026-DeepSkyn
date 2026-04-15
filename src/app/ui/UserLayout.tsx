@@ -11,6 +11,7 @@ import { setUser } from "@/store/slices/authSlice";
 import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
 import "@/app/css/satoshi.css";
+import { useTranslations } from "next-intl";
 
 interface UserLayoutProps {
     children: React.ReactNode;
@@ -23,6 +24,7 @@ interface UserLayoutProps {
 function UserLayoutContent({ children }: UserLayoutProps) {
     useSidebarContext();
     const { isLoading } = useNavigation();
+    const t = useTranslations();
     const user = useAppSelector((state) => state.auth.user);
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
     const highContrastMode = useAppSelector((state) => state.uiTheme.highContrastMode);
@@ -77,7 +79,7 @@ function UserLayoutContent({ children }: UserLayoutProps) {
                                 <div className="h-64 rounded-2xl bg-gray-200 dark:bg-gray-700" />
                                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                                     <Loader2 className="size-4 animate-spin" />
-                                    Chargement de la page...
+                                    {t('common.loadingPage')}
                                 </div>
                             </div>
                         </div>

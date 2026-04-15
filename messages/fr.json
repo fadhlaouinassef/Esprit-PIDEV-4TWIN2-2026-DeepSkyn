@@ -1,0 +1,2169 @@
+{
+  "common": {
+    "appName": "DeepSkyn",
+    "language": "Langue",
+    "login": "Connexion",
+    "search": "Rechercher",
+    "toggleSidebar": "Basculer la barre latérale",
+    "loadingPage": "Chargement de la page...",
+    "loading": "Chargement...",
+    "theme": "Thème",
+    "closeMenu": "Fermer le menu",
+    "user": "Utilisateur"
+  },
+  "components": {
+    "userInfo": {
+      "srMyAccount": "Mon compte",
+      "srUserInformation": "Informations utilisateur",
+      "account": "Compte utilisateur",
+      "viewProfile": "Voir le profil",
+      "accountSettings": "Paramètres du compte",
+      "logout": "Se déconnecter",
+      "defaultName": "Nom d’utilisateur",
+      "defaultAdminName": "Utilisateur admin"
+    },
+    "userBadgeCard": {
+      "certifiedLabel": "Certifié DeepSkyn"
+    },
+    "routineItemScraper": {
+      "searching": "Recherche de {brand} sur {website}...",
+      "error": {
+        "memoryLimit": "Limite de mémoire dépassée.",
+        "creditLimit": "Crédit Apify atteint",
+        "unavailable": "Recommandation indisponible"
+      },
+      "actions": {
+        "retry": "Relancer la recherche",
+        "viewOnSite": "Voir sur {website}"
+      },
+      "noResults": "Aucun {brand} {action} trouvé sur {website}",
+      "defaultSeller": "primini.tn",
+      "productFallback": "Produit {brand} disponible sur {website}."
+    },
+    "deleteRoutineModal": {
+      "title": "Supprimer la routine",
+      "confirmText": "Êtes-vous sûr de vouloir",
+      "delete": "supprimer",
+      "routineName": "la routine",
+      "thisRoutine": "cette routine",
+      "actionPrompt": "Cette action est permanente et ne peut pas être annulée.",
+      "cancel": "Annuler",
+      "deleting": "Suppression..."
+    },
+    "composer": {
+      "unsupportedSpeech": "La reconnaissance vocale n’est pas prise en charge par votre navigateur",
+      "uploadedImageAlt": "Image téléchargée",
+      "removeImage": "Supprimer l’image",
+      "sendMessage": "Envoyer le message",
+      "stopGenerating": "Arrêter la génération",
+      "startVoiceInput": "Démarrer la saisie vocale",
+      "attachImage": "Joindre une image",
+      "selectAiModel": "Sélectionner le modèle IA",
+      "listening": "Écoute...",
+      "typeMessage": "Saisissez un message... (Shift+Enter pour saut de ligne)",
+      "defaultDescribeImage": "Décrire cette image"
+    },
+    "pageLoader": {
+      "loading": "Chargement..."
+    },
+    "themePicker": {
+      "title": "Thème",
+      "selectTheme": "Sélectionner le thème {theme}"
+    },
+    "listeUtilisateurs": {
+      "title": "Utilisateurs actifs",
+      "headers": {
+        "name": "Nom",
+        "visitors": "Visiteurs",
+        "revenues": "Revenus",
+        "sales": "Ventes",
+        "conversion": "Conversion",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Modifier",
+        "delete": "Supprimer"
+      }
+    },
+    "notification": {
+      "ariaLabel": "Afficher les notifications",
+      "title": "Notifications",
+      "newNotifications": "{count} nouvelles notifications",
+      "markAllRead": "Marquer tout comme lu",
+      "empty": {
+        "heading": "Tout est à jour !",
+        "description": "Aucune nouvelle notification pour le moment."
+      },
+      "footer": {
+        "seeAll": "Voir toutes les notifications"
+      },
+      "types": {
+        "signup": {
+          "title": "{name} a rejoint l’équipe !",
+          "subtitle": "Félicitez-le",
+          "toastTitle": "{name} a rejoint !",
+          "toastDescription": "Un nouvel utilisateur vient de s’inscrire."
+        },
+        "analyse": {
+          "title": "{name} a complété une analyse de peau !",
+          "subtitle": "Score : {score}/100 - Détails de l’analyse",
+          "toastMessage": "{name} a analysé sa peau",
+          "toastDescription": "Score de peau : {score}/100"
+        },
+        "verify": {
+          "title": "{name} a vérifié son compte !",
+          "subtitle": "Identité confirmée",
+          "toastTitle": "{name} a été vérifié !",
+          "toastDescription": "L’identité du compte a été confirmée."
+        }
+      },
+      "userAlt": "Utilisateur"
+    },
+    "userCharts": {
+      "visitorsByUser": "Visiteurs par utilisateur",
+      "revenueDistribution": "Répartition des revenus",
+      "totalRevenueLabel": "Revenu total",
+      "visitors": "Visiteurs"
+    },
+    "donutChart": {
+      "noData": "Aucune donnée disponible",
+      "visitors": "Visiteurs"
+    },
+    "monthlyRegistrationsChart": {
+      "seriesName": "Inscriptions"
+    },
+    "paymentsOverviewChart": {
+      "loadingData": "Chargement des données...",
+      "series": {
+        "received": "Reçu",
+        "due": "Dû"
+      }
+    },
+    "weeksProfitChart": {
+      "loadingData": "Chargement des données...",
+      "series": {
+        "sales": "Ventes",
+        "revenue": "Revenu"
+      }
+    },
+    "regionLabels": {
+      "title": "Étiquettes de région"
+    }
+  },
+  "nav": {
+    "mainNavigation": "Navigation principale",
+    "collapseSidebar": "Réduire la barre latérale",
+    "expandSidebar": "Ouvrir la barre latérale",
+    "userAccount": "Compte utilisateur",
+    "adminAccount": "Compte admin",
+    "administrator": "Administrateur",
+    "adminDefaultUserName": "Utilisateur admin",
+    "user": {
+      "sections": {
+        "menu": "Menu",
+        "account": "Compte",
+        "support": "Support"
+      },
+      "items": {
+        "dashboard": "Tableau de bord",
+        "routines": "Routines",
+        "questionnaire": "Questionnaire",
+        "analyzes": "Analyses",
+        "products": "Produits",
+        "badge": "Badge",
+        "profile": "Profil",
+        "billing": "Facturation",
+        "security": "Sécurité",
+        "settings": "Paramètres",
+        "helpCenter": "Centre d’aide",
+        "complaints": "Réclamations & avis"
+      }
+    },
+    "admin": {
+      "sections": {
+        "main": "Principal",
+        "management": "Gestion",
+        "administrative": "Administratif",
+        "settings": "Paramètres"
+      },
+      "items": {
+        "dashboard": "Tableau de bord",
+        "analytics": "Analytique",
+        "analyzes": "Analyses",
+        "users": "Utilisateurs",
+        "badges": "Badges",
+        "quizzes": "Quiz",
+        "routines": "Routines",
+        "subscriptions": "Abonnements",
+        "content": "Blog & contenu",
+        "faqs": "FAQ",
+        "complaints": "Réclamations & avis",
+        "profile": "Profil",
+        "systemSettings": "Paramètres système"
+      },
+      "subItems": {
+        "allUsers": "Tous les utilisateurs",
+        "verification": "Vérification",
+        "articles": "Articles",
+        "categories": "Catégories"
+      }
+    }
+  },
+  "auth": {
+    "signin": {
+      "testToast": {
+        "title": "Système DeepSkyn",
+        "description": "Les notifications sont maintenant configurées en haut-centre."
+      },
+      "redirecting": "Redirection vers votre tableau de bord...",
+      "backToHome": "Retour à l’accueil",
+      "subtitle": "Connectez-vous à votre compte",
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "nom@deepskyn.com",
+      "passwordLabel": "Mot de passe",
+      "forgotLink": "Oublié ?",
+      "rememberMe": "Se souvenir de moi",
+      "submit": "Se connecter",
+      "divider": "Ou continuer avec",
+      "googleButton": "Se connecter avec Google",
+      "unverifiedToast": {
+        "title": "Vérification requise",
+        "description": "Veuillez vérifier votre compte pour continuer."
+      },
+      "success": {
+        "title": "Connexion réussie !",
+        "description": "Redirection..."
+      },
+      "validationFailed": {
+        "description": "Veuillez vérifier les champs en rouge"
+      },
+      "googleError": {
+        "title": "Échec de la connexion Google"
+      },
+      "blocked": {
+        "title": "Compte désactivé",
+        "descriptionTop": "Votre compte a été désactivé par l’administration.",
+        "descriptionBold": "Veuillez contacter l’administration de l’application",
+        "descriptionBottom": "pour plus d’informations.",
+        "contactButton": "Contacter l’administration",
+        "closeButton": "Fermer"
+      },
+      "errors": {
+        "emailRequired": "L’e-mail est requis",
+        "emailInvalid": "Format d’e-mail invalide",
+        "passwordRequired": "Le mot de passe est requis",
+        "passwordInvalid": "Mot de passe invalide (min. 8 caractères)",
+        "signinFailed": "Échec de la connexion",
+        "sessionNotEstablished": "La session n’a pas pu être établie. Veuillez réessayer."
+      },
+      "error": {
+        "generic": "Une erreur est survenue",
+        "googleGeneric": "Une erreur est survenue lors de la connexion",
+        "accountNotVerifiedTitle": "Compte non vérifié",
+        "loginFailedTitle": "Échec de connexion",
+        "invalidCredentialsDescription": "E-mail ou mot de passe invalide"
+      },
+      "footer": {
+        "newUser": "Nouveau ?",
+        "createAccount": "Créer un compte",
+        "copyright": "© 2026 DEEPSKYN LTD • CONFIDENTIALITÉ PROTÉGÉE"
+      }
+    },
+    "signup": {
+      "backToEntry": "Retour à l’entrée",
+      "subtitle": "Créer votre compte",
+      "googleButton": "S’inscrire avec Google",
+      "divider": "Ou continuer avec",
+      "fullNameLabel": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "nom@deepskyn.com",
+      "birthDateLabel": "Date de naissance",
+      "ageLabel": "Âge",
+      "ageYears": "{age} ANS",
+      "genderLabel": "Genre",
+      "genderOptions": {
+        "male": "Homme",
+        "female": "Femme",
+        "other": "Autre"
+      },
+      "passwordLabel": "Mot de passe",
+      "confirmPasswordLabel": "Confirmer le mot de passe",
+      "passwordHint": "Min. 8 car. (1 chiffre, 1 spécial)",
+      "submit": "Créer un compte",
+      "validationFailed": {
+        "title": "Erreur de validation",
+        "description": "Veuillez vérifier les champs en rouge"
+      },
+      "unverifiedToast": {
+        "title": "Compte non vérifié",
+        "description": "Veuillez vérifier votre compte pour continuer."
+      },
+      "success": {
+        "title": "Compte créé !",
+        "description": "Consultez votre e-mail pour le code de vérification"
+      },
+      "googleSuccess": {
+        "title": "Inscription réussie !",
+        "description": "Bienvenue sur DeepSkyn !"
+      },
+      "errors": {
+        "fullNameRequired": "Le nom complet est requis",
+        "fullNameInvalid": "Le nom ne doit contenir que des lettres (2 à 50 caractères)",
+        "emailRequired": "L’adresse e-mail est requise",
+        "emailInvalid": "Veuillez saisir une adresse e-mail valide",
+        "birthDateRequired": "La date de naissance est requise",
+        "birthDateFuture": "La date de naissance ne peut pas être dans le futur",
+        "birthDateTooYoung": "Vous devez avoir au moins 13 ans",
+        "genderRequired": "Veuillez sélectionner votre genre",
+        "passwordRequired": "Le mot de passe est requis",
+        "passwordInvalid": "8+ caractères avec un chiffre et un caractère spécial",
+        "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+        "passwordMismatch": "Les mots de passe ne correspondent pas"
+      },
+      "error": {
+        "generic": "Une erreur est survenue",
+        "createAccountFailed": "Échec de création du compte",
+        "signupFailedTitle": "Inscription échouée",
+        "googleFailedTitle": "Échec de l’inscription Google"
+      },
+      "footer": {
+        "acceptPrefix": "En créant un compte, vous acceptez nos",
+        "terms": "Conditions",
+        "privacy": "Confidentialité",
+        "alreadyRegistered": "Déjà inscrit ?",
+        "loginLink": "Se connecter",
+        "copyright": "© 2026 DEEPSKYN LTD • SESSION CHIFFRÉE"
+      }
+    },
+    "forgotPassword": {
+      "backToLogin": "Retour à la connexion",
+      "title": "Réinitialiser le mot de passe",
+      "description": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "nom@entreprise.com",
+      "sending": "Envoi...",
+      "submit": "Envoyer le lien de réinitialisation",
+      "errors": {
+        "emailRequired": "L’e-mail est requis.",
+        "emailInvalid": "Veuillez entrer une adresse e-mail valide.",
+        "sendFailed": "Échec de l’envoi du code de réinitialisation"
+      },
+      "success": {
+        "title": "Code envoyé !",
+        "description": "Vérifiez votre boîte mail pour le code de réinitialisation."
+      },
+      "error": {
+        "title": "Erreur",
+        "description": "Une erreur est survenue"
+      }
+    },
+    "resetPassword": {
+      "title": "Nouveau mot de passe",
+      "description": "Veuillez saisir votre nouveau mot de passe ci-dessous. Assurez-vous qu’il est sécurisé.",
+      "newPasswordLabel": "Nouveau mot de passe",
+      "confirmPasswordLabel": "Confirmer le mot de passe",
+      "saving": "Enregistrement...",
+      "submit": "Mettre à jour le mot de passe",
+      "errors": {
+        "passwordTooShortTitle": "Mot de passe trop court",
+        "passwordTooShortDescription": "Le mot de passe doit faire au moins 6 caractères.",
+        "confirmationTitle": "Erreur de confirmation",
+        "confirmationDescription": "Les deux mots de passe ne correspondent pas.",
+        "sessionExpired": "Session expirée. Veuillez recommencer le processus.",
+        "resetFailed": "Erreur lors de la réinitialisation"
+      },
+      "success": {
+        "title": "Mot de passe modifié !",
+        "description": "Votre nouveau mot de passe a été enregistré avec succès."
+      },
+      "error": {
+        "title": "Erreur",
+        "description": "Une erreur est survenue"
+      }
+    },
+    "verifyCode": {
+      "backToForgot": "Retour à la réinitialisation",
+      "backToSignup": "Retour à l’inscription",
+      "titleReset": "Vérification",
+      "titleSignup": "Vérifier le code",
+      "descriptionReset": "Entrez le code envoyé pour réinitialiser votre mot de passe.",
+      "descriptionSignupPrefix": "Nous avons envoyé un code à 6 chiffres à",
+      "descriptionSignupSuffix": ".",
+      "yourEmail": "votre e-mail",
+      "verifying": "Vérification...",
+      "submit": "Vérifier le code",
+      "errors": {
+        "incompleteTitle": "Code incomplet",
+        "incompleteDescription": "Veuillez entrer les 6 chiffres du code.",
+        "sessionExpired": "Session expirée. Veuillez recommencer.",
+        "verifyFailed": "Vérification échouée"
+      },
+      "resetSuccess": {
+        "title": "Code validé !",
+        "description": "Vous pouvez maintenant changer votre mot de passe."
+      },
+      "accountVerified": {
+        "title": "Compte vérifié !",
+        "description": "Bienvenue sur DeepSkyn ! Redirection en cours..."
+      },
+      "error": {
+        "title": "Erreur de vérification",
+        "description": "Code invalide ou expiré"
+      },
+      "resend": {
+        "submit": "Renvoyer le code",
+        "errors": {
+          "sendFailed": "Échec de l’envoi"
+        },
+        "success": {
+          "title": "Code renvoyé",
+          "description": "Un nouveau code de vérification a été envoyé à votre e-mail."
+        },
+        "error": {
+          "title": "Échec de l’envoi",
+          "description": "Une erreur est survenue"
+        }
+      }
+    }
+  },
+  "home": {
+    "nav": {
+      "products": "Produits",
+      "routines": "Routines",
+      "testimonials": "Témoignages",
+      "faq": "FAQ",
+      "journey": "Parcours",
+      "mapButton": "Carte DeepSkyn",
+      "openMapAria": "Ouvrir la carte d’expérience DeepSkyn",
+      "toggleMobileMenu": "Basculer le menu mobile"
+    },
+    "product": {
+      "dailyVolumeLabel": "CLIENTS SATISFAITS",
+      "headline": "Votre routine de soin personnalisée",
+      "subheadline": "DeepSkyn propose une gamme complète de soins pour hommes et femmes : nettoyants, hydratants, sérums et masques adaptés à tous les types de peau.",
+      "description": "Plébiscité par des milliers d’utilisateurs, DeepSkyn offre des soins testés dermatologiquement et formulés avec des ingrédients naturels pour une peau éclatante.",
+      "primaryCta": "Ma routine",
+      "secondaryCta": "Voir les produits"
+    },
+    "pricing": {
+      "title": "Choisissez votre formule",
+      "subtitle": "Découvrez nos abonnements skincare adaptés à vos besoins. Tous les plans incluent l’analyse de peau par IA et l’accès à l’app mobile.",
+      "monthly": "Mensuel",
+      "yearly": "Annuel",
+      "savePercent": "Économisez {percent}%",
+      "mostPopular": "Le plus populaire",
+      "perMonth": "mois",
+      "perYear": "an",
+      "selected": "Sélectionné",
+      "selectPlan": "Choisir",
+      "features": "Fonctionnalités",
+      "getStartedWith": "Commencer avec {plan}",
+      "plans": {
+        "essential": "Essentiel",
+        "premium": "Premium",
+        "luxury": "Luxe"
+      },
+      "featuresList": {
+        "basicRoutine": "Routine de base (matin/soir)",
+        "threeProducts": "3 produits essentiels",
+        "onlineConsultation": "Consultation en ligne",
+        "usageGuide": "Guide d’utilisation & conseils",
+        "completeRoutine": "Routine complète personnalisée",
+        "sixProducts": "6 produits premium",
+        "monthlyFollowUp": "Suivi dermatologue mensuel",
+        "priorityShipping": "Livraison prioritaire offerte",
+        "customFormulas": "Formules sur-mesure exclusives",
+        "unlimitedProducts": "Produits illimités",
+        "dermatologist247": "Dermatologue dédié 24/7",
+        "homeSpa": "Soin spa à domicile mensuel",
+        "aiAnalysis": "Analyse de peau par IA",
+        "mobileApp": "Accès à l’application mobile"
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": {
+        "q1": "Qu’est-ce que DeepSkyn et comment l’application fonctionne ?",
+        "a1": "DeepSkyn est votre assistant beauté personnalisé : il analyse votre type de peau grâce à l’intelligence artificielle et vous propose une routine adaptée. Téléchargez l’app, répondez à quelques questions et recevez des recommandations. Nos formules conviennent aux hommes et aux femmes, avec des ingrédients naturels.",
+        "q2": "Comment DeepSkyn personnalise ma routine ?",
+        "a2": "Notre IA prend en compte votre type de peau, vos préoccupations (acné, rides, sécheresse, etc.) et vos objectifs. L’algorithme construit ensuite une routine sur mesure avec les produits les plus adaptés. Les produits sont testés dermatologiquement et formulés sans parabènes. Vous gardez le contrôle et pouvez ajuster vos préférences à tout moment.",
+        "q3": "Quels sont les tarifs et comment commander ?",
+        "a3": "C’est simple : téléchargez l’app, faites votre diagnostic gratuit, puis choisissez l’un des 3 plans : Essentiel (39$/mois), Premium (89$/mois) ou Luxe (199$/mois). Tous les plans incluent la livraison offerte, l’analyse IA et un suivi personnalisé. Économisez 17% avec l’abonnement annuel."
+      }
+    },
+    "bankingHero": {
+      "tagline": "Solutions skincare premium",
+      "titleMain": "Des soins sur mesure pour chaque type de peau",
+      "titleMuted": "conçus pour sublimer la beauté naturelle des femmes et des hommes.",
+      "subtitle": "Découvrez notre collection premium, formulée avec des ingrédients naturels pour une peau lumineuse et saine.",
+      "ctaExploreProducts": "Explorer nos produits",
+      "stats": {
+        "happyCustomers": "Clients satisfaits\ndans le monde",
+        "satisfactionRate": "Taux de\nsatisfaction",
+        "customerSupport": "Support\nclient",
+        "premiumProducts": "Produits skincare\npremium"
+      }
+    },
+    "integrations": {
+      "buttonText": "Nos partenaires",
+      "title": "Des partenariats beauté de confiance",
+      "subtitle": "DeepSkyn collabore avec des laboratoires dermatologiques et des marques premium pour offrir une qualité skincare exceptionnelle."
+    },
+    "healthySteps": {
+      "title": "Des étapes simples pour une peau en meilleure santé",
+      "steps": {
+        "quiz": {
+          "title": "Faire le quiz",
+          "description": "Répondez à quelques questions intelligentes pour nous aider à comprendre votre type de peau et vos préoccupations.",
+          "previewTitle": "Évaluation de la peau",
+          "previewText": "Quiz terminé avec succès"
+        },
+        "analysis": {
+          "title": "Analyser vos résultats",
+          "description": "Notre IA évalue vos réponses pour construire votre profil de peau personnalisé.",
+          "previewTitle": "Analyse IA",
+          "previewText": "Analyse de l’hydratation et de la sensibilité..."
+        },
+        "advice": {
+          "title": "Recevoir des conseils IA personnalisés",
+          "description": "Recevez des recommandations de soins adaptées, propulsées par une IA avancée.",
+          "previewTitle": "Recommandations IA",
+          "previewText": "Conseils skincare personnalisés prêts"
+        },
+        "routine": {
+          "title": "Obtenir votre routine",
+          "description": "Accédez à une routine quotidienne sur mesure, conçue pour vous.",
+          "previewTitle": "Routine quotidienne",
+          "previewText": "Routine AM & PM générée"
+        },
+        "progress": {
+          "title": "Suivre et partager vos résultats",
+          "description": "Suivez vos progrès dans le temps et partagez vos améliorations en toute confiance.",
+          "previewTitle": "Suivi des progrès",
+          "previewText": "La santé de la peau s’améliore"
+        }
+      },
+      "preview": {
+        "defaultTitle": "Profil de peau",
+        "defaultText": "Commencez votre parcours vers une peau plus saine dès aujourd’hui.",
+        "aiPowered": "Propulsé par l’IA",
+        "scoreLabel": "Score de santé de la peau"
+      }
+    },
+    "experience": {
+      "closeGuide": "Fermer le guide",
+      "badge": "Carte d’expérience",
+      "stepCounter": "Étape {current} / {total}",
+      "goToStep": "Aller à l’étape {step}",
+      "yourJourney": "Votre parcours",
+      "startAdventure": "Démarrer l’aventure",
+      "nextStep": "Étape suivante",
+      "skipForNow": "Ignorer pour l’instant",
+      "steps": {
+        "welcome": {
+          "title": "Bienvenue sur DeepSkyn",
+          "subtitle": "Votre parcours vers une peau éclatante commence ici",
+          "description": "DeepSkyn utilise l’intelligence artificielle pour révolutionner votre routine beauté. Suivez ce guide pour découvrir comment transformer votre peau.",
+          "cta": "Commencer l’expérience"
+        },
+        "quiz": {
+          "title": "Diagnostic intelligent",
+          "subtitle": "Apprendre à connaître votre peau",
+          "description": "Répondez à notre questionnaire intelligent. Nos algorithmes analysent vos habitudes et vos besoins spécifiques pour un profil ultra-précis.",
+          "cta": "Lancer le diagnostic"
+        },
+        "analysis": {
+          "title": "Analyse de peau par IA",
+          "subtitle": "Visualisez vos progrès scientifiquement",
+          "description": "Accédez aux indicateurs clés (hydratation, sensibilité, éclat). Suivez l’évolution de votre peau grâce à nos scans haute définition.",
+          "cta": "Voir mon analyse"
+        },
+        "routines": {
+          "title": "Votre plan d’action",
+          "subtitle": "Efficacité, pas à pas",
+          "description": "Recevez une routine skincare personnalisée. Matin et soir, on vous guide pour appliquer les bons produits dans le bon ordre.",
+          "cta": "Gérer mes routines"
+        },
+        "products": {
+          "title": "Shopping sélectif",
+          "subtitle": "Seulement le meilleur pour vous",
+          "description": "Découvrez une sélection de produits recommandés par nos experts selon votre analyse de peau.",
+          "cta": "Explorer ma sélection"
+        },
+        "achievements": {
+          "title": "Récompenses & progrès",
+          "subtitle": "Célébrez chaque victoire",
+          "description": "Débloquez des badges exclusifs en restant régulier. Plus vous prenez soin de vous, plus vous progressez dans l’écosystème DeepSkyn.",
+          "cta": "Voir mes récompenses"
+        },
+        "profile": {
+          "title": "Votre espace personnel",
+          "subtitle": "Contrôle total, simplifié",
+          "description": "Gérez vos préférences, mettez à jour votre profil et accédez au support DeepSkyn en un clic.",
+          "cta": "Mon profil"
+        }
+      }
+    },
+    "caseStudies": {
+      "title": "Histoires de réussite",
+      "subtitle": "Découvrez comment des équipes de premier plan utilisent Auralink pour gagner en clarté sur la collaboration et l’alignement.",
+      "navigation": {
+        "goToSlide": "Aller à la diapositive {slide}",
+        "previousSlide": "Diapositive précédente",
+        "nextSlide": "Diapositive suivante"
+      },
+      "features": {
+        "slackCalls": "Appels Slack",
+        "meetingTranscripts": "Transcriptions de réunion",
+        "sentimentReports": "Rapports de sentiment"
+      },
+      "cards": {
+        "teamAlignment": {
+          "title": "Alignement d’équipe",
+          "realTime": "Temps réel",
+          "designTeam": "Équipe design",
+          "engineering": "Ingénierie",
+          "product": "Produit",
+          "activeConversations": "conversations actives"
+        },
+        "globalTeamDynamics": {
+          "title": "Dynamique globale d’équipe",
+          "last24h": "Dernières 24 h",
+          "high": "Élevée",
+          "active": "Active",
+          "peak": "Pic",
+          "crossOfficeVelocity": "Vitesse inter-bureaux"
+        },
+        "sprintPlanning": {
+          "title": "Planification de sprint",
+          "weekDay": "Semaine {week} • Jour {day}",
+          "designHandoffClarity": "Clarté du handoff design",
+          "teamSentiment": "Sentiment d’équipe",
+          "frictionDetection": "Détection de frictions",
+          "low": "Faible",
+          "blockersIdentified": "Blocages identifiés"
+        }
+      },
+      "studies": {
+        "notion": {
+          "title": "Clandestine utilise Auralink pour comprendre comment ses équipes collaborent en temps réel.",
+          "quote": "Auralink nous apporte une clarté sur l’alignement des équipes que nous n’avions jamais eue.",
+          "attribution": "Marie Chen, responsable des opérations, Clandestine"
+        },
+        "cloudwatch": {
+          "title": "Cloudwatch s’appuie sur Auralink pour suivre la dynamique des équipes transverses dans ses bureaux internationaux.",
+          "quote": "Avec Auralink, nous voyons des schémas de collaboration qui impactent directement la vitesse de livraison produit.",
+          "attribution": "Sarah Chen, VP Engineering, Cloudwatch"
+        },
+        "eightball": {
+          "title": "EightBall compte sur Auralink pour suivre la santé des équipes et la qualité de la communication asynchrone.",
+          "quote": "Auralink a transformé notre façon de comprendre notre culture remote-first.",
+          "attribution": "Karri Saarinen, cofondateur, EightBall"
+        },
+        "coreos": {
+          "title": "CoreOS utilise Auralink pour garder les équipes design et engineering alignées pendant les sprints.",
+          "quote": "L’analyse de sentiment nous aide à repérer les points de friction avant qu’ils ne deviennent des blocages.",
+          "attribution": "Noah Levin, VP Engineering, CoreOS"
+        }
+      }
+    },
+    "footer": {
+      "tagline": "Votre routine de soin personnalisée pour hommes et femmes",
+      "copyright": "© {year} {company}. Tous droits réservés.",
+      "status": "Statut",
+      "sitemap": "Plan du site",
+      "sections": {
+        "products": {
+          "title": "Produits",
+          "cleansers": "Nettoyants",
+          "moisturizers": "Hydratants",
+          "serums": "Sérums",
+          "masks": "Masques",
+          "giftSets": "Coffrets"
+        },
+        "company": {
+          "title": "Entreprise",
+          "about": "À propos",
+          "careers": "Carrières",
+          "beautyBlog": "Blog beauté",
+          "press": "Presse",
+          "contact": "Contact"
+        },
+        "resources": {
+          "title": "Ressources",
+          "skincareGuide": "Guide skincare",
+          "helpCenter": "Centre d’aide",
+          "community": "Communauté",
+          "testimonials": "Témoignages",
+          "tutorials": "Tutoriels"
+        },
+        "legal": {
+          "title": "Légal",
+          "privacyPolicy": "Politique de confidentialité",
+          "termsOfService": "Conditions d’utilisation",
+          "shipping": "Livraison",
+          "returns": "Retours",
+          "cookies": "Cookies"
+        }
+      }
+    }
+  },
+  "userSettingsProfile": {
+    "audioLabel": "Audio paramètres",
+    "sections": {
+      "personalInformation": "Informations personnelles",
+      "security": "Sécurité & mot de passe",
+      "photo": "Votre photo"
+    },
+    "fields": {
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Nom",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Prénom",
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "email@exemple.com",
+      "age": "Âge",
+      "agePlaceholder": "Âge",
+      "gender": "Sexe (genre)",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe"
+    },
+    "genderOptions": {
+      "male": "Homme",
+      "female": "Femme",
+      "other": "Autre"
+    },
+    "actions": {
+      "saved": "Enregistré !",
+      "updateProfile": "Mettre à jour le profil",
+      "changePassword": "Changer le mot de passe"
+    },
+    "photo": {
+      "avatarTitle": "Avatar du profil",
+      "avatarDescription": "Mettre à jour votre photo personnelle",
+      "clickToUpload": "Cliquez pour téléverser",
+      "orDragDrop": "ou glissez-déposez",
+      "formatHint": "PNG, JPG (max 5 Mo)"
+    },
+    "toasts": {
+      "updateProfileError": "Erreur lors de la mise à jour du profil",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "changePasswordError": "Erreur lors du changement de mot de passe",
+      "imageTooLarge": "Image trop volumineuse (max 5 Mo)",
+      "updatePhotoError": "Erreur lors de la mise à jour de la photo"
+    }
+  },
+  "userProfile": {
+    "audioLabel": "Audio profil",
+    "memberSince": "Membre depuis",
+    "latestBadgeLabel": "Dernier badge :",
+    "noBadgesHint": "Gagnez des badges en complétant des routines et des analyses.",
+    "breadcrumb": {
+      "user": "Utilisateur",
+      "profile": "Mon profil"
+    },
+    "authRequired": {
+      "title": "Veuillez vous connecter",
+      "description": "Vous devez être authentifié pour voir cette page.",
+      "cta": "Aller à la connexion"
+    },
+    "sections": {
+      "personalDetails": "Détails personnels",
+      "latestAnalysis": "Dernière analyse de peau",
+      "recentBadge": "Badge récent"
+    },
+    "fields": {
+      "email": "Adresse e-mail",
+      "age": "Âge",
+      "ageYears": "{age} ans",
+      "ageYearsShort": "{age} ans",
+      "gender": "Genre",
+      "skinType": "Type de peau"
+    },
+    "actions": {
+      "editProfile": "Modifier le profil",
+      "viewHistory": "Voir l’historique",
+      "startFirstAnalysis": "Démarrer votre première analyse",
+      "viewGallery": "Voir la galerie des réussites"
+    },
+    "security": {
+      "title": "Compte sécurisé",
+      "description": "Vos données sont protégées avec un chiffrement 128 bits et le protocole de confidentialité DeepSkyn."
+    },
+    "fallbacks": {
+      "newUser": "Nouveau membre",
+      "userName": "Nom utilisateur",
+      "unknown": "Inconnu",
+      "newbie": "Débutant",
+      "notSet": "Non défini",
+      "notAnalyzed": "Pas encore analysé",
+      "generalAnalysis": "Analyse générale",
+      "achievementEarned": "Réussite obtenue"
+    },
+    "toasts": {
+      "imageTooLarge": "Image trop volumineuse (max 5 Mo)",
+      "photoUpdated": "Photo mise à jour avec succès !",
+      "updatePhotoError": "Erreur lors de la mise à jour de la photo",
+      "loadProfileError": "Erreur lors du chargement du profil"
+    },
+    "states": {
+      "noAnalysis": "No analysis performed yet."
+    },
+    "speech": {
+      "profileFor": "User profile for {name}. ",
+      "memberSince": "Member since {date}. ",
+      "skinType": "Skin type is {skinType}. ",
+      "age": "Age: {age} years old. ",
+      "email": "Email: {email}. ",
+      "latestScore": "Latest skin analysis score is {score} out of 100 on {date}. ",
+      "latestAchievement": "Latest achievement: {badge}. "
+    }
+  },
+  "adminProfile": {
+    "memberSince": "Membre depuis",
+    "breadcrumb": {
+      "admin": "Admin",
+      "profile": "Mon profil"
+    },
+    "sections": {
+      "personalDetails": "Détails personnels"
+    },
+    "fields": {
+      "email": "Adresse e-mail",
+      "age": "Âge",
+      "ageYears": "{age} ans",
+      "gender": "Genre"
+    },
+    "actions": {
+      "editProfile": "Modifier le profil"
+    },
+    "security": {
+      "title": "Compte administrateur sécurisé",
+      "description": "Votre session administrateur est protégée et surveillée par les politiques de sécurité DeepSkyn."
+    },
+    "fallbacks": {
+      "adminUser": "Administrateur",
+      "unknown": "Inconnu",
+      "notSet": "Non défini"
+    },
+    "toasts": {
+      "imageTooLarge": "Image trop volumineuse (max 5 Mo)",
+      "photoUpdated": "Photo mise à jour avec succès !",
+      "updatePhotoError": "Erreur lors de la mise à jour de la photo",
+      "loadProfileError": "Erreur lors du chargement du profil"
+    }
+  },
+  "userComplaints": {
+    "audioLabel": "Audio réclamations",
+    "searchPlaceholder": "Rechercher par message ou catégorie...",
+    "inboxHint": "Choisissez une conversation pour voir l’historique détaillé et les mises à jour de notre équipe sécurité.",
+    "confirmDelete": "Voulez-vous vraiment supprimer cette réclamation ? Cette action est irréversible.",
+    "actions": {
+      "newClaim": "Nouvelle réclamation",
+      "deleteClaim": "Supprimer la réclamation",
+      "closeDiscussion": "Fermer la discussion"
+    },
+    "empty": {
+      "title": "Tout est clair",
+      "description": "Aucune réclamation active trouvée."
+    },
+    "newForm": {
+      "title": "Que s’est-il passé ?",
+      "selectCategory": "Sélectionner une catégorie",
+      "detailedReport": "Votre rapport détaillé",
+      "reportPlaceholder": "Écrivez votre réclamation ici...",
+      "uploadProof": "Joindre des preuves (images, documents)",
+      "add": "AJOUTER",
+      "submitting": "ENVOI...",
+      "confirmSubmit": "CONFIRMER & ENVOYER"
+    },
+    "chat": {
+      "myMessage": "Mon message",
+      "teamSupport": "Support DeepSkyn",
+      "systemProhibition": "Interdiction système",
+      "ticketClosed": "Ce ticket a été officiellement fermé.",
+      "writeUpdate": "Écrire une mise à jour...",
+      "claimsTitle": "{category} Claims",
+      "brand": "DEEPSKYN"
+    },
+    "toasts": {
+      "fetchFailed": "Échec du chargement des réclamations",
+      "submitSuccess": "Réclamation envoyée avec succès ! (mots inappropriés filtrés)",
+      "submitError": "Une erreur est survenue lors de l’envoi.",
+      "replySent": "Réponse envoyée (mots inappropriés filtrés)",
+      "replyError": "Une erreur est survenue.",
+      "ticketDeleted": "Ticket supprimé avec succès.",
+      "deleteFailed": "Échec de la suppression du ticket."
+    },
+    "categories": {
+      "analysis": "Analysis",
+      "routine": "Routine",
+      "product": "Product",
+      "badge": "Badge",
+      "bug": "Bug",
+      "payment": "Payment",
+      "service": "Service",
+      "other": "Other"
+    },
+    "header": {
+      "title": "RECLAMATION",
+      "titleAccent": "& FEEDBACK",
+      "subtitle": "Your voice matters. Track and manage your reports in real-time."
+    },
+    "speech": {
+      "overview": "Complaints and feedback interface. ",
+      "totalClaims": "You have {count} total claims. ",
+      "breakdown": "{pending} pending, {accepted} accepted, and {closed} closed. ",
+      "searchActive": "Search filter is active with keyword {query}. ",
+      "searchMatches": "{count} claims match your search. ",
+      "newClaimOpen": "New claim form is open. Select category, write details, and optionally upload evidence before submitting. ",
+      "selectedCategory": "Selected claim category is {category}. ",
+      "selectedStatus": "Status is {status}. ",
+      "ticketMessages": "This ticket currently has {count} messages. ",
+      "ticketClosed": "This ticket is officially closed. ",
+      "noneSelected": "No claim is selected. You can open a conversation from the list or create a new claim. "
+    },
+    "inboxTitle": "Boîte support"
+  },
+  "adminComplaints": {
+    "title": "Réclamations",
+    "searchPlaceholder": "Rechercher des conversations...",
+    "empty": "Aucun résultat trouvé",
+    "unknownUser": "Utilisateur inconnu",
+    "userId": "ID utilisateur :",
+    "confirmDelete": "Voulez-vous vraiment supprimer ce ticket ?",
+    "actions": {
+      "deleteTicket": "Supprimer le ticket",
+      "closeDiscussion": "Fermer la discussion",
+      "respond": "Répondre"
+    },
+    "chat": {
+      "teamSupport": "Support DeepSkyn",
+      "user": "Utilisateur",
+      "writeResponse": "Écrire votre réponse..."
+    },
+    "noSelection": {
+      "title": "Aucune réclamation sélectionnée",
+      "description": "Sélectionnez une conversation dans la colonne pour voir les détails et répondre."
+    },
+    "toasts": {
+      "fetchFailed": "Échec du chargement des réclamations",
+      "statusUpdated": "Statut du ticket mis à jour : {status}",
+      "updateStatusFailed": "Échec de la mise à jour du statut",
+      "ticketDeleted": "Ticket supprimé avec succès.",
+      "deleteFailed": "Échec de la suppression du ticket",
+      "sendMessageFailed": "Échec de l’envoi du message"
+    },
+    "status": {
+      "all": "all",
+      "pending": "pending",
+      "accept": "accept",
+      "reject": "reject"
+    }
+  },
+  "userProducts": {
+    "breadcrumb": {
+      "user": "Utilisateur",
+      "products": "Produits"
+    },
+    "hero": {
+      "poweredBy": "Propulsé par Apify",
+      "title": "Scraper de produits cosmétiques et médicaux",
+      "subtitle": "Analysez Google pour les produits cosmétiques et pharmaceutiques, ingrédients et formulations."
+    },
+    "category": {
+      "title": "Catégorie de produit"
+    },
+    "search": {
+      "placeholder": "ex: Sérum niacinamide, Trétinoïne 0,025%, CeraVe Hydrating...",
+      "filters": "Filtres",
+      "searching": "Recherche...",
+      "scrape": "Analyser"
+    },
+    "filters": {
+      "brand": "Marque",
+      "brandPlaceholder": "ex: CeraVe, L'Oreal",
+      "site": "Limiter au site",
+      "country": "Pays",
+      "maxResults": "Résultats max",
+      "language": "Langue:",
+      "allSites": "All Sites"
+    },
+    "loading": {
+      "title": "Analyse Google des produits...",
+      "description": "Catégorie : {category} · Cela peut prendre jusqu’à 40 secondes."
+    },
+    "results": {
+      "enrichedQuery": "Requête enrichie",
+      "noResultsTitle": "Aucun résultat trouvé",
+      "noResultsDescription": "Essayez un autre nom de produit ou ajustez les filtres.",
+      "productAlt": "Produit",
+      "productFallbackAlt": "Image de secours produit",
+      "titleUnavailable": "Titre indisponible",
+      "noDescription": "Aucune description fournie.",
+      "visitPage": "Visiter la page",
+      "withImageCount": "{count} produit{count, plural, one {} other {s}} avec image",
+      "withoutImage": "Produits sans image",
+      "noImage": "No Image"
+    },
+    "empty": {
+      "ready": "Prêt à analyser les produits {category}",
+      "descriptionPrefix": "Entrez un nom de produit, un ingrédient ou une marque ci-dessus puis cliquez sur",
+      "descriptionSuffix": "pour récupérer les résultats Google via Apify."
+    },
+    "toasts": {
+      "enterQuery": "Veuillez saisir un nom de produit ou un ingrédient.",
+      "scrapeFailed": "Échec de l’analyse.",
+      "resultsFound": "{total} résultats trouvés pour \"{query}\"",
+      "networkError": "Erreur réseau."
+    },
+    "examples": "Examples:",
+    "categories": {
+      "skincare": "Skincare",
+      "sunscreen": "Sunscreen / SPF",
+      "serums": "Serums",
+      "moisturizers": "Moisturizers",
+      "cleansers": "Cleansers",
+      "pharmaceutical": "Pharmaceutical",
+      "derma": "Derma / Medical"
+    }
+  },
+  "userBadge": {
+    "audioLabel": "Mode audio",
+    "shareTitle": "Mon badge DeepSkyn",
+    "errors": {
+      "fetchMotivationData": "Échec du chargement des données de motivation",
+      "initImageCanvas": "Impossible d'initialiser le canvas de l'image"
+    },
+    "shareDefaults": {
+      "badgeTitle": "mon dernier badge DeepSkyn",
+      "shareText": "Je viens d'obtenir {badgeTitle} sur DeepSkyn. La régularité paie. #DeepSkyn #SkinHero",
+      "heroTitle": "Héros DeepSkyn",
+      "description": "La régularité et les progrès de peau ont débloqué une nouvelle réussite.",
+      "level": "BRONZE",
+      "userName": "Utilisateur DeepSkyn",
+      "user": "Utilisateur",
+      "beginnerTitle": "Débutant DeepSkyn",
+      "beginnerDescription": "Commencez à compléter vos routines pour obtenir votre premier badge."
+    },
+    "shareCard": {
+      "badgeLabel": "BADGE DEEPSKYN",
+      "level": "NIVEAU",
+      "user": "UTILISATEUR",
+      "domain": "deepskyn.app"
+    },
+    "breadcrumb": {
+      "user": "Utilisateur",
+      "title": "Badges & Réalisations"
+    },
+    "empty": {
+      "title": "Données de motivation indisponibles",
+      "description": "Impossible de charger vos données de réussite. Vérifiez que vous êtes connecté et que votre profil initial est complété.",
+      "retry": "Réessayer"
+    },
+    "shareModal": {
+      "title": "Partager votre badge",
+      "description": "Publiez votre réussite sur les réseaux sociaux avec une carte DeepSkyn générée.",
+      "shareViaDevice": "Partager via les apps de l'appareil",
+      "close": "Fermer"
+    },
+    "toasts": {
+      "imageDownloaded": "Image du badge téléchargée",
+      "generateImageFailed": "Impossible de générer l’image du badge",
+      "linkCopied": "Lien du badge copié",
+      "copyLinkFailed": "Échec de la copie du lien",
+      "captionCopied": "Légende copiée",
+      "copyCaptionFailed": "Échec de la copie de la légende",
+      "facebookReady": "Facebook ouvert. Votre image et légende sont prêtes à être collées.",
+      "facebookFailed": "Échec de la préparation du partage Facebook",
+      "instagramReady": "Instagram ouvert. Téléversez l’image et collez la légende copiée.",
+      "instagramFailed": "Échec de la préparation du partage Instagram",
+      "tiktokReady": "TikTok ouvert. Téléversez l’image et collez la légende copiée.",
+      "tiktokFailed": "Échec de la préparation du partage TikTok",
+      "nativeShareUnavailable": "Le partage natif n’est pas disponible sur cet appareil",
+      "shareFailed": "Échec du partage"
+    },
+    "labels": {
+      "shareAchievement": "PARTAGER VOTRE RÉUSSITE",
+      "activeGoal": "Objectif actif",
+      "master": "Maître",
+      "towardLevel": "Vers le niveau {level}",
+      "detailedProgress": "Suivi détaillé des progrès",
+      "completed": "Terminé",
+      "validationTasks": "Tâches de validation",
+      "badgeReady": "Badge prêt !",
+      "requirementsCompleted": "Toutes les exigences de ce niveau sont remplies.",
+      "roadmapTitle": "Feuille de route vers la maîtrise",
+      "roadmapSubtitle": "Suivez votre progression de débutant à expert",
+      "earned": "Obtenu",
+      "target": "Cible",
+      "locked": "Verrouillé",
+      "missionParameters": "Paramètres de mission",
+      "missionComplete": "Mission accomplie",
+      "missionsClassified": "Missions classifiées. Atteignez le niveau précédent pour les révéler.",
+      "yourTrajectory": "Votre trajectoire",
+      "almostThere": "Presque arrivé..."
+    },
+    "stats": {
+      "streak": "Streak",
+      "analyses": "Analyses",
+      "score": "Score"
+    }
+  },
+  "userRoutines": {
+    "audioLabel": "Audio routines",
+    "breadcrumb": {
+      "user": "Utilisateur",
+      "routines": "Routines"
+    },
+    "labels": {
+      "motivation": "Motivation :",
+      "warnings": "Avertissements :",
+      "goal": "Objectif :",
+      "consistency": "Régularité",
+      "glowing": "Vous rayonnez.",
+      "dailyInsight": "Insight du jour",
+      "routineType": "Routine {type}",
+      "aiRoutine": "AI Routine",
+      "routine": "Routine",
+      "step": "Step {step}",
+      "completedOn": "✓ Completed on {date}",
+      "dayStreak": "{streak}-Day Streak!"
+    },
+    "toasts": {
+      "step": "Étape",
+      "stepCompleted": "{step} terminée ! ✨",
+      "stepCompletedDescription": "Votre peau vous remercie.",
+      "updateFailed": "Échec de la mise à jour.",
+      "routineDeleted": "Routine supprimée ✨",
+      "deleteFailed": "Échec de suppression de la routine"
+    },
+    "progress": {
+      "routineType": "Routine {type}",
+      "sparkle": "Sparkle time! ✨",
+      "halfway": "Halfway there!",
+      "keepGoing": "Keep going!"
+    },
+    "tabs": {
+      "morning": "Morning",
+      "night": "Night",
+      "weekly": "Weekly"
+    },
+    "actions": {
+      "newRoutine": "New Routine",
+      "createRoutine": "Create Routine",
+      "edit": "Edit",
+      "delete": "Delete",
+      "restartRoutine": "Restart Routine"
+    },
+    "states": {
+      "noRoutines": "No {type} routines",
+      "noRoutinesDescription": "Create your first personalized routine"
+    },
+    "meta": {
+      "skin": "Skin",
+      "score": "Score",
+      "duration": "Duration",
+      "weeks": "weeks"
+    },
+    "speech": {
+      "summary": "Hello {userName}. Your {tab} routine has {count} steps. ",
+      "completion": "You are currently {percentage}% complete. ",
+      "streak": "Your current streak is {streak} days. ",
+      "guidelines": "Guidelines for today: ",
+      "step": "Step {index}: {action}. "
+    }
+  },
+  "userBilling": {
+    "title": "Abonnement & facturation",
+    "subtitle": "Gérez votre accès premium et vos préférences de paiement depuis un tableau de bord élégant.",
+    "breadcrumb": {
+      "user": "Utilisateur",
+      "billing": "Facturation & abonnement"
+    },
+    "toasts": {
+      "loginRequired": "Vous devez être connecté pour effectuer un paiement",
+      "checkoutFailed": "Échec du checkout",
+      "missingCheckoutUrl": "URL de checkout manquante",
+      "paymentError": "Une erreur de paiement est survenue"
+    },
+    "audioLabel": "Audio Billing",
+    "status": {
+      "free": "FREE",
+      "active": "ACTIVE",
+      "daysRemaining": "{days} DAYS REMAINING",
+      "expiringSoon": "EXPIRING SOON",
+      "expired": "EXPIRED"
+    },
+    "speech": {
+      "overview": "Subscription and billing overview. Current plan is {plan}. ",
+      "status": "Status is {status}. ",
+      "billingCycle": "Billing cycle is {cycle}. ",
+      "amount": "Amount is {amount} Tunisian dinars. ",
+      "renewalDate": "Next renewal date is {date}. ",
+      "freePlan": "You are currently on the free plan. ",
+      "expiresIn": "Your subscription expires in {days} days. ",
+      "planChoice": "You can choose between premium monthly and premium yearly plans in the payment section. "
+    },
+    "units": {
+      "year": "Year",
+      "month": "Month"
+    },
+    "labels": {
+      "nextRenewalDate": "Next Renewal Date",
+      "savings": "Économies",
+      "priceLockTitle": "Garantie prix bloqué",
+      "priceLockDescription": "Votre tarif actuel est verrouillé jusqu’en 2026. Aucune hausse."
+    },
+    "messages": {
+      "freePlan": "You are currently on the Free Plan. Upgrade to Premium to unlock exclusive features.",
+      "activeUntil": "Your subscription is active until {date}.",
+      "expiresSoon": "Action Required: Your subscription expires in {days} days.",
+      "expired": "Your subscription is expired. Renew it to regain access."
+    },
+    "plans": {
+      "choose": "Choose a Plan",
+      "premiumMonthly": "Premium Monthly",
+      "perMonth": "Per Month",
+      "perYear": "Per Year",
+      "saveYearly": "Save 40 TND/year",
+      "premiumYearly": "Premium Annuel"
+    },
+    "checkout": {
+      "title": "Secure Checkout",
+      "subtitle": "Automated Payment",
+      "secureStripe": "Secure Payment with Stripe",
+      "redirectHint": "By clicking the button below, you will be redirected to the secure Stripe payment page.",
+      "testMode": "📝 Mode test - Cartes de test acceptées",
+      "successCard": "✅ Succès :",
+      "failureCard": "❌ Échec :",
+      "testCardHint": "Date: n’importe quelle date future (ex: 12/34) • CVC: 123",
+      "encryption": "Chiffrement SSL 256 bits",
+      "vaultSecured": "Paiement sécurisé en coffre",
+      "vaultDescription": "Vos moyens de paiement sont chiffrés et stockés en sécurité.",
+      "compliance": "CONFORME PCI-DSS • PASSERELLE CHIFFRÉE"
+    },
+    "summary": {
+      "verification": "Verification",
+      "tax": "Tax",
+      "yearlyDiscount": "Yearly Member Discount",
+      "grandTotal": "Grand Total",
+      "billedAnnually": "Billed annually",
+      "billedMonthly": "Billed monthly",
+      "title": "Récapitulatif de commande"
+    },
+    "actions": {
+      "changePlan": "Change Plan",
+      "upgradeToPremium": "Upgrade to Premium",
+      "renewAccess": "Renew Access",
+      "extendNow": "Extend Now",
+      "manageSettings": "Manage Settings",
+      "addMethod": "Ajouter un moyen"
+    }
+  },
+  "adminVerification": {
+    "title": "Centre de vérification",
+    "loading": "Chargement des utilisateurs...",
+    "searchPlaceholder": "Rechercher des utilisateurs {tab}...",
+    "noUsers": "Aucun utilisateur {tab}",
+    "noImage": "Aucune image fournie pour la vérification",
+    "emptyTitle": "Sélectionnez une demande de vérification",
+    "emptyDescription": "Parcourez la liste des utilisateurs en attente à gauche pour consulter leurs informations et gérer leur vérification d’identité.",
+    "status": {
+      "approved": "approuvé",
+      "rejected": "rejeté"
+    },
+    "breadcrumb": {
+      "admin": "Admin",
+      "center": "Centre de vérification"
+    },
+    "actions": {
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    },
+    "tabs": {
+      "requests": "Demandes",
+      "pending": "En attente",
+      "rejected": "Rejetés"
+    },
+    "total": "Total {tab}",
+    "cards": {
+      "personalIdentity": "Identité personnelle",
+      "verificationImage": "Image de vérification",
+      "identityPreview": "Aperçu d'identité"
+    },
+    "fields": {
+      "fullName": "Nom complet",
+      "gender": "Genre",
+      "age": "Âge",
+      "ageValue": "{age} ans",
+      "joined": "Inscrit",
+      "notAvailable": "N/D"
+    },
+    "badges": {
+      "efficiency": "Focus efficacité",
+      "realtime": "Sync temps réel"
+    },
+    "toasts": {
+      "loadUsersFailed": "Échec du chargement des utilisateurs",
+      "userStatusUpdated": "Utilisateur {status} avec succès !",
+      "actionFailed": "Impossible de {action} l’utilisateur"
+    }
+  },
+  "userDashboard": {
+    "fallbackName": "vous",
+    "welcome": "Bon retour, {name} !",
+    "subtitle": "Voici ce qui se passe sur votre compte aujourd’hui.",
+    "stats": {
+      "totalScans": "Analyses totales",
+      "activePlans": "Abonnements actifs",
+      "notifications": "Notifications"
+    },
+    "empty": {
+      "title": "Aucune activité pour le moment",
+      "description": "Vous n’avez pas encore effectué d’analyse de peau. Lancez votre première analyse pour voir vos résultats ici.",
+      "cta": "Démarrer une nouvelle analyse"
+    }
+  },
+  "adminDashboard": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "dashboard": "Tableau de bord"
+    },
+    "title": "Tableau de bord Admin",
+    "subtitle": "Suivi en temps réel des performances et de la croissance utilisateurs.",
+    "kpis": {
+      "totalUsers": {
+        "title": "Utilisateurs totaux",
+        "trend": "+12,5% vs mois dernier"
+      },
+      "activeSubscriptions": {
+        "title": "Abonnements actifs",
+        "trend": "Temps réel depuis la base"
+      },
+      "growthTrends": {
+        "title": "Tendances de croissance",
+        "trend": "Nouveaux utilisateurs ce mois"
+      },
+      "estimatedRevenue": {
+        "title": "Revenu estimé",
+        "trend": "Total de la période en cours"
+      }
+    },
+    "sections": {
+      "paymentsOverview": {
+        "title": "Vue d’ensemble des paiements",
+        "subtitle": "Statistiques réelles depuis la base",
+        "badge": "9 DERNIERS MOIS"
+      },
+      "weeklyProfit": "Profit hebdomadaire",
+      "visitorsByCountry": "Visiteurs par pays"
+    }
+  },
+  "userSettingsPage": {
+    "breadcrumb": {
+      "user": "Utilisateur",
+      "settings": "Paramètres"
+    },
+    "title": "Paramètres du compte",
+    "subtitle": "Gérez vos informations de profil, votre mot de passe et vos préférences."
+  },
+  "billingSuccess": {
+    "title": "Paiement réussi !",
+    "sessionIdLabel": "ID de session",
+    "waitMessage": "Veuillez patienter pendant la finalisation de votre compte...",
+    "redirectPrefix": "Redirection automatique dans",
+    "redirectSuffix": "secondes...",
+    "backToBilling": "Retour à la facturation",
+    "messages": {
+      "confirming": "Nous confirmons votre abonnement et mettons votre compte à jour...",
+      "missingSession": "ID de session manquant. Retournez à la facturation puis réessayez.",
+      "activated": "Abonnement activé avec succès.",
+      "unableToConfirm": "Impossible de confirmer l’abonnement",
+      "confirmationFailed": "La confirmation de l’abonnement a échoué. Veuillez ouvrir la page de facturation."
+    }
+  },
+  "billingCancel": {
+    "title": "Paiement annulé",
+    "description": "Aucun souci. Le paiement a été annulé. Vous pouvez réessayer à tout moment ou explorer d’autres options.",
+    "retryPayment": "Réessayer le paiement",
+    "backToDashboard": "Retour au tableau de bord",
+    "needHelp": "Besoin d’aide ?",
+    "contactSupport": "Contacter notre support"
+  },
+  "adminSettingsPage": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "settings": "Paramètres"
+    },
+    "title": "Paramètres du compte",
+    "subtitle": "Gérez vos informations de profil, votre mot de passe et vos préférences."
+  },
+  "adminSubscriptions": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "subscriptions": "Abonnements"
+    },
+    "header": {
+      "title": "Gestion des abonnements",
+      "subtitle": "Surveillez et gérez tous les abonnements utilisateurs",
+      "lastUpdated": "Dernière mise à jour"
+    },
+    "summary": {
+      "totalSubscriptions": "Abonnements totaux",
+      "matchingFilters": "{count} correspondant aux filtres actuels",
+      "activeSubscriptions": "Abonnements actifs",
+      "activeRatio": "{ratio}% de tous les abonnements",
+      "expiredSubscriptions": "Abonnements expirés",
+      "expiredHint": "Nécessitent un renouvellement",
+      "monthlyRevenue": "Revenu mensuel",
+      "monthlyRevenueHint": "Issu des abonnements actifs"
+    },
+    "filters": {
+      "button": "Filtres",
+      "searchPlaceholder": "Rechercher par nom ou e-mail...",
+      "export": "Exporter CSV",
+      "exportTitle": "Exporter les résultats filtrés en CSV",
+      "paymentStatus": "Statut de paiement",
+      "allStatuses": "Tous les statuts",
+      "plan": "Offre",
+      "allPlans": "Toutes les offres",
+      "startDateFrom": "Date de début à partir de",
+      "endDateTo": "Date de fin jusqu’à"
+    },
+    "statuses": {
+      "paid": "Payé",
+      "expiring": "Expire bientôt",
+      "expired": "Expiré"
+    },
+    "billing": {
+      "year": "An",
+      "month": "Mois"
+    },
+    "table": {
+      "user": "Utilisateur",
+      "plan": "Offre",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "payment": "Paiement",
+      "amount": "Montant",
+      "actions": "Actions"
+    },
+    "states": {
+      "loading": "Chargement des abonnements...",
+      "noMatch": "Aucun abonnement ne correspond aux filtres"
+    },
+    "actions": {
+      "view": "Voir",
+      "viewDetails": "Voir les détails"
+    },
+    "pagination": {
+      "showing": "Affichage",
+      "of": "sur",
+      "subscriptions": "abonnements"
+    },
+    "detail": {
+      "tabs": {
+        "info": "Infos abonnement",
+        "history": "Historique"
+      },
+      "fields": {
+        "fullName": "Nom complet",
+        "email": "E-mail",
+        "plan": "Offre",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "paymentStatus": "Statut de paiement",
+        "renewal": "Renouvellement",
+        "amount": "Montant",
+        "yearly": "Annuel",
+        "subscriptionStarted": "Abonnement démarré",
+        "close": "Fermer",
+        "renewSubscription": "Renouveler l’abonnement"
+      }
+    },
+    "csv": {
+      "userName": "Nom utilisateur",
+      "email": "E-mail",
+      "plan": "Offre",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "paymentStatus": "Statut paiement",
+      "amount": "Montant"
+    }
+  },
+  "userAnalyzes": {
+    "header": {
+      "kicker": "Historique clinique",
+      "title": "Historique d’analyse de peau",
+      "subtitle": "Consultez et suivez l’évolution de votre peau dans le temps grâce à notre diagnostic."
+    },
+    "filters": {
+      "searchPlaceholder": "Rechercher des analyses...",
+      "status": {
+        "all": "Tous",
+        "improved": "Amélioré",
+        "stable": "Stable",
+        "worse": "Dégradé"
+      }
+    },
+    "actions": {
+      "newAnalysis": "Nouvelle analyse"
+    },
+    "empty": {
+      "title": "Aucune analyse trouvée",
+      "noAnalyses": "Vous n’avez pas encore effectué d’analyse de peau. Lancez votre premier scan pour voir votre rapport détaillé.",
+      "noMatches": "Aucune analyse ne correspond à votre recherche ou à vos filtres. Ajustez-les ou lancez un nouveau scan.",
+      "firstAnalysis": "Effectuer la première analyse",
+      "clearFilters": "Réinitialiser les filtres"
+    },
+    "audio": {
+      "detailIntro": "Analyse détaillée du {date}.",
+      "score": "Le score de santé de la peau est de {score} sur 100.",
+      "skinTypeSensitivity": "Le type de peau est {skinType} avec une sensibilité {sensitivity}.",
+      "summary": "Résumé : {summary}.",
+      "topRecommendations": "Recommandations principales : {recommendations}.",
+      "history": "Historique d’analyse de peau. Vous avez {count} rapports. Votre dernier score est {score} pour une peau {skinType}."
+    },
+    "card": {
+      "labels": {
+        "baseline": "Analyse de référence",
+        "latest": "Dernière analyse",
+        "previous": "Résultat précédent",
+        "past": "Historique"
+      },
+      "statuses": {
+        "improved": "Amélioré",
+        "stable": "Stable",
+        "worse": "Dégradé"
+      },
+      "skinType": "Type de peau",
+      "hydration": "Hydratation",
+      "oilProduction": "Production de sébum",
+      "sensitivity": {
+        "label": "Sensibilité",
+        "low": "Faible",
+        "medium": "Moyenne",
+        "high": "Élevée"
+      }
+    },
+    "modal": {
+      "report": "Rapport d’analyse clinique",
+      "detailed": "Analyse détaillée - {date}",
+      "overallHealthScore": "Score global de santé",
+      "overallHealthDescription": "La santé de votre peau est nettement au-dessus de la moyenne pour votre profil.",
+      "skinType": "Type de peau",
+      "sensitivity": "Sensibilité",
+      "hydration": "Hydratation",
+      "oilBalance": "Équilibre du sébum",
+      "identifiedConcerns": "Problèmes identifiés",
+      "mild": "Léger",
+      "redness": "Rougeurs",
+      "minimal": "Minimal",
+      "aiVision": "Analyse IA Vision",
+      "skinAge": "Âge de peau",
+      "actual": "Réel",
+      "riskFactor": "Facteur de risque",
+      "targetedRecommendations": "Recommandations ciblées",
+      "recommendationsFallback": "Selon vos paramètres cliniques, nous avons défini les recommandations stratégiques suivantes pour votre peau.",
+      "analysisDescription": "Analyse pour l'utilisateur {userName}, calculée à partir des paramètres cliniques.",
+      "prescribedRoutine": "Routine prescrite",
+      "morningRoutine": "Routine du matin",
+      "nightRoutine": "Routine du soir",
+      "step": "Étape {number}"
+    }
+  },
+  "adminUsers": {
+    "loading": "Chargement des utilisateurs...",
+    "errorPrefix": "Erreur",
+    "searchPlaceholder": "Rechercher par nom, e-mail ou rôle...",
+    "breadcrumb": {
+      "admin": "Admin",
+      "users": "Utilisateurs",
+      "usersManagement": "Gestion des utilisateurs"
+    },
+    "errors": {
+      "fetchUsers": "Échec du chargement des utilisateurs",
+      "updateUser": "Échec de la mise à jour"
+    },
+    "toasts": {
+      "activated": "Compte de {name} activé",
+      "deactivated": "Compte de {name} désactivé",
+      "genericError": "Une erreur est survenue"
+    },
+    "stats": {
+      "totalUsers": "Utilisateurs totaux",
+      "verified": "Vérifiés",
+      "unverified": "Non vérifiés",
+      "admins": "Admins"
+    },
+    "charts": {
+      "monthlyRegistrations": "Inscriptions mensuelles",
+      "updated": "Mis à jour",
+      "download": "Télécharger le graphique en PNG",
+      "usersByRole": "Utilisateurs par rôle",
+      "ageGroups": "Tranches d’âge",
+      "accountStatus": "Statut du compte"
+    },
+    "actions": {
+      "exportCsv": "Exporter CSV",
+      "addUser": "Ajouter un utilisateur",
+      "edit": "Modifier",
+      "deactivateAccount": "Désactiver le compte",
+      "activateAccount": "Activer le compte"
+    },
+    "table": {
+      "user": "Utilisateur",
+      "email": "E-mail",
+      "role": "Rôle",
+      "status": "Statut",
+      "account": "Compte",
+      "age": "Âge",
+      "gender": "Genre",
+      "joined": "Inscrit le",
+      "actions": "Actions"
+    },
+    "status": {
+      "verified": "Vérifié",
+      "unverified": "Non vérifié",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "verifyTitle": "Cliquer pour vérifier ce compte",
+      "unverifiedVerify": "Non vérifié - Vérifier"
+    },
+    "account": {
+      "clickDeactivate": "Cliquer pour désactiver",
+      "clickActivate": "Cliquer pour activer",
+      "updating": "Mise à jour..."
+    },
+    "empty": {
+      "noMatch": "Aucun utilisateur ne correspond à votre recherche.",
+      "noUsers": "Aucun utilisateur trouvé."
+    },
+    "footer": {
+      "showing": "Affichage",
+      "of": "sur",
+      "users": "utilisateurs"
+    },
+    "csv": {
+      "id": "ID",
+      "name": "Nom",
+      "email": "E-mail",
+      "role": "Rôle",
+      "status": "Statut",
+      "age": "Âge",
+      "gender": "Genre",
+      "joined": "Inscrit le"
+    },
+    "modal": {
+      "titleAdd": "Ajouter un utilisateur",
+      "titleEdit": "Modifier l’utilisateur",
+      "fields": {
+        "name": "Nom",
+        "email": "E-mail",
+        "password": "Mot de passe",
+        "role": "Rôle",
+        "age": "Âge",
+        "gender": "Genre",
+        "accountVerified": "Compte vérifié"
+      },
+      "placeholders": {
+        "fullName": "Nom complet",
+        "password": "Minimum 8 caractères",
+        "age": "Âge"
+      },
+      "options": {
+        "notSpecified": "Non précisé",
+        "male": "Homme",
+        "female": "Femme"
+      },
+      "actions": {
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "createUser": "Créer l’utilisateur",
+        "saveChanges": "Enregistrer"
+      },
+      "errors": {
+        "create": "Échec de création de l’utilisateur",
+        "update": "Échec de mise à jour de l’utilisateur"
+      },
+      "toasts": {
+        "creating": "Création de l’utilisateur...",
+        "updating": "Mise à jour de {name}...",
+        "created": "Utilisateur créé avec succès",
+        "updated": "{name} mis à jour",
+        "genericError": "Une erreur est survenue"
+      }
+    },
+    "toggleModal": {
+      "titleDeactivate": "Désactiver le compte",
+      "titleActivate": "Activer le compte",
+      "deactivateText": "Voulez-vous vraiment désactiver le compte de {name} ? L’utilisateur ne pourra plus se connecter.",
+      "activateText": "Activer le compte de {name} ? L’utilisateur pourra se reconnecter.",
+      "cancel": "Annuler",
+      "deactivate": "Désactiver",
+      "activate": "Activer"
+    }
+  },
+  "adminProducts": {
+    "title": "Produits",
+    "subtitle": "Gérez tous les produits skincare de votre catalogue.",
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "stats": {
+      "totalProducts": "Produits totaux",
+      "activeProducts": "Produits actifs",
+      "inactiveItems": "Produits inactifs",
+      "totalCategories": "Catégories totales"
+    },
+    "filters": {
+      "searchPlaceholder": "Rechercher un produit ou un ingrédient...",
+      "categoryAll": "Catégorie : Toutes",
+      "skinTypeAll": "Type de peau : Tous",
+      "statusAll": "Statut : Tous"
+    },
+    "actions": {
+      "addNewProduct": "Ajouter un produit"
+    },
+    "table": {
+      "productInfo": "Infos produit",
+      "category": "Catégorie",
+      "skinType": "Type de peau",
+      "ingredientsBenefits": "Ingrédients & bénéfices",
+      "price": "Prix",
+      "status": "Statut",
+      "created": "Créé",
+      "actions": "Actions",
+      "noProductsFound": "Aucun produit trouvé.",
+      "sku": "SKU",
+      "viewDetails": "Voir les détails",
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "pagination": {
+      "showing": "Affichage",
+      "to": "à",
+      "of": "sur",
+      "products": "produits",
+      "previous": "Précédent",
+      "next": "Suivant"
+    },
+    "skinCompatibility": {
+      "title": "Compatibilité peau",
+      "selectAll": "Sélectionnez toutes les options applicables"
+    },
+    "proTip": {
+      "title": "Astuce Pro",
+      "description": "Ajouter des types de peau précis aide notre moteur de recommandation à proposer ce produit aux bons clients."
+    },
+    "scraping": {
+      "title": "Web scraping produits",
+      "subtitle": "Saisissez uniquement des mots-clés d’ingrédients, puis cliquez pour afficher les produits correspondants.",
+      "useFormIngredients": "Utiliser les ingrédients du formulaire",
+      "clearResults": "Effacer les résultats",
+      "ingredientKeywords": "Mots-clés ingrédients",
+      "typeIngredient": "Saisir un ingrédient...",
+      "scraping": "Scraping en cours...",
+      "run": "Lancer le scraping",
+      "found": "{total} correspondances trouvées, {returned} résultats affichés.",
+      "warnings": "Avertissements",
+      "errors": {
+        "addIngredient": "Ajoutez au moins un mot-clé d’ingrédient.",
+        "failed": "Le scraping a échoué.",
+        "unable": "Impossible d’exécuter le scraping."
+      },
+      "table": {
+        "image": "Image",
+        "productName": "Nom du produit",
+        "description": "Description",
+        "matchedIngredients": "Ingrédients correspondants",
+        "price": "Prix",
+        "link": "Lien",
+        "noProducts": "Aucun produit scrapé pour le moment.",
+        "noImage": "Pas d’image",
+        "open": "Ouvrir"
+      }
+    },
+    "modal": {
+      "sku": "SKU",
+      "noImage": "Aucune image importée",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "category": "Catégorie",
+      "price": "Prix",
+      "created": "Créé le",
+      "skinTypes": "Types de peau",
+      "keyIngredients": "Ingrédients clés",
+      "benefitsDescription": "Bénéfices & description",
+      "close": "Fermer",
+      "editProduct": "Modifier le produit"
+    },
+    "addForm": {
+      "breadcrumbAdd": "Ajouter",
+      "title": "Ajouter un produit",
+      "subtitle": "Configurez les détails du produit et les propriétés spécifiques à la peau.",
+      "actions": {
+        "cancel": "Annuler",
+        "save": "Enregistrer le produit"
+      },
+      "sections": {
+        "basic": "Informations de base",
+        "formula": "Formule et ingrédients",
+        "image": "Image du produit"
+      },
+      "fields": {
+        "name": "Nom du produit",
+        "namePlaceholder": "ex: Sérum éclat Vitamine C",
+        "category": "Catégorie",
+        "availability": "Statut de disponibilité",
+        "price": "Prix (USD)",
+        "description": "Description",
+        "descriptionPlaceholder": "Décrivez les caractéristiques, la texture et l’application du produit...",
+        "keyIngredients": "Ingrédients clés",
+        "ingredientPlaceholder": "Ajouter un ingrédient...",
+        "ingredientHint": "Appuyez sur Entrée ou virgule pour ajouter un ingrédient",
+        "serumsOption": "Sérums",
+        "keyBenefits": "Bénéfices clés",
+        "imageUpload": "Cliquez pour téléverser ou glisser-déposer",
+        "imageFormats": "PNG, JPG jusqu’à 10 Mo"
+      }
+    }
+  },
+  "userQuestionnaire": {
+    "userDefaultName": "Utilisateur",
+    "breadcrumb": {
+      "user": "Utilisateur",
+      "skinAnalysis": "Analyse de peau"
+    },
+    "header": {
+      "title": "Analyse de peau",
+      "questions": "{count} questions"
+    },
+    "thinking": "DeepSkyn réfléchit",
+    "analyzingDescription": "Notre IA traite vos réponses pour générer une routine skincare personnalisée.",
+    "analysis": {
+      "complete": "Analyse terminée."
+    },
+    "errors": {
+      "loadAccessStatus": "Impossible de charger le statut d’accès à l’analyse.",
+      "unexpected": "Erreur inattendue",
+      "unknown": "erreur inconnue",
+      "createAnalysisForImages": "Impossible de créer une analyse pour associer les images.",
+      "analysisIdMissingAfterCreate": "analysisId manquant après création de l’analyse.",
+      "analysisIdRequired": "analysisId est requis pour enregistrer les images.",
+      "storeImages": "Impossible d’enregistrer les images en base de données.",
+      "imageAnalysisFailed": "Échec de la demande d’analyse d’images",
+      "finalAnalysisFailed": "Échec de la demande d’analyse finale"
+    },
+    "messages": {
+      "ready": "Je suis prêt quand vous l’êtes. Si vous voyez ce message, n8n renvoie peut-être une réponse vide.",
+      "connectionError": "Erreur de connexion : {error}. Vérifiez que n8n est démarré et que le webhook est actif.",
+      "userSessionMissing": "Session utilisateur introuvable. Reconnectez-vous puis relancez le questionnaire.",
+      "finalizeWithImagesError": "Impossible de finaliser l’analyse avec images : {error}.",
+      "finalizeError": "Impossible de finaliser l’analyse : {error}."
+    },
+    "toasts": {
+      "maxImages": "Maximum {count} image(s) autorisée(s).",
+      "maxImagesWarning": "Maximum {count} image(s) autorisée(s). Supprimez des images avant d’en ajouter.",
+      "photoCaptured": "Photo capturée avec succès !"
+    },
+    "limit": {
+      "description": "Vous avez déjà utilisé votre analyse gratuite dans les dernières 24 heures.",
+      "nextAnalysis": "Prochaine analyse",
+      "lessThan24h": "dans moins de 24h",
+      "viewMyAnalyses": "Voir mes analyses",
+      "goPremium": "Passer Premium",
+      "title": "Limite atteinte"
+    },
+    "result": {
+      "analysisComplete": "Analyse terminée",
+      "yourSkinScore": "Votre score peau",
+      "scoreExcellent": "Excellente santé de peau ! Continuez ainsi.",
+      "scoreGood": "Bonne santé avec une marge d’amélioration.",
+      "scoreNeedsCare": "Votre peau a besoin de plus d’attention.",
+      "age": "Âge",
+      "analysisConfidence": "Confiance de l’analyse",
+      "personalizedAnalysis": "Votre analyse personnalisée",
+      "strongPoints": "Points forts",
+      "priorityConcerns": "Préoccupations prioritaires",
+      "immediateRecommendations": "Recommandations immédiates",
+      "morningRoutine": "Routine du matin",
+      "eveningRoutine": "Routine du soir",
+      "viewRoutine": "Voir la routine",
+      "viewHistory": "Voir l’historique"
+    },
+    "images": {
+      "addForGemini": "Maximum {count} image(s). Galerie, caméra, ou glisser-déposer.",
+      "dragHere": "Glissez vos images ici",
+      "orUseButtons": "ou utilisez les boutons ci-dessous",
+      "addFromGallery": "Ajouter depuis la galerie",
+      "takePhoto": "Prendre une photo",
+      "remove": "Retirer",
+      "continueWithout": "Continuer sans images",
+      "analyzing": "Analyse en cours...",
+      "analyzeWithGemini": "Analyser avec Gemini",
+      "title": "Ajouter des images pour Gemini"
+    },
+    "analyzingTitle": "Analyse de votre peau..."
+  },
+  "adminAnalytics": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "platformAnalytics": "Analytics plateforme"
+    },
+    "header": {
+      "title": "Analytics plateforme",
+      "subtitle": "Vue complète des performances du réseau DeepSkyn.",
+      "moreFilters": "Plus de filtres",
+      "export": "Exporter"
+    },
+    "kpis": {
+      "totalUsers": {
+        "label": "Utilisateurs totaux",
+        "description": "Total des comptes enregistrés"
+      },
+      "activeUsers": {
+        "label": "Utilisateurs actifs",
+        "description": "DAU : utilisateurs actifs quotidiens"
+      },
+      "monthlyRevenue": {
+        "label": "Revenu mensuel",
+        "description": "Abonnements & achats ponctuels"
+      },
+      "conversionRate": {
+        "label": "Taux de conversion",
+        "description": "Conversion visiteurs vers Premium"
+      }
+    },
+    "sections": {
+      "userGrowth": {
+        "title": "Tendances de croissance utilisateurs",
+        "subtitle": "Engagement vs nouvelles acquisitions",
+        "new": "Nouveaux",
+        "active": "Actifs"
+      },
+      "subscriptions": {
+        "title": "Abonnements",
+        "noData": "Aucune donnée d’abonnement"
+      },
+      "aiInsight": {
+        "textBefore": "Les recommandations de routine personnalisée ont entraîné une",
+        "textAfter": "d’augmentation de la rétention ce mois-ci.",
+        "fullReport": "Rapport IA complet",
+        "title": "Insight IA de réussite"
+      },
+      "systemHealth": {
+        "title": "Santé système",
+        "items": {
+          "apiGateway": "Passerelle API",
+          "aiSync": "Synchronisation modèle IA",
+          "dbLatency": "Latence base de données",
+          "workerJobs": "Jobs workers"
+        },
+        "status": {
+          "operational": "Opérationnel",
+          "active24": "Actif (24)"
+        }
+      },
+      "alerts": {
+        "title": "Alertes critiques (2)",
+        "highChurn": "Churn élevé",
+        "twoHoursAgo": "il y a 2 h",
+        "highChurnDescription": "Le taux de churn a augmenté de 2,4% pour les utilisateurs ‘Expert Plan’ en Allemagne.",
+        "investigate": "Enquêter",
+        "paymentFail": "Échec paiement",
+        "fourHoursAgo": "il y a 4 h",
+        "paymentFailDescription": "Hausse des erreurs Stripe détectée pour les transactions UE.",
+        "checkLogs": "Voir les logs"
+      },
+      "liveActivity": {
+        "title": "Activité en direct",
+        "user1": "Utilisateur #1293",
+        "user2": "Utilisateur #8821",
+        "user3": "Utilisateur #4502",
+        "action1": "Routine du matin terminée",
+        "action2": "Passage en Pro",
+        "action3": "Nouveau produit ajouté",
+        "justNow": "À l’instant",
+        "threeMinAgo": "il y a 3 min",
+        "eightMinAgo": "il y a 8 min"
+      }
+    }
+  },
+  "accessibility": {
+    "title": "Accessibilité",
+    "shortTitle": "Accès",
+    "modesCount": "{count, plural, one {# mode} other {# modes}}",
+    "highContrast": "Contraste élevé",
+    "largeText": "Texte agrandi",
+    "reducedMotion": "Animations réduites",
+    "colorAssist": "Aide couleurs",
+    "off": "Désactivé",
+    "protan": "Protan (rouge)",
+    "deutan": "Deutan (vert)",
+    "tritan": "Tritan (bleu)"
+  },
+  "adminProfilePage": {
+    "title": "Admin Profile - DeepSkyn"
+  },
+  "adminAnalyzes": {
+    "stats": {
+      "totalAnalyzes": "Analyses totales",
+      "activeUsers": "Utilisateurs actifs",
+      "avgScore": "Score moyen",
+      "newToday": "Nouveaux aujourd’hui",
+      "newValue": "Nouveau"
+    },
+    "header": {
+      "title": "Analyses récentes",
+      "subtitle": "Gérez et examinez toutes les analyses du système provenant des utilisateurs.",
+      "searchPlaceholder": "Rechercher un utilisateur ou une date..."
+    },
+    "table": {
+      "user": "Utilisateur",
+      "date": "Date",
+      "summary": "Résumé",
+      "score": "Score",
+      "details": "Détails",
+      "skinTypeType": "Type de {skinType}"
+    },
+    "pagination": {
+      "showing": "Affichage de {filtered} sur {total} analyses",
+      "previous": "Précédent",
+      "next": "Suivant"
+    }
+  },
+  "adminQuizzes": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "quizzes": "Gestion des quizzes"
+    },
+    "header": {
+      "title": "Gestion des quizzes",
+      "subtitle": "Créez et gérez des quizzes d’évaluation pour vos utilisateurs."
+    },
+    "actions": {
+      "createQuiz": "Créer un quiz",
+      "deleteQuiz": "Supprimer le quiz",
+      "editQuiz": "Modifier le quiz",
+      "addNewQuiz": "Ajouter un quiz",
+      "preview": "Aperçu",
+      "saving": "Enregistrement...",
+      "saveChanges": "Enregistrer les modifications"
+    },
+    "search": {
+      "placeholder": "Rechercher par titre..."
+    },
+    "filters": {
+      "allCategories": "Toutes les catégories"
+    },
+    "stats": {
+      "totalQuizzes": "{count} quizzes au total",
+      "foundQuizzes": "{found}/{total} trouvés"
+    },
+    "labels": {
+      "category": "Catégorie"
+    },
+    "preview": {
+      "questions": "Aperçu des questions",
+      "textAnswer": "Aperçu de la réponse texte",
+      "awaitingInput": "Réponse utilisateur attendue...",
+      "noQuestions": "Aucune question ajoutée pour le moment."
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "category": "Catégorie"
+    },
+    "questions": {
+      "title": "Questions ({count})",
+      "addQuestion": "Ajouter une question",
+      "multipleChoice": "Choix multiples",
+      "textInput": "Réponse texte",
+      "addChoice": "Ajouter une option",
+      "expectedAnswer": "Réponse attendue :",
+      "expectedPlaceholder": "ex. Minimalisme...",
+      "expectedHint": "L’utilisateur devra taper cela exactement pour marquer le point.",
+      "appendNew": "Ajouter une nouvelle question",
+      "questionPlaceholder": "Question {number}",
+      "optionPlaceholder": "Option {number}",
+      "optionTemplate": "Option {number}"
+    },
+    "categories": {
+      "other": "Autre",
+      "skinType": "Type de peau",
+      "skinGlow": "Éclat de la peau",
+      "ingredients": "Ingrédients",
+      "medical": "Médical",
+      "personal": "Personnel",
+      "general": "Général"
+    },
+    "statuses": {
+      "active": "Actif",
+      "draft": "Brouillon",
+      "unknown": "Inconnu"
+    },
+    "defaults": {
+      "untitledQuestion": "Sans titre"
+    },
+    "toasts": {
+      "enterTitle": "Veuillez saisir un titre de quiz",
+      "saving": "Enregistrement...",
+      "saveQuizError": "Erreur lors de l’enregistrement du quiz",
+      "syncQuestionError": "Erreur : {question}... {error}",
+      "savedQuizQuestions": "Quiz et {count} questions enregistrés",
+      "saveError": "Erreur d’enregistrement",
+      "deleting": "Suppression...",
+      "deleted": "Quiz supprimé",
+      "deleteError": "Erreur lors de la suppression"
+    },
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce quiz ?",
+    "editor": {
+      "editingQuiz": "Modification du quiz",
+      "quizDetails": "Détails du quiz",
+      "settings": "Paramètres",
+      "randomizeQuestions": "Mélanger les questions",
+      "showResultsAtEnd": "Afficher les résultats à la fin",
+      "passScore": "Score de réussite %"
+    }
+  },
+  "adminBadges": {
+    "holders": "{count} détenteurs actifs",
+    "historyTitle": "Historique des badges",
+    "toasts": {
+      "loadError": "Impossible de charger les badges."
+    },
+    "states": {
+      "loading": "Chargement des badges...",
+      "noUsers": "Aucun utilisateur trouvé",
+      "noUsersHint": "Vérifiez la recherche ou les données de badges"
+    },
+    "hero": {
+      "kicker": "Système de gamification",
+      "title": "Badges & Récompenses",
+      "subtitle": "Un utilisateur par ligne avec son badge le plus élevé. Ouvrez les détails pour voir l’historique complet."
+    },
+    "table": {
+      "title": "Progression des utilisateurs",
+      "subtitle": "Classement par badge le plus élevé",
+      "searchPlaceholder": "Rechercher nom ou email...",
+      "user": "Utilisateur",
+      "bestBadge": "Meilleur badge",
+      "totalBadges": "Total des badges",
+      "details": "Détails",
+      "displayedUsers": "{count} utilisateur(s) affiché(s)",
+      "pageOne": "Page 1 sur 1"
+    },
+    "badgeLevels": {
+      "bronze": "Bronze",
+      "silver": "Argent",
+      "gold": "Or",
+      "platinum": "Platine",
+      "rubyMaster": "Maître Rubis"
+    }
+  }
+}

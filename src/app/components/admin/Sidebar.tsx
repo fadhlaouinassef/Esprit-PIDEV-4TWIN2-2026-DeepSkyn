@@ -14,6 +14,7 @@ import { useAppSelector } from "@/store/hooks";
 import { ThemePicker } from "../ui/ThemePicker";
 import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { useTranslations } from "next-intl";
 
 type AdminSubItem = { title: string; url: string };
 
@@ -21,21 +22,22 @@ export function Sidebar() {
     const pathname = usePathname();
     const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
+    const t = useTranslations();
     const user = useAppSelector((state) => state.auth.user);
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
     const hydrated = useHydrated();
     const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
     const isCollapsedDesktop = !isMobile && !isOpen;
-    const activeParentTitle = NAV_DATA.flatMap((section) => section.items).find((item) =>
+    const activeParentId = NAV_DATA.flatMap((section) => section.items).find((item) =>
         item.items.some((subItem: AdminSubItem) => subItem.url === pathname)
-    )?.title;
+    )?.id;
 
     // Admin display name
-    const userName = user ? `${user.nom} ${user.prenom || ''}`.trim() : "Admin User";
+    const userName = user ? `${user.nom} ${user.prenom || ''}`.trim() : t('nav.adminDefaultUserName');
     const userPhoto = user?.photo || "/avatar.png";
 
-    const toggleExpanded = (title: string) => {
-        setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
+    const toggleExpanded = (id: string) => {
+        setExpandedItems((prev) => (prev.includes(id) ? [] : [id]));
     };
 
     return (
@@ -61,7 +63,7 @@ export function Sidebar() {
                     borderRightColor: `${appliedTheme.color}30`,
                     backgroundImage: `linear-gradient(180deg, ${appliedTheme.color}08 0%, transparent 28%)`,
                 }}
-                aria-label="Main navigation"
+                aria-label={t('nav.mainNavigation')}
                 aria-hidden={isMobile && !isOpen}
             >
                 <div className={cn("flex h-full flex-col py-6", isCollapsedDesktop ? "px-3" : "pl-6.25 pr-1.75")}>
@@ -89,7 +91,7 @@ export function Sidebar() {
                                                 {userName}
                                             </span>
                                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                {user?.role === 'admin' ? 'Administrator' : 'Admin Account'}
+                                                {user?.role === 'admin' ? t('nav.administrator') : t('nav.adminAccount')}
                                             </span>
                                         </div>
                                     )}
@@ -103,8 +105,8 @@ export function Sidebar() {
                                         "inline-flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 transition-all duration-300 ease-in-out",
                                         isCollapsedDesktop ? "size-10 ml-0" : "size-10"
                                     )}
-                                    title={isOpen ? "Réduire la sidebar" : "Ouvrir la sidebar"}
-                                    aria-label={isOpen ? "Réduire la sidebar" : "Ouvrir la sidebar"}
+                                    title={isOpen ? t('nav.collapseSidebar') : t('nav.expandSidebar')}
+                                    aria-label={isOpen ? t('nav.collapseSidebar') : t('nav.expandSidebar')}
                                 >
                                     {isOpen ? <PanelLeftClose className="size-5" /> : <PanelLeftOpen className="size-5" />}
                                 </button>
@@ -116,7 +118,7 @@ export function Sidebar() {
                                 onClick={toggleSidebar}
                                 className="absolute right-0 top-0 p-2"
                             >
-                                <span className="sr-only">Close Menu</span>
+                                <span className="sr-only">{t('common.closeMenu')}</span>
                                 <ArrowLeft className="size-6" />
                             </button>
                         )}
@@ -125,17 +127,17 @@ export function Sidebar() {
                     {/* Navigation */}
                     <div className={cn("custom-scrollbar flex-1 overflow-y-auto", isCollapsedDesktop ? "pr-0" : "pr-3")} data-lenis-prevent>
                         {NAV_DATA.map((section) => (
-                            <div key={section.label} className="mb-6">
+                            <div key={section.id} className="mb-6">
                                 {!isCollapsedDesktop && (
                                     <h2 className="mb-4 px-3 text-sm font-bold uppercase tracking-widest text-gray-500/70">
-                                        {section.label}
+                                        {t(`nav.admin.sections.${section.id}`)}
                                     </h2>
                                 )}
 
-                                <nav role="navigation" aria-label={section.label}>
+                                <nav role="navigation" aria-label={t(`nav.admin.sections.${section.id}`)}>
                                     <ul className="space-y-1">
                                         {section.items.map((item) => (
-                                            <li key={item.title}>
+                                            <li key={item.id}>
                                                 {isCollapsedDesktop ? (
                                                     <MenuItem
                                                         as="link"
@@ -149,7 +151,7 @@ export function Sidebar() {
                                                 ) : item.items.length > 0 ? (
                                                     <div>
                                                         <MenuItem
-                                                            onClick={() => toggleExpanded(item.title)}
+                                                            onClick={() => toggleExpanded(item.id)}
                                                             accentColor={appliedTheme.color}
                                                             className="w-full cursor-pointer"
                                                         >
@@ -158,19 +160,19 @@ export function Sidebar() {
                                                                 aria-hidden="true"
                                                             />
 
-                                                            <span>{item.title}</span>
+                                                            <span>{t(`nav.admin.items.${item.id}`)}</span>
 
                                                             <ChevronUp
                                                                 className={cn(
                                                                     "ml-auto size-4 transition-transform duration-200",
-                                                                    !expandedItems.includes(item.title) &&
+                                                                    !expandedItems.includes(item.id) &&
                                                                     "rotate-180",
                                                                 )}
                                                                 aria-hidden="true"
                                                             />
                                                         </MenuItem>
 
-                                                        {(expandedItems.includes(item.title) || activeParentTitle === item.title) && (
+                                                        {(expandedItems.includes(item.id) || activeParentId === item.id) && (
                                                             <ul
                                                                 className="ml-9 mr-0 space-y-1 pt-1"
                                                                 role="menu"
@@ -183,7 +185,7 @@ export function Sidebar() {
                                                                             isActive={pathname === subItem.url}
                                                                             accentColor={appliedTheme.color}
                                                                         >
-                                                                            <span>{subItem.title}</span>
+                                                                            <span>{t(`nav.admin.subItems.${subItem.id}`)}</span>
                                                                         </MenuItem>
                                                                     </li>
                                                                 ))}
@@ -210,7 +212,7 @@ export function Sidebar() {
                                                                     className="size-5 shrink-0"
                                                                     aria-hidden="true"
                                                                 />
-                                                                {!isCollapsedDesktop && <span>{item.title}</span>}
+                                                                {!isCollapsedDesktop && <span>{t(`nav.admin.items.${item.id}`)}</span>}
                                                             </MenuItem>
                                                         );
                                                     })()

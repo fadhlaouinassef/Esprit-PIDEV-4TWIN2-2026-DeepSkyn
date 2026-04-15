@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ComponentType, useCallback } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
-  Circle,
   Sparkles,
-  User,
   ClipboardList,
   ScanFace,
   Droplets,
@@ -19,6 +17,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { LoadingLink } from "@/app/components/LoadingLink";
+import { useTranslations } from "next-intl";
 
 const OPEN_EVENT_NAME = "deepskyn:open-experience-map";
 
@@ -37,14 +36,20 @@ type ExperienceStep = {
   icon: ComponentType<{ className?: string }>;
 };
 
-const EXPERIENCE_STEPS: ExperienceStep[] = [
+type ExperienceStepTemplate = Omit<ExperienceStep, "title" | "subtitle" | "description" | "ctaLabel"> & {
+  titleKey: string;
+  subtitleKey: string;
+  descriptionKey: string;
+  ctaLabelKey: string;
+};
+
+const EXPERIENCE_STEP_TEMPLATES: ExperienceStepTemplate[] = [
   {
     id: "welcome",
-    title: "Welcome to DeepSkyn",
-    subtitle: "Your journey to glowing skin begins here",
-    description:
-      "DeepSkyn uses artificial intelligence to revolutionize your beauty routine. Follow this guide to discover how to transform your skin.",
-    ctaLabel: "Start the Experience",
+    titleKey: "home.experience.steps.welcome.title",
+    subtitleKey: "home.experience.steps.welcome.subtitle",
+    descriptionKey: "home.experience.steps.welcome.description",
+    ctaLabelKey: "home.experience.steps.welcome.cta",
     ctaHref: "/signup",
     gradient: "from-cyan-400 via-blue-500 to-indigo-600",
     accentColor: "#22d3ee",
@@ -55,11 +60,10 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
   },
   {
     id: "quiz",
-    title: "Intelligent Diagnostic",
-    subtitle: "Getting to know your skin",
-    description:
-      "Take our intelligent questionnaire. Our algorithms analyze your habits and specific needs for an ultra-precise profile.",
-    ctaLabel: "Launch Diagnostic",
+    titleKey: "home.experience.steps.quiz.title",
+    subtitleKey: "home.experience.steps.quiz.subtitle",
+    descriptionKey: "home.experience.steps.quiz.description",
+    ctaLabelKey: "home.experience.steps.quiz.cta",
     ctaHref: "/user/questionnaire",
     gradient: "from-teal-400 via-cyan-500 to-blue-600",
     accentColor: "#2dd4bf",
@@ -70,11 +74,10 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
   },
   {
     id: "analysis",
-    title: "AI Skin Analysis",
-    subtitle: "Visualize your progress scientifically",
-    description:
-      "Access key indicators (hydration, sensitivity, radiance). Track your skin's evolution with our high-definition scans.",
-    ctaLabel: "View My Analysis",
+    titleKey: "home.experience.steps.analysis.title",
+    subtitleKey: "home.experience.steps.analysis.subtitle",
+    descriptionKey: "home.experience.steps.analysis.description",
+    ctaLabelKey: "home.experience.steps.analysis.cta",
     ctaHref: "/user/analyzes",
     gradient: "from-sky-400 via-blue-500 to-cyan-600",
     accentColor: "#38bdf8",
@@ -85,11 +88,10 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
   },
   {
     id: "routines",
-    title: "Your Action Plan",
-    subtitle: "Efficiency, step by step",
-    description:
-      "Receive a personalized skincare routine. Morning and night, let us guide you to apply the right products in the right order.",
-    ctaLabel: "Manage My Routines",
+    titleKey: "home.experience.steps.routines.title",
+    subtitleKey: "home.experience.steps.routines.subtitle",
+    descriptionKey: "home.experience.steps.routines.description",
+    ctaLabelKey: "home.experience.steps.routines.cta",
     ctaHref: "/user/routines",
     gradient: "from-blue-400 via-cyan-600 to-teal-500",
     accentColor: "#14b8a6",
@@ -100,11 +102,10 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
   },
   {
     id: "products",
-    title: "Selective Shopping",
-    subtitle: "Only the best for you",
-    description:
-      "Discover a selection of products recommended by our experts based on your unique skin analysis.",
-    ctaLabel: "Explore My Selection",
+    titleKey: "home.experience.steps.products.title",
+    subtitleKey: "home.experience.steps.products.subtitle",
+    descriptionKey: "home.experience.steps.products.description",
+    ctaLabelKey: "home.experience.steps.products.cta",
     ctaHref: "/user/products",
     gradient: "from-cyan-400 via-emerald-500 to-teal-600",
     accentColor: "#10b981",
@@ -115,11 +116,10 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
   },
   {
     id: "achievements",
-    title: "Rewards & Progress",
-    subtitle: "Celebrate every victory",
-    description:
-      "Unlock exclusive badges by staying consistent. The more you take care of yourself, the more you progress in the DeepSkyn ecosystem.",
-    ctaLabel: "View My Achievements",
+    titleKey: "home.experience.steps.achievements.title",
+    subtitleKey: "home.experience.steps.achievements.subtitle",
+    descriptionKey: "home.experience.steps.achievements.description",
+    ctaLabelKey: "home.experience.steps.achievements.cta",
     ctaHref: "/user/badge",
     gradient: "from-indigo-400 via-blue-500 to-cyan-600",
     accentColor: "#818cf8",
@@ -130,11 +130,10 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
   },
   {
     id: "profile",
-    title: "Your Personal Space",
-    subtitle: "Total control, simplified",
-    description:
-      "Manage your preferences, update your profile, and access DeepSkyn support in one click.",
-    ctaLabel: "My Profile",
+    titleKey: "home.experience.steps.profile.title",
+    subtitleKey: "home.experience.steps.profile.subtitle",
+    descriptionKey: "home.experience.steps.profile.description",
+    ctaLabelKey: "home.experience.steps.profile.cta",
     ctaHref: "/user/profile",
     gradient: "from-cyan-600 via-blue-700 to-slate-800",
     accentColor: "#0ea5e9",
@@ -146,18 +145,31 @@ const EXPERIENCE_STEPS: ExperienceStep[] = [
 ];
 
 export default function DeepSkynExperienceMap() {
+  const t = useTranslations();
   const [isOpen, setIsOpen] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0); // -1 for prev, 1 for next
 
-  const step = useMemo(() => EXPERIENCE_STEPS[currentStep], [currentStep]);
+  const experienceSteps = useMemo<ExperienceStep[]>(
+    () =>
+      EXPERIENCE_STEP_TEMPLATES.map((template) => ({
+        ...template,
+        title: t(template.titleKey),
+        subtitle: t(template.subtitleKey),
+        description: t(template.descriptionKey),
+        ctaLabel: t(template.ctaLabelKey),
+      })),
+    [t]
+  );
+
+  const step = useMemo(() => experienceSteps[currentStep] ?? experienceSteps[0], [experienceSteps, currentStep]);
 
   const handleNext = useCallback(() => {
-    if (currentStep < EXPERIENCE_STEPS.length - 1) {
+    if (currentStep < experienceSteps.length - 1) {
       setDirection(1);
       setCurrentStep((prev) => prev + 1);
     }
-  }, [currentStep]);
+  }, [currentStep, experienceSteps.length]);
 
   const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
@@ -197,7 +209,7 @@ export default function DeepSkynExperienceMap() {
     };
   }, [isOpen]);
 
-  const progress = ((currentStep + 1) / EXPERIENCE_STEPS.length) * 100;
+  const progress = ((currentStep + 1) / experienceSteps.length) * 100;
   const accent = step.accentColor;
 
   const variants = {
@@ -225,8 +237,8 @@ export default function DeepSkynExperienceMap() {
       {isOpen && (
         <motion.div
           key="deepskyn-experience-map-overlay"
-          className="fixed inset-0 z-1000 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-4 md:p-8"
-          initial={{ opacity: 0 }}
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-4 md:p-8"
+          initial={false}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           role="dialog"
@@ -234,8 +246,8 @@ export default function DeepSkynExperienceMap() {
           aria-labelledby="experience-map-title"
         >
           <motion.div
-            className="relative flex h-full max-h-212.5 w-full max-w-7xl flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-white shadow-[0_32px_128px_rgba(0,0,0,0.4)] md:flex-row"
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            className="relative z-[1001] flex h-[92vh] max-h-[850px] w-full max-w-7xl flex-col overflow-hidden rounded-[2.5rem] border border-white/10 bg-white shadow-[0_32px_128px_rgba(0,0,0,0.4)] md:flex-row"
+            initial={false}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.97 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -243,15 +255,15 @@ export default function DeepSkynExperienceMap() {
             {/* Close Button */}
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute right-6 top-6 z-60 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/60 bg-white/80 text-slate-700 shadow-[0_6px_22px_rgba(15,23,42,0.12)] backdrop-blur-md transition-all hover:bg-white hover:text-slate-900 hover:scale-110 active:scale-95"
-              aria-label="Close guide"
+              className="absolute right-6 top-6 z-[60] flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/60 bg-white/80 text-slate-700 shadow-[0_6px_22px_rgba(15,23,42,0.12)] backdrop-blur-md transition-all hover:bg-white hover:text-slate-900 hover:scale-110 active:scale-95"
+              aria-label={t("home.experience.closeGuide")}
             >
               <X className="h-5 w-5" />
             </button>
 
             {/* Left Side: Visual & Content */}
             <div
-              className={`relative flex flex-1 flex-col justify-between overflow-hidden bg-linear-to-br ${step.gradient} p-8 pb-10 text-white transition-all duration-700 md:p-16 md:pb-12`}
+              className={`relative flex flex-1 flex-col justify-between overflow-hidden bg-gradient-to-br ${step.gradient} p-8 pb-10 text-white transition-all duration-700 md:p-16 md:pb-12`}
             >
               <div className="absolute inset-0">
                 <div
@@ -265,7 +277,7 @@ export default function DeepSkynExperienceMap() {
                   aria-hidden="true"
                 />
                 <div
-                  className={`absolute inset-0 bg-linear-to-br ${step.gradient} transition-all duration-700`}
+                  className={`absolute inset-0 bg-gradient-to-br ${step.gradient} transition-all duration-700`}
                   style={{ opacity: Number(step.overlayOpacity ?? "0.5") }}
                   aria-hidden="true"
                 />
@@ -303,7 +315,7 @@ export default function DeepSkynExperienceMap() {
                   className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/35 bg-white/12 px-4 py-2 text-xs font-bold tracking-widest uppercase backdrop-blur-md"
                 >
                   <Sparkles className="h-4 w-4" style={{ color: accent }} />
-                  Experience Map
+                  {t("home.experience.badge")}
                 </motion.div>
 
                 <AnimatePresence mode="wait" custom={direction}>
@@ -328,7 +340,7 @@ export default function DeepSkynExperienceMap() {
                         <step.icon className="h-7 w-7" />
                       </div>
                       <span className="text-lg font-medium text-white/85 [text-shadow:0_2px_8px_rgba(2,6,23,0.4)]">
-                        Step {currentStep + 1} / {EXPERIENCE_STEPS.length}
+                        {t("home.experience.stepCounter", { current: currentStep + 1, total: experienceSteps.length })}
                       </span>
                     </div>
 
@@ -358,7 +370,7 @@ export default function DeepSkynExperienceMap() {
               </div>
 
               <div className="relative z-10 mt-6 flex items-center gap-2.5 md:mt-8 md:gap-3">
-                {EXPERIENCE_STEPS.map((_, idx) => (
+                {experienceSteps.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => {
@@ -367,17 +379,17 @@ export default function DeepSkynExperienceMap() {
                     }}
                     className={`h-2.5 rounded-full transition-all duration-300 ${idx === currentStep ? "w-14 bg-white" : "w-2.5 bg-white/40 hover:bg-white/60"
                       }`}
-                    aria-label={`Go to step ${idx + 1}`}
+                    aria-label={t("home.experience.goToStep", { step: idx + 1 })}
                   />
                 ))}
               </div>
             </div>
 
             {/* Right Side: Roadmap & Controls */}
-            <div className="relative flex h-full w-full flex-col overflow-hidden bg-slate-50 p-8 md:w-112.5 md:p-12 lg:w-125">
+            <div className="relative flex h-full w-full flex-col overflow-hidden bg-slate-50 p-8 md:w-[450px] md:p-12 lg:w-[500px]">
               <div className="mb-10">
                 <div className="mb-4 flex items-center justify-between">
-                  <span className="text-sm font-bold uppercase tracking-widest text-slate-400">Your Journey</span>
+                  <span className="text-sm font-bold uppercase tracking-widest text-slate-400">{t("home.experience.yourJourney")}</span>
                   <span className="text-lg font-black text-slate-800">{Math.round(progress)}%</span>
                 </div>
                 <div className="relative h-3 w-full overflow-hidden rounded-full bg-slate-200">
@@ -397,7 +409,7 @@ export default function DeepSkynExperienceMap() {
               </div>
 
               <div className="flex-1 space-y-4 overflow-y-auto pr-2">
-                {EXPERIENCE_STEPS.map((item, index) => {
+                {experienceSteps.map((item, index) => {
                   const isActive = index === currentStep;
                   const isDone = index < currentStep;
 
@@ -427,7 +439,7 @@ export default function DeepSkynExperienceMap() {
                             <span className="text-xs font-bold">{index + 1}</span>
                           </div>
                         )}
-                        {index < EXPERIENCE_STEPS.length - 1 && (
+                        {index < experienceSteps.length - 1 && (
                           <div className="absolute left-3.5 top-10 h-6 w-0.5 bg-slate-200" />
                         )}
                       </div>
@@ -463,12 +475,12 @@ export default function DeepSkynExperienceMap() {
                     <ChevronLeft className="h-6 w-6" />
                   </button>
 
-                  {currentStep === EXPERIENCE_STEPS.length - 1 ? (
+                  {currentStep === experienceSteps.length - 1 ? (
                     <button
                       onClick={handleFinish}
                       className="flex-1 rounded-2xl bg-slate-900 py-4 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-lg active:scale-[0.98]"
                     >
-                      Start the Adventure
+                      {t("home.experience.startAdventure")}
                     </button>
                   ) : (
                     <button
@@ -476,7 +488,7 @@ export default function DeepSkynExperienceMap() {
                       className="group flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-sm font-bold text-white transition-all active:scale-[0.98]"
                       style={{ backgroundColor: accent, boxShadow: `0 8px 24px ${accent}52` }}
                     >
-                      Next Step
+                      {t("home.experience.nextStep")}
                       <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </button>
                   )}
@@ -486,7 +498,7 @@ export default function DeepSkynExperienceMap() {
                   onClick={() => setIsOpen(false)}
                   className="mt-6 w-full text-center text-sm font-semibold text-slate-400 transition-colors hover:text-slate-600"
                 >
-                  Skip for Now
+                  {t("home.experience.skipForNow")}
                 </button>
               </div>
             </div>

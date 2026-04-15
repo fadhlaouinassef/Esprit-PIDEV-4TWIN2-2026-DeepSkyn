@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation"
 import { Lock, Eye, EyeOff, CheckCircle2, ShieldCheck } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 
 export default function ResetPassword() {
   const router = useRouter()
+  const t = useTranslations()
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -17,15 +19,15 @@ export default function ResetPassword() {
     e.preventDefault()
 
     if (password.length < 6) {
-      toast.error("Mot de passe trop court", {
-        description: "Le mot de passe doit faire au moins 6 caractères."
+      toast.error(t('auth.resetPassword.errors.passwordTooShortTitle'), {
+        description: t('auth.resetPassword.errors.passwordTooShortDescription')
       })
       return
     }
 
     if (password !== confirmPassword) {
-      toast.error("Erreur de confirmation", {
-        description: "Les deux mots de passe ne correspondent pas."
+      toast.error(t('auth.resetPassword.errors.confirmationTitle'), {
+        description: t('auth.resetPassword.errors.confirmationDescription')
       })
       return
     }
@@ -34,7 +36,7 @@ export default function ResetPassword() {
     try {
       const userId = sessionStorage.getItem('pendingUserId')
       if (!userId) {
-        throw new Error('Session expirée. Veuillez recommencer le processus.')
+        throw new Error(t('auth.resetPassword.errors.sessionExpired'))
       }
 
       const response = await fetch('/api/auth/reset-password', {
@@ -48,11 +50,11 @@ export default function ResetPassword() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de la réinitialisation')
+        throw new Error(data.error || t('auth.resetPassword.errors.resetFailed'))
       }
 
-      toast.success("Mot de passe modifié !", {
-        description: "Votre nouveau mot de passe a été enregistré avec succès."
+      toast.success(t('auth.resetPassword.success.title'), {
+        description: t('auth.resetPassword.success.description')
       })
 
       // Nettoyage final
@@ -60,8 +62,8 @@ export default function ResetPassword() {
 
       router.push("/signin")
     } catch (error: any) {
-      toast.error("Erreur", {
-        description: error.message || "Une erreur est survenue"
+      toast.error(t('auth.resetPassword.error.title'), {
+        description: error.message || t('auth.resetPassword.error.description')
       })
     } finally {
       setIsLoading(false)
@@ -102,10 +104,10 @@ export default function ResetPassword() {
             className="text-center mb-8"
           >
             <h1 className="text-3xl font-bold text-[#202020] mb-3 bg-gradient-to-r from-[#202020] to-[#156d95] bg-clip-text text-transparent" style={{ fontFamily: "Figtree" }}>
-              New Password
+              {t('auth.resetPassword.title')}
             </h1>
             <p className="text-sm text-[#666666] leading-relaxed" style={{ fontFamily: "Figtree" }}>
-              Please enter your new password below. Make sure it's secure.
+              {t('auth.resetPassword.description')}
             </p>
           </motion.div>
 
@@ -120,7 +122,7 @@ export default function ResetPassword() {
             {/* New Password */}
             <div>
               <label className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
-                New Password
+                {t('auth.resetPassword.newPasswordLabel')}
               </label>
               <div className="relative group">
                 <input
@@ -143,7 +145,7 @@ export default function ResetPassword() {
             {/* Confirm Password */}
             <div>
               <label className="block text-sm font-semibold text-[#202020] mb-2" style={{ fontFamily: "Figtree" }}>
-                Confirm Password
+                {t('auth.resetPassword.confirmPasswordLabel')}
               </label>
               <div className="relative group">
                 <input
@@ -164,7 +166,7 @@ export default function ResetPassword() {
               className="w-full bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white py-3.5 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2"
               style={{ fontFamily: "Figtree" }}
             >
-              {isLoading ? "Saving..." : "Update Password"}
+              {isLoading ? t('auth.resetPassword.saving') : t('auth.resetPassword.submit')}
               {!isLoading && <CheckCircle2 className="w-4 h-4" />}
             </motion.button>
           </motion.form>

@@ -10,10 +10,12 @@ import { useAppSelector } from "@/store/hooks";
 import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
 import "@/app/css/satoshi.css";
+import { useTranslations } from "next-intl";
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     useSidebarContext();
     const { isLoading } = useNavigation();
+    const t = useTranslations();
     const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
     const hydrated = useHydrated();
     const appliedTheme = hydrated ? sidebarTheme : SIDEBAR_THEMES[0];
@@ -49,7 +51,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                                 <div className="h-72 rounded-2xl bg-gray-200 dark:bg-gray-700" />
                                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                                     <Loader2 className="size-4 animate-spin" />
-                                    Chargement de la page...
+                                    {t('common.loadingPage')}
                                 </div>
                             </div>
                         </div>

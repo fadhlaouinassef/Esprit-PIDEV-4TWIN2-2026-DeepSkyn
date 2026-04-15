@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 
 type ComplaintCategory = 'Analysis' | 'Routine' | 'Product' | 'Badge' | 'Bug' | 'Payment' | 'Service' | 'Other';
 
@@ -50,6 +51,7 @@ interface DBComplaint {
 }
 
 export default function AdminComplaintsPage() {
+    const t = useTranslations();
     const [complaints, setComplaints] = useState<DBComplaint[]>([]);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [replyText, setReplyText] = useState("");
@@ -60,6 +62,17 @@ export default function AdminComplaintsPage() {
     const selectedComplaint = complaints.find(c => c.id === selectedId);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
+    async function fetchComplaints(silent = false) {
+        try {
+            const res = await axios.get('/api/admin/complaints');
+            setComplaints(res.data);
+            if (!silent) setIsLoading(false);
+        } catch (error) {
+            if (!silent) toast.error(t("adminComplaints.toasts.fetchFailed"));
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchComplaints();
         const interval = setInterval(() => {
@@ -67,17 +80,6 @@ export default function AdminComplaintsPage() {
         }, 3000);
         return () => clearInterval(interval);
     }, []);
-
-    const fetchComplaints = async (silent = false) => {
-        try {
-            const res = await axios.get('/api/admin/complaints');
-            setComplaints(res.data);
-            if (!silent) setIsLoading(false);
-        } catch (error) {
-            if (!silent) toast.error("Failed to fetch complaints");
-            setIsLoading(false);
-        }
-    };
 
     // Scroll instantly to bottom on selection
     useEffect(() => {
@@ -130,21 +132,21 @@ export default function AdminComplaintsPage() {
             setComplaints(prev => prev.map(c =>
                 c.id === id ? { ...c, status: res.data.status } : c
             ));
-            toast.success(`Ticket status updated to ${newStatus}`);
+            toast.success(t("adminComplaints.toasts.statusUpdated", { status: newStatus }));
         } catch (error) {
-            toast.error("Failed to update status");
+            toast.error(t("adminComplaints.toasts.updateStatusFailed"));
         }
     };
 
     const handleDeleteTicket = async (id: number) => {
-        if (!confirm("Are you sure you want to delete this ticket?")) return;
+        if (!confirm(t("adminComplaints.confirmDelete"))) return;
         try {
             await axios.delete(`/api/admin/complaints/${id}`);
             setComplaints(prev => prev.filter(c => c.id !== id));
             if (selectedId === id) setSelectedId(null);
-            toast.success("Ticket deleted successfully.");
+            toast.success(t("adminComplaints.toasts.ticketDeleted"));
         } catch (error) {
-            toast.error("Failed to delete ticket");
+            toast.error(t("adminComplaints.toasts.deleteFailed"));
         }
     };
 
@@ -168,8 +170,15 @@ export default function AdminComplaintsPage() {
                     : c
             ));
             setReplyText("");
-        } catch (error: any) {
-            toast.error(error.response?.data?.error || "Failed to send message");
+        } catch (error: unknown) {
+            const message =
+                typeof error === "object" &&
+                error !== null &&
+                "response" in error &&
+                typeof (error as { response?: { data?: { error?: string } } }).response?.data?.error === "string"
+                    ? (error as { response?: { data?: { error?: string } } }).response?.data?.error
+                    : t("adminComplaints.toasts.sendMessageFailed");
+            toast.error(message);
         }
     };
 
@@ -193,6 +202,15 @@ export default function AdminComplaintsPage() {
         'OTHER': '📝'
     };
 
+    const statusLabel = (status: 'ALL' | 'PENDING' | 'ACCEPT' | 'REJECT') => {
+        switch (status) {
+            case 'ALL': return t("adminComplaints.status.all");
+            case 'PENDING': return t("adminComplaints.status.pending");
+            case 'ACCEPT': return t("adminComplaints.status.accept");
+            case 'REJECT': return t("adminComplaints.status.reject");
+        }
+    };
+
     return (
         <AdminLayout>
             <div className="flex h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden">
@@ -204,23 +222,23 @@ export default function AdminComplaintsPage() {
                     <div className="p-6 border-b border-gray-100 dark:border-gray-700 space-y-4">
                         <h1 className="text-2xl font-bold flex items-center gap-2">
                             <MessageSquare className="size-6 text-primary" />
-                            Feedbacks
+                            {t("adminComplaints.title")}
                         </h1>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search conversations..."
+                                placeholder={t("adminComplaints.searchPlaceholder")}
                                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 outline-none focus:border-primary transition-colors text-sm"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                            {['ALL', 'PENDING', 'ACCEPT', 'REJECT'].map((s) => (
+                            {(['ALL', 'PENDING', 'ACCEPT', 'REJECT'] as const).map((s) => (
                                 <button
                                     key={s}
-                                    onClick={() => setFilterStatus(s as any)}
+                                    onClick={() => setFilterStatus(s)}
                                     className={cn(
                                         "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap capitalize transition-all",
                                         filterStatus === s
@@ -228,7 +246,7 @@ export default function AdminComplaintsPage() {
                                             : "bg-gray-100 dark:bg-gray-900 text-gray-500 hover:bg-gray-200"
                                     )}
                                 >
-                                    {s.toLowerCase()}
+                                    {statusLabel(s)}
                                 </button>
                             ))}
                         </div>
@@ -245,11 +263,11 @@ export default function AdminComplaintsPage() {
                         ) : filteredComplaints.length === 0 ? (
                             <div className="p-12 text-center text-gray-400">
                                 <MessageSquare className="size-12 mx-auto mb-4 opacity-20" />
-                                <p className="text-sm">No results found</p>
+                                <p className="text-sm">{t("adminComplaints.empty")}</p>
                             </div>
                         ) : (
                             filteredComplaints.map((c) => {
-                                const userName = `${c.user?.nom || ''} ${c.user?.prenom || ''}`.trim() || c.user?.email || 'Unknown User';
+                                const userName = `${c.user?.nom || ''} ${c.user?.prenom || ''}`.trim() || c.user?.email || t('adminComplaints.unknownUser');
                                 return (
                                     <div
                                         key={c.id}
@@ -271,7 +289,7 @@ export default function AdminComplaintsPage() {
                                                 "bg-rose-50 text-rose-600 border-rose-100"
                                             )}>
                                                 <Clock className="size-3" />
-                                                {c.status.toLowerCase()}
+                                                {statusLabel(c.status)}
                                             </div>
                                         </div>
 
@@ -324,10 +342,10 @@ export default function AdminComplaintsPage() {
                                     </div>
                                     <div>
                                         <h2 className="font-bold text-lg">
-                                            {`${selectedComplaint.user?.nom || ''} ${selectedComplaint.user?.prenom || ''}`.trim() || selectedComplaint.user?.email || 'Unknown User'}
+                                            {`${selectedComplaint.user?.nom || ''} ${selectedComplaint.user?.prenom || ''}`.trim() || selectedComplaint.user?.email || t('adminComplaints.unknownUser')}
                                         </h2>
                                         <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-400 font-medium">
-                                            <span className="flex items-center gap-1"><User className="size-3" /> User ID: #{selectedComplaint.user_id}</span>
+                                            <span className="flex items-center gap-1"><User className="size-3" /> {t("adminComplaints.userId")} #{selectedComplaint.user_id}</span>
                                             <span className="flex items-center gap-1"><Calendar className="size-3" /> {new Date(selectedComplaint.created_at).toLocaleString()}</span>
                                         </div>
                                     </div>
@@ -346,14 +364,14 @@ export default function AdminComplaintsPage() {
                                                         : "text-gray-400 hover:text-gray-600"
                                                 )}
                                             >
-                                                {s.toLowerCase()}
+                                                {statusLabel(s)}
                                             </button>
                                         ))}
                                     </div>
-                                    <button onClick={() => handleDeleteTicket(selectedComplaint.id)} className="p-2 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-900/30 rounded-lg text-gray-400 transition-colors" title="Delete Ticket">
+                                    <button onClick={() => handleDeleteTicket(selectedComplaint.id)} className="p-2 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-900/30 rounded-lg text-gray-400 transition-colors" title={t("adminComplaints.actions.deleteTicket")}>
                                         <Trash2 className="size-5" />
                                     </button>
-                                    <button onClick={() => setSelectedId(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-400 transition-colors" title="Close discussion">
+                                    <button onClick={() => setSelectedId(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-400 transition-colors" title={t("adminComplaints.actions.closeDiscussion")}>
                                         <X className="size-5" />
                                     </button>
                                 </div>
@@ -372,7 +390,7 @@ export default function AdminComplaintsPage() {
                                     )}>
                                         <div className="flex items-center gap-2 mb-2 px-2">
                                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                                {msg.sender_role === 'ADMIN' ? 'Team Support Deepskyn' : 'User'}
+                                                {msg.sender_role === 'ADMIN' ? t('adminComplaints.chat.teamSupport') : t('adminComplaints.chat.user')}
                                             </span>
                                             <span className="text-[10px] text-gray-500">
                                                 {new Date(msg.created_at).toLocaleTimeString()}
@@ -405,7 +423,7 @@ export default function AdminComplaintsPage() {
                                     <div className="flex-1 relative">
                                         <input
                                             type="text"
-                                            placeholder="Write your response..."
+                                            placeholder={t("adminComplaints.chat.writeResponse")}
                                             className="w-full px-6 py-4 pr-16 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                             value={replyText}
                                             onChange={(e) => setReplyText(e.target.value)}
@@ -420,7 +438,7 @@ export default function AdminComplaintsPage() {
                                         className="bg-primary hover:bg-primary/90 disabled:opacity-50 text-white px-8 rounded-2xl font-bold shadow-lg shadow-primary/20 transition-all flex items-center gap-2"
                                     >
                                         <Send className="size-5" />
-                                        Respond
+                                        {t("adminComplaints.actions.respond")}
                                     </button>
                                 </form>
                             </div>
@@ -430,8 +448,8 @@ export default function AdminComplaintsPage() {
                             <div className="size-24 rounded-3xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
                                 <MessageSquare className="size-12 text-gray-300" />
                             </div>
-                            <h2 className="text-xl font-bold mb-2">No feedback selected</h2>
-                            <p className="text-sm max-w-xs">Select a conversation from the sidebar to view details and respond.</p>
+                            <h2 className="text-xl font-bold mb-2">{t("adminComplaints.noSelection.title")}</h2>
+                            <p className="text-sm max-w-xs">{t("adminComplaints.noSelection.description")}</p>
                         </div>
                     )}
                 </div>
