@@ -8,7 +8,6 @@ import {
     AlertCircle,
     XCircle,
     Info,
-    AlertTriangle,
     CreditCard,
     Lock,
     ShieldCheck,
@@ -23,6 +22,7 @@ import { toast } from "sonner";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 import type { PlanKey } from "@/lib/stripe";
+import { useTranslations } from "next-intl";
 
 // --- Types ---
 type SubscriptionStatus = "active" | "expiring" | "expired";
@@ -78,21 +78,22 @@ const DEFAULT_SUBSCRIPTION: SubscriptionInfo = {
 // --- Components ---
 
 const StatusBadge = ({ status, remainingDays, planName }: { status: SubscriptionStatus, remainingDays?: number, planName?: string }) => {
+    const t = useTranslations("userBilling");
     const configs = {
         active: {
             color: "bg-green-500/10 text-green-500 border-green-500/20",
             icon: planName === "Free Plan" ? <Info className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />,
-            label: planName === "Free Plan" ? "FREE" : "ACTIVE"
+            label: planName === "Free Plan" ? t("status.free") : t("status.active")
         },
         expiring: {
             color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
             icon: <AlertCircle className="w-4 h-4" />,
-            label: remainingDays ? `${remainingDays} ${remainingDays > 1 ? 'DAYS' : 'DAY'} REMAINING` : "EXPIRING SOON"
+            label: remainingDays ? t("status.daysRemaining", { days: remainingDays }) : t("status.expiringSoon")
         },
         expired: {
             color: "bg-red-500/10 text-red-500 border-red-500/20",
             icon: <XCircle className="w-4 h-4" />,
-            label: "EXPIRED"
+            label: t("status.expired")
         }
     };
 
@@ -108,6 +109,7 @@ const StatusBadge = ({ status, remainingDays, planName }: { status: Subscription
 };
 
 export default function BillingPage() {
+    const t = useTranslations();
     const user = useAppSelector((state) => state.auth.user);
     const [subscription, setSubscription] = useState<SubscriptionInfo>(DEFAULT_SUBSCRIPTION);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -217,23 +219,23 @@ export default function BillingPage() {
 
     useEffect(() => {
         if (autoSpeech) {
-            let fullText = `Subscription and billing overview. Current plan is ${subscription.planName}. `;
-            fullText += `Status is ${currentStatus}. `;
+            let fullText = t("userBilling.speech.overview", { plan: subscription.planName });
+            fullText += t("userBilling.speech.status", { status: currentStatus });
 
             if (subscription.planName !== "Free Plan") {
-                fullText += `Billing cycle is ${subscription.billingCycle}. `;
-                fullText += `Amount is ${subscription.amount ?? subscription.price} Tunisian dinars. `;
-                fullText += `Next renewal date is ${subscription.expiryDate}. `;
+                fullText += t("userBilling.speech.billingCycle", { cycle: subscription.billingCycle });
+                fullText += t("userBilling.speech.amount", { amount: subscription.amount ?? subscription.price });
+                fullText += t("userBilling.speech.renewalDate", { date: subscription.expiryDate });
             } else {
-                fullText += `You are currently on the free plan. `;
+                fullText += t("userBilling.speech.freePlan");
             }
 
             if (currentStatus === "expiring") {
-                fullText += `Your subscription expires in ${remainingDays} days. `;
+                fullText += t("userBilling.speech.expiresIn", { days: remainingDays ?? 0 });
             }
 
             if (isRenewalRequired || subscription.planName === "Free Plan") {
-                fullText += `You can choose between premium monthly and premium yearly plans in the payment section. `;
+                fullText += t("userBilling.speech.planChoice");
             }
 
             const id = `billing-${subscription.planName}-${subscription.billingCycle}-${subscription.expiryDate}-${currentStatus}-${selectedPlan}`;
@@ -241,6 +243,8 @@ export default function BillingPage() {
                 speakContent(fullText, id);
             }
         }
+    // Keep dependency list focused to avoid re-triggering speech on each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         autoSpeech,
         subscription.planName,
@@ -285,7 +289,7 @@ export default function BillingPage() {
     const startStripeCheckout = async () => {
         // Check if user is logged in
         if (!user?.id) {
-            toast.error("You must be logged in to make a payment");
+            toast.error(t("userBilling.toasts.loginRequired"));
             return;
         }
 
@@ -301,13 +305,13 @@ export default function BillingPage() {
             });
 
             const data = await res.json();
-            if (!res.ok) throw new Error(data?.error || "Checkout failed");
-            if (!data?.url) throw new Error("Missing checkout URL");
+            if (!res.ok) throw new Error(data?.error || t("userBilling.toasts.checkoutFailed"));
+            if (!data?.url) throw new Error(t("userBilling.toasts.missingCheckoutUrl"));
 
             // Redirect to Stripe
             window.location.href = data.url;
         } catch (e: unknown) {
-            toast.error(e instanceof Error ? e.message : "Payment error occurred");
+            toast.error(e instanceof Error ? e.message : t("userBilling.toasts.paymentError"));
             setIsProcessing(false);
         }
     };
@@ -335,9 +339,9 @@ export default function BillingPage() {
                 <div className="max-w-[1100px] mx-auto relative z-10 px-4 space-y-6">
                     {/* Breadcrumb */}
                     <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
-                        <span>User</span>
+                        <span>{t("userBilling.breadcrumb.user")}</span>
                         <ChevronRight size={14} />
-                        <span className="text-foreground font-medium">Billing & Subscription</span>
+                        <span className="text-foreground font-medium">{t("userBilling.breadcrumb.billing")}</span>
                     </nav>
 
                     <header className="mb-12">
@@ -348,10 +352,10 @@ export default function BillingPage() {
                             transition={{ duration: 0.6 }}
                         >
                             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground mb-3 bg-gradient-to-r from-foreground via-foreground/80 to-foreground/50 bg-clip-text text-transparent">
-                                Subscription & Billing
+                                {t("userBilling.title")}
                             </h1>
                             <p className="text-muted-foreground text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
-                                Seamlessly manage your premium access and payment preferences from one elegant dashboard.
+                                {t("userBilling.subtitle")}
                             </p>
                         </motion.div>
 
@@ -361,7 +365,7 @@ export default function BillingPage() {
                                 if (autoSpeech) stopSpeaking();
                                 setAutoSpeech(!autoSpeech);
                             }}
-                            label="Audio Billing"
+                            label={t("userBilling.audioLabel")}
                             className="self-start"
                         />
                         </div>
@@ -392,16 +396,16 @@ export default function BillingPage() {
                                             <div className="flex items-center gap-3 text-muted-foreground font-bold">
                                                 <span className="bg-muted px-3 py-1 rounded-lg text-[10px] uppercase tracking-widest">{subscription.billingCycle}</span>
                                                 <span className="text-primary text-lg">
-                                                    {subscription.amount !== null ? `${subscription.amount} TND` : `${subscription.price} TND`} / {subscription.billingCycle === "yearly" ? "Year" : "Month"}
+                                                    {subscription.amount !== null ? `${subscription.amount} TND` : `${subscription.price} TND`} / {subscription.billingCycle === "yearly" ? t("userBilling.units.year") : t("userBilling.units.month")}
                                                 </span>
                                             </div>
 
                                         </div>
                                         <div className="text-left md:text-right space-y-1">
-                                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Next Renewal Date</span>
+                                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{t("userBilling.labels.nextRenewalDate")}</span>
                                             <p className="text-xl md:text-2xl font-black text-foreground">{subscription.expiryDate}</p>
                                             <button className="group/btn inline-flex items-center gap-2 text-primary hover:text-primary/80 text-sm font-bold transition-all pt-2">
-                                                <span>Change Plan</span>
+                                                <span>{t("userBilling.actions.changePlan")}</span>
                                                 <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                             </button>
                                         </div>
@@ -421,10 +425,10 @@ export default function BillingPage() {
                                                         <XCircle className="w-6 h-6" />}
                                         </div>
                                         <p className="text-sm font-bold leading-relaxed">
-                                            {subscription.planName === "Free Plan" ? "You are currently on the Free Plan. Upgrade to Premium to unlock exclusive features." :
-                                                currentStatus === "active" ? `Your subscription is active until ${subscription.expiryDate}.` :
-                                                    currentStatus === "expiring" ? `Action Required: Your subscription expires in ${remainingDays} days.` :
-                                                        "Your subscription is expired. Renew it to regain access."}
+                                            {subscription.planName === "Free Plan" ? t("userBilling.messages.freePlan") :
+                                                currentStatus === "active" ? t("userBilling.messages.activeUntil", { date: subscription.expiryDate }) :
+                                                    currentStatus === "expiring" ? t("userBilling.messages.expiresSoon", { days: remainingDays ?? 0 }) :
+                                                        t("userBilling.messages.expired")}
                                         </p>
 
                                     </div>
@@ -445,7 +449,7 @@ export default function BillingPage() {
                                     >
                                         {/* Plan Selection Section */}
                                         <div className="p-8 md:p-10 space-y-6">
-                                            <h3 className="text-2xl font-black text-foreground mb-6">Choose a Plan</h3>
+                                            <h3 className="text-2xl font-black text-foreground mb-6">{t("userBilling.plans.choose")}</h3>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {/* Premium Monthly */}
                                                 <button
@@ -456,7 +460,7 @@ export default function BillingPage() {
                                                         }`}
                                                 >
                                                     <div className="flex items-start justify-between mb-3">
-                                                        <h4 className="text-lg font-black text-foreground">Premium Monthly</h4>
+                                                        <h4 className="text-lg font-black text-foreground">{t("userBilling.plans.premiumMonthly")}</h4>
 
                                                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === "premium_monthly" ? "border-primary bg-primary" : "border-border"
                                                             }`}>
@@ -466,7 +470,7 @@ export default function BillingPage() {
                                                         </div>
                                                     </div>
                                                     <p className="text-3xl font-black text-foreground mb-2">20 TND</p>
-                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Per Month</p>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">{t("userBilling.plans.perMonth")}</p>
                                                 </button>
 
                                                 {/* Premium Yearly */}
@@ -478,10 +482,10 @@ export default function BillingPage() {
                                                         }`}
                                                 >
                                                     <div className="absolute top-2 right-2 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-wide">
-                                                        Savings
+                                                        {t("userBilling.labels.savings")}
                                                     </div>
                                                     <div className="flex items-start justify-between mb-3">
-                                                        <h4 className="text-lg font-black text-foreground">Premium Yearly</h4>
+                                                        <h4 className="text-lg font-black text-foreground">{t("userBilling.plans.premiumYearly")}</h4>
 
                                                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === "premium_yearly" ? "border-primary bg-primary" : "border-border"
                                                             }`}>
@@ -491,8 +495,8 @@ export default function BillingPage() {
                                                         </div>
                                                     </div>
                                                     <p className="text-3xl font-black text-foreground mb-2">200 TND</p>
-                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">Per Year</p>
-                                                    <p className="text-[10px] text-green-600 dark:text-green-400 font-bold mt-2">Save 40 TND/year</p>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide">{t("userBilling.plans.perYear")}</p>
+                                                    <p className="text-[10px] text-green-600 dark:text-green-400 font-bold mt-2">{t("userBilling.plans.saveYearly")}</p>
                                                 </button>
                                             </div>
                                         </div>
@@ -503,8 +507,8 @@ export default function BillingPage() {
                                                     <CreditCard className="w-6 h-6" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-xl md:text-2xl font-black text-foreground">Secure Checkout</h3>
-                                                    <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mt-0.5">Automated Payment</p>
+                                                    <h3 className="text-xl md:text-2xl font-black text-foreground">{t("userBilling.checkout.title")}</h3>
+                                                    <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mt-0.5">{t("userBilling.checkout.subtitle")}</p>
                                                 </div>
                                             </div>
                                             <div className="hidden sm:flex gap-4 opacity-50 grayscale">
@@ -521,18 +525,18 @@ export default function BillingPage() {
                                                         <Lock className="w-5 h-5 text-primary" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h4 className="font-black text-foreground text-sm mb-2">Secure Payment with Stripe</h4>
+                                                        <h4 className="font-black text-foreground text-sm mb-2">{t("userBilling.checkout.secureStripe")}</h4>
                                                         <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                                                            By clicking the button below, you will be redirected to the secure Stripe payment page.
+                                                            {t("userBilling.checkout.redirectHint")}
                                                         </p>
                                                         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 space-y-2">
                                                             <p className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
-                                                                📝 Test Mode - Test cards accepted
+                                                                {t("userBilling.checkout.testMode")}
                                                             </p>
                                                             <div className="text-[10px] text-muted-foreground space-y-1 font-mono">
-                                                                <p>✅ Success: <span className="font-bold">4242 4242 4242 4242</span></p>
-                                                                <p>❌ Failure: <span className="font-bold">4000 0000 0000 0002</span></p>
-                                                                <p className="text-[9px] mt-2 font-sans">Date: any future date (ex: 12/34) • CVC: 123</p>
+                                                                <p>{t("userBilling.checkout.successCard")} <span className="font-bold">4242 4242 4242 4242</span></p>
+                                                                <p>{t("userBilling.checkout.failureCard")} <span className="font-bold">4000 0000 0000 0002</span></p>
+                                                                <p className="text-[9px] mt-2 font-sans">{t("userBilling.checkout.testCardHint")}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -542,7 +546,7 @@ export default function BillingPage() {
                                             <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-border/50">
                                                 <div className="flex items-center gap-2.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
                                                     <Lock className="w-4 h-4 text-green-500" />
-                                                    256-bit SSL HEAVY Encryption
+                                                    {t("userBilling.checkout.encryption")}
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <ShieldCheck className="w-5 h-5 text-primary opacity-50" />
@@ -560,12 +564,12 @@ export default function BillingPage() {
                                         <div className="w-20 h-20 bg-card border border-border rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
                                             <Shield className="w-10 h-10 text-primary" />
                                         </div>
-                                        <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3">Vault-Secured Payment</h3>
+                                        <h3 className="text-2xl md:text-3xl font-black text-foreground mb-3">{t("userBilling.checkout.vaultSecured")}</h3>
                                         <p className="text-muted-foreground text-base md:text-lg font-medium max-w-md mx-auto">
-                                            Your payment methods are encrypted and securely stored.
+                                            {t("userBilling.checkout.vaultDescription")}
                                         </p>
                                         <button className="mt-8 flex items-center gap-2 mx-auto px-8 py-3 bg-card border border-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
-                                            <Plus className="w-4 h-4" /> Add Method
+                                            <Plus className="w-4 h-4" /> {t("userBilling.actions.addMethod")}
                                         </button>
                                     </motion.div>
                                 )}
@@ -578,8 +582,8 @@ export default function BillingPage() {
 
                             <div className="bg-slate-950 dark:bg-card border border-border rounded-[32px] md:rounded-[40px] overflow-hidden shadow-2xl text-white dark:text-foreground">
                                 <div className="p-8 md:p-10">
-                                    <h3 className="text-xl md:text-2xl font-black mb-1">Order Summary</h3>
-                                    <p className="text-slate-400 dark:text-muted-foreground text-xs font-bold uppercase tracking-widest mb-10">Verification</p>
+                                    <h3 className="text-xl md:text-2xl font-black mb-1">{t("userBilling.summary.title")}</h3>
+                                    <p className="text-slate-400 dark:text-muted-foreground text-xs font-bold uppercase tracking-widest mb-10">{t("userBilling.summary.verification")}</p>
 
                                     <div className="space-y-6">
                                         <div className="flex justify-between items-center text-sm font-bold">
@@ -587,13 +591,13 @@ export default function BillingPage() {
                                             <span>{(isRenewalRequired || subscription.planName === "Free Plan") ? getPlanPrice().toFixed(2) : (subscription.price || 0).toFixed(2)} TND</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm font-bold opacity-50">
-                                            <span>Tax</span>
+                                            <span>{t("userBilling.summary.tax")}</span>
                                             <span>0.00 TND</span>
                                         </div>
                                         {((isRenewalRequired || subscription.planName === "Free Plan") && selectedPlan === "premium_yearly") && (
                                             <div className="flex justify-between items-center text-sm font-black text-green-400">
                                                 <span className="flex items-center gap-2 uppercase tracking-tighter italic">
-                                                    <Zap className="w-4 h-4" /> Yearly Member Discount
+                                                    <Zap className="w-4 h-4" /> {t("userBilling.summary.yearlyDiscount")}
                                                 </span>
                                                 <span>-40.00 TND</span>
                                             </div>
@@ -603,9 +607,9 @@ export default function BillingPage() {
                                     <div className="mt-10 border-t border-dashed border-slate-800 dark:border-border pt-10">
                                         <div className="flex justify-between items-end mb-10">
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-muted-foreground/60">Grand Total</span>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-muted-foreground/60">{t("userBilling.summary.grandTotal")}</span>
                                                 <p className="text-[10px] text-slate-600 dark:text-muted-foreground/40 font-bold uppercase">
-                                                    {(isRenewalRequired || subscription.planName === "Free Plan") ? (selectedPlan.includes("yearly") ? "Billed annually" : "Billed monthly") : "Billed annually"}
+                                                    {(isRenewalRequired || subscription.planName === "Free Plan") ? (selectedPlan.includes("yearly") ? t("userBilling.summary.billedAnnually") : t("userBilling.summary.billedMonthly")) : t("userBilling.summary.billedAnnually")}
                                                 </p>
                                             </div>
                                             <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">
@@ -627,9 +631,9 @@ export default function BillingPage() {
                                             ) : (
                                                 <>
                                                     <span>
-                                                        {subscription.planName === "Free Plan" ? "Upgrade to Premium" :
-                                                            subscription.status === "expired" ? "Renew Access" :
-                                                            subscription.status === "expiring" ? "Extend Now" : "Manage Settings"}
+                                                        {subscription.planName === "Free Plan" ? t("userBilling.actions.upgradeToPremium") :
+                                                            subscription.status === "expired" ? t("userBilling.actions.renewAccess") :
+                                                            subscription.status === "expiring" ? t("userBilling.actions.extendNow") : t("userBilling.actions.manageSettings")}
                                                     </span>
                                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                                                 </>
@@ -638,7 +642,7 @@ export default function BillingPage() {
 
 
                                         <p className="text-[10px] text-center mt-8 text-slate-500 dark:text-muted-foreground/40 leading-relaxed font-bold">
-                                            PCI-DSS COMPLIANT • ENCRYPTED GATEWAY
+                                            {t("userBilling.checkout.compliance")}
                                         </p>
                                     </div>
                                 </div>
@@ -650,9 +654,9 @@ export default function BillingPage() {
                                     <ShieldCheck className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h4 className="font-black text-foreground text-sm uppercase tracking-wider mb-1">Price Lock Guarantee</h4>
+                                    <h4 className="font-black text-foreground text-sm uppercase tracking-wider mb-1">{t("userBilling.labels.priceLockTitle")}</h4>
                                     <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                                        Your current rate is locked until 2026. No price hikes.
+                                        {t("userBilling.labels.priceLockDescription")}
                                     </p>
                                 </div>
                             </div>

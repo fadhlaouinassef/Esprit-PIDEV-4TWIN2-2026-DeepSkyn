@@ -27,6 +27,7 @@ import { ComplaintCategory, ChatMessage } from "@/lib/complaintsData";
 import { toast } from "sonner";
 import axios from "axios";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
+import { useTranslations } from "next-intl";
 
 // Status in DB: PENDING, ACCEPT, REJECT
 // Category in DB: ANALYSIS, ROUTINE, PRODUCT, BADGE, BUG, PAYMENT, SERVICE, OTHER
@@ -50,6 +51,7 @@ interface DBComplaint {
 }
 
 export default function UserComplaintsPage() {
+    const t = useTranslations();
     const [complaints, setComplaints] = useState<DBComplaint[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddingNew, setIsAddingNew] = useState(false);
@@ -78,6 +80,17 @@ export default function UserComplaintsPage() {
         { label: 'Service', icon: '⚙️', color: 'bg-slate-500' },
         { label: 'Other', icon: '📝', color: 'bg-gray-500' }
     ];
+
+    const categoryLabelMap: Record<string, string> = {
+        ANALYSIS: t("userComplaints.categories.analysis"),
+        ROUTINE: t("userComplaints.categories.routine"),
+        PRODUCT: t("userComplaints.categories.product"),
+        BADGE: t("userComplaints.categories.badge"),
+        BUG: t("userComplaints.categories.bug"),
+        PAYMENT: t("userComplaints.categories.payment"),
+        SERVICE: t("userComplaints.categories.service"),
+        OTHER: t("userComplaints.categories.other"),
+    };
 
     useEffect(() => {
         fetchComplaints();
@@ -114,7 +127,7 @@ export default function UserComplaintsPage() {
                 return updated || prev;
             });
         } catch (error) {
-            if (!silent) toast.error("Failed to fetch complaints");
+            if (!silent) toast.error(t("userComplaints.toasts.fetchFailed"));
             setIsLoading(false);
         }
     };
@@ -153,9 +166,9 @@ export default function UserComplaintsPage() {
             setSelectedComplaint(null); // Return to list view
             setIsAddingNew(false);
             setNewComplaint({ category: 'Other', content: '', evidence: [] });
-            toast.success("Complaint submitted successfully! (Cleaned from bad words)");
+            toast.success(t("userComplaints.toasts.submitSuccess"));
         } catch (error) {
-            toast.error("An error occurred during submission.");
+            toast.error(t("userComplaints.toasts.submitError"));
         } finally {
             setIsSending(false);
         }
@@ -185,9 +198,9 @@ export default function UserComplaintsPage() {
             setComplaints(prev => prev.map(c => c.id === selectedComplaint.id ? updatedComplaint : c));
             setSelectedComplaint(updatedComplaint);
             setReplyText("");
-            toast.success("Reply sent (Cleaned from bad words)");
+            toast.success(t("userComplaints.toasts.replySent"));
         } catch (error) {
-            toast.error("An error occurred.");
+            toast.error(t("userComplaints.toasts.replyError"));
         } finally {
             setIsSending(false);
         }
@@ -277,26 +290,26 @@ export default function UserComplaintsPage() {
             const closedCount = complaints.filter(c => c.status === "REJECT").length;
             const acceptedCount = complaints.filter(c => c.status === "ACCEPT").length;
 
-            let fullText = "Complaints and feedback interface. ";
-            fullText += `You have ${complaints.length} total claims. `;
-            fullText += `${pendingCount} pending, ${acceptedCount} accepted, and ${closedCount} closed. `;
+            let fullText = t("userComplaints.speech.overview");
+            fullText += t("userComplaints.speech.totalClaims", { count: complaints.length });
+            fullText += t("userComplaints.speech.breakdown", { pending: pendingCount, accepted: acceptedCount, closed: closedCount });
 
             if (searchQuery.trim()) {
-                fullText += `Search filter is active with keyword ${searchQuery}. `;
-                fullText += `${filteredComplaints.length} claims match your search. `;
+                fullText += t("userComplaints.speech.searchActive", { query: searchQuery });
+                fullText += t("userComplaints.speech.searchMatches", { count: filteredComplaints.length });
             }
 
             if (isAddingNew) {
-                fullText += "New claim form is open. Select category, write details, and optionally upload evidence before submitting. ";
+                fullText += t("userComplaints.speech.newClaimOpen");
             } else if (selectedComplaint) {
-                fullText += `Selected claim category is ${selectedComplaint.category}. `;
-                fullText += `Status is ${selectedComplaint.status}. `;
-                fullText += `This ticket currently has ${selectedComplaint.messages.length} messages. `;
+                fullText += t("userComplaints.speech.selectedCategory", { category: selectedComplaint.category });
+                fullText += t("userComplaints.speech.selectedStatus", { status: selectedComplaint.status });
+                fullText += t("userComplaints.speech.ticketMessages", { count: selectedComplaint.messages.length });
                 if (selectedComplaint.status === "REJECT") {
-                    fullText += "This ticket is officially closed. ";
+                    fullText += t("userComplaints.speech.ticketClosed");
                 }
             } else {
-                fullText += "No claim is selected. You can open a conversation from the list or create a new claim. ";
+                fullText += t("userComplaints.speech.noneSelected");
             }
 
             const id = `complaints-${complaints.length}-${pendingCount}-${acceptedCount}-${closedCount}-${selectedComplaint?.id ?? "none"}-${isAddingNew}-${searchQuery}-${filteredComplaints.length}`;
@@ -337,10 +350,10 @@ export default function UserComplaintsPage() {
                             <ShieldCheck className="size-3.5" />
                         </div>
                         <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                            RECLAMATION <span className="text-primary italic">& FEEDBACK</span>
+                            {t("userComplaints.header.title")} <span className="text-primary italic">{t("userComplaints.header.titleAccent")}</span>
                         </h1>
                         <p className="text-gray-500 dark:text-gray-400 font-medium">
-                            Your voice matters. Track and manage your reports in real-time.
+                            {t("userComplaints.header.subtitle")}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -350,7 +363,7 @@ export default function UserComplaintsPage() {
                                 if (autoSpeech) stopSpeaking();
                                 setAutoSpeech(!autoSpeech);
                             }}
-                            label="Audio Complaints"
+                            label={t("userComplaints.audioLabel")}
                         />
                         {!isAddingNew && (
                             <motion.button
@@ -360,7 +373,7 @@ export default function UserComplaintsPage() {
                                 className="flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-2xl font-bold shadow-2xl transition-all active:scale-95"
                             >
                                 <Plus className="size-5" />
-                                New Claim
+                                {t("userComplaints.actions.newClaim")}
                             </motion.button>
                         )}
                     </div>
@@ -376,7 +389,7 @@ export default function UserComplaintsPage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-gray-400 group-focus-within:text-primary transition-colors" />
                             <input
                                 type="text"
-                                placeholder="Search by message or category..."
+                                placeholder={t("userComplaints.searchPlaceholder")}
                                 className="w-full pl-11 pr-4 py-4 rounded-2xl bg-white dark:bg-gray-800 border-none shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 focus:ring-2 focus:ring-primary outline-none transition-all font-medium text-sm"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -390,8 +403,8 @@ export default function UserComplaintsPage() {
                         ) : filteredComplaints.length === 0 ? (
                             <div className="text-center py-20 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-gray-700">
                                 <MessageSquare className="size-16 mx-auto text-gray-300 mb-4 opacity-20" />
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">All clear</h3>
-                                <p className="text-gray-500 dark:text-gray-400">No active complaints found.</p>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t("userComplaints.empty.title")}</h3>
+                                <p className="text-gray-500 dark:text-gray-400">{t("userComplaints.empty.description")}</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -412,7 +425,7 @@ export default function UserComplaintsPage() {
                                                 <div className={cn("size-10 rounded-xl flex items-center justify-center text-xl shadow-inner bg-primary/10")}>
                                                     {categories.find(cat => cat.label.toUpperCase() === c.category)?.icon || '📝'}
                                                 </div>
-                                                <span className="text-xs font-black uppercase tracking-widest text-gray-400">{c.category}</span>
+                                                <span className="text-xs font-black uppercase tracking-widest text-gray-400">{categoryLabelMap[c.category] || c.category}</span>
                                             </div>
                                             <div className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border", getStatusBg(c.status))}>
                                                 {getStatusIcon(c.status)}
@@ -462,11 +475,11 @@ export default function UserComplaintsPage() {
                                         </button>
                                     </div>
 
-                                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-8">What happened?</h2>
+                                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-8">{t("userComplaints.newForm.title")}</h2>
 
                                     <form onSubmit={handleSubmitNew} className="space-y-8">
                                         <div>
-                                            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-4 px-1">Select Category</label>
+                                            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-4 px-1">{t("userComplaints.newForm.selectCategory")}</label>
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                                 {categories.map((cat) => (
                                                     <button
@@ -488,10 +501,10 @@ export default function UserComplaintsPage() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 px-1">Your detailed report</label>
+                                            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 px-1">{t("userComplaints.newForm.detailedReport")}</label>
                                             <textarea
                                                 required
-                                                placeholder="Write your reclamation here..."
+                                                placeholder={t("userComplaints.newForm.reportPlaceholder")}
                                                 className="w-full min-h-[150px] p-6 rounded-3xl border-none ring-1 ring-gray-200 dark:ring-gray-700 bg-gray-50 dark:bg-gray-900/50 focus:ring-2 focus:ring-primary outline-none transition-all resize-none shadow-inner"
                                                 value={newComplaint.content}
                                                 onChange={(e) => setNewComplaint(prev => ({ ...prev, content: e.target.value }))}
@@ -499,7 +512,7 @@ export default function UserComplaintsPage() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 px-1">Upload Proof (Images, Documents)</label>
+                                            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 px-1">{t("userComplaints.newForm.uploadProof")}</label>
                                             <div className="flex flex-wrap gap-4 p-4 rounded-[2rem] bg-gray-50 dark:bg-gray-900/50 border-2 border-dashed border-gray-200 dark:border-gray-700 shadow-inner">
                                                 {newComplaint.evidence.map((file, idx) => (
                                                     <div key={idx} className="relative size-20 rounded-2xl overflow-hidden shadow-md group">
@@ -519,7 +532,7 @@ export default function UserComplaintsPage() {
                                                     className="size-20 rounded-2xl bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-all shadow-sm"
                                                 >
                                                     <Plus className="size-6 mb-1" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest">ADD</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">{t("userComplaints.newForm.add")}</span>
                                                 </button>
                                                 <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" multiple accept="image/*,.pdf,.doc,.docx" />
                                             </div>
@@ -530,7 +543,7 @@ export default function UserComplaintsPage() {
                                             disabled={isSending}
                                             className="w-full bg-primary hover:bg-primary/90 text-white py-5 rounded-[1.5rem] font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98] mt-4 disabled:opacity-50"
                                         >
-                                            {isSending ? "SUBMITTING..." : "CONFIRM & SUBMIT"}
+                                            {isSending ? t("userComplaints.newForm.submitting") : t("userComplaints.newForm.confirmSubmit")}
                                         </button>
                                     </form>
                                 </motion.div>
@@ -548,7 +561,7 @@ export default function UserComplaintsPage() {
                                                     {categories.find(cat => cat.label.toUpperCase() === selectedComplaint.category)?.icon || '📝'}
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-black text-xl tracking-tight text-gray-900 dark:text-white uppercase leading-none">{selectedComplaint.category} Claims</h3>
+                                                    <h3 className="font-black text-xl tracking-tight text-gray-900 dark:text-white uppercase leading-none">{t("userComplaints.chat.claimsTitle", { category: categoryLabelMap[selectedComplaint.category] || selectedComplaint.category })}</h3>
                                                     <div className="flex items-center gap-3 mt-2">
                                                         <div className={cn("px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border shadow-sm", getStatusBg(selectedComplaint.status))}>
                                                             {selectedComplaint.status}
@@ -561,24 +574,24 @@ export default function UserComplaintsPage() {
                                                 {selectedComplaint.status === 'PENDING' && (
                                                     <button
                                                         onClick={async () => {
-                                                            if (window.confirm("Are you sure you want to delete this claim? This action is irreversible.")) {
+                                                            if (window.confirm(t("userComplaints.confirmDelete"))) {
                                                                 try {
                                                                     await axios.delete(`/api/user/complaints/${selectedComplaint.id}`);
                                                                     setComplaints(prev => prev.filter(c => c.id !== selectedComplaint.id));
                                                                     setSelectedComplaint(null);
-                                                                    toast.success("Ticket deleted successfully.");
+                                                                    toast.success(t("userComplaints.toasts.ticketDeleted"));
                                                                 } catch (error) {
-                                                                    toast.error("Failed to delete the ticket.");
+                                                                    toast.error(t("userComplaints.toasts.deleteFailed"));
                                                                 }
                                                             }
                                                         }}
                                                         className="p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-500 hover:bg-rose-100 rounded-2xl transition-colors"
-                                                        title="Delete Claim"
+                                                        title={t("userComplaints.actions.deleteClaim")}
                                                     >
                                                         <Trash2 className="size-5" />
                                                     </button>
                                                 )}
-                                                <button onClick={() => setSelectedComplaint(null)} className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 rounded-2xl transition-colors" title="Close discussion">
+                                                <button onClick={() => setSelectedComplaint(null)} className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 rounded-2xl transition-colors" title={t("userComplaints.actions.closeDiscussion")}>
                                                     <X className="size-6" />
                                                 </button>
                                             </div>
@@ -597,10 +610,10 @@ export default function UserComplaintsPage() {
                                             )}>
                                                 <div className="flex items-center gap-3 mb-2 px-3">
                                                     {msg.sender_role === 'ADMIN' && (
-                                                        <div className="px-2 py-1 rounded-lg bg-primary text-[8px] font-black text-white flex items-center justify-center shadow-lg shadow-primary/20">DEEPSKYN</div>
+                                                        <div className="px-2 py-1 rounded-lg bg-primary text-[8px] font-black text-white flex items-center justify-center shadow-lg shadow-primary/20">{t("userComplaints.chat.brand")}</div>
                                                     )}
                                                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic">
-                                                        {msg.sender_role === 'USER' ? 'My Message' : 'Team Support DeepSkyn'}
+                                                        {msg.sender_role === 'USER' ? t('userComplaints.chat.myMessage') : t('userComplaints.chat.teamSupport')}
                                                     </span>
                                                     <span className="text-[9px] text-gray-400 font-bold opacity-60">
                                                         {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -623,7 +636,7 @@ export default function UserComplaintsPage() {
                                                     {msg.text.includes("⚠️") && (
                                                         <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-rose-500/20 font-black uppercase tracking-[0.1em] text-[8px] text-rose-700 dark:text-rose-400">
                                                             <div className="size-1 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]" />
-                                                            System Prohibition
+                                                            {t("userComplaints.chat.systemProhibition")}
                                                         </div>
                                                     )}
                                                     <div className="relative z-10 leading-relaxed font-semibold">
@@ -648,14 +661,14 @@ export default function UserComplaintsPage() {
                                         {selectedComplaint.status === 'REJECT' ? (
                                             <div className="flex items-center gap-4 p-5 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-3xl border-2 border-rose-100 dark:border-rose-900/30 shadow-inner">
                                                 <AlertTriangle className="size-6 shrink-0" />
-                                                <p className="text-sm font-bold uppercase tracking-wide">This ticket has been officially closed.</p>
+                                                <p className="text-sm font-bold uppercase tracking-wide">{t("userComplaints.chat.ticketClosed")}</p>
                                             </div>
                                         ) : (
                                             <form onSubmit={handleReply} className="flex gap-4 items-center">
                                                 <div className="flex-1 relative group">
                                                     <input
                                                         type="text"
-                                                        placeholder="Write an update..."
+                                                        placeholder={t("userComplaints.chat.writeUpdate")}
                                                         className="w-full px-8 py-5 pr-16 rounded-[2rem] border-none ring-1 ring-gray-200 dark:ring-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner font-medium"
                                                         value={replyText}
                                                         onChange={(e) => setReplyText(e.target.value)}
@@ -686,9 +699,9 @@ export default function UserComplaintsPage() {
                                             <MessageSquare className="size-14 text-primary/30" />
                                         </div>
                                     </div>
-                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight uppercase">Support Inbox</h3>
+                                    <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight uppercase">{t("userComplaints.inboxTitle")}</h3>
                                     <p className="text-gray-500 font-medium max-w-xs mx-auto leading-relaxed">
-                                        Choose a conversation to view detailed history and updates from our security team.
+                                        {t("userComplaints.inboxHint")}
                                     </p>
                                 </div>
                             )}

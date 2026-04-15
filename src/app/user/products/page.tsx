@@ -27,6 +27,7 @@ import {
   Pill,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 /* ─────────────────────── Types ── */
 interface OrganicResult {
@@ -170,7 +171,7 @@ function OgImageFallback({ url, alt }: { url?: string; alt: string }) {
       {loaded ? (
         <>
           <Package className="size-12 mb-2 opacity-40" />
-          <span className="text-xs font-bold uppercase tracking-widest opacity-60">No Image</span>
+          <span className="text-xs font-bold uppercase tracking-widest opacity-60">{alt}</span>
         </>
       ) : (
         <Loader2 className="size-6 animate-spin opacity-40" />
@@ -181,6 +182,7 @@ function OgImageFallback({ url, alt }: { url?: string; alt: string }) {
 
 /* ─────────────────────── Page ── */
 export default function ProductsPage() {
+  const t = useTranslations();
   const [query, setQuery]               = useState("");
   const [category, setCategory]         = useState("skincare");
   const [brand, setBrand]               = useState("");
@@ -194,11 +196,24 @@ export default function ProductsPage() {
 
   const selectedCategory = CATEGORIES.find((c) => c.value === category) ?? CATEGORIES[0];
 
+  const getCategoryLabel = (value: string) => {
+    switch (value) {
+      case "skincare": return t("userProducts.categories.skincare");
+      case "sunscreen": return t("userProducts.categories.sunscreen");
+      case "serum": return t("userProducts.categories.serums");
+      case "moisturizer": return t("userProducts.categories.moisturizers");
+      case "cleanser": return t("userProducts.categories.cleansers");
+      case "pharmaceutical": return t("userProducts.categories.pharmaceutical");
+      case "derma": return t("userProducts.categories.derma");
+      default: return value;
+    }
+  };
+
   const handleSearch = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) {
-      toast.error("Please enter a product name or ingredient.");
+      toast.error(t("userProducts.toasts.enterQuery"));
       return;
     }
 
@@ -212,13 +227,13 @@ export default function ProductsPage() {
       });
       const data: SearchResponse = await res.json();
       if (!res.ok || data.error) {
-        toast.error(data.error || "Scraping failed.");
+        toast.error(data.error || t("userProducts.toasts.scrapeFailed"));
         return;
       }
       setSearchData(data);
-      toast.success(`Found ${data.totalResults} results for "${trimmed}"`);
+      toast.success(t("userProducts.toasts.resultsFound", { total: data.totalResults, query: trimmed }));
     } catch (err: unknown) {
-      toast.error((err as Error).message || "Network error.");
+      toast.error((err as Error).message || t("userProducts.toasts.networkError"));
     } finally {
       setLoading(false);
     }
@@ -234,9 +249,9 @@ export default function ProductsPage() {
 
         {/* ── Breadcrumb ── */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
-          <span>User</span>
+          <span>{t("userProducts.breadcrumb.user")}</span>
           <ChevronRight size={14} />
-          <span className="text-foreground font-medium">Products</span>
+          <span className="text-foreground font-medium">{t("userProducts.breadcrumb.products")}</span>
         </nav>
 
         {/* ── Hero Banner ── */}
@@ -251,14 +266,14 @@ export default function ProductsPage() {
               <div className="flex items-center gap-2 mb-1">
                 <Sparkles className="size-4 text-yellow-200" />
                 <span className="hero-kicker text-xs font-bold text-white/60 uppercase tracking-widest">
-                  Powered by Apify
+                  {t("userProducts.hero.poweredBy")}
                 </span>
               </div>
               <h1 className="text-2xl font-black text-white leading-tight">
-                Cosmetic &amp; Medical Product Scraper
+                {t("userProducts.hero.title")}
               </h1>
               <p className="hero-subtitle mt-1 text-sm text-white/70">
-                Scrape Google for cosmetic and pharmaceutical products, ingredients, and formulations.
+                {t("userProducts.hero.subtitle")}
               </p>
             </div>
           </div>
@@ -267,7 +282,7 @@ export default function ProductsPage() {
         {/* ── Category Selector ── */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
           <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-            Product Category
+            {t("userProducts.category.title")}
           </p>
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((cat) => (
@@ -282,14 +297,14 @@ export default function ProductsPage() {
                 }`}
               >
                 {cat.icon}
-                {cat.label}
+                {getCategoryLabel(cat.value)}
               </button>
             ))}
           </div>
 
           {/* Example queries for selected category */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-gray-400 font-medium">Examples:</span>
+            <span className="text-xs text-gray-400 font-medium">{t("userProducts.examples")}</span>
             {selectedCategory.examples.map((ex) => (
               <button
                 key={ex}
@@ -317,7 +332,7 @@ export default function ProductsPage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="e.g. Niacinamide serum, Tretinoin 0.025%, CeraVe Hydrating…"
+                placeholder={t("userProducts.search.placeholder")}
                 className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                 disabled={loading}
                 autoFocus
@@ -334,7 +349,7 @@ export default function ProductsPage() {
               }`}
             >
               <Filter className="size-4" />
-              Filters
+              {t("userProducts.search.filters")}
             </button>
 
             <button
@@ -344,9 +359,9 @@ export default function ProductsPage() {
               className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all shadow-lg shadow-blue-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <><Loader2 className="size-4 animate-spin" /> Searching…</>
+                <><Loader2 className="size-4 animate-spin" /> {t("userProducts.search.searching")}</>
               ) : (
-                <><Search className="size-4" /> Scrape</>
+                <><Search className="size-4" /> {t("userProducts.search.scrape")}</>
               )}
             </button>
           </div>
@@ -365,13 +380,13 @@ export default function ProductsPage() {
                   {/* Brand filter */}
                   <div className="flex flex-col gap-1.5">
                     <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <Building2 className="size-3" /> Brand
+                      <Building2 className="size-3" /> {t("userProducts.filters.brand")}
                     </label>
                     <input
                       type="text"
                       value={brand}
                       onChange={(e) => setBrand(e.target.value)}
-                      placeholder="e.g. CeraVe, L'Oreal"
+                      placeholder={t("userProducts.filters.brandPlaceholder")}
                       className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm text-gray-800 dark:text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                     />
                   </div>
@@ -379,7 +394,7 @@ export default function ProductsPage() {
                   {/* Site filter */}
                   <div className="flex flex-col gap-1.5">
                     <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <Globe className="size-3" /> Restrict to Site
+                      <Globe className="size-3" /> {t("userProducts.filters.site")}
                     </label>
                     <select
                       value={site}
@@ -387,7 +402,7 @@ export default function ProductsPage() {
                       className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm text-gray-800 dark:text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                     >
                       {TRUSTED_SITES.map((s) => (
-                        <option key={s.value} value={s.value}>{s.label}</option>
+                        <option key={s.value} value={s.value}>{s.value === "" ? t("userProducts.filters.allSites") : s.label}</option>
                       ))}
                     </select>
                   </div>
@@ -395,7 +410,7 @@ export default function ProductsPage() {
                   {/* Country */}
                   <div className="flex flex-col gap-1.5">
                     <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <Tag className="size-3" /> Country
+                      <Tag className="size-3" /> {t("userProducts.filters.country")}
                     </label>
                     <select
                       value={countryCode}
@@ -411,7 +426,7 @@ export default function ProductsPage() {
                   {/* Max Results */}
                   <div className="flex flex-col gap-1.5">
                     <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <BookOpen className="size-3" /> Max Results
+                      <BookOpen className="size-3" /> {t("userProducts.filters.maxResults")}
                     </label>
                     <select
                       value={maxResults}
@@ -428,7 +443,7 @@ export default function ProductsPage() {
                 {/* Language row */}
                 <div className="mt-3 flex items-center gap-3">
                   <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
-                    Language:
+                    {t("userProducts.filters.language")}
                   </label>
                   {["en", "fr", "ar", "de"].map((lang) => (
                     <button
@@ -465,9 +480,9 @@ export default function ProductsPage() {
                 <FlaskConical className="absolute inset-0 m-auto size-6 text-blue-500" />
               </div>
               <div className="text-center">
-                <p className="font-bold text-gray-900 dark:text-white">Scraping Google for products…</p>
+                <p className="font-bold text-gray-900 dark:text-white">{t("userProducts.loading.title")}</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  Category: <strong>{selectedCategory.label}</strong> · This may take up to 40 seconds.
+                  {t("userProducts.loading.description", { category: getCategoryLabel(selectedCategory.value) })}
                 </p>
               </div>
               <div className="flex gap-1.5">
@@ -499,7 +514,7 @@ export default function ProductsPage() {
                     {searchData.totalResults} result{searchData.totalResults !== 1 ? "s" : ""} ·{" "}
                     <span className="text-blue-600 dark:text-blue-400">&ldquo;{searchData.query}&rdquo;</span>
                     <span className="ml-2 px-2 py-0.5 rounded-full text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-700 font-semibold">
-                      {selectedCategory.label}
+                      {getCategoryLabel(selectedCategory.value)}
                     </span>
                   </span>
                 </div>
@@ -523,7 +538,7 @@ export default function ProductsPage() {
                 <div className="flex items-start gap-2 px-4 py-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
                   <FlaskConical className="size-4 text-amber-500 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-xs font-bold text-amber-700 dark:text-amber-400">Enriched search query</p>
+                    <p className="text-xs font-bold text-amber-700 dark:text-amber-400">{t("userProducts.results.enrichedQuery")}</p>
                     <p className="text-xs text-amber-600 dark:text-amber-500 mt-0.5 font-mono break-all">
                       {searchData.enrichedQuery}
                     </p>
@@ -535,8 +550,8 @@ export default function ProductsPage() {
               {searchData.results.length === 0 && (
                 <div className="flex flex-col items-center gap-3 py-10 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700">
                   <AlertTriangle className="size-10 text-yellow-400" />
-                  <p className="font-semibold text-gray-700 dark:text-gray-200">No results found</p>
-                  <p className="text-sm text-gray-400">Try a different product name or adjust the filters.</p>
+                  <p className="font-semibold text-gray-700 dark:text-gray-200">{t("userProducts.results.noResultsTitle")}</p>
+                  <p className="text-sm text-gray-400">{t("userProducts.results.noResultsDescription")}</p>
                 </div>
               )}
 
@@ -569,10 +584,11 @@ export default function ProductsPage() {
                             <img
                               src={result.imageUrl}
                               alt={result.title || "Product"}
+                              alt={result.title || t("userProducts.results.productAlt")}
                               className="absolute inset-0 w-full h-full object-contain p-8 mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-500"
                             />
                           ) : (
-                            <OgImageFallback url={result.url} alt={result.title || "Product fallback"} />
+                            <OgImageFallback url={result.url} alt={t("userProducts.results.noImage")} />
                           )}
                           {result.price && result.price !== "N/A" && (
                             <div className="absolute bottom-4 right-4 px-3.5 py-1.5 rounded-xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-green-700 dark:text-green-400 text-sm font-black shadow-md border border-gray-100 dark:border-gray-700">
@@ -588,10 +604,10 @@ export default function ProductsPage() {
                           <span className="truncate">{result.merchantName || result.displayedUrl || domain}</span>
                         </div>
                         <h3 className="text-base font-bold text-gray-900 dark:text-white leading-snug group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                          {result.title || "Title Unavailable"}
+                          {result.title || t("userProducts.results.titleUnavailable")}
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3">
-                          {result.description || "No description provided."}
+                          {result.description || t("userProducts.results.noDescription")}
                         </p>
                         <div className="flex-1" />
                         {result.url && (
@@ -602,7 +618,7 @@ export default function ProductsPage() {
                               rel="noopener noreferrer"
                               className="inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 hover:bg-blue-50 dark:bg-gray-700/50 dark:hover:bg-blue-900/30 text-gray-600 hover:text-blue-700 dark:text-gray-300 dark:hover:text-blue-400 text-sm font-bold transition-all group/btn"
                             >
-                              Visit Page
+                              {t("userProducts.results.visitPage")}
                               <ExternalLink className="size-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                             </a>
                           </div>
@@ -620,7 +636,7 @@ export default function ProductsPage() {
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                             <span className="inline-block size-2 rounded-full bg-emerald-500" />
-                            {withImage.length} produit{withImage.length > 1 ? "s" : ""} avec image
+                            {t("userProducts.results.withImageCount", { count: withImage.length })}
                           </span>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -635,7 +651,7 @@ export default function ProductsPage() {
                         <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                         <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 whitespace-nowrap">
                           <Package className="size-3.5" />
-                          Produits sans image
+                          {t("userProducts.results.withoutImage")}
                         </span>
                         <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                       </div>
@@ -666,11 +682,10 @@ export default function ProductsPage() {
             </div>
             <div>
               <p className="font-bold text-lg text-gray-800 dark:text-white">
-                Ready to scrape {selectedCategory.label} products
+                {t("userProducts.empty.ready", { category: getCategoryLabel(selectedCategory.value) })}
               </p>
               <p className="text-sm text-gray-400 mt-1 max-w-sm mx-auto">
-                Enter a product name, ingredient, or brand above and click{" "}
-                <strong>Scrape</strong> to fetch Google results via Apify.
+                {t("userProducts.empty.descriptionPrefix")} <strong>{t("userProducts.search.scrape")}</strong> {t("userProducts.empty.descriptionSuffix")}
               </p>
             </div>
           </motion.div>

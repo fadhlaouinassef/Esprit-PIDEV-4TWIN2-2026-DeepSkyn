@@ -3,6 +3,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 
 type PropsType = {
     data: { x: string; y: number }[];
@@ -13,6 +14,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function MonthlyRegistrationsChart({ data }: PropsType) {
+    const t = useTranslations();
     const isMobile = useIsMobile();
 
     const options: ApexOptions = {
@@ -94,7 +96,7 @@ export function MonthlyRegistrationsChart({ data }: PropsType) {
                 options={options}
                 series={[
                     {
-                        name: "Registrations",
+                        name: t('components.monthlyRegistrationsChart.seriesName'),
                         data,
                     },
                 ]}

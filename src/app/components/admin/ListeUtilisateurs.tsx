@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Pencil, Trash2 } from "lucide-react";
 import { compactFormat, standardFormat } from "@/lib/format-number";
+import { useTranslations } from "next-intl";
 
 interface User {
     name: string;
@@ -19,19 +20,21 @@ interface ListeUtilisateursProps {
 }
 
 export function ListeUtilisateurs({ users }: ListeUtilisateursProps) {
+    const t = useTranslations();
+
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Active Users</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('components.listeUtilisateurs.title')}</h3>
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                     <thead>
                         <tr className="border-b border-gray-200 dark:border-gray-700">
-                            <th className="py-4 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Name</th>
-                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">Visitors</th>
-                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">Revenues</th>
-                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">Sales</th>
-                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">Conversion</th>
-                            <th className="py-4 px-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">Actions</th>
+                            <th className="py-4 px-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">{t('components.listeUtilisateurs.headers.name')}</th>
+                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">{t('components.listeUtilisateurs.headers.visitors')}</th>
+                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">{t('components.listeUtilisateurs.headers.revenues')}</th>
+                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">{t('components.listeUtilisateurs.headers.sales')}</th>
+                            <th className="py-4 px-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">{t('components.listeUtilisateurs.headers.conversion')}</th>
+                            <th className="py-4 px-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">{t('components.listeUtilisateurs.headers.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,13 +75,13 @@ export function ListeUtilisateurs({ users }: ListeUtilisateursProps) {
                                     <div className="flex items-center justify-end gap-2">
                                         <button
                                             className="flex size-8 items-center justify-center rounded-lg text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-all"
-                                            title="Edit"
+                                            title={t('components.listeUtilisateurs.actions.edit')}
                                         >
                                             <Pencil size={16} />
                                         </button>
                                         <button
                                             className="flex size-8 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-all"
-                                            title="Delete"
+                                            title={t('components.listeUtilisateurs.actions.delete')}
                                         >
                                             <Trash2 size={16} />
                                         </button>

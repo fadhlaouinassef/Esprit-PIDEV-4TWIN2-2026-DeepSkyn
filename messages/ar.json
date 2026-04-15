@@ -1,0 +1,2169 @@
+{
+  "common": {
+    "appName": "DeepSkyn",
+    "language": "اللغة",
+    "login": "تسجيل الدخول",
+    "search": "بحث",
+    "toggleSidebar": "تبديل الشريط الجانبي",
+    "loadingPage": "جارٍ تحميل الصفحة...",
+    "loading": "جارٍ التحميل...",
+    "theme": "السمة",
+    "closeMenu": "إغلاق القائمة",
+    "user": "مستخدم"
+  },
+  "components": {
+    "userInfo": {
+      "srMyAccount": "حسابي",
+      "srUserInformation": "معلومات المستخدم",
+      "account": "حساب المستخدم",
+      "viewProfile": "عرض الملف الشخصي",
+      "accountSettings": "إعدادات الحساب",
+      "logout": "تسجيل الخروج",
+      "defaultName": "اسم المستخدم",
+      "defaultAdminName": "مستخدم المسؤول"
+    },
+    "userBadgeCard": {
+      "certifiedLabel": "معتمد من DeepSkyn"
+    },
+    "routineItemScraper": {
+      "searching": "جارٍ البحث عن {brand} على {website}...",
+      "error": {
+        "memoryLimit": "تم تجاوز حد الذاكرة.",
+        "creditLimit": "تم الوصول إلى حد رصيد Apify",
+        "unavailable": "التوصية غير متاحة"
+      },
+      "actions": {
+        "retry": "إعادة البحث",
+        "viewOnSite": "عرض على {website}"
+      },
+      "noResults": "لم يتم العثور على {brand} {action} على {website}",
+      "defaultSeller": "primini.tn",
+      "productFallback": "المنتج {brand} متاح على {website}."
+    },
+    "deleteRoutineModal": {
+      "title": "حذف الروتين",
+      "confirmText": "هل أنت متأكد أنك تريد",
+      "delete": "حذف",
+      "routineName": "الروتين",
+      "thisRoutine": "هذا الروتين",
+      "actionPrompt": "هذا الإجراء دائم ولا يمكن التراجع عنه.",
+      "cancel": "إلغاء",
+      "deleting": "جارٍ الحذف..."
+    },
+    "composer": {
+      "unsupportedSpeech": "ميزة التعرف على الكلام غير مدعومة في متصفحك",
+      "uploadedImageAlt": "الصورة المرفوعة",
+      "removeImage": "إزالة الصورة",
+      "sendMessage": "إرسال الرسالة",
+      "stopGenerating": "إيقاف التوليد",
+      "startVoiceInput": "بدء الإدخال الصوتي",
+      "attachImage": "إرفاق صورة",
+      "selectAiModel": "اختر نموذج الذكاء الاصطناعي",
+      "listening": "جارٍ الاستماع...",
+      "typeMessage": "اكتب رسالة... (Shift+Enter لسطر جديد)",
+      "defaultDescribeImage": "وصف هذه الصورة"
+    },
+    "pageLoader": {
+      "loading": "جارٍ التحميل..."
+    },
+    "themePicker": {
+      "title": "السمة",
+      "selectTheme": "اختر السمة {theme}"
+    },
+    "listeUtilisateurs": {
+      "title": "المستخدمون النشطون",
+      "headers": {
+        "name": "الاسم",
+        "visitors": "الزوار",
+        "revenues": "الإيرادات",
+        "sales": "المبيعات",
+        "conversion": "التحويل",
+        "actions": "الإجراءات"
+      },
+      "actions": {
+        "edit": "تعديل",
+        "delete": "حذف"
+      }
+    },
+    "notification": {
+      "ariaLabel": "عرض الإشعارات",
+      "title": "الإشعارات",
+      "newNotifications": "{count} إشعارات جديدة",
+      "markAllRead": "تحديد الكل كمقروء",
+      "empty": {
+        "heading": "كل شيء جاهز!",
+        "description": "لا توجد إشعارات جديدة في الوقت الحالي."
+      },
+      "footer": {
+        "seeAll": "عرض جميع الإشعارات"
+      },
+      "types": {
+        "signup": {
+          "title": "انضم {name} إلى الفريق!",
+          "subtitle": "هنئه",
+          "toastTitle": "انضم {name}!",
+          "toastDescription": "قام مستخدم جديد بالتسجيل."
+        },
+        "analyse": {
+          "title": "أكمل {name} تحليل البشرة!",
+          "subtitle": "النتيجة: {score}/100 - تفاصيل التحليل",
+          "toastMessage": "قام {name} بتحليل بشرته",
+          "toastDescription": "درجة البشرة: {score}/100"
+        },
+        "verify": {
+          "title": "تحقق {name} من حسابه!",
+          "subtitle": "تم تأكيد الهوية",
+          "toastTitle": "تم التحقق من {name}!",
+          "toastDescription": "تم تأكيد هوية الحساب."
+        }
+      },
+      "userAlt": "مستخدم"
+    },
+    "userCharts": {
+      "visitorsByUser": "الزوار حسب المستخدم",
+      "revenueDistribution": "توزيع الإيرادات",
+      "totalRevenueLabel": "إجمالي الإيرادات",
+      "visitors": "الزوار"
+    },
+    "donutChart": {
+      "noData": "لا تتوفر بيانات",
+      "visitors": "الزوار"
+    },
+    "monthlyRegistrationsChart": {
+      "seriesName": "التسجيلات"
+    },
+    "paymentsOverviewChart": {
+      "loadingData": "جارٍ تحميل البيانات...",
+      "series": {
+        "received": "المستلمة",
+        "due": "المستحقة"
+      }
+    },
+    "weeksProfitChart": {
+      "loadingData": "جارٍ تحميل البيانات...",
+      "series": {
+        "sales": "المبيعات",
+        "revenue": "الإيرادات"
+      }
+    },
+    "regionLabels": {
+      "title": "عناوين المناطق"
+    }
+  },
+  "nav": {
+    "mainNavigation": "التنقل الرئيسي",
+    "collapseSidebar": "طي الشريط الجانبي",
+    "expandSidebar": "فتح الشريط الجانبي",
+    "userAccount": "حساب المستخدم",
+    "adminAccount": "حساب المسؤول",
+    "administrator": "مسؤول",
+    "adminDefaultUserName": "مستخدم مسؤول",
+    "user": {
+      "sections": {
+        "menu": "القائمة",
+        "account": "الحساب",
+        "support": "الدعم"
+      },
+      "items": {
+        "dashboard": "لوحة التحكم",
+        "routines": "الروتينات",
+        "questionnaire": "الاستبيان",
+        "analyzes": "التحاليل",
+        "products": "المنتجات",
+        "badge": "الشارات",
+        "profile": "الملف الشخصي",
+        "billing": "الفواتير",
+        "security": "الأمان",
+        "settings": "الإعدادات",
+        "helpCenter": "مركز المساعدة",
+        "complaints": "الشكاوى والتقييمات"
+      }
+    },
+    "admin": {
+      "sections": {
+        "main": "الرئيسية",
+        "management": "الإدارة",
+        "administrative": "إداري",
+        "settings": "الإعدادات"
+      },
+      "items": {
+        "dashboard": "لوحة التحكم",
+        "analytics": "التحليلات",
+        "analyzes": "التحاليل",
+        "users": "المستخدمون",
+        "badges": "الشارات",
+        "quizzes": "الاختبارات",
+        "routines": "الروتينات",
+        "subscriptions": "الاشتراكات",
+        "content": "المدونة والمحتوى",
+        "faqs": "الأسئلة الشائعة",
+        "complaints": "الشكاوى والتقييمات",
+        "profile": "الملف الشخصي",
+        "systemSettings": "إعدادات النظام"
+      },
+      "subItems": {
+        "allUsers": "كل المستخدمين",
+        "verification": "التحقق",
+        "articles": "المقالات",
+        "categories": "التصنيفات"
+      }
+    }
+  },
+  "auth": {
+    "signin": {
+      "testToast": {
+        "title": "نظام DeepSkyn",
+        "description": "تم إعداد الإشعارات أعلى المنتصف."
+      },
+      "redirecting": "جارٍ تحويلك إلى لوحة التحكم...",
+      "backToHome": "العودة إلى الصفحة الرئيسية",
+      "subtitle": "سجّل الدخول إلى حسابك",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "name@deepskyn.com",
+      "passwordLabel": "كلمة المرور",
+      "forgotLink": "نسيت؟",
+      "rememberMe": "تذكرني",
+      "submit": "تسجيل الدخول",
+      "divider": "أو تابع باستخدام",
+      "googleButton": "تسجيل الدخول عبر Google",
+      "unverifiedToast": {
+        "title": "يلزم التحقق",
+        "description": "يرجى التحقق من حسابك للمتابعة."
+      },
+      "success": {
+        "title": "تم تسجيل الدخول بنجاح!",
+        "description": "جارٍ التحويل..."
+      },
+      "validationFailed": {
+        "description": "يرجى التحقق من الحقول باللون الأحمر"
+      },
+      "googleError": {
+        "title": "فشل تسجيل الدخول عبر Google"
+      },
+      "blocked": {
+        "title": "الحساب معطّل",
+        "descriptionTop": "تم تعطيل حسابك من قبل الإدارة.",
+        "descriptionBold": "يرجى التواصل مع إدارة التطبيق",
+        "descriptionBottom": "لمزيد من المعلومات.",
+        "contactButton": "التواصل مع الإدارة",
+        "closeButton": "إغلاق"
+      },
+      "errors": {
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "تنسيق البريد الإلكتروني غير صالح",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordInvalid": "كلمة المرور غير صالحة (الحد الأدنى 8 أحرف)",
+        "signinFailed": "فشل تسجيل الدخول",
+        "sessionNotEstablished": "تعذر إنشاء جلسة. يرجى المحاولة مرة أخرى."
+      },
+      "error": {
+        "generic": "حدث خطأ ما",
+        "googleGeneric": "حدث خطأ أثناء تسجيل الدخول",
+        "accountNotVerifiedTitle": "الحساب غير مُحقق",
+        "loginFailedTitle": "فشل تسجيل الدخول",
+        "invalidCredentialsDescription": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+      },
+      "footer": {
+        "newUser": "مستخدم جديد؟",
+        "createAccount": "إنشاء حساب",
+        "copyright": "© 2026 DEEPSKYN LTD • الخصوصية محمية"
+      }
+    },
+    "signup": {
+      "backToEntry": "العودة إلى البداية",
+      "subtitle": "إنشاء حسابك",
+      "googleButton": "التسجيل عبر Google",
+      "divider": "أو تابع باستخدام",
+      "fullNameLabel": "الاسم الكامل",
+      "fullNamePlaceholder": "أحمد علي",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "name@deepskyn.com",
+      "birthDateLabel": "تاريخ الميلاد",
+      "ageLabel": "العمر",
+      "ageYears": "{age} سنة",
+      "genderLabel": "الجنس",
+      "genderOptions": {
+        "male": "ذكر",
+        "female": "أنثى",
+        "other": "آخر"
+      },
+      "passwordLabel": "كلمة المرور",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "passwordHint": "الحد الأدنى 8 أحرف (رقم ورمز خاص)",
+      "submit": "إنشاء حساب",
+      "validationFailed": {
+        "title": "خطأ في التحقق",
+        "description": "يرجى التحقق من الحقول باللون الأحمر"
+      },
+      "unverifiedToast": {
+        "title": "الحساب غير مُحقق",
+        "description": "يرجى التحقق من حسابك للمتابعة."
+      },
+      "success": {
+        "title": "تم إنشاء الحساب!",
+        "description": "يرجى التحقق من بريدك الإلكتروني للحصول على رمز التحقق"
+      },
+      "googleSuccess": {
+        "title": "تم التسجيل بنجاح!",
+        "description": "مرحبًا بك في DeepSkyn!"
+      },
+      "errors": {
+        "fullNameRequired": "الاسم الكامل مطلوب",
+        "fullNameInvalid": "يجب أن يحتوي الاسم على أحرف فقط (2-50 حرفًا)",
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "يرجى إدخال بريد إلكتروني صالح",
+        "birthDateRequired": "تاريخ الميلاد مطلوب",
+        "birthDateFuture": "لا يمكن أن يكون تاريخ الميلاد في المستقبل",
+        "birthDateTooYoung": "يجب أن يكون عمرك 13 عامًا على الأقل",
+        "genderRequired": "يرجى اختيار الجنس",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordInvalid": "8+ أحرف مع رقم ورمز خاص",
+        "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",
+        "passwordMismatch": "كلمتا المرور غير متطابقتين"
+      },
+      "error": {
+        "generic": "حدث خطأ ما",
+        "createAccountFailed": "تعذر إنشاء الحساب",
+        "signupFailedTitle": "فشل التسجيل",
+        "googleFailedTitle": "فشل التسجيل عبر Google"
+      },
+      "footer": {
+        "acceptPrefix": "بإنشاء حساب، فإنك توافق على",
+        "terms": "الشروط",
+        "privacy": "الخصوصية",
+        "alreadyRegistered": "لديك حساب بالفعل؟",
+        "loginLink": "تسجيل الدخول",
+        "copyright": "© 2026 DEEPSKYN LTD • جلسة مشفّرة"
+      }
+    },
+    "forgotPassword": {
+      "backToLogin": "العودة إلى تسجيل الدخول",
+      "title": "إعادة تعيين كلمة المرور",
+      "description": "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "name@company.com",
+      "sending": "جارٍ الإرسال...",
+      "submit": "إرسال رابط إعادة التعيين",
+      "errors": {
+        "emailRequired": "البريد الإلكتروني مطلوب.",
+        "emailInvalid": "يرجى إدخال بريد إلكتروني صالح.",
+        "sendFailed": "فشل إرسال رمز إعادة التعيين"
+      },
+      "success": {
+        "title": "تم إرسال الرمز!",
+        "description": "تحقق من صندوق الوارد للحصول على رمز إعادة التعيين."
+      },
+      "error": {
+        "title": "خطأ",
+        "description": "حدث خطأ ما"
+      }
+    },
+    "resetPassword": {
+      "title": "كلمة مرور جديدة",
+      "description": "يرجى إدخال كلمة المرور الجديدة أدناه. تأكد من أنها آمنة.",
+      "newPasswordLabel": "كلمة المرور الجديدة",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "saving": "جارٍ الحفظ...",
+      "submit": "تحديث كلمة المرور",
+      "errors": {
+        "passwordTooShortTitle": "كلمة المرور قصيرة جدًا",
+        "passwordTooShortDescription": "يجب ألا تقل كلمة المرور عن 6 أحرف.",
+        "confirmationTitle": "خطأ في التأكيد",
+        "confirmationDescription": "كلمتا المرور غير متطابقتين.",
+        "sessionExpired": "انتهت الجلسة. يرجى إعادة بدء العملية.",
+        "resetFailed": "فشل إعادة تعيين كلمة المرور"
+      },
+      "success": {
+        "title": "تم تحديث كلمة المرور!",
+        "description": "تم حفظ كلمة المرور الجديدة بنجاح."
+      },
+      "error": {
+        "title": "خطأ",
+        "description": "حدث خطأ ما"
+      }
+    },
+    "verifyCode": {
+      "backToForgot": "العودة لإعادة التعيين",
+      "backToSignup": "العودة للتسجيل",
+      "titleReset": "التحقق",
+      "titleSignup": "تأكيد الرمز",
+      "descriptionReset": "أدخل الرمز الذي أرسلناه لإعادة تعيين كلمة المرور.",
+      "descriptionSignupPrefix": "أرسلنا رمزًا من 6 أرقام إلى",
+      "descriptionSignupSuffix": ".",
+      "yourEmail": "بريدك الإلكتروني",
+      "verifying": "جارٍ التحقق...",
+      "submit": "تأكيد الرمز",
+      "errors": {
+        "incompleteTitle": "الرمز غير مكتمل",
+        "incompleteDescription": "يرجى إدخال الأرقام الستة كاملة.",
+        "sessionExpired": "انتهت الجلسة. يرجى إعادة بدء العملية.",
+        "verifyFailed": "فشل التحقق"
+      },
+      "resetSuccess": {
+        "title": "تم التحقق من الرمز!",
+        "description": "يمكنك الآن تغيير كلمة المرور."
+      },
+      "accountVerified": {
+        "title": "تم التحقق من الحساب!",
+        "description": "مرحبًا بك في DeepSkyn! جارٍ التحويل..."
+      },
+      "error": {
+        "title": "خطأ في التحقق",
+        "description": "الرمز غير صالح أو منتهي الصلاحية"
+      },
+      "resend": {
+        "submit": "إعادة إرسال الرمز",
+        "errors": {
+          "sendFailed": "فشل إرسال الرمز"
+        },
+        "success": {
+          "title": "تمت إعادة الإرسال",
+          "description": "تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني."
+        },
+        "error": {
+          "title": "فشل إعادة الإرسال",
+          "description": "حدث خطأ ما"
+        }
+      }
+    }
+  },
+  "home": {
+    "nav": {
+      "products": "المنتجات",
+      "routines": "الروتينات",
+      "testimonials": "آراء المستخدمين",
+      "faq": "الأسئلة الشائعة",
+      "journey": "الرحلة",
+      "mapButton": "خريطة DeepSkyn",
+      "openMapAria": "فتح خريطة تجربة DeepSkyn",
+      "toggleMobileMenu": "تبديل قائمة الهاتف"
+    },
+    "product": {
+      "dailyVolumeLabel": "عملاء سعداء",
+      "headline": "روتين عناية مخصص لبشرتك",
+      "subheadline": "تقدم DeepSkyn مجموعة كاملة من منتجات العناية بالبشرة للنساء والرجال: منظفات ومرطبات وسيرومات وأقنعة مناسبة لكل أنواع البشرة.",
+      "description": "يثق بنا الآلاف: منتجات مختبرة جلدياً ومصاغة بمكونات طبيعية لبشرة مشرقة.",
+      "primaryCta": "روتيني",
+      "secondaryCta": "عرض المنتجات"
+    },
+    "pricing": {
+      "title": "اختر خطتك",
+      "subtitle": "اكتشف اشتراكات العناية بالبشرة المناسبة لاحتياجاتك. جميع الخطط تتضمن تحليل البشرة بالذكاء الاصطناعي والوصول إلى تطبيق الهاتف.",
+      "monthly": "شهري",
+      "yearly": "سنوي",
+      "savePercent": "وفّر {percent}%",
+      "mostPopular": "الأكثر شيوعًا",
+      "perMonth": "شهر",
+      "perYear": "سنة",
+      "selected": "محدد",
+      "selectPlan": "اختر الخطة",
+      "features": "المزايا",
+      "getStartedWith": "ابدأ مع {plan}",
+      "plans": {
+        "essential": "أساسي",
+        "premium": "بريميوم",
+        "luxury": "فاخر"
+      },
+      "featuresList": {
+        "basicRoutine": "روتين أساسي (صباح/مساء)",
+        "threeProducts": "3 منتجات أساسية",
+        "onlineConsultation": "استشارة عبر الإنترنت",
+        "usageGuide": "دليل استخدام ونصائح",
+        "completeRoutine": "روتين كامل مخصص",
+        "sixProducts": "6 منتجات بريميوم",
+        "monthlyFollowUp": "متابعة شهرية مع طبيب جلدية",
+        "priorityShipping": "شحن أولوية مجاني",
+        "customFormulas": "تركيبات مخصصة حصرية",
+        "unlimitedProducts": "منتجات غير محدودة",
+        "dermatologist247": "طبيب جلدية مخصص 24/7",
+        "homeSpa": "جلسة سبا منزلية شهرية",
+        "aiAnalysis": "تحليل البشرة بالذكاء الاصطناعي",
+        "mobileApp": "الوصول لتطبيق الهاتف"
+      }
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "items": {
+        "q1": "ما هو DeepSkyn وكيف يعمل التطبيق؟",
+        "a1": "DeepSkyn مساعد جمال شخصي يحلل نوع بشرتك باستخدام الذكاء الاصطناعي ليقدم روتين عناية مناسب. حمّل التطبيق، أجب عن بعض الأسئلة، واحصل على توصيات. تركيباتنا مناسبة للنساء والرجال وبمكونات طبيعية.",
+        "q2": "كيف يخصص DeepSkyn روتين العناية؟",
+        "a2": "تحليلنا بالذكاء الاصطناعي يراعي نوع بشرتك ومشاكلك (حب الشباب، التجاعيد، الجفاف...) وأهدافك. ثم يقترح روتينًا مخصصًا بأفضل المنتجات. منتجاتنا مختبرة جلدياً ومصاغة بدون بارابين. ويمكنك تعديل تفضيلاتك في أي وقت.",
+        "q3": "ما خيارات الأسعار وكيف أطلب؟",
+        "a3": "الأمر بسيط: حمّل التطبيق، أكمل تشخيص البشرة المجاني، ثم اختر إحدى 3 خطط: أساسي (39$/شهرياً)، بريميوم (89$/شهرياً)، أو فاخر (199$/شهرياً). جميع الخطط تشمل الشحن المجاني وتحليل الذكاء الاصطناعي والمتابعة. وفّر 17% مع الاشتراك السنوي."
+      }
+    },
+    "bankingHero": {
+      "tagline": "حلول عناية بالبشرة مميّزة",
+      "titleMain": "عناية مخصّصة لكل نوع بشرة",
+      "titleMuted": "مصمّمة لتعزيز الجمال الطبيعي للنساء والرجال.",
+      "subtitle": "اكتشف مجموعتنا المميّزة المصاغة بمكوّنات طبيعية لبشرة مشرقة وصحيّة.",
+      "ctaExploreProducts": "استكشف منتجاتنا",
+      "stats": {
+        "happyCustomers": "عملاء سعداء\nحول العالم",
+        "satisfactionRate": "معدل\nالرضا",
+        "customerSupport": "دعم\nالعملاء",
+        "premiumProducts": "منتجات عناية\nمميّزة"
+      }
+    },
+    "integrations": {
+      "buttonText": "شركاؤنا",
+      "title": "شراكات موثوقة في عالم الجمال",
+      "subtitle": "يتعاون DeepSkyn مع مختبرات جلدية رائدة وعلامات مميّزة لتقديم جودة استثنائية."
+    },
+    "healthySteps": {
+      "title": "خطوات بسيطة لبشرة أكثر صحة",
+      "steps": {
+        "quiz": {
+          "title": "أجب عن الاختبار",
+          "description": "أجب عن بعض الأسئلة الذكية لنفهم نوع بشرتك واحتياجاتها.",
+          "previewTitle": "تقييم البشرة",
+          "previewText": "تم إكمال الاختبار بنجاح"
+        },
+        "analysis": {
+          "title": "حلّل نتائج الاختبار",
+          "description": "تقيّم خوارزمياتنا إجاباتك لبناء ملف بشرة مخصص.",
+          "previewTitle": "تحليل بالذكاء الاصطناعي",
+          "previewText": "جارٍ تحليل الترطيب والحساسية..."
+        },
+        "advice": {
+          "title": "احصل على نصائح مخصصة",
+          "description": "تلقَّ توصيات عناية بالبشرة مصممة لك ومدعومة بذكاء اصطناعي متقدم.",
+          "previewTitle": "توصيات الذكاء الاصطناعي",
+          "previewText": "رؤى مخصصة جاهزة"
+        },
+        "routine": {
+          "title": "احصل على روتينك",
+          "description": "احصل على روتين يومي مخصص مصمم لك.",
+          "previewTitle": "روتين يومي",
+          "previewText": "تم إنشاء روتين الصباح والمساء"
+        },
+        "progress": {
+          "title": "تتبّع وشارك نتائجك",
+          "description": "راقب تقدمك بمرور الوقت وشارك التحسن بثقة.",
+          "previewTitle": "تتبّع التقدم",
+          "previewText": "صحة البشرة تتحسن تدريجيًا"
+        }
+      },
+      "preview": {
+        "defaultTitle": "ملف البشرة",
+        "defaultText": "ابدأ رحلتك نحو بشرة أكثر صحة اليوم.",
+        "aiPowered": "مدعوم بالذكاء الاصطناعي",
+        "scoreLabel": "مؤشر صحة البشرة"
+      }
+    },
+    "experience": {
+      "closeGuide": "إغلاق الدليل",
+      "badge": "خريطة التجربة",
+      "stepCounter": "الخطوة {current} / {total}",
+      "goToStep": "اذهب إلى الخطوة {step}",
+      "yourJourney": "رحلتك",
+      "startAdventure": "ابدأ المغامرة",
+      "nextStep": "الخطوة التالية",
+      "skipForNow": "تخطي الآن",
+      "steps": {
+        "welcome": {
+          "title": "مرحبًا بك في DeepSkyn",
+          "subtitle": "رحلتك نحو بشرة متوهجة تبدأ هنا",
+          "description": "يستخدم DeepSkyn الذكاء الاصطناعي لإحداث نقلة في روتين الجمال لديك. اتبع هذا الدليل لاكتشاف كيفية تحسين بشرتك.",
+          "cta": "ابدأ التجربة"
+        },
+        "quiz": {
+          "title": "تشخيص ذكي",
+          "subtitle": "التعرّف على بشرتك",
+          "description": "أجب عن استبياننا الذكي. تحلل خوارزمياتنا عاداتك واحتياجاتك لتكوين ملف دقيق جدًا.",
+          "cta": "ابدأ التشخيص"
+        },
+        "analysis": {
+          "title": "تحليل البشرة بالذكاء الاصطناعي",
+          "subtitle": "شاهد تقدمك بشكل علمي",
+          "description": "اطّلع على مؤشرات أساسية (الترطيب، الحساسية، الإشراقة). تتبّع تطور بشرتك عبر عمليات مسح عالية الدقة.",
+          "cta": "عرض تحليلي"
+        },
+        "routines": {
+          "title": "خطة عملك",
+          "subtitle": "فعالية خطوة بخطوة",
+          "description": "احصل على روتين عناية مخصص. صباحًا ومساءً، سنرشدك لتطبيق المنتجات الصحيحة بالترتيب الصحيح.",
+          "cta": "إدارة روتيناتي"
+        },
+        "products": {
+          "title": "تسوق انتقائي",
+          "subtitle": "الأفضل لك فقط",
+          "description": "اكتشف مجموعة مختارة من المنتجات التي يوصي بها خبراؤنا بناءً على تحليل بشرتك.",
+          "cta": "استكشف اختياراتي"
+        },
+        "achievements": {
+          "title": "المكافآت والتقدم",
+          "subtitle": "احتفل بكل إنجاز",
+          "description": "افتح شارات حصرية عبر الاستمرارية. كلما اعتنيت بنفسك أكثر، تقدمت أكثر داخل منظومة DeepSkyn.",
+          "cta": "عرض إنجازاتي"
+        },
+        "profile": {
+          "title": "مساحتك الشخصية",
+          "subtitle": "تحكم كامل وببساطة",
+          "description": "أدر تفضيلاتك وحدّث ملفك الشخصي واصل إلى دعم DeepSkyn بنقرة واحدة.",
+          "cta": "ملفي الشخصي"
+        }
+      }
+    },
+    "caseStudies": {
+      "title": "قصص نجاح العملاء",
+      "subtitle": "اطّلع على كيف تستخدم الفرق الرائدة Auralink للحصول على وضوح أكبر حول التعاون وتوافق الفريق.",
+      "navigation": {
+        "goToSlide": "الانتقال إلى الشريحة {slide}",
+        "previousSlide": "الشريحة السابقة",
+        "nextSlide": "الشريحة التالية"
+      },
+      "features": {
+        "slackCalls": "مكالمات Slack",
+        "meetingTranscripts": "تفريغ الاجتماعات",
+        "sentimentReports": "تقارير المشاعر"
+      },
+      "cards": {
+        "teamAlignment": {
+          "title": "توافق الفريق",
+          "realTime": "في الوقت الحقيقي",
+          "designTeam": "فريق التصميم",
+          "engineering": "الهندسة",
+          "product": "المنتج",
+          "activeConversations": "محادثات نشطة"
+        },
+        "globalTeamDynamics": {
+          "title": "ديناميكيات الفريق العالمية",
+          "last24h": "آخر 24 ساعة",
+          "high": "مرتفع",
+          "active": "نشط",
+          "peak": "ذروة",
+          "crossOfficeVelocity": "سرعة التعاون بين المكاتب"
+        },
+        "sprintPlanning": {
+          "title": "تخطيط السبرنت",
+          "weekDay": "الأسبوع {week} • اليوم {day}",
+          "designHandoffClarity": "وضوح تسليم التصميم",
+          "teamSentiment": "مزاج الفريق",
+          "frictionDetection": "اكتشاف الاحتكاك",
+          "low": "منخفض",
+          "blockersIdentified": "العوائق المحددة"
+        }
+      },
+      "studies": {
+        "notion": {
+          "title": "تستخدم Clandestine Auralink لفهم كيفية تعاون فرقها في الوقت الحقيقي.",
+          "quote": "يمنحنا Auralink وضوحًا حول توافق الفريق لم نحصل عليه من قبل.",
+          "attribution": "Marie Chen، رئيسة العمليات، Clandestine"
+        },
+        "cloudwatch": {
+          "title": "تستفيد Cloudwatch من Auralink لمراقبة ديناميكيات الفرق متعددة التخصصات عبر المكاتب العالمية.",
+          "quote": "مع Auralink يمكننا رؤية أنماط التعاون التي تؤثر مباشرة على سرعة تطوير المنتج.",
+          "attribution": "Sarah Chen، نائب رئيس الهندسة، Cloudwatch"
+        },
+        "eightball": {
+          "title": "يعتمد EightBall على Auralink لتتبّع مؤشرات صحة الفريق وجودة التواصل غير المتزامن.",
+          "quote": "غيّر Auralink طريقة فهمنا لثقافتنا التي تعتمد على العمل عن بُعد.",
+          "attribution": "Karri Saarinen، شريك مؤسس، EightBall"
+        },
+        "coreos": {
+          "title": "يستخدم CoreOS Auralink لضمان بقاء فرق التصميم والهندسة على نفس الوتيرة خلال السبرنت.",
+          "quote": "يساعدنا تحليل المشاعر على اكتشاف نقاط الاحتكاك قبل أن تتحول إلى عوائق.",
+          "attribution": "Noah Levin، نائب رئيس الهندسة، CoreOS"
+        }
+      }
+    },
+    "footer": {
+      "tagline": "روتين العناية ببشرتك المخصص للنساء والرجال",
+      "copyright": "© {year} {company}. جميع الحقوق محفوظة.",
+      "status": "الحالة",
+      "sitemap": "خريطة الموقع",
+      "sections": {
+        "products": {
+          "title": "المنتجات",
+          "cleansers": "منظفات",
+          "moisturizers": "مرطبات",
+          "serums": "سيرومات",
+          "masks": "أقنعة",
+          "giftSets": "مجموعات هدايا"
+        },
+        "company": {
+          "title": "الشركة",
+          "about": "من نحن",
+          "careers": "الوظائف",
+          "beautyBlog": "مدونة الجمال",
+          "press": "الصحافة",
+          "contact": "اتصل بنا"
+        },
+        "resources": {
+          "title": "الموارد",
+          "skincareGuide": "دليل العناية بالبشرة",
+          "helpCenter": "مركز المساعدة",
+          "community": "المجتمع",
+          "testimonials": "آراء المستخدمين",
+          "tutorials": "شروحات"
+        },
+        "legal": {
+          "title": "قانوني",
+          "privacyPolicy": "سياسة الخصوصية",
+          "termsOfService": "شروط الخدمة",
+          "shipping": "الشحن",
+          "returns": "الإرجاع",
+          "cookies": "ملفات تعريف الارتباط"
+        }
+      }
+    }
+  },
+  "userSettingsProfile": {
+    "audioLabel": "إعدادات الصوت",
+    "sections": {
+      "personalInformation": "المعلومات الشخصية",
+      "security": "الأمان وكلمة المرور",
+      "photo": "صورتك"
+    },
+    "fields": {
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "اسم العائلة",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "الاسم الأول",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "email@example.com",
+      "age": "العمر",
+      "agePlaceholder": "العمر",
+      "gender": "الجنس",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmNewPassword": "تأكيد كلمة المرور الجديدة"
+    },
+    "genderOptions": {
+      "male": "ذكر",
+      "female": "أنثى",
+      "other": "آخر"
+    },
+    "actions": {
+      "saved": "تم الحفظ!",
+      "updateProfile": "تحديث الملف الشخصي",
+      "changePassword": "تغيير كلمة المرور"
+    },
+    "photo": {
+      "avatarTitle": "صورة الملف الشخصي",
+      "avatarDescription": "حدّث صورتك الشخصية",
+      "clickToUpload": "اضغط للرفع",
+      "orDragDrop": "أو اسحب وأفلت",
+      "formatHint": "PNG, JPG (الحد الأقصى 5MB)"
+    },
+    "toasts": {
+      "updateProfileError": "حدث خطأ أثناء تحديث الملف الشخصي",
+      "passwordMismatch": "كلمتا المرور غير متطابقتين",
+      "changePasswordError": "حدث خطأ أثناء تغيير كلمة المرور",
+      "imageTooLarge": "الصورة كبيرة جدًا (الحد الأقصى 5MB)",
+      "updatePhotoError": "حدث خطأ أثناء تحديث الصورة"
+    }
+  },
+  "userProfile": {
+    "audioLabel": "صوت الملف الشخصي",
+    "memberSince": "عضو منذ",
+    "latestBadgeLabel": "آخر شارة:",
+    "noBadgesHint": "اكسب شارات عبر إكمال الروتينات والتحليلات.",
+    "breadcrumb": {
+      "user": "المستخدم",
+      "profile": "ملفي الشخصي"
+    },
+    "authRequired": {
+      "title": "يرجى تسجيل الدخول",
+      "description": "يجب تسجيل الدخول لعرض هذه الصفحة.",
+      "cta": "الانتقال إلى تسجيل الدخول"
+    },
+    "sections": {
+      "personalDetails": "البيانات الشخصية",
+      "latestAnalysis": "آخر تحليل للبشرة",
+      "recentBadge": "شارة حديثة"
+    },
+    "fields": {
+      "email": "البريد الإلكتروني",
+      "age": "العمر",
+      "ageYears": "{age} سنة",
+      "ageYearsShort": "{age} سنة",
+      "gender": "الجنس",
+      "skinType": "نوع البشرة"
+    },
+    "actions": {
+      "editProfile": "تعديل الملف الشخصي",
+      "viewHistory": "عرض السجل",
+      "startFirstAnalysis": "ابدأ تحليلك الأول",
+      "viewGallery": "عرض معرض الإنجازات"
+    },
+    "security": {
+      "title": "الحساب آمن",
+      "description": "بياناتك محمية بتشفير 128-بت وبروتوكول خصوصية DeepSkyn."
+    },
+    "fallbacks": {
+      "newUser": "مستخدم جديد",
+      "userName": "اسم المستخدم",
+      "unknown": "غير معروف",
+      "newbie": "مبتدئ",
+      "notSet": "غير محدد",
+      "notAnalyzed": "لم يتم التحليل بعد",
+      "generalAnalysis": "تحليل عام",
+      "achievementEarned": "إنجاز مكتسب"
+    },
+    "toasts": {
+      "imageTooLarge": "الصورة كبيرة جدًا (الحد الأقصى 5MB)",
+      "photoUpdated": "تم تحديث الصورة بنجاح!",
+      "updatePhotoError": "حدث خطأ أثناء تحديث الصورة",
+      "loadProfileError": "حدث خطأ أثناء تحميل بيانات الملف الشخصي"
+    },
+    "states": {
+      "noAnalysis": "No analysis performed yet."
+    },
+    "speech": {
+      "profileFor": "User profile for {name}. ",
+      "memberSince": "Member since {date}. ",
+      "skinType": "Skin type is {skinType}. ",
+      "age": "Age: {age} years old. ",
+      "email": "Email: {email}. ",
+      "latestScore": "Latest skin analysis score is {score} out of 100 on {date}. ",
+      "latestAchievement": "Latest achievement: {badge}. "
+    }
+  },
+  "adminProfile": {
+    "memberSince": "عضو منذ",
+    "breadcrumb": {
+      "admin": "المدير",
+      "profile": "ملفي الشخصي"
+    },
+    "sections": {
+      "personalDetails": "البيانات الشخصية"
+    },
+    "fields": {
+      "email": "البريد الإلكتروني",
+      "age": "العمر",
+      "ageYears": "{age} سنة",
+      "gender": "الجنس"
+    },
+    "actions": {
+      "editProfile": "تعديل الملف الشخصي"
+    },
+    "security": {
+      "title": "حساب المدير مؤمّن",
+      "description": "جلستك الإدارية محمية ومراقبة وفق سياسات أمان DeepSkyn."
+    },
+    "fallbacks": {
+      "adminUser": "مدير",
+      "unknown": "غير معروف",
+      "notSet": "غير محدد"
+    },
+    "toasts": {
+      "imageTooLarge": "الصورة كبيرة جدًا (الحد الأقصى 5MB)",
+      "photoUpdated": "تم تحديث الصورة بنجاح!",
+      "updatePhotoError": "حدث خطأ أثناء تحديث الصورة",
+      "loadProfileError": "حدث خطأ أثناء تحميل بيانات الملف الشخصي"
+    }
+  },
+  "userComplaints": {
+    "audioLabel": "صوت الشكاوى",
+    "searchPlaceholder": "ابحث بالرسالة أو التصنيف...",
+    "inboxHint": "اختر محادثة لعرض السجل التفصيلي والتحديثات من فريق الأمان لدينا.",
+    "confirmDelete": "هل أنت متأكد من حذف هذه الشكوى؟ لا يمكن التراجع عن هذا الإجراء.",
+    "actions": {
+      "newClaim": "شكوى جديدة",
+      "deleteClaim": "حذف الشكوى",
+      "closeDiscussion": "إغلاق المحادثة"
+    },
+    "empty": {
+      "title": "لا توجد مشاكل",
+      "description": "لا توجد شكاوى نشطة."
+    },
+    "newForm": {
+      "title": "ماذا حدث؟",
+      "selectCategory": "اختر التصنيف",
+      "detailedReport": "تفاصيل الشكوى",
+      "reportPlaceholder": "اكتب شكواك هنا...",
+      "uploadProof": "إرفاق أدلة (صور، مستندات)",
+      "add": "إضافة",
+      "submitting": "جارٍ الإرسال...",
+      "confirmSubmit": "تأكيد وإرسال"
+    },
+    "chat": {
+      "myMessage": "رسالتي",
+      "teamSupport": "دعم DeepSkyn",
+      "systemProhibition": "حظر النظام",
+      "ticketClosed": "تم إغلاق هذا التذكرة رسميًا.",
+      "writeUpdate": "اكتب تحديثًا...",
+      "claimsTitle": "{category} Claims",
+      "brand": "DEEPSKYN"
+    },
+    "toasts": {
+      "fetchFailed": "فشل تحميل الشكاوى",
+      "submitSuccess": "تم إرسال الشكوى بنجاح! (تم تنظيف الكلمات غير اللائقة)",
+      "submitError": "حدث خطأ أثناء الإرسال.",
+      "replySent": "تم إرسال الرد (تم تنظيف الكلمات غير اللائقة)",
+      "replyError": "حدث خطأ.",
+      "ticketDeleted": "تم حذف التذكرة بنجاح.",
+      "deleteFailed": "فشل حذف التذكرة."
+    },
+    "categories": {
+      "analysis": "Analysis",
+      "routine": "Routine",
+      "product": "Product",
+      "badge": "Badge",
+      "bug": "Bug",
+      "payment": "Payment",
+      "service": "Service",
+      "other": "Other"
+    },
+    "header": {
+      "title": "RECLAMATION",
+      "titleAccent": "& FEEDBACK",
+      "subtitle": "Your voice matters. Track and manage your reports in real-time."
+    },
+    "speech": {
+      "overview": "Complaints and feedback interface. ",
+      "totalClaims": "You have {count} total claims. ",
+      "breakdown": "{pending} pending, {accepted} accepted, and {closed} closed. ",
+      "searchActive": "Search filter is active with keyword {query}. ",
+      "searchMatches": "{count} claims match your search. ",
+      "newClaimOpen": "New claim form is open. Select category, write details, and optionally upload evidence before submitting. ",
+      "selectedCategory": "Selected claim category is {category}. ",
+      "selectedStatus": "Status is {status}. ",
+      "ticketMessages": "This ticket currently has {count} messages. ",
+      "ticketClosed": "This ticket is officially closed. ",
+      "noneSelected": "No claim is selected. You can open a conversation from the list or create a new claim. "
+    },
+    "inboxTitle": "صندوق الدعم"
+  },
+  "adminComplaints": {
+    "title": "الشكاوى",
+    "searchPlaceholder": "ابحث في المحادثات...",
+    "empty": "لا توجد نتائج",
+    "unknownUser": "مستخدم غير معروف",
+    "userId": "معرّف المستخدم:",
+    "confirmDelete": "هل أنت متأكد من حذف هذه التذكرة؟",
+    "actions": {
+      "deleteTicket": "حذف التذكرة",
+      "closeDiscussion": "إغلاق المحادثة",
+      "respond": "رد"
+    },
+    "chat": {
+      "teamSupport": "دعم DeepSkyn",
+      "user": "المستخدم",
+      "writeResponse": "اكتب ردك..."
+    },
+    "noSelection": {
+      "title": "لم يتم تحديد شكوى",
+      "description": "اختر محادثة من الشريط الجانبي لعرض التفاصيل والرد."
+    },
+    "toasts": {
+      "fetchFailed": "فشل تحميل الشكاوى",
+      "statusUpdated": "تم تحديث حالة التذكرة إلى {status}",
+      "updateStatusFailed": "فشل تحديث الحالة",
+      "ticketDeleted": "تم حذف التذكرة بنجاح.",
+      "deleteFailed": "فشل حذف التذكرة",
+      "sendMessageFailed": "فشل إرسال الرسالة"
+    },
+    "status": {
+      "all": "all",
+      "pending": "pending",
+      "accept": "accept",
+      "reject": "reject"
+    }
+  },
+  "userProducts": {
+    "breadcrumb": {
+      "user": "المستخدم",
+      "products": "المنتجات"
+    },
+    "hero": {
+      "poweredBy": "مدعوم بواسطة Apify",
+      "title": "أداة استخراج منتجات التجميل والمنتجات الطبية",
+      "subtitle": "استخرج من Google منتجات التجميل والمنتجات الدوائية والمكونات والتركيبات."
+    },
+    "category": {
+      "title": "فئة المنتج"
+    },
+    "search": {
+      "placeholder": "مثال: سيروم نياسيناميد، تريتينوين 0.025%، CeraVe Hydrating...",
+      "filters": "فلاتر",
+      "searching": "جارٍ البحث...",
+      "scrape": "استخراج"
+    },
+    "filters": {
+      "brand": "العلامة التجارية",
+      "brandPlaceholder": "مثال: CeraVe, L'Oreal",
+      "site": "تقييد بالموقع",
+      "country": "البلد",
+      "maxResults": "الحد الأقصى للنتائج",
+      "language": "اللغة:",
+      "allSites": "All Sites"
+    },
+    "loading": {
+      "title": "جارٍ استخراج المنتجات من Google...",
+      "description": "الفئة: {category} · قد يستغرق ذلك حتى 40 ثانية."
+    },
+    "results": {
+      "enrichedQuery": "استعلام بحث مُحسّن",
+      "noResultsTitle": "لم يتم العثور على نتائج",
+      "noResultsDescription": "جرّب اسم منتج مختلفًا أو عدّل الفلاتر.",
+      "productAlt": "منتج",
+      "productFallbackAlt": "صورة بديلة للمنتج",
+      "titleUnavailable": "العنوان غير متاح",
+      "noDescription": "لا يوجد وصف متاح.",
+      "visitPage": "زيارة الصفحة",
+      "withImageCount": "{count} منتج{count, plural, one {} two {ان} few {ات} many {ًا} other {}} مع صورة",
+      "withoutImage": "منتجات بدون صورة",
+      "noImage": "No Image"
+    },
+    "empty": {
+      "ready": "جاهز لاستخراج منتجات {category}",
+      "descriptionPrefix": "أدخل اسم منتج أو مكوّن أو علامة تجارية أعلاه ثم اضغط",
+      "descriptionSuffix": "لجلب نتائج Google عبر Apify."
+    },
+    "toasts": {
+      "enterQuery": "يرجى إدخال اسم منتج أو مكوّن.",
+      "scrapeFailed": "فشل الاستخراج.",
+      "resultsFound": "تم العثور على {total} نتيجة لـ \"{query}\"",
+      "networkError": "خطأ في الشبكة."
+    },
+    "examples": "Examples:",
+    "categories": {
+      "skincare": "Skincare",
+      "sunscreen": "Sunscreen / SPF",
+      "serums": "Serums",
+      "moisturizers": "Moisturizers",
+      "cleansers": "Cleansers",
+      "pharmaceutical": "Pharmaceutical",
+      "derma": "Derma / Medical"
+    }
+  },
+  "userBadge": {
+    "audioLabel": "الوضع الصوتي",
+    "shareTitle": "شارة DeepSkyn الخاصة بي",
+    "errors": {
+      "fetchMotivationData": "فشل جلب بيانات التحفيز",
+      "initImageCanvas": "تعذر تهيئة لوحة الصورة"
+    },
+    "shareDefaults": {
+      "badgeTitle": "آخر شارة لي في DeepSkyn",
+      "shareText": "لقد حصلت للتو على {badgeTitle} على DeepSkyn. الاستمرارية تؤتي ثمارها. #DeepSkyn #SkinHero",
+      "heroTitle": "بطل DeepSkyn",
+      "description": "الاستمرارية وتقدم البشرة فتحا إنجازًا جديدًا.",
+      "level": "برونزي",
+      "userName": "مستخدم DeepSkyn",
+      "user": "مستخدم",
+      "beginnerTitle": "مبتدئ DeepSkyn",
+      "beginnerDescription": "ابدأ بإكمال روتيناتك للحصول على أول شارة."
+    },
+    "shareCard": {
+      "badgeLabel": "شارة DEEPSKYN",
+      "level": "المستوى",
+      "user": "المستخدم",
+      "domain": "deepskyn.app"
+    },
+    "breadcrumb": {
+      "user": "المستخدم",
+      "title": "الشارات والإنجازات"
+    },
+    "empty": {
+      "title": "بيانات التحفيز غير متاحة",
+      "description": "تعذّر تحميل بيانات إنجازاتك. تأكد من تسجيل الدخول وإكمال ملفك الشخصي الأولي.",
+      "retry": "إعادة المحاولة"
+    },
+    "shareModal": {
+      "title": "شارك شارتك",
+      "description": "انشر إنجازك على وسائل التواصل باستخدام بطاقة DeepSkyn المُولدة.",
+      "shareViaDevice": "المشاركة عبر تطبيقات الجهاز",
+      "close": "إغلاق"
+    },
+    "toasts": {
+      "imageDownloaded": "تم تنزيل صورة الشارة",
+      "generateImageFailed": "تعذر إنشاء صورة الشارة",
+      "linkCopied": "تم نسخ رابط الشارة",
+      "copyLinkFailed": "فشل نسخ الرابط",
+      "captionCopied": "تم نسخ الوصف",
+      "copyCaptionFailed": "فشل نسخ الوصف",
+      "facebookReady": "تم فتح فيسبوك. صورة الشارة والوصف جاهزان للصق.",
+      "facebookFailed": "فشل تجهيز المشاركة على فيسبوك",
+      "instagramReady": "تم فتح إنستغرام. ارفع الصورة والصق الوصف المنسوخ.",
+      "instagramFailed": "فشل تجهيز المشاركة على إنستغرام",
+      "tiktokReady": "تم فتح تيك توك. ارفع الصورة والصق الوصف المنسوخ.",
+      "tiktokFailed": "فشل تجهيز المشاركة على تيك توك",
+      "nativeShareUnavailable": "المشاركة الأصلية غير متاحة على هذا الجهاز",
+      "shareFailed": "فشل المشاركة"
+    },
+    "labels": {
+      "shareAchievement": "شارك إنجازك",
+      "activeGoal": "الهدف النشط",
+      "master": "ماستر",
+      "towardLevel": "نحو مستوى {level}",
+      "detailedProgress": "تتبع تفصيلي للتقدم",
+      "completed": "مكتمل",
+      "validationTasks": "مهام التحقق",
+      "badgeReady": "الشارة جاهزة!",
+      "requirementsCompleted": "تم استيفاء جميع متطلبات هذا المستوى.",
+      "roadmapTitle": "خارطة الطريق نحو الإتقان",
+      "roadmapSubtitle": "تابع مسارك من مبتدئ إلى خبير",
+      "earned": "مكتسب",
+      "target": "الهدف",
+      "locked": "مغلق",
+      "missionParameters": "معايير المهمة",
+      "missionComplete": "المهمة مكتملة",
+      "missionsClassified": "المهام مصنفة. بلغ المستوى السابق لإظهارها.",
+      "yourTrajectory": "مسارك",
+      "almostThere": "اقتربت جداً..."
+    },
+    "stats": {
+      "streak": "سلسلة",
+      "analyses": "تحاليل",
+      "score": "النتيجة"
+    }
+  },
+  "userRoutines": {
+    "audioLabel": "صوت الروتينات",
+    "breadcrumb": {
+      "user": "المستخدم",
+      "routines": "الروتينات"
+    },
+    "labels": {
+      "motivation": "الدافع:",
+      "warnings": "التحذيرات:",
+      "goal": "الهدف:",
+      "consistency": "الاستمرارية",
+      "glowing": "بشرتك متألقة.",
+      "dailyInsight": "نصيحة اليوم",
+      "routineType": "Routine {type}",
+      "aiRoutine": "AI Routine",
+      "routine": "Routine",
+      "step": "Step {step}",
+      "completedOn": "✓ Completed on {date}",
+      "dayStreak": "{streak}-Day Streak!"
+    },
+    "toasts": {
+      "step": "خطوة",
+      "stepCompleted": "تم إكمال {step}! ✨",
+      "stepCompletedDescription": "بشرتك تشكرك.",
+      "updateFailed": "فشل التحديث.",
+      "routineDeleted": "تم حذف الروتين ✨",
+      "deleteFailed": "فشل حذف الروتين"
+    },
+    "progress": {
+      "routineType": "Routine {type}",
+      "sparkle": "Sparkle time! ✨",
+      "halfway": "Halfway there!",
+      "keepGoing": "Keep going!"
+    },
+    "tabs": {
+      "morning": "Morning",
+      "night": "Night",
+      "weekly": "Weekly"
+    },
+    "actions": {
+      "newRoutine": "New Routine",
+      "createRoutine": "Create Routine",
+      "edit": "Edit",
+      "delete": "Delete",
+      "restartRoutine": "Restart Routine"
+    },
+    "states": {
+      "noRoutines": "No {type} routines",
+      "noRoutinesDescription": "Create your first personalized routine"
+    },
+    "meta": {
+      "skin": "Skin",
+      "score": "Score",
+      "duration": "Duration",
+      "weeks": "weeks"
+    },
+    "speech": {
+      "summary": "Hello {userName}. Your {tab} routine has {count} steps. ",
+      "completion": "You are currently {percentage}% complete. ",
+      "streak": "Your current streak is {streak} days. ",
+      "guidelines": "Guidelines for today: ",
+      "step": "Step {index}: {action}. "
+    }
+  },
+  "userBilling": {
+    "title": "الاشتراك والفوترة",
+    "subtitle": "أدِر وصولك المميز وتفضيلات الدفع بسهولة من لوحة واحدة.",
+    "breadcrumb": {
+      "user": "المستخدم",
+      "billing": "الفوترة والاشتراك"
+    },
+    "toasts": {
+      "loginRequired": "يجب تسجيل الدخول لإجراء الدفع",
+      "checkoutFailed": "فشل عملية الدفع",
+      "missingCheckoutUrl": "رابط الدفع غير موجود",
+      "paymentError": "حدث خطأ في الدفع"
+    },
+    "audioLabel": "Audio Billing",
+    "status": {
+      "free": "FREE",
+      "active": "ACTIVE",
+      "daysRemaining": "{days} DAYS REMAINING",
+      "expiringSoon": "EXPIRING SOON",
+      "expired": "EXPIRED"
+    },
+    "speech": {
+      "overview": "Subscription and billing overview. Current plan is {plan}. ",
+      "status": "Status is {status}. ",
+      "billingCycle": "Billing cycle is {cycle}. ",
+      "amount": "Amount is {amount} Tunisian dinars. ",
+      "renewalDate": "Next renewal date is {date}. ",
+      "freePlan": "You are currently on the free plan. ",
+      "expiresIn": "Your subscription expires in {days} days. ",
+      "planChoice": "You can choose between premium monthly and premium yearly plans in the payment section. "
+    },
+    "units": {
+      "year": "Year",
+      "month": "Month"
+    },
+    "labels": {
+      "nextRenewalDate": "Next Renewal Date",
+      "savings": "توفير",
+      "priceLockTitle": "ضمان تثبيت السعر",
+      "priceLockDescription": "سعرك الحالي ثابت حتى 2026. بدون زيادات."
+    },
+    "messages": {
+      "freePlan": "You are currently on the Free Plan. Upgrade to Premium to unlock exclusive features.",
+      "activeUntil": "Your subscription is active until {date}.",
+      "expiresSoon": "Action Required: Your subscription expires in {days} days.",
+      "expired": "Your subscription is expired. Renew it to regain access."
+    },
+    "plans": {
+      "choose": "Choose a Plan",
+      "premiumMonthly": "Premium Monthly",
+      "perMonth": "Per Month",
+      "perYear": "Per Year",
+      "saveYearly": "Save 40 TND/year",
+      "premiumYearly": "بريميوم سنوي"
+    },
+    "checkout": {
+      "title": "Secure Checkout",
+      "subtitle": "Automated Payment",
+      "secureStripe": "Secure Payment with Stripe",
+      "redirectHint": "By clicking the button below, you will be redirected to the secure Stripe payment page.",
+      "testMode": "📝 وضع الاختبار - بطاقات الاختبار مقبولة",
+      "successCard": "✅ نجاح:",
+      "failureCard": "❌ فشل:",
+      "testCardHint": "التاريخ: أي تاريخ مستقبلي (مثال: 12/34) • CVC: 123",
+      "encryption": "تشفير SSL بقوة 256-بت",
+      "vaultSecured": "دفع مؤمّن بالخزنة",
+      "vaultDescription": "طرق الدفع مشفّرة ومخزّنة بأمان.",
+      "compliance": "متوافق PCI-DSS • بوابة مشفّرة"
+    },
+    "summary": {
+      "verification": "Verification",
+      "tax": "Tax",
+      "yearlyDiscount": "Yearly Member Discount",
+      "grandTotal": "Grand Total",
+      "billedAnnually": "Billed annually",
+      "billedMonthly": "Billed monthly",
+      "title": "ملخص الطلب"
+    },
+    "actions": {
+      "changePlan": "Change Plan",
+      "upgradeToPremium": "Upgrade to Premium",
+      "renewAccess": "Renew Access",
+      "extendNow": "Extend Now",
+      "manageSettings": "Manage Settings",
+      "addMethod": "إضافة وسيلة"
+    }
+  },
+  "adminVerification": {
+    "title": "مركز التحقق",
+    "loading": "جارٍ تحميل المستخدمين...",
+    "searchPlaceholder": "البحث عن مستخدمين {tab}...",
+    "noUsers": "لا يوجد مستخدمون {tab}",
+    "noImage": "لا توجد صورة مرفقة للتحقق",
+    "emptyTitle": "اختر طلب تحقق",
+    "emptyDescription": "تصفح قائمة المستخدمين المعلقة على اليسار لعرض معلوماتهم وإدارة التحقق من الهوية.",
+    "status": {
+      "approved": "مقبول",
+      "rejected": "مرفوض"
+    },
+    "breadcrumb": {
+      "admin": "المدير",
+      "center": "مركز التحقق"
+    },
+    "actions": {
+      "approve": "قبول",
+      "reject": "رفض"
+    },
+    "tabs": {
+      "requests": "الطلبات",
+      "pending": "قيد الانتظار",
+      "rejected": "مرفوض"
+    },
+    "total": "الإجمالي {tab}",
+    "cards": {
+      "personalIdentity": "الهوية الشخصية",
+      "verificationImage": "صورة التحقق",
+      "identityPreview": "معاينة الهوية"
+    },
+    "fields": {
+      "fullName": "الاسم الكامل",
+      "gender": "الجنس",
+      "age": "العمر",
+      "ageValue": "{age} سنة",
+      "joined": "تاريخ الانضمام",
+      "notAvailable": "غير متاح"
+    },
+    "badges": {
+      "efficiency": "تركيز على الكفاءة",
+      "realtime": "مزامنة لحظية"
+    },
+    "toasts": {
+      "loadUsersFailed": "فشل تحميل المستخدمين",
+      "userStatusUpdated": "تم {status} المستخدم بنجاح!",
+      "actionFailed": "فشل {action} المستخدم"
+    }
+  },
+  "userDashboard": {
+    "fallbackName": "هناك",
+    "welcome": "مرحبًا بعودتك، {name}!",
+    "subtitle": "إليك ما يحدث في حسابك اليوم.",
+    "stats": {
+      "totalScans": "إجمالي التحليلات",
+      "activePlans": "الخطط النشطة",
+      "notifications": "الإشعارات"
+    },
+    "empty": {
+      "title": "لا يوجد نشاط بعد",
+      "description": "لم تقم بأي تحليل للبشرة بعد. ابدأ أول تحليل لرؤية نتائجك هنا.",
+      "cta": "ابدأ تحليلًا جديدًا"
+    }
+  },
+  "adminDashboard": {
+    "breadcrumb": {
+      "admin": "المدير",
+      "dashboard": "لوحة التحكم"
+    },
+    "title": "لوحة تحكم المدير",
+    "subtitle": "مراقبة الأداء ونمو المستخدمين في الوقت الفعلي.",
+    "kpis": {
+      "totalUsers": {
+        "title": "إجمالي المستخدمين",
+        "trend": "+12.5% مقارنة بالشهر الماضي"
+      },
+      "activeSubscriptions": {
+        "title": "الاشتراكات النشطة",
+        "trend": "بيانات مباشرة من قاعدة البيانات"
+      },
+      "growthTrends": {
+        "title": "اتجاهات النمو",
+        "trend": "مستخدمون جدد هذا الشهر"
+      },
+      "estimatedRevenue": {
+        "title": "الإيراد التقديري",
+        "trend": "إجمالي الفترة الحالية"
+      }
+    },
+    "sections": {
+      "paymentsOverview": {
+        "title": "نظرة عامة على المدفوعات",
+        "subtitle": "إحصاءات حقيقية من قاعدة البيانات",
+        "badge": "آخر 9 أشهر"
+      },
+      "weeklyProfit": "الربح الأسبوعي",
+      "visitorsByCountry": "الزوار حسب الدولة"
+    }
+  },
+  "userSettingsPage": {
+    "breadcrumb": {
+      "user": "المستخدم",
+      "settings": "الإعدادات"
+    },
+    "title": "إعدادات الحساب",
+    "subtitle": "إدارة معلومات الملف الشخصي وكلمة المرور والتفضيلات."
+  },
+  "billingSuccess": {
+    "title": "تم الدفع بنجاح!",
+    "sessionIdLabel": "معرف الجلسة",
+    "waitMessage": "يرجى الانتظار بينما ننهي إعداد حسابك...",
+    "redirectPrefix": "سيتم التحويل تلقائيًا خلال",
+    "redirectSuffix": "ثوانٍ...",
+    "backToBilling": "العودة إلى الفوترة",
+    "messages": {
+      "confirming": "نحن نؤكد اشتراكك ونحدّث حسابك...",
+      "missingSession": "معرف الجلسة مفقود. يرجى العودة إلى الفوترة والمحاولة مرة أخرى.",
+      "activated": "تم تفعيل الاشتراك بنجاح.",
+      "unableToConfirm": "تعذر تأكيد الاشتراك",
+      "confirmationFailed": "فشل تأكيد الاشتراك. يرجى فتح صفحة الفوترة."
+    }
+  },
+  "billingCancel": {
+    "title": "تم إلغاء الدفع",
+    "description": "لا مشكلة. تم إلغاء عملية الدفع. يمكنك المحاولة مجددًا في أي وقت أو استكشاف خيارات أخرى.",
+    "retryPayment": "إعادة محاولة الدفع",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "needHelp": "تحتاج مساعدة؟",
+    "contactSupport": "تواصل مع الدعم"
+  },
+  "adminSettingsPage": {
+    "breadcrumb": {
+      "admin": "المدير",
+      "settings": "الإعدادات"
+    },
+    "title": "إعدادات الحساب",
+    "subtitle": "إدارة معلومات الملف الشخصي وكلمة المرور والتفضيلات."
+  },
+  "adminSubscriptions": {
+    "breadcrumb": {
+      "admin": "المدير",
+      "subscriptions": "الاشتراكات"
+    },
+    "header": {
+      "title": "إدارة الاشتراكات",
+      "subtitle": "راقب وأدر جميع اشتراكات المستخدمين",
+      "lastUpdated": "آخر تحديث"
+    },
+    "summary": {
+      "totalSubscriptions": "إجمالي الاشتراكات",
+      "matchingFilters": "{count} مطابقة للفلاتر الحالية",
+      "activeSubscriptions": "الاشتراكات النشطة",
+      "activeRatio": "{ratio}% من جميع الاشتراكات",
+      "expiredSubscriptions": "الاشتراكات المنتهية",
+      "expiredHint": "تحتاج إلى متابعة التجديد",
+      "monthlyRevenue": "الإيراد الشهري",
+      "monthlyRevenueHint": "من الاشتراكات النشطة"
+    },
+    "filters": {
+      "button": "فلاتر",
+      "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني...",
+      "export": "تصدير CSV",
+      "exportTitle": "تصدير النتائج المفلترة إلى CSV",
+      "paymentStatus": "حالة الدفع",
+      "allStatuses": "كل الحالات",
+      "plan": "الخطة",
+      "allPlans": "كل الخطط",
+      "startDateFrom": "تاريخ البداية من",
+      "endDateTo": "تاريخ النهاية إلى"
+    },
+    "statuses": {
+      "paid": "مدفوع",
+      "expiring": "قارب على الانتهاء",
+      "expired": "منتهي"
+    },
+    "billing": {
+      "year": "سنة",
+      "month": "شهر"
+    },
+    "table": {
+      "user": "المستخدم",
+      "plan": "الخطة",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "payment": "الدفع",
+      "amount": "المبلغ",
+      "actions": "الإجراءات"
+    },
+    "states": {
+      "loading": "جارٍ تحميل الاشتراكات...",
+      "noMatch": "لا توجد اشتراكات تطابق الفلاتر"
+    },
+    "actions": {
+      "view": "عرض",
+      "viewDetails": "عرض التفاصيل"
+    },
+    "pagination": {
+      "showing": "عرض",
+      "of": "من",
+      "subscriptions": "اشتراك"
+    },
+    "detail": {
+      "tabs": {
+        "info": "معلومات الاشتراك",
+        "history": "السجل"
+      },
+      "fields": {
+        "fullName": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "plan": "الخطة",
+        "startDate": "تاريخ البداية",
+        "endDate": "تاريخ النهاية",
+        "paymentStatus": "حالة الدفع",
+        "renewal": "التجديد",
+        "amount": "المبلغ",
+        "yearly": "سنوي",
+        "subscriptionStarted": "بدأ الاشتراك",
+        "close": "إغلاق",
+        "renewSubscription": "تجديد الاشتراك"
+      }
+    },
+    "csv": {
+      "userName": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "plan": "الخطة",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "paymentStatus": "حالة الدفع",
+      "amount": "المبلغ"
+    }
+  },
+  "userAnalyzes": {
+    "header": {
+      "kicker": "السجل السريري",
+      "title": "سجل تحاليل البشرة",
+      "subtitle": "اطّلع على تقدم بشرتك وتابعه عبر الوقت من خلال عدستنا التشخيصية."
+    },
+    "filters": {
+      "searchPlaceholder": "ابحث في التحاليل...",
+      "status": {
+        "all": "الكل",
+        "improved": "تحسن",
+        "stable": "مستقر",
+        "worse": "تراجع"
+      }
+    },
+    "actions": {
+      "newAnalysis": "تحليل جديد"
+    },
+    "empty": {
+      "title": "لم يتم العثور على تحاليل",
+      "noAnalyses": "لم تُجرِ أي تحليل للبشرة بعد. ابدأ أول فحص لرؤية التقرير التفصيلي.",
+      "noMatches": "لم نجد تحاليل مطابقة للبحث أو الفلاتر. جرّب تعديلها أو ابدأ فحصًا جديدًا.",
+      "firstAnalysis": "إجراء أول تحليل",
+      "clearFilters": "مسح كل الفلاتر"
+    },
+    "audio": {
+      "detailIntro": "تحليل مفصل بتاريخ {date}.",
+      "score": "درجة صحة البشرة هي {score} من 100.",
+      "skinTypeSensitivity": "نوع البشرة {skinType} مع حساسية {sensitivity}.",
+      "summary": "ملخص: {summary}.",
+      "topRecommendations": "أهم التوصيات: {recommendations}.",
+      "history": "سجل تحاليل البشرة. لديك {count} تقارير. أحدث نتيجة كانت {score} لبشرة من نوع {skinType}."
+    },
+    "card": {
+      "labels": {
+        "baseline": "تحليل الأساس",
+        "latest": "أحدث تحليل",
+        "previous": "النتيجة السابقة",
+        "past": "السجل السابق"
+      },
+      "statuses": {
+        "improved": "تحسن",
+        "stable": "مستقر",
+        "worse": "تراجع"
+      },
+      "skinType": "نوع البشرة",
+      "hydration": "الترطيب",
+      "oilProduction": "إفراز الزيوت",
+      "sensitivity": {
+        "label": "الحساسية",
+        "low": "منخفضة",
+        "medium": "متوسطة",
+        "high": "مرتفعة"
+      }
+    },
+    "modal": {
+      "report": "تقرير التحليل السريري",
+      "detailed": "تحليل مفصل - {date}",
+      "overallHealthScore": "النتيجة العامة لصحة البشرة",
+      "overallHealthDescription": "صحة بشرتك أعلى بكثير من المتوسط لفئتك.",
+      "skinType": "نوع البشرة",
+      "sensitivity": "الحساسية",
+      "hydration": "الترطيب",
+      "oilBalance": "توازن الزيوت",
+      "identifiedConcerns": "المشكلات المحددة",
+      "mild": "خفيف",
+      "redness": "الاحمرار",
+      "minimal": "طفيف",
+      "aiVision": "تحليل الرؤية بالذكاء الاصطناعي",
+      "skinAge": "عمر البشرة",
+      "actual": "العمر الحقيقي",
+      "riskFactor": "عامل الخطر",
+      "targetedRecommendations": "توصيات موجهة",
+      "recommendationsFallback": "استنادًا إلى مؤشراتك السريرية، حددنا التوصيات الاستراتيجية التالية لصحة بشرتك.",
+      "analysisDescription": "التحليل للمستخدم {userName} تم حسابه بناءً على المعايير السريرية.",
+      "prescribedRoutine": "الروتين الموصوف",
+      "morningRoutine": "روتين الصباح",
+      "nightRoutine": "روتين الليل",
+      "step": "الخطوة {number}"
+    }
+  },
+  "adminUsers": {
+    "loading": "جارٍ تحميل المستخدمين...",
+    "errorPrefix": "خطأ",
+    "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني أو الدور...",
+    "breadcrumb": {
+      "admin": "المدير",
+      "users": "المستخدمون",
+      "usersManagement": "إدارة المستخدمين"
+    },
+    "errors": {
+      "fetchUsers": "فشل تحميل المستخدمين",
+      "updateUser": "فشل التحديث"
+    },
+    "toasts": {
+      "activated": "تم تفعيل حساب {name}",
+      "deactivated": "تم تعطيل حساب {name}",
+      "genericError": "حدث خطأ"
+    },
+    "stats": {
+      "totalUsers": "إجمالي المستخدمين",
+      "verified": "موثقون",
+      "unverified": "غير موثقين",
+      "admins": "المدراء"
+    },
+    "charts": {
+      "monthlyRegistrations": "التسجيلات الشهرية",
+      "updated": "تم التحديث",
+      "download": "تنزيل الرسم بصيغة PNG",
+      "usersByRole": "المستخدمون حسب الدور",
+      "ageGroups": "الفئات العمرية",
+      "accountStatus": "حالة الحساب"
+    },
+    "actions": {
+      "exportCsv": "تصدير CSV",
+      "addUser": "إضافة مستخدم",
+      "edit": "تعديل",
+      "deactivateAccount": "تعطيل الحساب",
+      "activateAccount": "تفعيل الحساب"
+    },
+    "table": {
+      "user": "المستخدم",
+      "email": "البريد الإلكتروني",
+      "role": "الدور",
+      "status": "الحالة",
+      "account": "الحساب",
+      "age": "العمر",
+      "gender": "الجنس",
+      "joined": "تاريخ الانضمام",
+      "actions": "الإجراءات"
+    },
+    "status": {
+      "verified": "موثق",
+      "unverified": "غير موثق",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "verifyTitle": "انقر للتحقق من هذا الحساب",
+      "unverifiedVerify": "غير موثق - تحقق"
+    },
+    "account": {
+      "clickDeactivate": "انقر للتعطيل",
+      "clickActivate": "انقر للتفعيل",
+      "updating": "جارٍ التحديث..."
+    },
+    "empty": {
+      "noMatch": "لا يوجد مستخدمون يطابقون البحث.",
+      "noUsers": "لا يوجد مستخدمون."
+    },
+    "footer": {
+      "showing": "عرض",
+      "of": "من",
+      "users": "مستخدمين"
+    },
+    "csv": {
+      "id": "المعرف",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "role": "الدور",
+      "status": "الحالة",
+      "age": "العمر",
+      "gender": "الجنس",
+      "joined": "تاريخ الانضمام"
+    },
+    "modal": {
+      "titleAdd": "إضافة مستخدم جديد",
+      "titleEdit": "تعديل المستخدم",
+      "fields": {
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "role": "الدور",
+        "age": "العمر",
+        "gender": "الجنس",
+        "accountVerified": "الحساب موثق"
+      },
+      "placeholders": {
+        "fullName": "الاسم الكامل",
+        "password": "8 أحرف على الأقل",
+        "age": "العمر"
+      },
+      "options": {
+        "notSpecified": "غير محدد",
+        "male": "ذكر",
+        "female": "أنثى"
+      },
+      "actions": {
+        "cancel": "إلغاء",
+        "saving": "جارٍ الحفظ...",
+        "createUser": "إنشاء مستخدم",
+        "saveChanges": "حفظ التغييرات"
+      },
+      "errors": {
+        "create": "فشل إنشاء المستخدم",
+        "update": "فشل تحديث المستخدم"
+      },
+      "toasts": {
+        "creating": "جارٍ إنشاء المستخدم...",
+        "updating": "جارٍ تحديث {name}...",
+        "created": "تم إنشاء المستخدم بنجاح",
+        "updated": "تم تحديث {name}",
+        "genericError": "حدث خطأ"
+      }
+    },
+    "toggleModal": {
+      "titleDeactivate": "تعطيل الحساب",
+      "titleActivate": "تفعيل الحساب",
+      "deactivateText": "هل أنت متأكد من تعطيل حساب {name}؟ لن يتمكن المستخدم من تسجيل الدخول.",
+      "activateText": "تفعيل حساب {name}؟ سيتمكن المستخدم من تسجيل الدخول مرة أخرى.",
+      "cancel": "إلغاء",
+      "deactivate": "تعطيل",
+      "activate": "تفعيل"
+    }
+  },
+  "adminProducts": {
+    "title": "المنتجات",
+    "subtitle": "إدارة جميع منتجات العناية بالبشرة في الكتالوج.",
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "stats": {
+      "totalProducts": "إجمالي المنتجات",
+      "activeProducts": "المنتجات النشطة",
+      "inactiveItems": "المنتجات غير النشطة",
+      "totalCategories": "إجمالي الفئات"
+    },
+    "filters": {
+      "searchPlaceholder": "ابحث عن منتج أو مكوّن...",
+      "categoryAll": "الفئة: الكل",
+      "skinTypeAll": "نوع البشرة: الكل",
+      "statusAll": "الحالة: الكل"
+    },
+    "actions": {
+      "addNewProduct": "إضافة منتج جديد"
+    },
+    "table": {
+      "productInfo": "معلومات المنتج",
+      "category": "الفئة",
+      "skinType": "نوع البشرة",
+      "ingredientsBenefits": "المكونات والفوائد",
+      "price": "السعر",
+      "status": "الحالة",
+      "created": "تاريخ الإنشاء",
+      "actions": "الإجراءات",
+      "noProductsFound": "لم يتم العثور على منتجات.",
+      "sku": "SKU",
+      "viewDetails": "عرض التفاصيل",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "pagination": {
+      "showing": "عرض",
+      "to": "إلى",
+      "of": "من",
+      "products": "منتج",
+      "previous": "السابق",
+      "next": "التالي"
+    },
+    "skinCompatibility": {
+      "title": "توافق البشرة",
+      "selectAll": "اختر كل ما ينطبق"
+    },
+    "proTip": {
+      "title": "نصيحة احترافية",
+      "description": "إضافة أنواع بشرة محددة تساعد محرك التوصيات على اقتراح هذا المنتج للعملاء المناسبين."
+    },
+    "scraping": {
+      "title": "سحب المنتجات من الويب",
+      "subtitle": "اكتب كلمات مكونات فقط ثم اضغط الزر لعرض المنتجات المطابقة.",
+      "useFormIngredients": "استخدام مكونات النموذج",
+      "clearResults": "مسح النتائج",
+      "ingredientKeywords": "كلمات المكونات",
+      "typeIngredient": "اكتب مكوّنًا...",
+      "scraping": "جارٍ السحب...",
+      "run": "تشغيل السحب",
+      "found": "تم العثور على {total} تطابقات، مع عرض {returned} نتيجة.",
+      "warnings": "تحذيرات",
+      "errors": {
+        "addIngredient": "يرجى إضافة كلمة مكوّن واحدة على الأقل.",
+        "failed": "فشل السحب.",
+        "unable": "تعذر تشغيل السحب."
+      },
+      "table": {
+        "image": "الصورة",
+        "productName": "اسم المنتج",
+        "description": "الوصف",
+        "matchedIngredients": "المكونات المطابقة",
+        "price": "السعر",
+        "link": "الرابط",
+        "noProducts": "لا توجد منتجات مسحوبة بعد.",
+        "noImage": "لا توجد صورة",
+        "open": "فتح"
+      }
+    },
+    "modal": {
+      "sku": "رمز SKU",
+      "noImage": "لم يتم رفع صورة",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "category": "الفئة",
+      "price": "السعر",
+      "created": "تاريخ الإنشاء",
+      "skinTypes": "أنواع البشرة",
+      "keyIngredients": "المكونات الأساسية",
+      "benefitsDescription": "الفوائد والوصف",
+      "close": "إغلاق",
+      "editProduct": "تعديل المنتج"
+    },
+    "addForm": {
+      "breadcrumbAdd": "إضافة",
+      "title": "إضافة منتج جديد",
+      "subtitle": "قم بإعداد تفاصيل المنتج وخصائص البشرة المستهدفة.",
+      "actions": {
+        "cancel": "إلغاء",
+        "save": "حفظ المنتج"
+      },
+      "sections": {
+        "basic": "معلومات أساسية",
+        "formula": "التركيبة والمكوّنات",
+        "image": "صورة المنتج"
+      },
+      "fields": {
+        "name": "اسم المنتج",
+        "namePlaceholder": "مثال: سيروم فيتامين C للإشراقة",
+        "category": "الفئة",
+        "availability": "حالة التوفر",
+        "price": "السعر (USD)",
+        "description": "الوصف",
+        "descriptionPlaceholder": "اكتب خصائص المنتج وملمسه وطريقة استخدامه...",
+        "keyIngredients": "المكوّنات الرئيسية",
+        "ingredientPlaceholder": "أضف مكوّناً...",
+        "ingredientHint": "اضغط Enter أو الفاصلة لإضافة مكوّن",
+        "serumsOption": "السيرومات",
+        "keyBenefits": "الفوائد الرئيسية",
+        "imageUpload": "انقر للرفع أو اسحب وأفلت",
+        "imageFormats": "PNG وJPG حتى 10MB"
+      }
+    }
+  },
+  "userQuestionnaire": {
+    "userDefaultName": "المستخدم",
+    "breadcrumb": {
+      "user": "المستخدم",
+      "skinAnalysis": "تحليل البشرة"
+    },
+    "header": {
+      "title": "تحليل البشرة",
+      "questions": "{count} سؤال"
+    },
+    "thinking": "DeepSkyn يفكر",
+    "analyzingDescription": "يقوم الذكاء الاصطناعي بتحليل إجاباتك لإنشاء روتين عناية مخصص.",
+    "analysis": {
+      "complete": "اكتمل التحليل."
+    },
+    "errors": {
+      "loadAccessStatus": "تعذر تحميل حالة صلاحية التحليل.",
+      "unexpected": "خطأ غير متوقع",
+      "unknown": "خطأ غير معروف",
+      "createAnalysisForImages": "تعذر إنشاء تحليل لربط الصور.",
+      "analysisIdMissingAfterCreate": "المعرف analysisId مفقود بعد إنشاء التحليل.",
+      "analysisIdRequired": "المعرف analysisId مطلوب لحفظ الصور.",
+      "storeImages": "تعذر حفظ الصور في قاعدة البيانات.",
+      "imageAnalysisFailed": "فشل طلب تحليل الصور",
+      "finalAnalysisFailed": "فشل طلب التحليل النهائي"
+    },
+    "messages": {
+      "ready": "أنا جاهز عندما تكون جاهزًا. إذا ظهر هذا، فقد تكون استجابة n8n فارغة.",
+      "connectionError": "خطأ اتصال: {error}. تحقق من تشغيل n8n وتفعيل webhook.",
+      "userSessionMissing": "تعذر العثور على جلسة المستخدم. يرجى تسجيل الدخول مجددًا وإعادة بدء الاستبيان.",
+      "finalizeWithImagesError": "تعذر إنهاء التحليل بالصور: {error}.",
+      "finalizeError": "تعذر إنهاء التحليل: {error}."
+    },
+    "toasts": {
+      "maxImages": "الحد الأقصى {count} صورة.",
+      "maxImagesWarning": "الحد الأقصى {count} صورة. يرجى إزالة بعض الصور قبل الإضافة.",
+      "photoCaptured": "تم التقاط الصورة بنجاح!"
+    },
+    "limit": {
+      "description": "لقد استخدمت التحليل المجاني خلال آخر 24 ساعة.",
+      "nextAnalysis": "التحليل التالي",
+      "lessThan24h": "خلال أقل من 24 ساعة",
+      "viewMyAnalyses": "عرض تحليلاتي",
+      "goPremium": "الترقية إلى Premium",
+      "title": "تم الوصول إلى الحد"
+    },
+    "result": {
+      "analysisComplete": "اكتمل التحليل",
+      "yourSkinScore": "درجة بشرتك",
+      "scoreExcellent": "صحة البشرة ممتازة! استمر.",
+      "scoreGood": "صحة جيدة مع فرصة للتحسن.",
+      "scoreNeedsCare": "بشرتك تحتاج عناية إضافية.",
+      "age": "العمر",
+      "analysisConfidence": "موثوقية التحليل",
+      "personalizedAnalysis": "تحليلك المخصص",
+      "strongPoints": "نقاط القوة",
+      "priorityConcerns": "المخاوف ذات الأولوية",
+      "immediateRecommendations": "التوصيات الفورية",
+      "morningRoutine": "روتين الصباح",
+      "eveningRoutine": "روتين المساء",
+      "viewRoutine": "عرض الروتين",
+      "viewHistory": "عرض السجل"
+    },
+    "images": {
+      "addForGemini": "الحد الأقصى {count} صورة. من المعرض أو الكاميرا أو بالسحب والإفلات.",
+      "dragHere": "اسحب صورك هنا",
+      "orUseButtons": "أو استخدم الأزرار أدناه",
+      "addFromGallery": "إضافة من المعرض",
+      "takePhoto": "التقاط صورة",
+      "remove": "إزالة",
+      "continueWithout": "المتابعة بدون صور",
+      "analyzing": "جارٍ التحليل...",
+      "analyzeWithGemini": "حلّل باستخدام Gemini",
+      "title": "أضف صوراً لـ Gemini"
+    },
+    "analyzingTitle": "جارٍ تحليل بشرتك..."
+  },
+  "adminAnalytics": {
+    "breadcrumb": {
+      "admin": "المدير",
+      "platformAnalytics": "تحليلات المنصة"
+    },
+    "header": {
+      "title": "تحليلات المنصة",
+      "subtitle": "رؤية شاملة لأداء شبكة DeepSkyn.",
+      "moreFilters": "مزيد من الفلاتر",
+      "export": "تصدير"
+    },
+    "kpis": {
+      "totalUsers": {
+        "label": "إجمالي المستخدمين",
+        "description": "إجمالي الحسابات المسجلة"
+      },
+      "activeUsers": {
+        "label": "المستخدمون النشطون",
+        "description": "DAU: المستخدمون النشطون يوميًا"
+      },
+      "monthlyRevenue": {
+        "label": "الإيراد الشهري",
+        "description": "إيرادات الاشتراكات والدفعات الفردية"
+      },
+      "conversionRate": {
+        "label": "معدل التحويل",
+        "description": "تحويل الزوار إلى Premium"
+      }
+    },
+    "sections": {
+      "userGrowth": {
+        "title": "اتجاهات نمو المستخدمين",
+        "subtitle": "التفاعل مقابل الاكتساب الجديد",
+        "new": "جدد",
+        "active": "نشطون"
+      },
+      "subscriptions": {
+        "title": "الاشتراكات",
+        "noData": "لا توجد بيانات اشتراك"
+      },
+      "aiInsight": {
+        "textBefore": "أدت توصيات الروتين المخصص إلى",
+        "textAfter": "زيادة في الاحتفاظ بالمستخدمين هذا الشهر.",
+        "fullReport": "تقرير الذكاء الاصطناعي الكامل",
+        "title": "رؤية نجاح الذكاء الاصطناعي"
+      },
+      "systemHealth": {
+        "title": "حالة النظام",
+        "items": {
+          "apiGateway": "بوابة API",
+          "aiSync": "مزامنة نموذج الذكاء الاصطناعي",
+          "dbLatency": "زمن استجابة قاعدة البيانات",
+          "workerJobs": "مهام المعالجة"
+        },
+        "status": {
+          "operational": "يعمل بشكل طبيعي",
+          "active24": "نشط (24)"
+        }
+      },
+      "alerts": {
+        "title": "تنبيهات حرجة (2)",
+        "highChurn": "ارتفاع التسرب",
+        "twoHoursAgo": "قبل ساعتين",
+        "highChurnDescription": "ارتفع معدل التسرب بنسبة 2.4% لمستخدمي ‘Expert Plan’ في ألمانيا.",
+        "investigate": "تحقق من الحالة",
+        "paymentFail": "فشل الدفع",
+        "fourHoursAgo": "قبل 4 ساعات",
+        "paymentFailDescription": "تم اكتشاف زيادة في أخطاء Stripe لمعاملات الاتحاد الأوروبي.",
+        "checkLogs": "فحص السجلات"
+      },
+      "liveActivity": {
+        "title": "النشاط المباشر",
+        "user1": "المستخدم #1293",
+        "user2": "المستخدم #8821",
+        "user3": "المستخدم #4502",
+        "action1": "أكمل روتين الصباح",
+        "action2": "الترقية إلى Pro",
+        "action3": "إضافة منتج جديد",
+        "justNow": "الآن",
+        "threeMinAgo": "قبل 3 دقائق",
+        "eightMinAgo": "قبل 8 دقائق"
+      }
+    }
+  },
+  "accessibility": {
+    "title": "إمكانية الوصول",
+    "shortTitle": "وصول",
+    "modesCount": "{count, plural, zero {لا أوضاع} one {وضع واحد} two {وضعان} few {# أوضاع} many {# وضعًا} other {# وضع}}",
+    "highContrast": "تباين عالٍ",
+    "largeText": "نص كبير",
+    "reducedMotion": "تقليل الحركة",
+    "colorAssist": "مساعدة الألوان",
+    "off": "إيقاف",
+    "protan": "بروتان (أحمر)",
+    "deutan": "ديوتان (أخضر)",
+    "tritan": "تريتان (أزرق)"
+  },
+  "adminProfilePage": {
+    "title": "Admin Profile - DeepSkyn"
+  },
+  "adminAnalyzes": {
+    "stats": {
+      "totalAnalyzes": "إجمالي التحاليل",
+      "activeUsers": "المستخدمون النشطون",
+      "avgScore": "المعدل",
+      "newToday": "جديد اليوم",
+      "newValue": "جديد"
+    },
+    "header": {
+      "title": "التحاليل الأخيرة",
+      "subtitle": "إدارة ومراجعة جميع التحاليل في النظام من المستخدمين.",
+      "searchPlaceholder": "البحث عن مستخدم أو تاريخ..."
+    },
+    "table": {
+      "user": "المستخدم",
+      "date": "التاريخ",
+      "summary": "الملخص",
+      "score": "النتيجة",
+      "details": "تفاصيل",
+      "skinTypeType": "نوع {skinType}"
+    },
+    "pagination": {
+      "showing": "عرض {filtered} من أصل {total} تحليل",
+      "previous": "السابق",
+      "next": "التالي"
+    }
+  },
+  "adminQuizzes": {
+    "breadcrumb": {
+      "admin": "المسؤول",
+      "quizzes": "إدارة الاختبارات"
+    },
+    "header": {
+      "title": "إدارة الاختبارات",
+      "subtitle": "إنشاء وإدارة اختبارات التقييم للمستخدمين."
+    },
+    "actions": {
+      "createQuiz": "إنشاء اختبار",
+      "deleteQuiz": "حذف الاختبار",
+      "editQuiz": "تعديل الاختبار",
+      "addNewQuiz": "إضافة اختبار جديد",
+      "preview": "معاينة",
+      "saving": "جارٍ الحفظ...",
+      "saveChanges": "حفظ التغييرات"
+    },
+    "search": {
+      "placeholder": "البحث بواسطة العنوان..."
+    },
+    "filters": {
+      "allCategories": "كل الفئات"
+    },
+    "stats": {
+      "totalQuizzes": "{count} اختبارًا إجماليًا",
+      "foundQuizzes": "{found}/{total} وجدت"
+    },
+    "labels": {
+      "category": "الفئة"
+    },
+    "preview": {
+      "questions": "معاينة الأسئلة",
+      "textAnswer": "معاينة الإجابة النصية",
+      "awaitingInput": "في انتظار إدخال المستخدم...",
+      "noQuestions": "لم تتم إضافة أسئلة بعد."
+    },
+    "fields": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "category": "الفئة"
+    },
+    "questions": {
+      "title": "الأسئلة ({count})",
+      "addQuestion": "إضافة سؤال",
+      "multipleChoice": "اختيار من متعدد",
+      "textInput": "إدخال نص",
+      "addChoice": "إضافة خيار",
+      "expectedAnswer": "الإجابة المتوقعة:",
+      "expectedPlaceholder": "مثال: الحد الأدنى...",
+      "expectedHint": "سيحتاج المستخدم إلى كتابة هذا بالضبط للحصول على النقطة.",
+      "appendNew": "إضافة سؤال جديد",
+      "questionPlaceholder": "السؤال {number}",
+      "optionPlaceholder": "الخيار {number}",
+      "optionTemplate": "الخيار {number}"
+    },
+    "categories": {
+      "other": "أخرى",
+      "skinType": "نوع البشرة",
+      "skinGlow": "إشراقة البشرة",
+      "ingredients": "المكوّنات",
+      "medical": "طبي",
+      "personal": "شخصي",
+      "general": "عام"
+    },
+    "statuses": {
+      "active": "نشط",
+      "draft": "مسودة",
+      "unknown": "غير معروف"
+    },
+    "defaults": {
+      "untitledQuestion": "بدون عنوان"
+    },
+    "toasts": {
+      "enterTitle": "يرجى إدخال عنوان الاختبار",
+      "saving": "جارٍ الحفظ...",
+      "saveQuizError": "حدث خطأ أثناء حفظ الاختبار",
+      "syncQuestionError": "خطأ: {question}... {error}",
+      "savedQuizQuestions": "تم حفظ الاختبار و {count} سؤالًا",
+      "saveError": "خطأ في الحفظ",
+      "deleting": "جارٍ الحذف...",
+      "deleted": "تم حذف الاختبار",
+      "deleteError": "حدث خطأ أثناء الحذف"
+    },
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا الاختبار؟",
+    "editor": {
+      "editingQuiz": "تعديل الاختبار",
+      "quizDetails": "تفاصيل الاختبار",
+      "settings": "الإعدادات",
+      "randomizeQuestions": "ترتيب عشوائي للأسئلة",
+      "showResultsAtEnd": "إظهار النتائج في النهاية",
+      "passScore": "نسبة النجاح %"
+    }
+  },
+  "adminBadges": {
+    "holders": "{count} حاملًا نشطًا",
+    "historyTitle": "سجل الشارات",
+    "toasts": {
+      "loadError": "تعذر تحميل الشارات."
+    },
+    "states": {
+      "loading": "جارٍ تحميل الشارات...",
+      "noUsers": "لم يتم العثور على مستخدمين",
+      "noUsersHint": "تحقق من البحث أو بيانات الشارات"
+    },
+    "hero": {
+      "kicker": "نظام التلعيب",
+      "title": "الشارات والإنجازات",
+      "subtitle": "مستخدم واحد في كل صف مع أعلى شارة له. افتح التفاصيل لعرض السجل الكامل."
+    },
+    "table": {
+      "title": "ترتيب المستخدمين",
+      "subtitle": "الترتيب حسب أعلى شارة",
+      "searchPlaceholder": "البحث بالاسم أو البريد الإلكتروني...",
+      "user": "المستخدم",
+      "bestBadge": "أفضل شارة",
+      "totalBadges": "إجمالي الشارات",
+      "details": "التفاصيل",
+      "displayedUsers": "{count} مستخدمًا معروضًا",
+      "pageOne": "الصفحة 1 من 1"
+    },
+    "badgeLevels": {
+      "bronze": "برونزية",
+      "silver": "فضية",
+      "gold": "ذهبية",
+      "platinum": "بلاتينية",
+      "rubyMaster": "ماستر روبي"
+    }
+  }
+}

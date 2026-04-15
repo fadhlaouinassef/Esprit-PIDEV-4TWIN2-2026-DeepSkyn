@@ -8,6 +8,9 @@ import SmoothScrollProvider from "./components/SmoothScrollProvider";
 import AuthProvider from "./components/AuthProvider";
 import { ToastProvider } from "./components/ToastProvider";
 import { ReduxProvider } from "@/store/Provider";
+import { ColorBlindFilterDefs } from "./components/ColorBlindFilterDefs";
+import IntlProvider from "./components/IntlProvider";
+import { getLocale, getMessages } from "next-intl/server";
 
 const figtree = Figtree({
   variable: "--font-sans",
@@ -35,27 +38,34 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const dir = locale === 'ar' ? 'rtl' : 'ltr';
+  
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={dir} suppressHydrationWarning>
       <body
         className={`${figtree.variable} ${inter.variable} ${geistMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <ReduxProvider>
-          <AuthProvider>
-            <SmoothScrollProvider>
-              <NavigationProvider>
-                {children}
-              </NavigationProvider>
-            </SmoothScrollProvider>
-          </AuthProvider>
-          <ToastProvider />
-        </ReduxProvider>
+        <IntlProvider locale={locale} messages={messages}>
+          <ReduxProvider>
+            <ColorBlindFilterDefs />
+            <AuthProvider>
+              <SmoothScrollProvider>
+                <NavigationProvider>
+                  {children}
+                </NavigationProvider>
+              </SmoothScrollProvider>
+            </AuthProvider>
+            <ToastProvider />
+          </ReduxProvider>
+        </IntlProvider>
       </body>
     </html>
   );

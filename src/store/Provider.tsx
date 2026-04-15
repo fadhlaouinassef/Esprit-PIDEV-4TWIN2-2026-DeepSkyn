@@ -4,9 +4,14 @@ import { Provider } from 'react-redux';
 import { store } from './index';
 import { ReactNode, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from './hooks';
-import { setSidebarTheme, setHighContrastMode } from './slices/uiThemeSlice';
+import { ColorBlindAssistMode, setColorBlindAssistMode, setSidebarTheme, setHighContrastMode } from './slices/uiThemeSlice';
 
 const SIDEBAR_THEME_STORAGE_KEY = 'deepskyn_sidebar_theme';
+const COLOR_ASSIST_STORAGE_KEY = 'deepskyn_color_assist_mode';
+
+const isColorAssistMode = (value: unknown): value is ColorBlindAssistMode => {
+  return value === 'none' || value === 'protanopia' || value === 'deuteranopia' || value === 'tritanopia';
+};
 
 const hexToRgb = (hex: string) => {
   const normalized = hex.replace('#', '');
@@ -86,6 +91,7 @@ const HC_THEME_PALETTES: Record<string, HcPalette> = {
 function ThemeStorageSync() {
   const dispatch = useAppDispatch();
   const sidebarTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
+  const colorBlindAssistMode = useAppSelector((state) => state.uiTheme.colorBlindAssistMode);
   const hasLoadedFromStorage = useRef(false);
 
   useEffect(() => {
@@ -93,6 +99,18 @@ function ThemeStorageSync() {
       const storedTheme = localStorage.getItem(SIDEBAR_THEME_STORAGE_KEY);
       if (storedTheme) {
         dispatch(setSidebarTheme(JSON.parse(storedTheme)));
+      }
+
+      const storedColorAssist = localStorage.getItem(COLOR_ASSIST_STORAGE_KEY);
+      if (storedColorAssist) {
+        try {
+          const parsed = JSON.parse(storedColorAssist);
+          if (isColorAssistMode(parsed)) {
+            dispatch(setColorBlindAssistMode(parsed));
+          }
+        } catch {
+          // ignore invalid values
+        }
       }
       // High contrast is now opt-in per session and should only be enabled by explicit click.
       dispatch(setHighContrastMode(false));
@@ -112,6 +130,36 @@ function ThemeStorageSync() {
       console.error('Failed to store theme state in localStorage', error);
     }
   }, [sidebarTheme]);
+
+  useEffect(() => {
+    if (!hasLoadedFromStorage.current) return;
+
+    try {
+      localStorage.setItem(COLOR_ASSIST_STORAGE_KEY, JSON.stringify(colorBlindAssistMode));
+    } catch (error) {
+      console.error('Failed to store color assist mode to localStorage', error);
+    }
+  }, [colorBlindAssistMode]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const cssValue = (() => {
+      switch (colorBlindAssistMode) {
+        case 'protanopia':
+          return 'url(#cb-assist-protanopia)';
+        case 'deuteranopia':
+          return 'url(#cb-assist-deuteranopia)';
+        case 'tritanopia':
+          return 'url(#cb-assist-tritanopia)';
+        case 'none':
+        default:
+          return 'none';
+      }
+    })();
+
+    root.style.setProperty('--color-blind-filter', cssValue);
+  }, [colorBlindAssistMode]);
 
   useEffect(() => {
     const { r, g, b } = hexToRgb(sidebarTheme.color);

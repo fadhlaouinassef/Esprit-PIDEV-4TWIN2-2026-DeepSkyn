@@ -5,6 +5,12 @@ export interface SidebarThemeOption {
   color: string;
 }
 
+export type ColorBlindAssistMode =
+  | 'none'
+  | 'protanopia'
+  | 'deuteranopia'
+  | 'tritanopia';
+
 export const SIDEBAR_THEMES: SidebarThemeOption[] = [
   { name: 'Accessible Blue', color: '#005FCC' },
   { name: 'Accessible Green', color: '#1B5E20' },
@@ -15,11 +21,13 @@ export const SIDEBAR_THEMES: SidebarThemeOption[] = [
 interface UiThemeState {
   sidebarTheme: SidebarThemeOption;
   highContrastMode: boolean;
+  colorBlindAssistMode: ColorBlindAssistMode;
 }
 
 const initialState: UiThemeState = {
   sidebarTheme: SIDEBAR_THEMES[0],
   highContrastMode: false,
+  colorBlindAssistMode: 'none',
 };
 
 const isKnownTheme = (theme: SidebarThemeOption) => {
@@ -40,9 +48,12 @@ const uiThemeSlice = createSlice({
     },
     setHighContrastMode: (state, action: PayloadAction<boolean>) => {
       state.highContrastMode = action.payload;
-    }
+    },
+    setColorBlindAssistMode: (state, action: PayloadAction<ColorBlindAssistMode>) => {
+      state.colorBlindAssistMode = action.payload;
+    },
   },
 });
 
-export const { setSidebarTheme, toggleHighContrastMode, setHighContrastMode } = uiThemeSlice.actions;
+export const { setSidebarTheme, toggleHighContrastMode, setHighContrastMode, setColorBlindAssistMode } = uiThemeSlice.actions;
 export default uiThemeSlice.reducer;

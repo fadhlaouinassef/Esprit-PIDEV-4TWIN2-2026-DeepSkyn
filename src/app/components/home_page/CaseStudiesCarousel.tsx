@@ -3,14 +3,14 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useTranslations } from "next-intl"
+
+type FeatureId = "slackCalls" | "meetingTranscripts" | "sentimentReports"
 type CaseStudy = {
   id: string
   company: string
   logo: React.ReactNode
-  title: string
-  features: string[]
-  quote: string
-  attribution: string
+  featureIds: FeatureId[]
   accentColor: string
   cards: {
     type: "slack" | "meeting" | "sentiment" | "notion" | "stripe" | "figma"
@@ -30,10 +30,7 @@ const caseStudies: CaseStudy[] = [
         />
       </svg>
     ),
-    title: "Clandestine uses Auralink to understand how their teams collaborate in real-time.",
-    features: ["Slack Calls", "Meeting Transcripts", "Sentiment Reports"],
-    quote: "Auralink gives us clarity on team alignment we never had before.",
-    attribution: "Marie Chen, Head of Operations, Clandestine",
+    featureIds: ["slackCalls", "meetingTranscripts", "sentimentReports"],
     accentColor: "#16b364",
     cards: [
       {
@@ -126,10 +123,7 @@ const caseStudies: CaseStudy[] = [
         </defs>
       </svg>
     ),
-    title: "Cloudwatch leverages Auralink to monitor cross-functional team dynamics across global offices.",
-    features: ["Slack Calls", "Meeting Transcripts", "Sentiment Reports"],
-    quote: "With Auralink, we can see collaboration patterns that directly impact our product velocity.",
-    attribution: "Sarah Chen, VP Engineering, Cloudwatch",
+    featureIds: ["slackCalls", "meetingTranscripts", "sentimentReports"],
     accentColor: "#3b82f6",
     cards: [
       {
@@ -167,10 +161,7 @@ const caseStudies: CaseStudy[] = [
         </g>
       </svg>
     ),
-    title: "EightBall relies on Auralink to track team health metrics and async communication quality.",
-    features: ["Slack Calls", "Sentiment Reports"],
-    quote: "Auralink transformed how we understand our remote-first culture.",
-    attribution: "Karri Saarinen, Co-founder, EightBall",
+    featureIds: ["slackCalls", "sentimentReports"],
     accentColor: "#0A0D12",
     cards: [
       {
@@ -281,10 +272,7 @@ const caseStudies: CaseStudy[] = [
         </g>
       </svg>
     ),
-    title: "CoreOS uses Auralink to ensure design and engineering teams stay in sync during sprints.",
-    features: ["Meeting Transcripts", "Sentiment Reports"],
-    quote: "The sentiment analysis helps us identify friction points before they become blockers.",
-    attribution: "Noah Levin, VP Engineering, CoreOS",
+    featureIds: ["meetingTranscripts", "sentimentReports"],
     accentColor: "#155eef",
     cards: [
       {
@@ -301,12 +289,14 @@ const caseStudies: CaseStudy[] = [
   },
 ]
 const FeatureBadge = ({
-  name,
+  id,
+  label,
 }: {
-  name: string
+  id: FeatureId
+  label: string
 }) => {
-  const getIcon = (featureName: string) => {
-    if (featureName.includes("Slack")) {
+  const getIcon = (featureId: FeatureId) => {
+    if (featureId === "slackCalls") {
       return (
         <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 opacity-50">
           <path
@@ -321,7 +311,8 @@ const FeatureBadge = ({
           <path d="M6 10C5.44772 10 5 10.4477 5 11C5 11.5523 5.44772 12 6 12H10V10H6Z" fill="#ECB22E" />
         </svg>
       )
-    } else if (featureName.includes("Meeting")) {
+    }
+    if (featureId === "meetingTranscripts") {
       return (
         <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 opacity-50">
           <path
@@ -340,7 +331,8 @@ const FeatureBadge = ({
           />
         </svg>
       )
-    } else if (featureName.includes("Sentiment")) {
+    }
+    if (featureId === "sentimentReports") {
       return (
         <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 opacity-50">
           <path
@@ -360,52 +352,42 @@ const FeatureBadge = ({
         </svg>
       )
     }
+
     return null
   }
+
   return (
     <div className="flex items-center gap-2 bg-white/75 shadow-sm border border-black/5 rounded-lg px-2 py-1 text-sm font-medium text-foreground">
-      {getIcon(name)}
-      {name}
+      {getIcon(id)}
+      {label}
     </div>
   )
 }
-const SlackCallCard = ({
-  accentColor,
-  delay,
-  zIndex,
-}: {
-  accentColor: string
-  delay: number
-  zIndex: number
-}) => {
-  return (
-    null
-  )
-}
-const MeetingTranscriptCard = ({
-  accentColor,
-  delay,
-  zIndex,
-}: {
-  accentColor: string
-  delay: number
-  zIndex: number
-}) => {
-  return (
-    null
-  )
-}
-const SentimentReportCard = ({
-  accentColor,
-  delay,
-  zIndex,
-}: {
+
+const SlackCallCard = (_props: {
   accentColor: string
   delay: number
   zIndex: number
 }) => {
   return null
 }
+
+const MeetingTranscriptCard = (_props: {
+  accentColor: string
+  delay: number
+  zIndex: number
+}) => {
+  return null
+}
+
+const SentimentReportCard = (_props: {
+  accentColor: string
+  delay: number
+  zIndex: number
+}) => {
+  return null
+}
+
 const NotionCollaborationCard = ({
   accentColor,
   delay,
@@ -415,6 +397,7 @@ const NotionCollaborationCard = ({
   delay: number
   zIndex: number
 }) => {
+  const t = useTranslations()
   return (
     <motion.div
       initial={{
@@ -443,15 +426,15 @@ const NotionCollaborationCard = ({
     >
       <div className="flex flex-col space-y-5">
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-foreground">Team Alignment</h4>
-          <span className="text-xs text-muted-foreground">Real-time</span>
+          <h4 className="text-sm font-semibold text-foreground">{t("home.caseStudies.cards.teamAlignment.title")}</h4>
+          <span className="text-xs text-muted-foreground">{t("home.caseStudies.cards.teamAlignment.realTime")}</span>
         </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500" />
-              <span className="text-sm text-foreground">Design Team</span>
+              <span className="text-sm text-foreground">{t("home.caseStudies.cards.teamAlignment.designTeam")}</span>
             </div>
             <span className="text-sm font-semibold text-green-600">96%</span>
           </div>
@@ -459,7 +442,7 @@ const NotionCollaborationCard = ({
           <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-blue-500" />
-              <span className="text-sm text-foreground">Engineering</span>
+              <span className="text-sm text-foreground">{t("home.caseStudies.cards.teamAlignment.engineering")}</span>
             </div>
             <span className="text-sm font-semibold text-blue-600">94%</span>
           </div>
@@ -467,7 +450,7 @@ const NotionCollaborationCard = ({
           <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-purple-500" />
-              <span className="text-sm text-foreground">Product</span>
+              <span className="text-sm text-foreground">{t("home.caseStudies.cards.teamAlignment.product")}</span>
             </div>
             <span className="text-sm font-semibold text-purple-600">92%</span>
           </div>
@@ -475,7 +458,7 @@ const NotionCollaborationCard = ({
 
         <div className="pt-3 border-t border-border/50">
           <div className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">12</span> active conversations
+            <span className="font-semibold text-foreground">12</span> {t("home.caseStudies.cards.teamAlignment.activeConversations")}
           </div>
         </div>
       </div>
@@ -492,6 +475,7 @@ const StripeGlobalCard = ({
   delay: number
   zIndex: number
 }) => {
+  const t = useTranslations()
   return (
     <motion.div
       initial={{
@@ -520,31 +504,31 @@ const StripeGlobalCard = ({
     >
       <div className="flex flex-col space-y-5">
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-foreground">Global Team Dynamics</h4>
-          <span className="text-xs text-muted-foreground">Last 24h</span>
+          <h4 className="text-sm font-semibold text-foreground">{t("home.caseStudies.cards.globalTeamDynamics.title")}</h4>
+          <span className="text-xs text-muted-foreground">{t("home.caseStudies.cards.globalTeamDynamics.last24h")}</span>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div className="text-center p-3 bg-muted/20 rounded-lg">
             <div className="text-2xl font-bold text-foreground">SF</div>
             <div className="text-xs text-muted-foreground mt-1">San Francisco</div>
-            <div className="text-xs font-semibold text-green-600 mt-2">High</div>
+            <div className="text-xs font-semibold text-green-600 mt-2">{t("home.caseStudies.cards.globalTeamDynamics.high")}</div>
           </div>
           <div className="text-center p-3 bg-muted/20 rounded-lg">
             <div className="text-2xl font-bold text-foreground">DUB</div>
             <div className="text-xs text-muted-foreground mt-1">Dublin</div>
-            <div className="text-xs font-semibold text-blue-600 mt-2">Active</div>
+            <div className="text-xs font-semibold text-blue-600 mt-2">{t("home.caseStudies.cards.globalTeamDynamics.active")}</div>
           </div>
           <div className="text-center p-3 bg-muted/20 rounded-lg">
             <div className="text-2xl font-bold text-foreground">SG</div>
             <div className="text-xs text-muted-foreground mt-1">Singapore</div>
-            <div className="text-xs font-semibold text-purple-600 mt-2">Peak</div>
+            <div className="text-xs font-semibold text-purple-600 mt-2">{t("home.caseStudies.cards.globalTeamDynamics.peak")}</div>
           </div>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Cross-office velocity</span>
+            <span className="text-muted-foreground">{t("home.caseStudies.cards.globalTeamDynamics.crossOfficeVelocity")}</span>
             <span className="font-semibold text-foreground">+28%</span>
           </div>
           <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -565,6 +549,7 @@ const FigmaSprintCard = ({
   delay: number
   zIndex: number
 }) => {
+  const t = useTranslations()
   return (
     <motion.div
       initial={{
@@ -603,15 +588,15 @@ const FigmaSprintCard = ({
               </svg>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-foreground">Sprint Planning</h4>
-              <p className="text-xs text-muted-foreground">Week 3 • Day 2</p>
+              <h4 className="text-sm font-semibold text-foreground">{t("home.caseStudies.cards.sprintPlanning.title")}</h4>
+              <p className="text-xs text-muted-foreground">{t("home.caseStudies.cards.sprintPlanning.weekDay", { week: 3, day: 2 })}</p>
             </div>
           </div>
         </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-            <span className="text-sm text-foreground">Design handoff clarity</span>
+            <span className="text-sm text-foreground">{t("home.caseStudies.cards.sprintPlanning.designHandoffClarity")}</span>
             <div className="flex items-center gap-2">
               <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div className="h-full bg-green-500" style={{ width: "94%" }} />
@@ -621,7 +606,7 @@ const FigmaSprintCard = ({
           </div>
 
           <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-            <span className="text-sm text-foreground">Team sentiment</span>
+            <span className="text-sm text-foreground">{t("home.caseStudies.cards.sprintPlanning.teamSentiment")}</span>
             <div className="flex items-center gap-2">
               <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div className="h-full bg-blue-500" style={{ width: "89%" }} />
@@ -631,16 +616,16 @@ const FigmaSprintCard = ({
           </div>
 
           <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-            <span className="text-sm text-foreground">Friction detection</span>
+            <span className="text-sm text-foreground">{t("home.caseStudies.cards.sprintPlanning.frictionDetection")}</span>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-green-600">Low</span>
+              <span className="text-xs font-semibold text-green-600">{t("home.caseStudies.cards.sprintPlanning.low")}</span>
             </div>
           </div>
         </div>
 
         <div className="pt-3 border-t border-border/50">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Blockers identified</span>
+            <span className="text-muted-foreground">{t("home.caseStudies.cards.sprintPlanning.blockersIdentified")}</span>
             <span className="font-semibold text-foreground">2</span>
           </div>
         </div>
@@ -650,11 +635,26 @@ const FigmaSprintCard = ({
 }
 
 export const CaseStudiesCarousel = () => {
+  const t = useTranslations()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
   const currentStudy = caseStudies[currentIndex]
+
+  const nextSlide = () => {
+    setDirection(1)
+    setCurrentIndex((prev) => (prev + 1) % caseStudies.length)
+  }
+  const prevSlide = () => {
+    setDirection(-1)
+    setCurrentIndex((prev) => (prev - 1 + caseStudies.length) % caseStudies.length)
+  }
+  const goToSlide = (index: number) => {
+    setDirection(index > currentIndex ? 1 : -1)
+    setCurrentIndex(index)
+  }
+
   const startAutoPlay = () => {
     if (autoPlayRef.current) clearInterval(autoPlayRef.current)
     autoPlayRef.current = setInterval(() => {
@@ -675,18 +675,6 @@ export const CaseStudiesCarousel = () => {
     }
     return () => stopAutoPlay()
   }, [isAutoPlaying, currentIndex])
-  const nextSlide = () => {
-    setDirection(1)
-    setCurrentIndex((prev) => (prev + 1) % caseStudies.length)
-  }
-  const prevSlide = () => {
-    setDirection(-1)
-    setCurrentIndex((prev) => (prev - 1 + caseStudies.length) % caseStudies.length)
-  }
-  const goToSlide = (index: number) => {
-    setDirection(index > currentIndex ? 1 : -1)
-    setCurrentIndex(index)
-  }
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
@@ -718,7 +706,7 @@ export const CaseStudiesCarousel = () => {
               fontSize: "40px",
             }}
           >
-            Customer Success Stories
+            {t("home.caseStudies.title")}
           </h1>
           <p
             className="text-lg leading-7 text-muted-foreground max-w-2xl mx-auto"
@@ -726,7 +714,7 @@ export const CaseStudiesCarousel = () => {
               fontFamily: "var(--font-figtree), Figtree",
             }}
           >
-            See how leading teams use Auralink to gain clarity on collaboration and team alignment.
+            {t("home.caseStudies.subtitle")}
           </p>
         </div>
 
@@ -763,12 +751,12 @@ export const CaseStudiesCarousel = () => {
                     fontSize: "32px",
                   }}
                 >
-                  {currentStudy.title}
+                  {t(`home.caseStudies.studies.${currentStudy.id}.title`)}
                 </h2>
 
                 <div className="flex flex-wrap gap-2">
-                  {currentStudy.features.map((feature, idx) => (
-                    <FeatureBadge key={idx} name={feature} />
+                  {currentStudy.featureIds.map((featureId) => (
+                    <FeatureBadge key={featureId} id={featureId} label={t(`home.caseStudies.features.${featureId}`)} />
                   ))}
                 </div>
 
@@ -779,7 +767,7 @@ export const CaseStudiesCarousel = () => {
                       fontFamily: "var(--font-figtree), Figtree",
                     }}
                   >
-                    "{currentStudy.quote}"
+                    &ldquo;{t(`home.caseStudies.studies.${currentStudy.id}.quote`)}&rdquo;
                   </p>
                   <footer
                     className="text-sm text-muted-foreground"
@@ -787,7 +775,7 @@ export const CaseStudiesCarousel = () => {
                       fontFamily: "var(--font-inter), Inter",
                     }}
                   >
-                    {currentStudy.attribution}
+                    {t(`home.caseStudies.studies.${currentStudy.id}.attribution`)}
                   </footer>
                 </blockquote>
               </motion.div>
@@ -801,7 +789,7 @@ export const CaseStudiesCarousel = () => {
                     key={idx}
                     onClick={() => goToSlide(idx)}
                     className={`h-2 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-8 bg-primary" : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"}`}
-                    aria-label={`Go to slide ${idx + 1}`}
+                    aria-label={t("home.caseStudies.navigation.goToSlide", { slide: idx + 1 })}
                   />
                 ))}
               </div>
@@ -810,7 +798,7 @@ export const CaseStudiesCarousel = () => {
                 <button
                   onClick={prevSlide}
                   className="p-2 rounded-lg border border-border hover:bg-accent transition-colors"
-                  aria-label="Previous slide"
+                  aria-label={t("home.caseStudies.navigation.previousSlide")}
                 >
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path
@@ -825,7 +813,7 @@ export const CaseStudiesCarousel = () => {
                 <button
                   onClick={nextSlide}
                   className="p-2 rounded-lg border border-border hover:bg-accent transition-colors"
-                  aria-label="Next slide"
+                  aria-label={t("home.caseStudies.navigation.nextSlide")}
                 >
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path

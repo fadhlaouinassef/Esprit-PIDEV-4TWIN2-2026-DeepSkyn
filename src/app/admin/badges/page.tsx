@@ -16,6 +16,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type BadgeLevel = "BRONZE" | "SILVER" | "GOLD" | "PLATINUM" | "RUBY_MASTER";
 
@@ -50,9 +51,9 @@ type BadgeApiResponse = {
     fetchedAt: string;
 };
 
-const BADGE_LEVEL_CONFIG: Record<BadgeLevel, { label: string; icon: React.ComponentType<{ size?: number; className?: string }>; color: string; bg: string; border: string; dot: string }> = {
+const BADGE_LEVEL_CONFIG: Record<BadgeLevel, { labelId: string; icon: React.ComponentType<{ size?: number; className?: string }>; color: string; bg: string; border: string; dot: string }> = {
     BRONZE: {
-        label: "Bronze",
+        labelId: "badgeLevels.bronze",
         icon: Award,
         color: "text-orange-600",
         bg: "bg-orange-50/60",
@@ -60,7 +61,7 @@ const BADGE_LEVEL_CONFIG: Record<BadgeLevel, { label: string; icon: React.Compon
         dot: "bg-orange-500",
     },
     SILVER: {
-        label: "Silver",
+        labelId: "badgeLevels.silver",
         icon: Star,
         color: "text-slate-500",
         bg: "bg-slate-50/70",
@@ -68,7 +69,7 @@ const BADGE_LEVEL_CONFIG: Record<BadgeLevel, { label: string; icon: React.Compon
         dot: "bg-slate-400",
     },
     GOLD: {
-        label: "Gold",
+        labelId: "badgeLevels.gold",
         icon: Trophy,
         color: "text-amber-600",
         bg: "bg-amber-50/60",
@@ -76,15 +77,15 @@ const BADGE_LEVEL_CONFIG: Record<BadgeLevel, { label: string; icon: React.Compon
         dot: "bg-amber-500",
     },
     PLATINUM: {
-        label: "Platinum",
+        labelId: "badgeLevels.platinum",
         icon: Shield,
         color: "text-indigo-500",
         bg: "bg-indigo-50/60",
         border: "border-indigo-200",
-        dot: "bg-indigo-500",
+        dot: "bg-rose-500",
     },
     RUBY_MASTER: {
-        label: "Ruby Master",
+        labelId: "badgeLevels.rubyMaster",
         icon: Gem,
         color: "text-rose-500",
         bg: "bg-rose-50/60",
@@ -96,6 +97,7 @@ const BADGE_LEVEL_CONFIG: Record<BadgeLevel, { label: string; icon: React.Compon
 // --- SUB-COMPONENTS ---
 
 const BadgeCard = ({ level, users, totalUsers }: { level: BadgeLevel; users: number; totalUsers: number }) => {
+    const t = useTranslations("adminBadges");
     const config = BADGE_LEVEL_CONFIG[level];
     const Icon = config.icon;
     const rarity = totalUsers > 0 ? `${((users / totalUsers) * 100).toFixed(1)}%` : "0%";
@@ -110,8 +112,8 @@ const BadgeCard = ({ level, users, totalUsers }: { level: BadgeLevel; users: num
             </div>
             <div className="flex justify-between items-end">
                 <div>
-                    <h3 className="text-xl font-black text-gray-900 dark:text-white leading-none mb-2">{config.label}</h3>
-                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{users} active holders</p>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white leading-none mb-2">{t(config.labelId)}</h3>
+                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{t("holders", { count: users })}</p>
                 </div>
                 <div className="text-right">
                     <span className="text-[10px] font-black text-[#156d95] bg-blue-50 px-2.5 py-1 rounded-full uppercase">{rarity}</span>
@@ -122,6 +124,7 @@ const BadgeCard = ({ level, users, totalUsers }: { level: BadgeLevel; users: num
 };
 
 const UserBadgeHistoryModal = ({ user, onClose }: { user: BadgeUser | null; onClose: () => void }) => {
+    const t = useTranslations("adminBadges");
     if (!user) return null;
 
     return (
@@ -152,7 +155,7 @@ const UserBadgeHistoryModal = ({ user, onClose }: { user: BadgeUser | null; onCl
                     <div className="space-y-6">
                         <div className="flex items-center gap-3">
                             <History size={18} className="text-[#156d95]" />
-                            <h3 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">Badge Achievement History</h3>
+                            <h3 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">{t("historyTitle")}</h3>
                         </div>
                         
                         <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100 dark:before:bg-gray-800">
@@ -186,6 +189,7 @@ const UserBadgeHistoryModal = ({ user, onClose }: { user: BadgeUser | null; onCl
 // --- MAIN PAGE ---
 
 export default function AdminBadgesPage() {
+    const t = useTranslations("adminBadges");
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUser, setSelectedUser] = useState<BadgeUser | null>(null);
     const [users, setUsers] = useState<BadgeUser[]>([]);
@@ -217,7 +221,7 @@ export default function AdminBadgesPage() {
                 });
             } catch (error) {
                 console.error("[AdminBadgesPage] Failed to fetch data", error);
-                toast.error("Impossible de charger les badges.");
+                toast.error(t("toasts.loadError"));
             } finally {
                 setIsLoading(false);
             }
@@ -239,7 +243,7 @@ export default function AdminBadgesPage() {
         return (
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl border ${config.border} ${config.color} bg-white dark:bg-gray-900 text-[10px] font-black uppercase tracking-widest shadow-sm`}>
                 <div className={`size-2 rounded-full ${config.dot} opacity-70 animate-pulse`} />
-                {config.label}
+                {t(config.labelId)}
             </div>
         );
     };
@@ -249,7 +253,7 @@ export default function AdminBadgesPage() {
             return (
                 <tr>
                     <td colSpan={4} className="px-12 py-16 text-center text-sm text-gray-500 font-semibold">
-                        Chargement des badges...
+                        {t("states.loading")}
                     </td>
                 </tr>
             );
@@ -263,8 +267,8 @@ export default function AdminBadgesPage() {
                             <div className="size-24 rounded-[40px] bg-gray-50 dark:bg-gray-900 flex items-center justify-center mx-auto mb-8 shadow-inner">
                                 <Award size={40} className="text-gray-200" />
                             </div>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Aucun utilisateur trouvé</h3>
-                            <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Vérifiez la recherche ou les données badges</p>
+                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">{t("states.noUsers")}</h3>
+                            <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("states.noUsersHint")}</p>
                         </div>
                     </td>
                 </tr>
@@ -297,9 +301,9 @@ export default function AdminBadgesPage() {
                 <td className="px-12 py-8 min-w-70">
                     <div className="flex items-center gap-3">
                         <span className="text-lg font-black text-gray-900 dark:text-white tracking-tight">{user.badgeCount}</span>
-                        <span className="text-xs font-bold uppercase tracking-widest text-gray-400">badges gagnés</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-gray-400">{t("table.totalBadges")}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2 font-medium truncate">Top badge: {user.highestBadge.title}</p>
+                    <p className="text-xs text-gray-500 mt-2 font-medium truncate">{t("table.bestBadge")}: {user.highestBadge.title}</p>
                 </td>
                 <td className="px-12 py-8 text-right">
                     <div className="size-12 rounded-2xl bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400 ml-auto group-hover:bg-[#156d95] group-hover:text-white transition-all shadow-sm group-hover:shadow-lg group-hover:shadow-blue-600/10">
@@ -315,10 +319,10 @@ export default function AdminBadgesPage() {
             <div className="mx-auto w-full max-w-350">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
                     <div>
-                        <span className="text-[10px] font-black text-[#156d95] uppercase tracking-[5px] mb-3 block">Gamification System</span>
-                        <h1 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight">Badges & Achievements</h1>
+                        <span className="text-[10px] font-black text-[#156d95] uppercase tracking-[5px] mb-3 block">{t("hero.kicker")}</span>
+                        <h1 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight">{t("hero.title")}</h1>
                         <p className="text-gray-400 font-medium mt-3 max-w-xl">
-                            Un utilisateur par ligne avec son badge le plus élevé. Ouvrez la fiche pour voir l&apos;historique complet.
+                            {t("hero.subtitle")}
                         </p>
                     </div>
                 </div>
@@ -337,14 +341,14 @@ export default function AdminBadgesPage() {
                 <div className="bg-white dark:bg-gray-800 rounded-[48px] border border-gray-50 dark:border-gray-700/50 shadow-sm overflow-hidden scroll-smooth">
                     <div className="p-10 border-b border-gray-50 dark:border-gray-700/50 flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
-                            <h2 className="text-2xl font-black text-gray-900 dark:text-white leading-none mb-2">Progression des utilisateurs</h2>
-                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Classement par meilleur badge</p>
+                            <h2 className="text-2xl font-black text-gray-900 dark:text-white leading-none mb-2">{t("table.title")}</h2>
+                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{t("table.subtitle")}</p>
                         </div>
                         <div className="relative flex-1 max-w-xs">
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 size-5" />
                             <input
                                 type="text"
-                                placeholder="Rechercher nom ou email..."
+                                placeholder={t("table.searchPlaceholder")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-gray-900 rounded-3xl border-none text-xs focus:ring-2 focus:ring-[#156d95]/50 transition-all font-bold placeholder:text-gray-400"
@@ -356,10 +360,10 @@ export default function AdminBadgesPage() {
                         <table className="w-full text-left">
                             <thead className="bg-gray-50/50 dark:bg-gray-900/50">
                                 <tr className="text-[10px] font-black text-gray-400 uppercase tracking-[4px] border-b border-gray-50 dark:border-gray-700/50">
-                                    <th className="px-12 py-8">Utilisateur</th>
-                                    <th className="px-12 py-8">Meilleur badge</th>
-                                    <th className="px-12 py-8">Total badges</th>
-                                    <th className="px-12 py-8 text-right">Détails</th>
+                                    <th className="px-12 py-8">{t("table.user")}</th>
+                                    <th className="px-12 py-8">{t("table.bestBadge")}</th>
+                                    <th className="px-12 py-8">{t("table.totalBadges")}</th>
+                                    <th className="px-12 py-8 text-right">{t("table.details")}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
@@ -369,8 +373,8 @@ export default function AdminBadgesPage() {
                     </div>
 
                     <div className="p-10 bg-gray-50/30 dark:bg-gray-900/10 border-t border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
-                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[3px]">{filteredUsers.length} utilisateur(s) affiché(s)</p>
-                        <span className="text-sm font-black px-6 text-gray-900 dark:text-white">Page 1 of 1</span>
+                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[3px]">{t("table.displayedUsers", { count: filteredUsers.length })}</p>
+                        <span className="text-sm font-black px-6 text-gray-900 dark:text-white">{t("table.pageOne")}</span>
                     </div>
                 </div>
             </div>

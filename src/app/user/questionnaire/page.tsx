@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { CameraModal } from "@/app/components/user/CameraModal";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
+import { useTranslations } from "next-intl";
 
 interface Question {
     id: number;
@@ -164,6 +165,7 @@ const parseN8nResult = (raw: unknown): N8nResult | null => {
 };
 
 export default function QuestionnairePage() {
+    const t = useTranslations("userQuestionnaire");
     const { data: session, status: sessionStatus } = useSession();
     const userId = session?.user?.id ? parseInt(session.user.id) : null;
 
@@ -210,7 +212,7 @@ export default function QuestionnairePage() {
             try {
                 const response = await fetch('/api/quiz/skin-score', { method: 'GET' });
                 if (!response.ok) {
-                    throw new Error('Failed to load analysis access status.');
+                    throw new Error(t('errors.loadAccessStatus'));
                 }
 
                 const data = await response.json();
@@ -242,7 +244,7 @@ export default function QuestionnairePage() {
         return () => {
             cancelled = true;
         };
-    }, [sessionStatus, userId]);
+    }, [sessionStatus, userId, t]);
 
     const finalizeAndSaveAnalysis = async (result: Record<string, unknown>) => {
         setCurrentQuestion(null);
@@ -304,7 +306,6 @@ export default function QuestionnairePage() {
             const hasIncomingAnalysis = incomingAnalysis.length > 0;
             const hasIncomingScore = Number.isFinite(incomingScore);
 
-            const fallbackAnalysis = hasIncomingAnalysis ? incomingAnalysis : 'Analysis complete.';
             const fallbackScore = hasIncomingScore ? incomingScore : 85;
 
             const elapsed = Date.now() - startedAt;
@@ -315,7 +316,7 @@ export default function QuestionnairePage() {
 
             setAnalysisResult({
                 // Final n8n/Gemini output has priority for displayed final result.
-                analysis: hasIncomingAnalysis ? incomingAnalysis : (computed?.analysis || fallbackAnalysis),
+                analysis: hasIncomingAnalysis ? incomingAnalysis : (computed?.analysis || t('analysis.complete')),
                 score: hasIncomingScore
                     ? incomingScore
                     : (Number.isFinite(computed?.score) ? Number(computed?.score) : fallbackScore),
@@ -339,14 +340,14 @@ export default function QuestionnairePage() {
         }
     };
 
-    const stopSpeaking = () => {
+    const stopSpeaking = useCallback(() => {
         if (typeof window !== 'undefined') {
             window.speechSynthesis.cancel();
             setSpeakingIndex(null);
         }
-    };
+    }, []);
 
-    const speakQuestion = (text: string, index: number | string) => {
+    const speakQuestion = useCallback((text: string, index: number | string) => {
         if (typeof window === 'undefined') return;
 
         if (speakingIndex === index) {
@@ -380,7 +381,7 @@ export default function QuestionnairePage() {
 
         setSpeakingIndex(index);
         window.speechSynthesis.speak(utterance);
-    };
+    }, [speakingIndex, stopSpeaking]);
 
     // Auto-read new question and its suggestions/options if enabled
     useEffect(() => {
@@ -402,14 +403,14 @@ export default function QuestionnairePage() {
                 speakQuestion(fullText, `q-${currentQuestion.id}`);
             }
         }
-    }, [currentQuestion, autoSpeech, analysisResult]);
+    }, [currentQuestion, autoSpeech, analysisResult, speakQuestion, speakingIndex]);
 
     // Read analysis automatically if it just appeared
     useEffect(() => {
         if (autoSpeech && analysisResult && analysisResult.analysis && speakingIndex !== "analysis") {
             speakQuestion(analysisResult.analysis, "analysis");
         }
-    }, [analysisResult, autoSpeech]);
+    }, [analysisResult, autoSpeech, speakQuestion, speakingIndex]);
 
     useEffect(() => {
         return () => {
@@ -535,13 +536,13 @@ export default function QuestionnairePage() {
             } else {
                 console.warn("⚠️ Unexpected n8n format or empty response", result);
                 if (messages.length === 0) {
-                    setMessages(prev => [...prev, { role: "assistant", content: "I'm ready when you are. If you see this, n8n might be returning an empty response." }]);
+                    setMessages(prev => [...prev, { role: "assistant", content: t('messages.ready') }]);
                 }
             }
         } catch (error: unknown) {
             const err = error as { message?: string };
             console.error("❌ Fetch next step error:", error);
-            setMessages(prev => [...prev, { role: "assistant", content: `Connection Error: ${err.message || 'Unexpected error'}. Please check if n8n is running and its webhook is active.` }]);
+            setMessages(prev => [...prev, { role: "assistant", content: t('messages.connectionError', { error: err.message || t('errors.unexpected') }) }]);
         } finally {
             setIsStreaming(false);
         }
@@ -553,12 +554,12 @@ export default function QuestionnairePage() {
 
         const remaining = maxSurveyImages - uploadedSurveyImages.length;
         if (remaining <= 0) {
-            toast.error(`Maximum ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} autorisee(s).`);
+            toast.error(t('toasts.maxImages', { count: maxSurveyImages }));
             return;
         }
 
         if (files.length > remaining) {
-            toast.warning(`Maximum ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} autorisee(s). Veuillez retirer des images avant d'en ajouter.`);
+            toast.warning(t('toasts.maxImagesWarning', { count: maxSurveyImages }));
         }
 
         const selected = files.slice(0, remaining);
@@ -586,11 +587,11 @@ export default function QuestionnairePage() {
         if (parsed) {
             // Check limits again just in case
             if (uploadedSurveyImages.length >= maxSurveyImages) {
-                toast.error(`Maximum ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} autorisee(s).`);
+                toast.error(t('toasts.maxImages', { count: maxSurveyImages }));
                 return;
             }
             setUploadedSurveyImages((prev) => [...prev, parsed].slice(0, maxSurveyImages));
-            toast.success('Photo capturee avec succes !');
+            toast.success(t('toasts.photoCaptured'));
         }
     };
 
@@ -602,7 +603,7 @@ export default function QuestionnairePage() {
         if (!userId) {
             setMessages((prev) => [
                 ...prev,
-                { role: 'assistant', content: 'User session not found. Please sign in again and restart the questionnaire.' },
+                { role: 'assistant', content: t('messages.userSessionMissing') },
             ]);
             return;
         }
@@ -622,13 +623,13 @@ export default function QuestionnairePage() {
 
                 if (!analysisResponse.ok) {
                     const analysisError = await analysisResponse.json().catch(() => ({}));
-                    throw new Error(analysisError.error || 'Unable to create an analysis to attach images.');
+                        throw new Error(analysisError.error || t('errors.createAnalysisForImages'));
                 }
 
                 const analysisData = await analysisResponse.json().catch(() => ({}));
                 const createdAnalysisId = Number(analysisData?.analysisId);
                 if (!Number.isFinite(createdAnalysisId)) {
-                    throw new Error('analysisId is missing after analysis creation.');
+                    throw new Error(t('errors.analysisIdMissingAfterCreate'));
                 }
 
                 analysisId = createdAnalysisId;
@@ -637,7 +638,7 @@ export default function QuestionnairePage() {
 
             if (uploadedSurveyImages.length > 0) {
                 if (!analysisId) {
-                    throw new Error('analysisId is required to save images.');
+                    throw new Error(t('errors.analysisIdRequired'));
                 }
 
                 const storeResponse = await fetch('/api/quiz/image-survey', {
@@ -652,7 +653,7 @@ export default function QuestionnairePage() {
 
                 if (!storeResponse.ok) {
                     const storeError = await storeResponse.json().catch(() => ({}));
-                    throw new Error(storeError.error || 'Unable to store images in the database.');
+                    throw new Error(storeError.error || t('errors.storeImages'));
                 }
             }
 
@@ -676,7 +677,7 @@ export default function QuestionnairePage() {
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.detail || errData.error || 'Image analysis request failed');
+                throw new Error(errData.detail || errData.error || t('errors.imageAnalysisFailed'));
             }
 
             const result = parseN8nResult(await response.json());
@@ -690,7 +691,7 @@ export default function QuestionnairePage() {
                 ...prev,
                 {
                     role: 'assistant',
-                    content: `Unable to finalize analysis with images: ${err.message || 'unknown error'}.`,
+                    content: t('messages.finalizeWithImagesError', { error: err.message || t('errors.unknown') }),
                 },
             ]);
         } finally {
@@ -718,7 +719,7 @@ export default function QuestionnairePage() {
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.detail || errData.error || 'Final analysis request failed');
+                throw new Error(errData.detail || errData.error || t('errors.finalAnalysisFailed'));
             }
 
             const result = parseN8nResult(await response.json());
@@ -731,7 +732,7 @@ export default function QuestionnairePage() {
                 ...prev,
                 {
                     role: 'assistant',
-                    content: `Unable to finalize analysis: ${err.message || 'unknown error'}.`,
+                    content: t('messages.finalizeError', { error: err.message || t('errors.unknown') }),
                 },
             ]);
         } finally {
@@ -769,14 +770,14 @@ export default function QuestionnairePage() {
     };
 
     return (
-        <UserLayout userName={session?.user?.name || "User"} userPhoto={session?.user?.image || "/avatar.png"}>
+        <UserLayout userName={session?.user?.name || t('userDefaultName')} userPhoto={session?.user?.image || "/avatar.png"}>
             <div className={`mx-auto w-full max-w-[800px] flex flex-col relative space-y-6 ${analysisResult ? "" : "h-[calc(100vh-180px)]"
                 }`}>
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
-                    <span>User</span>
+                    <span>{t('breadcrumb.user')}</span>
                     <ChevronRight size={14} />
-                    <span className="text-foreground font-medium">Skin Analysis</span>
+                    <span className="text-foreground font-medium">{t('breadcrumb.skinAnalysis')}</span>
                 </nav>
 
                 {/* Header with Progress */}
@@ -784,7 +785,7 @@ export default function QuestionnairePage() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                Skin Analysis
+                                {t('header.title')}
                             </h2>
                             <AudioToggleButton
                                 enabled={autoSpeech}
@@ -796,7 +797,7 @@ export default function QuestionnairePage() {
                         </div>
                         {!analysisResult && analysisAccess.canCreateAnalysis && (
                             <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
-                                {answersSoFar.length + (currentQuestion ? 1 : 0)} Questions
+                                {t('header.questions', { count: answersSoFar.length + (currentQuestion ? 1 : 0) })}
                             </span>
                         )}
                     </div>
@@ -823,14 +824,14 @@ export default function QuestionnairePage() {
                                 <Lock className="size-5 text-amber-700 dark:text-amber-300" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-base font-black text-amber-900 dark:text-amber-200">Limit reached</h3>
+                                <h3 className="text-base font-black text-amber-900 dark:text-amber-200">{t('limit.title')}</h3>
                                 <p className="text-sm mt-1 text-amber-800 dark:text-amber-300">
-                                    You have already used your free analysis in the last 24 hours.
+                                    {t('limit.description')}
                                 </p>
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-white/80 dark:bg-black/20 text-amber-800 dark:text-amber-200">
                                         <Clock3 className="size-3.5" />
-                                        Prochaine analyse: {analysisAccess.nextAvailableAt ? new Date(analysisAccess.nextAvailableAt).toLocaleString() : 'dans moins de 24h'}
+                                        {t('limit.nextAnalysis')}: {analysisAccess.nextAvailableAt ? new Date(analysisAccess.nextAvailableAt).toLocaleString() : t('limit.lessThan24h')}
                                     </span>
                                 </div>
                                 <div className="mt-4 flex flex-wrap gap-2">
@@ -840,7 +841,7 @@ export default function QuestionnairePage() {
                                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 text-xs font-bold text-amber-900 dark:text-amber-200"
                                     >
                                         <History className="size-3.5" />
-                                        Voir mes analyses
+                                        {t('limit.viewMyAnalyses')}
                                     </button>
                                     <button
                                         type="button"
@@ -848,7 +849,7 @@ export default function QuestionnairePage() {
                                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold"
                                     >
                                         <Crown className="size-3.5" />
-                                        Passer Premium
+                                        {t('limit.goPremium')}
                                     </button>
                                 </div>
                             </div>
@@ -895,7 +896,7 @@ export default function QuestionnairePage() {
                             className="flex justify-start"
                         >
                             <div className="bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 rounded-2xl p-4 rounded-tl-none shadow-sm flex items-center gap-2">
-                                <span className="text-sm font-medium text-gray-400">DeepSkyn is thinking</span>
+                                <span className="text-sm font-medium text-gray-400">{t('thinking')}</span>
                                 <div className="flex gap-1">
                                     <div className="size-1.5 bg-primary/40 rounded-full animate-bounce"></div>
                                     <div className="size-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></div>
@@ -918,9 +919,9 @@ export default function QuestionnairePage() {
                                 </div>
                             </div>
                             <div className="text-center space-y-2">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Analyzing your skin...</h3>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('analyzingTitle')}</h3>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto">
-                                    Our AI is processing your answers to generate a personalized skincare routine.
+                                    {t('analyzingDescription')}
                                 </p>
                             </div>
                         </motion.div>
@@ -966,13 +967,13 @@ export default function QuestionnairePage() {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Sparkles className="size-4 text-yellow-300" />
-                                            <span className="text-xs font-bold text-white/60 uppercase tracking-widest">Analysis Complete</span>
+                                            <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{t('result.analysisComplete')}</span>
                                         </div>
-                                        <h3 className="text-xl font-black text-white leading-tight">Your Skin Score</h3>
+                                        <h3 className="text-xl font-black text-white leading-tight">{t('result.yourSkinScore')}</h3>
                                         <p className="mt-1 text-sm text-white/70">
-                                            {analysisResult.score >= 80 ? "Excellent skin health! Keep it up." :
-                                                analysisResult.score >= 60 ? "Good health with room to improve." :
-                                                    "Your skin needs some extra care."}
+                                            {analysisResult.score >= 80 ? t('result.scoreExcellent') :
+                                                analysisResult.score >= 60 ? t('result.scoreGood') :
+                                                    t('result.scoreNeedsCare')}
                                         </p>
                                         {/* Stat pills */}
                                         <div className="mt-3 flex flex-wrap gap-2">
@@ -983,7 +984,7 @@ export default function QuestionnairePage() {
                                             )}
                                             {analysisResult.agePeau !== undefined && (
                                                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur text-white text-xs font-bold">
-                                                    <TrendingUp className="size-3" /> Age {analysisResult.agePeau}
+                                                    <TrendingUp className="size-3" /> {t('result.age')} {analysisResult.agePeau}
                                                 </span>
                                             )}
                                             {analysisResult.scoreEau !== undefined && (
@@ -999,7 +1000,7 @@ export default function QuestionnairePage() {
                                 {analysisResult.confidence ? (
                                     <div className="mt-5">
                                         <div className="flex justify-between text-xs text-white/60 mb-1 font-semibold">
-                                            <span>Analysis Confidence</span>
+                                            <span>{t('result.analysisConfidence')}</span>
                                             <span>{analysisResult.confidence}%</span>
                                         </div>
                                         <div className="h-1.5 w-full rounded-full bg-white/20 overflow-hidden">
@@ -1020,7 +1021,7 @@ export default function QuestionnairePage() {
                                     <div className="flex items-center justify-between mb-4">
                                         <div className="flex items-center gap-2">
                                             <Award className="size-5 text-primary" />
-                                            <h4 className="font-bold text-gray-900 dark:text-white text-base">Your Personalized Analysis</h4>
+                                            <h4 className="font-bold text-gray-900 dark:text-white text-base">{t('result.personalizedAnalysis')}</h4>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
@@ -1043,7 +1044,7 @@ export default function QuestionnairePage() {
                                         >
                                             <div className="flex items-center gap-2 mb-3">
                                                 <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
-                                                <h4 className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">Strong Points</h4>
+                                                <h4 className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">{t('result.strongPoints')}</h4>
                                             </div>
                                             <ul className="space-y-2">
                                                 {analysisResult.strengths.map((item, idx) => (
@@ -1064,7 +1065,7 @@ export default function QuestionnairePage() {
                                         >
                                             <div className="flex items-center gap-2 mb-3">
                                                 <AlertTriangle className="size-5 text-rose-600 dark:text-rose-400" />
-                                                <h4 className="font-bold text-rose-800 dark:text-rose-300 text-sm">Priority Concerns</h4>
+                                                <h4 className="font-bold text-rose-800 dark:text-rose-300 text-sm">{t('result.priorityConcerns')}</h4>
                                             </div>
                                             <ul className="space-y-2">
                                                 {analysisResult.concerns.map((item, idx) => (
@@ -1089,7 +1090,7 @@ export default function QuestionnairePage() {
                                 >
                                     <div className="flex items-center gap-2 mb-4">
                                         <Zap className="size-5 text-amber-500" />
-                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm">Immediate Recommendations</h4>
+                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm">{t('result.immediateRecommendations')}</h4>
                                     </div>
                                     <ul className="space-y-2.5">
                                         {analysisResult.recommendations.immediate.map((item, idx) => (
@@ -1116,7 +1117,7 @@ export default function QuestionnairePage() {
                                                 <div className="size-8 rounded-full bg-amber-400 flex items-center justify-center">
                                                     <Sun className="size-4 text-white" />
                                                 </div>
-                                                <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">Morning Routine</h4>
+                                                <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">{t('result.morningRoutine')}</h4>
                                             </div>
                                             <ol className="space-y-4">
                                                 {analysisResult.routine.morning.map((item, idx) => (
@@ -1137,7 +1138,7 @@ export default function QuestionnairePage() {
                                                 <div className="size-8 rounded-full bg-indigo-500 flex items-center justify-center">
                                                     <Moon className="size-4 text-white" />
                                                 </div>
-                                                <h4 className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">Evening Routine</h4>
+                                                <h4 className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">{t('result.eveningRoutine')}</h4>
                                             </div>
                                             <ol className="space-y-4">
                                                 {analysisResult.routine.evening.map((item, idx) => (
@@ -1164,7 +1165,7 @@ export default function QuestionnairePage() {
                                     className="flex-1 flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-purple-500/30 text-base"
                                 >
                                     <Sparkles className="size-5" />
-                                    View Routine
+                                    {t('result.viewRoutine')}
                                     <ArrowRight className="size-5" />
                                 </motion.button>
                                 <motion.button
@@ -1174,7 +1175,7 @@ export default function QuestionnairePage() {
                                     className="flex-1 flex items-center justify-center gap-3 py-4 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 text-gray-900 dark:text-white font-bold rounded-2xl transition-all shadow-lg text-base"
                                 >
                                     <History className="size-5 text-[#156d95]" />
-                                    View History
+                                    {t('result.viewHistory')}
                                 </motion.button>
                             </div>
                         </motion.div>
@@ -1197,8 +1198,8 @@ export default function QuestionnairePage() {
                                         <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xl space-y-4">
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
-                                                    <h4 className="text-sm font-black text-gray-900 dark:text-white">Add images for Gemini</h4>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Maximum {maxSurveyImages} image{maxSurveyImages > 1 ? 's' : ''}. Gallery, camera, or drag and drop.</p>
+                                                    <h4 className="text-sm font-black text-gray-900 dark:text-white">{t('images.title')}</h4>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('images.addForGemini', { count: maxSurveyImages })}</p>
                                                 </div>
                                                 <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
                                                     {uploadedSurveyImages.length}/{maxSurveyImages}
@@ -1234,8 +1235,8 @@ export default function QuestionnairePage() {
                                             >
                                                 <div className="flex flex-col items-center text-center gap-2">
                                                     <Upload className="size-6 text-primary" />
-                                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Drag your images here</p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">or use the buttons below</p>
+                                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{t('images.dragHere')}</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('images.orUseButtons')}</p>
                                                 </div>
                                             </div>
 
@@ -1247,7 +1248,7 @@ export default function QuestionnairePage() {
                                                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
                                                 >
                                                     <Upload className="size-3.5" />
-                                                    Add from gallery
+                                                    {t('images.addFromGallery')}
                                                 </button>
                                                 <button
                                                     type="button"
@@ -1256,7 +1257,7 @@ export default function QuestionnairePage() {
                                                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-xs font-bold disabled:opacity-50"
                                                 >
                                                     <Camera className="size-3.5" />
-                                                    Take a photo
+                                                    {t('images.takePhoto')}
                                                 </button>
                                             </div>
 
@@ -1269,7 +1270,7 @@ export default function QuestionnairePage() {
                                                                 type="button"
                                                                 onClick={() => setUploadedSurveyImages((prev) => prev.filter((_, i) => i !== index))}
                                                                 className="absolute top-1 right-1 size-6 rounded-full bg-black/70 text-white flex items-center justify-center"
-                                                                aria-label="Remove"
+                                                                aria-label={t('images.remove')}
                                                             >
                                                                 <X className="size-3" />
                                                             </button>
@@ -1285,7 +1286,7 @@ export default function QuestionnairePage() {
                                                     disabled={isSubmittingImages}
                                                     className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200"
                                                 >
-                                                    Continue without images
+                                                    {t('images.continueWithout')}
                                                 </button>
                                                 <button
                                                     type="button"
@@ -1293,7 +1294,7 @@ export default function QuestionnairePage() {
                                                     disabled={isSubmittingImages}
                                                     className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold disabled:opacity-60"
                                                 >
-                                                    {isSubmittingImages ? 'Analyzing...' : 'Analyze with Gemini'}
+                                                    {isSubmittingImages ? t('images.analyzing') : t('images.analyzeWithGemini')}
                                                 </button>
                                             </div>
                                         </div>

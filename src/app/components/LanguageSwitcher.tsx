@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 const languages = [
     { code: 'en', label: 'English', flag: '🇬🇧' },
@@ -11,22 +12,38 @@ const languages = [
     { code: 'ar', label: 'العربية', flag: '🇸🇦' },
 ];
 
+const LOCALE_COOKIE = 'app-language';
+
+function getCookie(name: string) {
+    if (typeof document === 'undefined') return null;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() ?? null;
+    return null;
+}
+
+function setCookie(name: string, value: string) {
+    const maxAge = 60 * 60 * 24 * 365;
+    document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; samesite=lax`;
+}
+
 export default function LanguageSwitcher() {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedLang, setSelectedLang] = useState('fr'); // Default to French as seen in screenshots
+    const router = useRouter();
 
     useEffect(() => {
-        const saved = localStorage.getItem('app-language');
-        if (saved) setSelectedLang(saved);
+        const saved = getCookie(LOCALE_COOKIE);
+        if (saved) setSelectedLang(decodeURIComponent(saved));
     }, []);
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
     const selectLanguage = (code: string) => {
         setSelectedLang(code);
-        localStorage.setItem('app-language', code);
+        setCookie(LOCALE_COOKIE, code);
         setIsOpen(false);
-        // Optional: window.location.reload() or hook into i18n if needed later
+        router.refresh();
     };
 
     const currentLang = languages.find(l => l.code === selectedLang) || languages[1];

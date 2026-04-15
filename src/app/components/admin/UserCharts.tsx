@@ -4,6 +4,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import { compactFormat } from "@/lib/format-number";
+import { useTranslations } from "next-intl";
 
 const Chart = dynamic(() => import("react-apexcharts"), {
     ssr: false,
@@ -22,6 +23,7 @@ interface UserChartsProps {
 }
 
 export function UserCharts({ users }: UserChartsProps) {
+    const t = useTranslations();
     const visitorOptions: ApexOptions = {
         chart: {
             type: "bar",
@@ -73,7 +75,7 @@ export function UserCharts({ users }: UserChartsProps) {
                         show: true,
                         total: {
                             show: true,
-                            label: "Total Revenue",
+                            label: t('components.userCharts.totalRevenueLabel'),
                             formatter: () => {
                                 const total = users.reduce((acc, curr) => acc + curr.revenues, 0);
                                 return `$${compactFormat(total)}`;
@@ -87,7 +89,7 @@ export function UserCharts({ users }: UserChartsProps) {
 
     const visitorSeries = [
         {
-            name: "Visitors",
+            name: t('components.userCharts.visitors'),
             data: users.map(u => u.visitors),
         },
     ];
@@ -97,7 +99,7 @@ export function UserCharts({ users }: UserChartsProps) {
     return (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mb-6">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Visitors by User</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('components.userCharts.visitorsByUser')}</h3>
                 <div className="h-[300px]">
                     <Chart
                         options={visitorOptions}
@@ -108,7 +110,7 @@ export function UserCharts({ users }: UserChartsProps) {
                 </div>
             </div>
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Revenue Distribution</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('components.userCharts.revenueDistribution')}</h3>
                 <div className="h-[300px] flex items-center justify-center">
                     <Chart
                         options={revenueOptions}

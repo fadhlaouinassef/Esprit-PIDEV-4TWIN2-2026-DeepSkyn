@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { PortfolioNavbar } from "@/app/components/home_page/PortfolioNavbar"
-import HeroSection from "@/app/components/home_page/HeroSection"
 import { ProductTeaserCard } from "@/app/components/home_page/ProductTeaserCard"
 import { BankingScaleHero } from "@/app/components/home_page/BankingScaleHero"
 import { CaseStudiesCarousel } from "@/app/components/home_page/CaseStudiesCarousel"
@@ -32,6 +31,7 @@ const staggerContainer = {
 export default function HomePage() {
   return (
     <motion.div
+      id="home"
       initial="initial"
       animate="animate"
       variants={staggerContainer}

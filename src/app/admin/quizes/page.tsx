@@ -34,6 +34,7 @@ import {
 
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 // Types
 interface Option {
@@ -60,6 +61,7 @@ interface Quiz {
 }
 
 export default function QuizzesPage() {
+    const t = useTranslations("adminQuizzes");
     const [view, setView] = useState<"list" | "edit">("list");
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
@@ -120,12 +122,12 @@ export default function QuizzesPage() {
     const handleSaveQuiz = async () => {
         if (!selectedQuiz) return;
         if (!selectedQuiz.title.trim()) {
-            toast.error("Veuillez saisir un titre pour le quiz");
+            toast.error(t("toasts.enterTitle"));
             return;
         }
 
         setIsSaving(true);
-        const toastId = toast.loading("Enregistrement en cours...");
+        const toastId = toast.loading(t("toasts.saving"));
 
         try {
             const isNew = selectedQuiz.id === "new";
@@ -144,7 +146,7 @@ export default function QuizzesPage() {
                 body: JSON.stringify(quizBody)
             });
 
-            if (!res.ok) throw new Error("Erreur lors de la sauvegarde du quiz");
+            if (!res.ok) throw new Error(t("toasts.saveQuizError"));
 
             const savedQuiz = await res.json();
             const quizId = savedQuiz.id;
@@ -167,7 +169,7 @@ export default function QuizzesPage() {
                 const qUrl = isNewQuestion ? `/api/quiz/${quizId}/questions` : `/api/quiz/questions/${idStr}`;
 
                 const qBody = {
-                    question: q.text || "Sans titre",
+                    question: q.text || t("defaults.untitledQuestion"),
                     type_reponse: q.type === 'choice' ? 'multiple_choice' : 'input',
                     options: q.type === 'choice' ? JSON.stringify(q.options) : null,
                     quiz_id: Number(quizId)
@@ -187,37 +189,37 @@ export default function QuizzesPage() {
                 } else {
                     const errorData = await qRes.json();
                     console.error("Failed to sync question:", q.id, errorData);
-                    toast.error(`Erreur: ${q.text.substring(0, 10)}... ${errorData.error || ""}`);
+                    toast.error(t("toasts.syncQuestionError", { question: q.text.substring(0, 10), error: errorData.error || "" }));
                 }
             }
 
-            toast.success(`Quiz et ${qCount} questions enregistrés`, { id: toastId });
+            toast.success(t("toasts.savedQuizQuestions", { count: qCount }), { id: toastId });
             await fetchQuizzes();
             setDeletedQuestionIds([]);
             setView("list");
         } catch (error) {
             console.error('Failed to save quiz:', error);
-            toast.error("Erreur d'enregistrement", { id: toastId });
+            toast.error(t("toasts.saveError"), { id: toastId });
         } finally {
             setIsSaving(false);
         }
     };
 
     const handleDeleteQuiz = async (id: string) => {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer ce quiz ?')) return;
+        if (!confirm(t("confirmDelete"))) return;
 
-        const toastId = toast.loading("Suppression en cours...");
+        const toastId = toast.loading(t("toasts.deleting"));
         try {
             const res = await fetch(`/api/quiz/${id}`, { method: 'DELETE' });
             if (res.ok) {
-                toast.success("Quiz supprimé", { id: toastId });
+                toast.success(t("toasts.deleted"), { id: toastId });
                 fetchQuizzes();
             } else {
                 throw new Error("Failed to delete");
             }
         } catch (error) {
             console.error('Failed to delete quiz:', error);
-            toast.error("Erreur lors de la suppression", { id: toastId });
+            toast.error(t("toasts.deleteError"), { id: toastId });
         }
     };
 
@@ -234,7 +236,7 @@ export default function QuizzesPage() {
             text: "",
             type: "choice",
             options: [
-                { id: `o${Date.now()}-1`, text: "Option 1" }
+                { id: `o${Date.now()}-1`, text: t('questions.optionTemplate', { number: 1 }) }
             ]
         };
         setQuestions([...questions, newQuestion]);
@@ -287,15 +289,23 @@ export default function QuizzesPage() {
         }));
     };
 
-    const getCategoryLabel = (type: string) => {
+    const getCategoryLabel = (type: string, t: any) => {
         switch (type) {
-            case 'droplets': return 'Skin Type';
-            case 'sparkles': return 'Skin Glow';
-            case 'flask': return 'Ingredients';
-            case 'health': return 'Medical';
-            case 'user': return 'Personal';
-            case 'globe': return 'General';
-            default: return 'Other';
+            case 'droplets': return t('categories.skinType');
+            case 'sparkles': return t('categories.skinGlow');
+            case 'flask': return t('categories.ingredients');
+            case 'health': return t('categories.medical');
+            case 'user': return t('categories.personal');
+            case 'globe': return t('categories.general');
+            default: return t('categories.other');
+        }
+    };
+
+    const getStatusLabel = (status: string, t: any) => {
+        switch (status) {
+            case 'active': return t('statuses.active');
+            case 'draft': return t('statuses.draft');
+            default: return t('statuses.unknown');
         }
     };
 
@@ -316,9 +326,9 @@ export default function QuizzesPage() {
             <div className="max-w-6xl mx-auto space-y-6 pb-20">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-gray-400">
-                    <span>Admin</span>
+                    <span>{t("breadcrumb.admin")}</span>
                     <ChevronRight size={14} />
-                    <span className="text-gray-700 dark:text-gray-200 font-medium">Quiz Management</span>
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">{t("breadcrumb.quizzes")}</span>
                 </nav>
 
                 <AnimatePresence mode="wait">
@@ -335,16 +345,16 @@ export default function QuizzesPage() {
                                 <div>
                                     <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
                                         <BrainCircuit className="size-8 text-blue-600 dark:text-blue-400" />
-                                        Quiz Management
+                                        {t("header.title")}
                                     </h1>
-                                    <p className="text-gray-500 dark:text-gray-400 mt-1 ml-11">Create and manage assessment quizzes for your users.</p>
+                                    <p className="text-gray-500 dark:text-gray-400 mt-1 ml-11">{t("header.subtitle")}</p>
                                 </div>
                                 <button
                                     onClick={() => { setSelectedQuiz({ id: "new", title: "New Quiz", description: "", questionCount: 0, status: "draft", iconType: "help", questions: [] }); setQuestions([]); setDeletedQuestionIds([]); setView("edit"); }}
                                     className="flex items-center justify-center gap-2 bg-gray-900 border border-gray-900 dark:bg-white dark:border-white text-white dark:text-gray-900 px-6 py-3 rounded-2xl font-bold transition-all active:scale-95 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-sm"
                                 >
                                     <Plus className="size-5" />
-                                    <span>Create Quiz</span>
+                                    <span>{t("actions.createQuiz")}</span>
                                 </button>
                             </div>
 
@@ -354,7 +364,7 @@ export default function QuizzesPage() {
                                     <Search className="size-5 text-gray-400 mr-3" />
                                     <input
                                         type="text"
-                                        placeholder="Search by title..."
+                                        placeholder={t("search.placeholder")}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="flex-1 bg-transparent border-none outline-none text-gray-700 dark:text-gray-200"
@@ -367,17 +377,17 @@ export default function QuizzesPage() {
                                         onChange={(e) => setSelectedCategory(e.target.value)}
                                         className="flex-1 bg-transparent border-none outline-none text-gray-700 dark:text-gray-200 font-medium cursor-pointer"
                                     >
-                                        <option value="all" className="bg-white dark:bg-gray-800">All Categories</option>
-                                        <option value="droplets" className="bg-white dark:bg-gray-800">Skin Type</option>
-                                        <option value="sparkles" className="bg-white dark:bg-gray-800">Skin Glow</option>
-                                        <option value="flask" className="bg-white dark:bg-gray-800">Ingredients</option>
-                                        <option value="health" className="bg-white dark:bg-gray-800">Medical</option>
-                                        <option value="user" className="bg-white dark:bg-gray-800">Personal</option>
-                                        <option value="globe" className="bg-white dark:bg-gray-800">General</option>
+                                        <option value="all" className="bg-white dark:bg-gray-800">{t("filters.allCategories")}</option>
+                                        <option value="droplets" className="bg-white dark:bg-gray-800">{t("categories.skinType")}</option>
+                                        <option value="sparkles" className="bg-white dark:bg-gray-800">{t("categories.skinGlow")}</option>
+                                        <option value="flask" className="bg-white dark:bg-gray-800">{t("categories.ingredients")}</option>
+                                        <option value="health" className="bg-white dark:bg-gray-800">{t("categories.medical")}</option>
+                                        <option value="user" className="bg-white dark:bg-gray-800">{t("categories.personal")}</option>
+                                        <option value="globe" className="bg-white dark:bg-gray-800">{t("categories.general")}</option>
                                     </select>
                                 </div>
                                 <div className="md:col-span-3 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center px-4 shadow-sm border border-gray-100 dark:border-gray-700/50 font-bold text-gray-600 dark:text-gray-300 h-14">
-                                    {filteredQuizzes.length === quizzes.length ? `${quizzes.length} Total Quizzes` : `${filteredQuizzes.length}/${quizzes.length} Found`}
+                                    {filteredQuizzes.length === quizzes.length ? t("stats.totalQuizzes", { count: quizzes.length }) : t("stats.foundQuizzes", { found: filteredQuizzes.length, total: quizzes.length })}
                                 </div>
                             </div>
 
@@ -400,7 +410,7 @@ export default function QuizzesPage() {
                                                     </div>
                                                     <div className="px-2 py-1 bg-blue-50 dark:bg-blue-900/40 rounded-lg border border-blue-100 dark:border-blue-800">
                                                         <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-tighter">
-                                                            Catégorie: {getCategoryLabel(quiz.iconType)}
+                                                            {t("labels.category")}: {getCategoryLabel(quiz.iconType)}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -416,13 +426,13 @@ export default function QuizzesPage() {
                                                 <div className="flex items-center gap-2">
                                                     <span className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300">
                                                         <ListChecks className="size-3.5 text-blue-500" />
-                                                        {quiz.questionCount} Questions
+                                                        {quiz.questionCount} {t('preview.questions')}
                                                     </span>
                                                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${quiz.status === 'active'
                                                         ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
                                                         : 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400'
                                                         }`}>
-                                                        {quiz.status.charAt(0).toUpperCase() + quiz.status.slice(1)}
+                                                            {getStatusLabel(quiz.status, t)}
                                                     </span>
                                                 </div>
 
@@ -436,14 +446,14 @@ export default function QuizzesPage() {
                                                     <button
                                                         onClick={() => handleDeleteQuiz(quiz.id)}
                                                         className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm"
-                                                        title="Supprimer le quiz"
+                                                        title={t("actions.deleteQuiz")}
                                                     >
                                                         <Trash2 className="size-5" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleEditQuiz(quiz)}
                                                         className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-sm"
-                                                        title="Modifier le quiz"
+                                                        title={t("actions.editQuiz")}
                                                     >
                                                         <SquarePen className="size-5" />
                                                     </button>
@@ -460,7 +470,7 @@ export default function QuizzesPage() {
                                                         className="overflow-hidden"
                                                     >
                                                         <div className="pt-6 mt-6 border-t border-gray-100 dark:border-gray-700/50 space-y-4">
-                                                            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Questions Preview</h4>
+                                                            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">{t("preview.questions")}</h4>
                                                             {quiz.questions.map((q, idx) => (
                                                                 <div key={q.id} className="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-700/30">
                                                                     <div className="flex items-start gap-3">
@@ -480,8 +490,8 @@ export default function QuizzesPage() {
                                                                                 </div>
                                                                             ) : (
                                                                                 <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 rounded-xl px-3 py-2">
-                                                                                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">Text Answer Preview</p>
-                                                                                    <p className="text-xs text-blue-500 dark:text-blue-300 italic">" {q.correctAnswer || "Awaited user input..."} "</p>
+                                                                                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">{t("preview.textAnswer")}</p>
+                                                                                    <p className="text-xs text-blue-500 dark:text-blue-300 italic">" {q.correctAnswer || t("preview.awaitingInput")} "</p>
                                                                                 </div>
                                                                             )}
                                                                         </div>
@@ -489,7 +499,7 @@ export default function QuizzesPage() {
                                                                 </div>
                                                             ))}
                                                             {quiz.questions.length === 0 && (
-                                                                <p className="text-center py-4 text-xs text-gray-400 italic">No questions added yet.</p>
+                                                                <p className="text-center py-4 text-xs text-gray-400 italic">{t("preview.noQuestions")}</p>
                                                             )}
                                                         </div>
                                                     </motion.div>
@@ -507,7 +517,7 @@ export default function QuizzesPage() {
                                         <div className="size-16 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md">
                                             <Plus className="size-8 text-blue-500" />
                                         </div>
-                                        <span className="font-bold text-gray-500 dark:text-gray-400">Add New Quiz</span>
+                                        <span className="font-bold text-gray-500 dark:text-gray-400">{t("actions.addNewQuiz")}</span>
                                     </motion.button>
                                 </div>
                             )}
@@ -530,21 +540,21 @@ export default function QuizzesPage() {
                                         <ArrowLeft className="size-5" />
                                     </button>
                                     <div>
-                                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Editing Quiz</span>
+                                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">{t("editor.editingQuiz")}</span>
                                         <h2 className="text-2xl font-black text-gray-900 dark:text-white">{selectedQuiz?.title}</h2>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <button className="hidden md:flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 font-bold hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
                                         <Eye className="size-4" />
-                                        Preview
+                                        {t("actions.preview")}
                                     </button>
                                     <button
                                         onClick={handleSaveQuiz}
                                         disabled={isSaving}
                                         className="bg-gray-900 border border-gray-900 dark:bg-white dark:border-white text-white dark:text-gray-900 px-6 py-2.5 rounded-2xl font-bold transition-all active:scale-95 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-sm disabled:opacity-50"
                                     >
-                                        {isSaving ? "Saving..." : "Save Changes"}
+                                        {isSaving ? t("actions.saving") : t("actions.saveChanges")}
                                     </button>
                                 </div>
                             </div>
@@ -555,12 +565,12 @@ export default function QuizzesPage() {
                                     <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700/50 space-y-6">
                                         <div className="flex items-center gap-2 mb-2">
                                             <FileText className="size-5 text-blue-500" />
-                                            <h3 className="font-bold text-gray-900 dark:text-white">Quiz Details</h3>
+                                            <h3 className="font-bold text-gray-900 dark:text-white">{t("editor.quizDetails")}</h3>
                                         </div>
 
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Title</label>
+                                                <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">{t("fields.title")}</label>
                                                 <input
                                                     type="text"
                                                     value={selectedQuiz?.title || ""}
@@ -569,7 +579,7 @@ export default function QuizzesPage() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Description</label>
+                                                <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">{t("fields.description")}</label>
                                                 <textarea
                                                     rows={4}
                                                     value={selectedQuiz?.description || ""}
@@ -578,18 +588,18 @@ export default function QuizzesPage() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Category</label>
+                                                <label className="block text-sm font-bold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">{t("fields.category")}</label>
                                                 <select
                                                     value={selectedQuiz?.iconType}
                                                     onChange={(e) => setSelectedQuiz(prev => prev ? { ...prev, iconType: e.target.value as any } : null)}
                                                     className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
                                                 >
-                                                    <option value="droplets">Skin Type (Droplets)</option>
-                                                    <option value="sparkles">Skin Glow (Sparkles)</option>
-                                                    <option value="flask">Ingredients (Flask)</option>
-                                                    <option value="health">Medical (Health)</option>
-                                                    <option value="user">Personal (User)</option>
-                                                    <option value="globe">General (Globe)</option>
+                                                    <option value="droplets">{t("categories.skinType")}</option>
+                                                    <option value="sparkles">{t("categories.skinGlow")}</option>
+                                                    <option value="flask">{t("categories.ingredients")}</option>
+                                                    <option value="health">{t("categories.medical")}</option>
+                                                    <option value="user">{t("categories.personal")}</option>
+                                                    <option value="globe">{t("categories.general")}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -598,23 +608,23 @@ export default function QuizzesPage() {
                                     <div className="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-3xl shadow-lg text-white">
                                         <h4 className="font-bold flex items-center gap-2 mb-4">
                                             <SlidersHorizontal className="size-5" />
-                                            Settings
+                                            {t("editor.settings")}
                                         </h4>
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm">Randomize questions</span>
+                                                <span className="text-sm">{t("editor.randomizeQuestions")}</span>
                                                 <div className="w-12 h-6 bg-white/20 rounded-full relative">
                                                     <div className="absolute top-1 right-1 size-4 bg-white rounded-full"></div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm">Show results at end</span>
+                                                <span className="text-sm">{t("editor.showResultsAtEnd")}</span>
                                                 <div className="w-12 h-6 bg-blue-400 rounded-full relative">
                                                     <div className="absolute top-1 right-1 size-4 bg-white rounded-full"></div>
                                                 </div>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm">Pass score %</span>
+                                                <span className="text-sm">{t("editor.passScore")}</span>
                                                 <span className="font-black">70</span>
                                             </div>
                                         </div>
@@ -626,14 +636,14 @@ export default function QuizzesPage() {
                                     <div className="flex items-center justify-between px-2">
                                         <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                             <BookOpenCheck className="size-6 text-blue-500" />
-                                            Questions ({questions.length})
+                                            {t("questions.title", { count: questions.length })}
                                         </h3>
                                         <button
                                             onClick={handleAddQuestion}
                                             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-xl transition-all"
                                         >
                                             <PlusCircle className="size-4" />
-                                            Add Question
+                                            {t("questions.addQuestion")}
                                         </button>
                                     </div>
 
@@ -657,7 +667,7 @@ export default function QuizzesPage() {
                                                                     type="text"
                                                                     value={q.text}
                                                                     onChange={(e) => handleUpdateQuestion(q.id, { text: e.target.value })}
-                                                                    placeholder={`Question ${qIndex + 1}`}
+                                                                    placeholder={t('questions.questionPlaceholder', { number: qIndex + 1 })}
                                                                     className="w-full text-lg font-bold bg-transparent border-none outline-none focus:ring-0 placeholder:text-gray-300 dark:placeholder:text-gray-600 text-gray-900 dark:text-white"
                                                                 />
                                                             </div>
@@ -666,8 +676,8 @@ export default function QuizzesPage() {
                                                                 onChange={(e) => handleUpdateQuestion(q.id, { type: e.target.value })}
                                                                 className="bg-gray-100 dark:bg-gray-700 border-none rounded-xl px-4 py-2 text-sm font-bold text-gray-700 dark:text-gray-200 outline-none"
                                                             >
-                                                                <option value="choice">Multiple Choice</option>
-                                                                <option value="input">Text Input</option>
+                                                                <option value="choice">{t("questions.multipleChoice")}</option>
+                                                                <option value="input">{t("questions.textInput")}</option>
                                                             </select>
                                                             <button
                                                                 onClick={() => handleRemoveQuestion(q.id)}
@@ -685,7 +695,7 @@ export default function QuizzesPage() {
                                                                             type="text"
                                                                             value={opt.text}
                                                                             onChange={(e) => handleUpdateOption(q.id, opt.id, e.target.value)}
-                                                                            placeholder={`Option ${optIndex + 1}`}
+                                                                            placeholder={t('questions.optionPlaceholder', { number: optIndex + 1 })}
                                                                             className="flex-1 bg-gray-50/50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:text-gray-200"
                                                                         />
                                                                         <button
@@ -701,22 +711,22 @@ export default function QuizzesPage() {
                                                                     className="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 mt-2 transition-all"
                                                                 >
                                                                     <Plus className="size-4" />
-                                                                    Add Choice
+                                                                    {t("questions.addChoice")}
                                                                 </button>
                                                             </div>
                                                         ) : (
                                                             <div className="pl-9">
                                                                 <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl">
-                                                                    <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-2">Expected Answer:</p>
+                                                                    <p className="text-sm text-blue-600 dark:text-blue-400 font-bold mb-2">{t("questions.expectedAnswer")}</p>
                                                                     <input
                                                                         type="text"
                                                                         value={q.correctAnswer || ""}
                                                                         onChange={(e) => handleUpdateQuestion(q.id, { correctAnswer: e.target.value })}
-                                                                        placeholder="e.g. Minimalism..."
+                                                                        placeholder={t("questions.expectedPlaceholder")}
                                                                         className="w-full bg-white dark:bg-gray-800 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-white"
                                                                     />
                                                                     <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 italic px-1">
-                                                                        Users will need to type this exactly to get the point.
+                                                                        {t("questions.expectedHint")}
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -734,7 +744,7 @@ export default function QuizzesPage() {
                                         <div className="p-3 bg-white dark:bg-gray-800 rounded-2xl shadow-sm group-hover:scale-110 transition-transform">
                                             <Plus className="size-6" />
                                         </div>
-                                        <span className="font-bold">Append New Question</span>
+                                        <span className="font-bold">{t("questions.appendNew")}</span>
                                     </button>
                                 </div>
                             </div>

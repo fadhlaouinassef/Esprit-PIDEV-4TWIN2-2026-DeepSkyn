@@ -7,11 +7,13 @@ import { PaymentsOverviewChart } from "@/app/components/admin/PaymentsOverviewCh
 import { WeeksProfitChart } from "@/app/components/admin/WeeksProfitChart";
 import { DonutChart } from "@/app/components/admin/DonutChart";
 import { RegionLabels } from "@/app/components/admin/RegionLabels";
+import { useTranslations } from "next-intl";
 
 
 import { Users, CreditCard, TrendingUp, DollarSign, ChevronRight } from "lucide-react";
 
 export default function AdminDashboard() {
+    const t = useTranslations("adminDashboard");
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -43,36 +45,36 @@ export default function AdminDashboard() {
 
     const kpiCards = [
         {
-            title: "Total Users",
+            title: t("kpis.totalUsers.title"),
             value: stats?.totalUsers?.toLocaleString() || "0",
             icon: Users,
             color: "text-blue-600",
             bg: "bg-blue-50",
-            trend: "+12.5% vs last month"
+            trend: t("kpis.totalUsers.trend")
         },
         {
-            title: "Active Subscriptions",
+            title: t("kpis.activeSubscriptions.title"),
             value: stats?.totalSubscriptions?.toLocaleString() || "0",
             icon: CreditCard,
             color: "text-emerald-600",
             bg: "bg-emerald-50",
-            trend: "Real-time from DB"
+            trend: t("kpis.activeSubscriptions.trend")
         },
         {
-            title: "Growth Trends",
+            title: t("kpis.growthTrends.title"),
             value: stats?.userGrowthSeries?.[0]?.data?.slice(-1)?.[0]?.toLocaleString() || "0",
             icon: TrendingUp,
             color: "text-violet-600",
             bg: "bg-violet-50",
-            trend: "New users this month"
+            trend: t("kpis.growthTrends.trend")
         },
         {
-            title: "Est. Revenue",
+            title: t("kpis.estimatedRevenue.title"),
             value: `$${(stats?.paymentsData?.received?.reduce((acc: any, curr: any) => acc + curr.y, 0) || 0).toLocaleString()}`,
             icon: DollarSign,
             color: "text-amber-600",
             bg: "bg-amber-50",
-            trend: "Total current period"
+            trend: t("kpis.estimatedRevenue.trend")
         }
     ];
 
@@ -81,15 +83,15 @@ export default function AdminDashboard() {
             <div className="space-y-8">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-gray-400">
-                    <span>Admin</span>
+                    <span>{t("breadcrumb.admin")}</span>
                     <ChevronRight size={14} />
-                    <span className="text-gray-700 dark:text-gray-200 font-medium">Dashboard</span>
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">{t("breadcrumb.dashboard")}</span>
                 </nav>
 
                 {/* Header */}
                 <div className="bg-white dark:bg-gray-800 rounded-[32px] shadow-sm p-8 border border-gray-100 dark:border-gray-700">
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">Admin Dashboard</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">Monitoring real-time performance and user growth.</p>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">{t("title")}</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium">{t("subtitle")}</p>
                 </div>
 
                 {/* KPI Cards Grid */}
@@ -116,11 +118,11 @@ export default function AdminDashboard() {
                     <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-[32px] shadow-sm p-8 border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Payments Overview</h2>
-                                <p className="text-xs text-gray-400 font-bold uppercase tracking-tight">Real statistics from database</p>
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t("sections.paymentsOverview.title")}</h2>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-tight">{t("sections.paymentsOverview.subtitle")}</p>
                             </div>
                             <span className="text-[10px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full font-black">
-                                LAST 9 MONTHS
+                                {t("sections.paymentsOverview.badge")}
                             </span>
                         </div>
                         <PaymentsOverviewChart data={stats?.paymentsData} />
@@ -128,7 +130,7 @@ export default function AdminDashboard() {
 
                     {/* 1/3 width - Weeks Profit */}
                     <div className="lg:col-span-1 bg-white dark:bg-gray-800 rounded-[32px] shadow-sm p-8 border border-gray-100 dark:border-gray-700">
-                        <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Weekly Profit</h2>
+                        <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">{t("sections.weeklyProfit")}</h2>
                         <WeeksProfitChart data={stats?.profitData} />
                     </div>
                 </div>
@@ -136,7 +138,7 @@ export default function AdminDashboard() {
                 {/* Second Row: 1/3 + 2/3 */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
                     <div className="lg:col-span-1 bg-white dark:bg-gray-800 rounded-[32px] shadow-sm p-8 border border-gray-100 dark:border-gray-700">
-                        <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Visitors by Country</h2>
+                        <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">{t("sections.visitorsByCountry")}</h2>
                         <DonutChart data={stats?.donutData} />
                     </div>
 

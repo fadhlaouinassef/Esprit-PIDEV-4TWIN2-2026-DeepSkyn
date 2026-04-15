@@ -7,15 +7,17 @@ import { CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 import { useAppDispatch } from "@/store/hooks";
 import { updateUserProfile } from "@/store/slices/authSlice";
 import { UserLayout } from "@/app/ui/UserLayout";
+import { useTranslations } from "next-intl";
 
 export default function BillingSuccessPage() {
+  const t = useTranslations("billingSuccess");
   const searchParams = useSearchParams();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const sessionId = searchParams.get("session_id");
+  const sessionId = searchParams?.get("session_id") ?? null;
   const [countdown, setCountdown] = useState(5);
   const [isSyncing, setIsSyncing] = useState(true);
-  const [syncMessage, setSyncMessage] = useState("We are confirming your subscription and updating your account...");
+  const [syncMessage, setSyncMessage] = useState(t("messages.confirming"));
 
   useEffect(() => {
     let cancelled = false;
@@ -23,7 +25,7 @@ export default function BillingSuccessPage() {
     const confirmSession = async () => {
       if (!sessionId) {
         if (!cancelled) {
-          setSyncMessage("Missing session id. Please return to billing and retry.");
+          setSyncMessage(t("messages.missingSession"));
           setIsSyncing(false);
         }
         return;
@@ -41,7 +43,7 @@ export default function BillingSuccessPage() {
           if (res.ok) {
             if (!cancelled) {
               dispatch(updateUserProfile({ role: "PREMIUM_USER" }));
-              setSyncMessage("Subscription activated successfully.");
+              setSyncMessage(t("messages.activated"));
               setIsSyncing(false);
             }
             return;
@@ -49,11 +51,11 @@ export default function BillingSuccessPage() {
 
           if (res.status !== 409) {
             const payload = await res.json().catch(() => ({}));
-            throw new Error(payload?.error || "Unable to confirm subscription");
+            throw new Error(payload?.error || t("messages.unableToConfirm"));
           }
         } catch (error: unknown) {
           if (attempt === maxRetries && !cancelled) {
-            setSyncMessage(error instanceof Error ? error.message : "Subscription confirmation failed. Please open billing page.");
+            setSyncMessage(error instanceof Error ? error.message : t("messages.confirmationFailed"));
             setIsSyncing(false);
             return;
           }
@@ -72,7 +74,7 @@ export default function BillingSuccessPage() {
     return () => {
       cancelled = true;
     };
-  }, [dispatch, sessionId]);
+  }, [dispatch, sessionId, t]);
 
   // Countdown timer
   useEffect(() => {
@@ -129,7 +131,7 @@ export default function BillingSuccessPage() {
             transition={{ delay: 0.3 }}
             className="text-4xl md:text-5xl font-black text-foreground mb-4 flex items-center justify-center gap-3"
           >
-            Payment Successful!
+            {t("title")}
             <Sparkles className="w-8 h-8 text-primary" />
           </motion.h1>
 
@@ -152,7 +154,7 @@ export default function BillingSuccessPage() {
               className="bg-muted/50 border border-border rounded-2xl p-6 mb-8 max-w-md mx-auto"
             >
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
-                Session ID
+                {t("sessionIdLabel")}
               </p>
               <p className="text-sm font-mono text-foreground break-all">
                 {sessionId}
@@ -169,14 +171,13 @@ export default function BillingSuccessPage() {
           >
             <p className="text-sm text-muted-foreground">
               {isSyncing ? (
-                <span className="font-semibold">Please wait while we finalize your account...</span>
+                <span className="font-semibold">{t("waitMessage")}</span>
               ) : (
                 <>
-                  Automatic redirection in{" "}
+                  {t("redirectPrefix")}{" "}
                   <span className="font-black text-primary text-xl">
                     {countdown}
-                  </span>{" "}
-                  seconds...
+                  </span>{" "}{t("redirectSuffix")}
                 </>
               )}
             </p>
@@ -186,7 +187,7 @@ export default function BillingSuccessPage() {
               onClick={() => router.push("/user/billing")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-primary/20"
             >
-              <span>Back to Billing</span>
+              <span>{t("backToBilling")}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </motion.div>

@@ -1,0 +1,356 @@
+﻿node_modules/next-auth/adapters.d.ts(2,47): error TS2307: Cannot find module '@auth/core/adapters' or its corresponding type declarations.
+node_modules/next-auth/core/lib/cookie.d.ts(31,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/next-auth/core/types.d.ts(6,15): error TS2724: '"cookie"' has no exported member named 'CookieSerializeOptions'. Did you mean 'SerializeOptions'?
+node_modules/next-auth/react/index.d.ts(86,71): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/build/webpack/loaders/next-app-loader/index.d.ts(1,13): error TS2613: Module '"next/dist/compiled/webpack/webpack"' has no default export. Did you mean to use 'import { webpack } from "next/dist/compiled/webpack/webpack"' instead?
+node_modules/next/dist/client/components/error-boundary.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/http-access-fallback/error-boundary.d.ts(11,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/layout-router.d.ts(2,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/image-component.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/link.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/script.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/with-router.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/lib/metadata/metadata.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_app.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_document.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_error.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/server/app-render/types.d.ts(10,8): error TS1192: Module '"next/dist/compiled/superstruct"' has no default export.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(39,16): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(40,13): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(41,15): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(42,26): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/shared/lib/app-router-context.shared-runtime.d.ts(4,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/app-router-types.d.ts(7,13): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/dynamic.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head-manager-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/image-config-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable.shared-runtime.d.ts(21,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/router-context.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/utils.d.ts(10,13): error TS1192: Module '"fs"' has no default export.
+node_modules/next/dist/styled-jsx/types/global.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-apexcharts/types/react-apexcharts.d.ts(2,8): error TS1259: Module '"apexcharts"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-apexcharts/types/react-apexcharts.d.ts(3,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/sonner/dist/index.d.ts(1,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/use-intl/core.d.ts(2,15): error TS2846: A declaration file cannot be imported without 'import type'. Did you mean to import an implementation file './dist/types/core' instead?
+node_modules/use-intl/dist/types/core/createFormatter.d.ts(35,148): error TS2694: Namespace 'Intl' has no exported member 'ListFormatOptions'.
+node_modules/use-intl/dist/types/core/createFormatter.d.ts(36,178): error TS2694: Namespace 'Intl' has no exported member 'ListFormatOptions'.
+node_modules/use-intl/dist/types/core/Formats.d.ts(6,32): error TS2694: Namespace 'Intl' has no exported member 'ListFormatOptions'.
+node_modules/use-intl/dist/types/core/formatters.d.ts(8,31): error TS2694: Namespace 'Intl' has no exported member 'ListFormat'.
+node_modules/use-intl/dist/types/core/formatters.d.ts(18,62): error TS2339: Property 'ListFormat' does not exist on type 'typeof Intl'.
+node_modules/use-intl/dist/types/core/formatters.d.ts(18,81): error TS2694: Namespace 'Intl' has no exported member 'ListFormat'.
+node_modules/use-intl/react.d.ts(2,15): error TS2846: A declaration file cannot be imported without 'import type'. Did you mean to import an implementation file './dist/types/react' instead?
+src/app/components/admin/DonutChart.tsx(4,31): error TS2307: Cannot find module '@/lib/format-number' or its corresponding type declarations.
+src/app/components/admin/DonutChart.tsx(20,44): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/DonutChart.tsx(99,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/DonutChart.tsx(100,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(3,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/app/components/admin/ListeUtilisateurs.tsx(6,47): error TS2307: Cannot find module '@/lib/format-number' or its corresponding type declarations.
+src/app/components/admin/ListeUtilisateurs.tsx(26,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(27,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(28,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(29,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(30,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(31,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(32,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(33,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(34,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(35,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(36,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(37,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(40,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(42,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(46,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(47,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(48,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(49,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(57,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(62,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(65,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(68,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(71,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(74,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(75,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(76,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(80,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(82,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/ListeUtilisateurs.tsx(86,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/MonthlyRegistrationsChart.tsx(3,29): error TS2307: Cannot find module '@/hooks/use-mobile' or its corresponding type declarations.
+src/app/components/admin/MonthlyRegistrationsChart.tsx(94,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/MonthlyRegistrationsChart.tsx(95,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(4,29): error TS2307: Cannot find module '@/hooks/use-mobile' or its corresponding type declarations.
+src/app/components/admin/Notification.tsx(5,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/app/components/admin/Notification.tsx(10,60): error TS6142: Module './dropdown' was resolved to 'C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/src/app/components/admin/dropdown.tsx', but '--jsx' is not set.
+src/app/components/admin/Notification.tsx(42,28): error TS2339: Property 'role' does not exist on type '{ name?: string; email?: string; image?: string; }'.
+src/app/components/admin/Notification.tsx(117,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(142,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(166,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(223,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(227,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(232,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(233,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(236,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(247,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(253,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(254,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(255,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(258,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(261,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(271,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(273,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(274,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(275,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(276,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(277,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(280,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(281,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(282,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(286,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(288,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(298,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(307,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(308,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(309,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(317,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(321,75): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(321,134): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(321,171): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(325,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(326,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(327,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(333,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(334,53): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(340,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(341,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(344,49): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(351,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(361,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/Notification.tsx(362,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/PaymentsOverviewChart.tsx(4,29): error TS2307: Cannot find module '@/hooks/use-mobile' or its corresponding type declarations.
+src/app/components/admin/PaymentsOverviewChart.tsx(92,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/PaymentsOverviewChart.tsx(95,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/PaymentsOverviewChart.tsx(96,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/RegionLabels.tsx(7,34): error TS6142: Module './map' was resolved to 'C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/src/app/components/admin/map.tsx', but '--jsx' is not set.
+src/app/components/admin/RegionLabels.tsx(13,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/RegionLabels.tsx(14,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/RegionLabels.tsx(18,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(3,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/app/components/admin/UserCharts.tsx(6,31): error TS2307: Cannot find module '@/lib/format-number' or its corresponding type declarations.
+src/app/components/admin/UserCharts.tsx(100,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(101,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(102,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(103,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(104,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(112,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(113,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(114,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserCharts.tsx(115,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(4,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/app/components/admin/UserInfo.tsx(9,60): error TS6142: Module './dropdown' was resolved to 'C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/src/app/components/admin/dropdown.tsx', but '--jsx' is not set.
+src/app/components/admin/UserInfo.tsx(10,48): error TS2307: Cannot find module '@/store/hooks' or its corresponding type declarations.
+src/app/components/admin/UserInfo.tsx(11,27): error TS2307: Cannot find module '@/store/slices/authSlice' or its corresponding type declarations.
+src/app/components/admin/UserInfo.tsx(44,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(45,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(49,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(51,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(52,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(53,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(61,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(62,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(64,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(75,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(80,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(82,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(83,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(84,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(93,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(94,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(97,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(103,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(105,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(106,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(110,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(111,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(114,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(118,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(119,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(123,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(125,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(126,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(130,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/UserInfo.tsx(131,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/WeeksProfitChart.tsx(98,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/WeeksProfitChart.tsx(101,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/admin/WeeksProfitChart.tsx(102,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(10,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(11,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(13,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(14,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(15,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(17,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(27,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(28,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(29,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(33,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(37,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(38,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(42,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(50,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(52,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(59,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(60,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(64,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(68,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(77,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(78,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(79,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(81,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(96,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(106,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(107,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(108,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/PageLoader.tsx(117,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/ui/ThemePicker.tsx(3,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/app/components/ui/ThemePicker.tsx(4,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/app/components/ui/ThemePicker.tsx(5,48): error TS2307: Cannot find module '@/store/hooks' or its corresponding type declarations.
+src/app/components/ui/ThemePicker.tsx(6,49): error TS2307: Cannot find module '@/store/slices/uiThemeSlice' or its corresponding type declarations.
+src/app/components/ui/ThemePicker.tsx(7,29): error TS2307: Cannot find module '@/hooks/use-hydrated' or its corresponding type declarations.
+src/app/components/ui/ThemePicker.tsx(22,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/ui/ThemePicker.tsx(29,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/ui/ThemePicker.tsx(34,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/ui/ThemePicker.tsx(38,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/ui/ThemePicker.tsx(46,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(3,13): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/app/components/user/Composer.tsx(7,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.
+src/app/components/user/Composer.tsx(8,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/app/components/user/Composer.tsx(16,8): error TS2307: Cannot find module '@/components/ui/dropdown-menu' or its corresponding type declarations.
+src/app/components/user/Composer.tsx(18,29): error TS6142: Module './animated-orb' was resolved to 'C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/src/app/components/user/animated-orb.tsx', but '--jsx' is not set.
+src/app/components/user/Composer.tsx(19,31): error TS6142: Module './audio-waveform' was resolved to 'C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/src/app/components/user/audio-waveform.tsx', but '--jsx' is not set.
+src/app/components/user/Composer.tsx(207,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(208,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(209,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(219,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(221,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(222,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(223,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(231,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(236,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(241,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(261,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(262,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(267,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(275,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(276,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(283,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(294,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(299,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(300,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(309,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(310,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(322,48): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(322,81): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(326,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(336,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(339,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(340,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(341,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(349,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(352,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(353,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(360,41): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(371,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(378,45): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/Composer.tsx(385,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(3,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/app/components/user/DeleteRoutineModal.tsx(29,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(30,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(37,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(45,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(46,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(47,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(49,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(55,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(56,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(57,78): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(57,221): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(62,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(63,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/DeleteRoutineModal.tsx(70,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(3,8): error TS1259: Module '"C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/app/components/user/UserBadgeCard.tsx(63,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(65,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(66,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(67,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(68,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(69,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(70,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(73,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(74,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(75,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(78,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(79,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(80,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(83,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(84,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(85,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(88,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(89,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(90,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(92,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(103,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(104,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(106,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(107,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(122,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(123,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(124,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(130,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(134,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(135,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(138,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(139,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(140,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(142,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(143,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(144,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(150,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(162,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(164,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserBadgeCard.tsx(165,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(3,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/app/components/user/UserInfo.tsx(8,60): error TS6142: Module './dropdown' was resolved to 'C:/Users/Mostfa Charfedin/Desktop/deepskyn-main/deepskyn/src/app/components/user/dropdown.tsx', but '--jsx' is not set.
+src/app/components/user/UserInfo.tsx(9,48): error TS2307: Cannot find module '@/store/hooks' or its corresponding type declarations.
+src/app/components/user/UserInfo.tsx(10,27): error TS2307: Cannot find module '@/store/slices/authSlice' or its corresponding type declarations.
+src/app/components/user/UserInfo.tsx(45,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(46,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(50,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(52,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(53,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(54,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(62,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(63,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(65,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(76,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(81,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(83,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(84,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(85,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(94,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(95,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(98,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(104,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(106,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(107,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(111,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(112,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(115,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(119,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(120,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(124,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(126,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(127,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(131,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/components/user/UserInfo.tsx(132,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.

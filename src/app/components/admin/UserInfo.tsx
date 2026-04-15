@@ -10,17 +10,19 @@ import { Dropdown, DropdownContent, DropdownTrigger } from "./dropdown";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { clearUser } from "@/store/slices/authSlice";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 const AUTH_MODE_KEY = 'deepskyn_auth_mode';
 
 export function UserInfo() {
+    const t = useTranslations();
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
 
     const USER_DATA = {
-        name: user ? `${user.nom} ${user.prenom || ''}`.trim() : "Admin User",
+        name: user ? `${user.nom} ${user.prenom || ''}`.trim() : t('components.userInfo.defaultAdminName'),
         email: user?.email || "admin@deepskyn.com",
         img: user?.photo || "/avatar.png",
     };
@@ -44,7 +46,7 @@ export function UserInfo() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="rounded-lg align-middle outline-none transition-all hover:bg-gray-100 dark:hover:bg-gray-800 p-1 cursor-pointer"
             >
-                <span className="sr-only">My Account</span>
+                <span className="sr-only">{t('components.userInfo.srMyAccount')}</span>
 
                 <figure className="flex items-center gap-3">
                     <div className="size-11 rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700">
@@ -75,7 +77,7 @@ export function UserInfo() {
                 className="border border-gray-100 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800 min-w-[280px] mt-2"
                 align="end"
             >
-                <h2 className="sr-only">User information</h2>
+                <h2 className="sr-only">{t('components.userInfo.srUserInformation')}</h2>
 
                 <figure className="flex items-center gap-3.5 px-5 py-4">
                     <div className="size-12 rounded-full overflow-hidden border border-gray-100 dark:border-gray-700">
@@ -106,7 +108,7 @@ export function UserInfo() {
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-[#156d95] dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-white transition-all cursor-pointer"
                     >
                         <User className="w-4 h-4" />
-                        <span>View profile</span>
+                        <span>{t('components.userInfo.viewProfile')}</span>
                     </button>
 
                     <button
@@ -114,7 +116,7 @@ export function UserInfo() {
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-[#156d95] dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-white transition-all cursor-pointer"
                     >
                         <Settings className="w-4 h-4" />
-                        <span>Account Settings</span>
+                        <span>{t('components.userInfo.accountSettings')}</span>
                     </button>
                 </div>
 
@@ -126,7 +128,7 @@ export function UserInfo() {
                         onClick={handleLogout}
                     >
                         <LogOut className="w-4 h-4" />
-                        <span>Log out</span>
+                        <span>{t('components.userInfo.logout')}</span>
                     </button>
                 </div>
             </DropdownContent>

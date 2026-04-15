@@ -1,8 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export function PageLoader() {
+  const t = useTranslations();
+
   return (
     <div className="fixed inset-0 z-50 bg-background">
       <div className="container mx-auto px-4 py-8 h-full">
@@ -90,7 +93,7 @@ export function PageLoader() {
                 />
               ))}
             </div>
-            <span className="text-sm text-muted-foreground ml-2">Chargement...</span>
+            <span className="text-sm text-muted-foreground ml-2">{t('components.pageLoader.loading')}</span>
           </div>
         </div>
       </div>

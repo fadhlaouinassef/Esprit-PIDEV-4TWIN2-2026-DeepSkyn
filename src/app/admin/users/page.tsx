@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AdminLayout } from "@/app/ui/AdminLayout";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { MonthlyRegistrationsChart } from "@/app/components/admin/MonthlyRegistrationsChart";
 import {
   PieChart,
@@ -51,9 +52,10 @@ interface User {
 // Breadcrumb
 // ──────────────────────────────────────────
 function Breadcrumb({ pageName }: { pageName: string }) {
+  const t = useTranslations("adminUsers.breadcrumb");
   return (
     <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-      <span>Admin</span>
+      <span>{t("admin")}</span>
       <ChevronRight size={14} />
       <span className="text-gray-700 dark:text-gray-200 font-medium">{pageName}</span>
     </nav>
@@ -92,6 +94,7 @@ interface UserModalProps {
 }
 
 function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
+  const t = useTranslations("adminUsers.modal");
   const [form, setForm] = useState<ModalFormData>(
     user
       ? {
@@ -155,7 +158,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
         if (!res.ok)
           throw new Error(
             data.error ||
-            (mode === "add" ? "Failed to create user" : "Failed to update user")
+            (mode === "add" ? t("errors.create") : t("errors.update"))
           );
         onSaved();
         onClose();
@@ -166,14 +169,14 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
     toast.promise(promise, {
       loading:
         mode === "add"
-          ? "Creating user…"
-          : `Updating ${form.nom || form.email}…`,
+          ? t("toasts.creating")
+          : t("toasts.updating", { name: form.nom || form.email }),
       success:
         mode === "add"
-          ? "✅ User created successfully"
-          : `✅ ${form.nom || form.email} updated`,
+          ? t("toasts.created")
+          : t("toasts.updated", { name: form.nom || form.email }),
       error: (err: unknown) =>
-        err instanceof Error ? err.message : "An error occurred",
+        err instanceof Error ? err.message : t("toasts.genericError"),
     });
   };
 
@@ -182,7 +185,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-gray-800 shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            {mode === "add" ? "Add New User" : "Edit User"}
+            {mode === "add" ? t("titleAdd") : t("titleEdit")}
           </h3>
           <button
             onClick={onClose}
@@ -196,7 +199,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Name
+                {t("fields.name")}
               </label>
               <input
                 name="nom"
@@ -204,12 +207,12 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
                 onChange={handleChange}
                 required
                 className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#156d95]"
-                placeholder="Full name"
+                placeholder={t("placeholders.fullName")}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Email
+                {t("fields.email")}
               </label>
               <input
                 name="email"
@@ -226,7 +229,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
           {mode === "add" && (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Password
+                {t("fields.password")}
               </label>
               <input
                 name="password"
@@ -235,7 +238,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
                 onChange={handleChange}
                 required
                 className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#156d95]"
-                placeholder="Minimum 8 characters"
+                placeholder={t("placeholders.password")}
               />
             </div>
           )}
@@ -243,7 +246,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Role
+                {t("fields.role")}
               </label>
               <select
                 name="role"
@@ -258,7 +261,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Age
+                {t("fields.age")}
               </label>
               <input
                 name="age"
@@ -266,14 +269,14 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
                 value={form.age}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#156d95]"
-                placeholder="Age"
+                placeholder={t("placeholders.age")}
               />
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Gender
+              {t("fields.gender")}
             </label>
             <select
               name="sexe"
@@ -281,9 +284,9 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#156d95]"
             >
-              <option value="">Not specified</option>
-              <option value="MALE">Male</option>
-              <option value="FEMALE">Female</option>
+              <option value="">{t("options.notSpecified")}</option>
+              <option value="MALE">{t("options.male")}</option>
+              <option value="FEMALE">{t("options.female")}</option>
             </select>
           </div>
 
@@ -300,7 +303,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
               htmlFor="verified"
               className="text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              Account Verified
+              {t("fields.accountVerified")}
             </label>
           </div>
 
@@ -310,7 +313,7 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
               onClick={onClose}
               className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              Cancel
+              {t("actions.cancel")}
             </button>
             <button
               type="submit"
@@ -318,10 +321,10 @@ function UserModal({ mode, user, onClose, onSaved }: UserModalProps) {
               className="flex-1 rounded-lg bg-[#156d95] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1a87b8] disabled:opacity-60 transition-colors"
             >
               {saving
-                ? "Saving..."
+                ? t("actions.saving")
                 : mode === "add"
-                  ? "Create User"
-                  : "Save Changes"}
+                  ? t("actions.createUser")
+                  : t("actions.saveChanges")}
             </button>
           </div>
         </form>
@@ -348,6 +351,7 @@ function ToggleActivationModal({
   onConfirm,
   loading,
 }: ToggleActivationModalProps) {
+  const t = useTranslations("adminUsers.toggleModal");
   const isDeactivating = !targetState;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -363,27 +367,14 @@ function ToggleActivationModal({
             {isDeactivating ? <PowerOff size={20} /> : <Power size={20} />}
           </div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            {isDeactivating ? "Deactivate Account" : "Activate Account"}
+            {isDeactivating ? t("titleDeactivate") : t("titleActivate")}
           </h3>
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
           {isDeactivating ? (
-            <>
-              Are you sure you want to{" "}
-              <strong className="text-red-600">deactivate</strong> the account of{" "}
-              <strong className="text-gray-900 dark:text-white">
-                {user.nom || user.email}
-              </strong>
-              ? The user will no longer be able to sign in.
-            </>
+            t("deactivateText", { name: user.nom || user.email })
           ) : (
-            <>
-              Activate the account of{" "}
-              <strong className="text-gray-900 dark:text-white">
-                {user.nom || user.email}
-              </strong>
-              ? The user will be able to sign in again.
-            </>
+            t("activateText", { name: user.nom || user.email })
           )}
         </p>
         <div className="flex gap-3">
@@ -392,7 +383,7 @@ function ToggleActivationModal({
             disabled={loading}
             className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-60"
           >
-            Cancel
+            {t("cancel")}
           </button>
           <button
             onClick={onConfirm}
@@ -406,9 +397,9 @@ function ToggleActivationModal({
             {loading ? (
               <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : isDeactivating ? (
-              "Deactivate"
+              t("deactivate")
             ) : (
-              "Activate"
+              t("activate")
             )}
           </button>
         </div>
@@ -432,6 +423,7 @@ const CHART_COLORS = ["#156d95", "#10b981", "#f59e0b", "#ef4444", "#7c3aed"];
 // Page principale
 // ──────────────────────────────────────────
 export default function UsersPage() {
+  const t = useTranslations("adminUsers");
   const [users, setUsers] = useState<User[]>([]);
   const [filtered, setFiltered] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -458,16 +450,16 @@ export default function UsersPage() {
     setLoading(true);
     try {
       const res = await fetch("/api/users");
-      if (!res.ok) throw new Error("Failed to fetch users");
+      if (!res.ok) throw new Error(t("errors.fetchUsers"));
       const data = await res.json();
       setUsers(data);
       setFiltered(data);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to fetch users");
+      setError(err instanceof Error ? err.message : t("errors.fetchUsers"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchUsers();
@@ -500,15 +492,15 @@ export default function UsersPage() {
         body: JSON.stringify({ activated }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update");
+      if (!res.ok) throw new Error(data.error || t("errors.updateUser"));
       await fetchUsers();
       toast.success(
         activated
-          ? `✅ ${user.nom || user.email}’s account activated`
-          : `🚫 ${user.nom || user.email}’s account deactivated`
+          ? t("toasts.activated", { name: user.nom || user.email })
+          : t("toasts.deactivated", { name: user.nom || user.email })
       );
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "An error occurred");
+      toast.error(err instanceof Error ? err.message : t("toasts.genericError"));
     } finally {
       setActivatingId(null);
       setToggleActivationUser(null);
@@ -522,21 +514,21 @@ export default function UsersPage() {
   // ── Export CSV ──
   const downloadCSV = () => {
     const headers = [
-      "ID",
-      "Name",
-      "Email",
-      "Role",
-      "Status",
-      "Age",
-      "Gender",
-      "Joined",
+      t("csv.id"),
+      t("csv.name"),
+      t("csv.email"),
+      t("csv.role"),
+      t("csv.status"),
+      t("csv.age"),
+      t("csv.gender"),
+      t("csv.joined"),
     ];
     const rows = filtered.map((u) => [
       u.id,
       u.nom || "",
       u.email,
       u.role,
-      u.verified ? "Verified" : "Unverified",
+      u.verified ? t("status.verified") : t("status.unverified"),
       u.age || "",
       u.sexe || "",
       new Date(u.created_at).toLocaleDateString(),
@@ -615,8 +607,8 @@ export default function UsersPage() {
   ).map(([name, value]) => ({ name, value }));
 
   const accountStatusData = [
-    { name: "Active", value: users.filter((u) => u.activated).length },
-    { name: "Inactive", value: users.filter((u) => !u.activated).length },
+    { name: t("status.active"), value: users.filter((u) => u.activated).length },
+    { name: t("status.inactive"), value: users.filter((u) => !u.activated).length },
   ];
 
   const ageGroupData = [
@@ -648,7 +640,7 @@ export default function UsersPage() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#156d95] mx-auto" />
             <p className="mt-4 text-gray-600 dark:text-gray-400">
-              Loading users...
+              {t("loading")}
             </p>
           </div>
         </div>
@@ -660,9 +652,9 @@ export default function UsersPage() {
     return (
       <AdminLayout>
         <div className="mx-auto w-full max-w-[1400px] p-4 md:p-6">
-          <Breadcrumb pageName="Users" />
+          <Breadcrumb pageName={t("breadcrumb.users")} />
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-600">Error: {error}</p>
+            <p className="text-red-600">{t("errorPrefix")}: {error}</p>
           </div>
         </div>
       </AdminLayout>
@@ -672,28 +664,28 @@ export default function UsersPage() {
   return (
     <AdminLayout>
       <div className="mx-auto w-full max-w-[1400px] p-4 md:p-6 space-y-6">
-        <Breadcrumb pageName="Users Management" />
+        <Breadcrumb pageName={t("breadcrumb.usersManagement")} />
 
         {/* ── Stats Cards ── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             {
-              label: "Total Users",
+              label: t("stats.totalUsers"),
               value: users.length,
               color: "text-gray-900 dark:text-white",
             },
             {
-              label: "Verified",
+              label: t("stats.verified"),
               value: users.filter((u) => u.verified).length,
               color: "text-green-600",
             },
             {
-              label: "Unverified",
+              label: t("stats.unverified"),
               value: users.filter((u) => !u.verified).length,
               color: "text-orange-500",
             },
             {
-              label: "Admins",
+              label: t("stats.admins"),
               value: users.filter((u) => u.role === "ADMIN").length,
               color: "text-purple-600",
             },
@@ -719,14 +711,14 @@ export default function UsersPage() {
           <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white">Monthly Registrations</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white">{t("charts.monthlyRegistrations")}</h3>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                  Updated {new Date().toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" })}
+                  {t("charts.updated")} {new Date().toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" })}
                 </p>
               </div>
               <button
                 onClick={() => downloadChart(monthlyChartRef, "monthly_chart")}
-                title="Download chart as PNG"
+                title={t("charts.download")}
                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
               >
                 <ImageDown className="w-4 h-4" />
@@ -742,10 +734,10 @@ export default function UsersPage() {
           {/* Users by Role – 1/3 */}
           <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Users by Role</h3>
+              <h3 className="font-bold text-gray-900 dark:text-white">{t("charts.usersByRole")}</h3>
               <button
                 onClick={() => downloadChart(pieChartRef, "roles_chart")}
-                title="Download chart as PNG"
+                title={t("charts.download")}
                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
               >
                 <ImageDown className="w-4 h-4" />
@@ -788,10 +780,10 @@ export default function UsersPage() {
           {/* Age Groups – 1/3 */}
           <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Age Groups</h3>
+              <h3 className="font-bold text-gray-900 dark:text-white">{t("charts.ageGroups")}</h3>
               <button
                 onClick={() => downloadChart(ageChartRef, "age_chart")}
-                title="Download chart as PNG"
+                title={t("charts.download")}
                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
               >
                 <ImageDown className="w-4 h-4" />
@@ -817,10 +809,10 @@ export default function UsersPage() {
           {/* Account Status – 2/3 */}
           <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-900 dark:text-white">Account Status</h3>
+              <h3 className="font-bold text-gray-900 dark:text-white">{t("charts.accountStatus")}</h3>
               <button
                 onClick={() => downloadChart(accountStatusChartRef, "account_status_chart")}
-                title="Download chart as PNG"
+                title={t("charts.download")}
                 className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-[#156d95] transition-colors"
               >
                 <ImageDown className="w-4 h-4" />
@@ -860,7 +852,7 @@ export default function UsersPage() {
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name, email or role…"
+                placeholder={t("searchPlaceholder")}
                 className="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 pl-9 pr-4 py-2 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#156d95]"
               />
             </div>
@@ -871,14 +863,14 @@ export default function UsersPage() {
                 className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-600 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <Download className="w-4 h-4" />
-                Export CSV
+                {t("actions.exportCsv")}
               </button>
               <button
                 onClick={() => setAddModal(true)}
                 className="flex items-center gap-2 rounded-lg bg-[#156d95] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1a87b8] transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
-                Add User
+                {t("actions.addUser")}
               </button>
             </div>
           </div>
@@ -889,15 +881,15 @@ export default function UsersPage() {
               <thead className="bg-gray-50 dark:bg-gray-900/50">
                 <tr>
                   {[
-                    "User",
-                    "Email",
-                    "Role",
-                    "Status",
-                    "Account",
-                    "Age",
-                    "Gender",
-                    "Joined",
-                    "Actions",
+                    t("table.user"),
+                    t("table.email"),
+                    t("table.role"),
+                    t("table.status"),
+                    t("table.account"),
+                    t("table.age"),
+                    t("table.gender"),
+                    t("table.joined"),
+                    t("table.actions"),
                   ].map((col) => (
                     <th
                       key={col}
@@ -930,7 +922,7 @@ export default function UsersPage() {
                         )}
                         <div>
                           <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {user.nom || "—"}
+                            {user.nom || "-"}
                           </p>
                           <p className="text-xs text-gray-400">#{user.id}</p>
                         </div>
@@ -960,16 +952,16 @@ export default function UsersPage() {
                       {user.verified ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
                           <CheckCircle className="w-3 h-3" />
-                          Verified
+                          {t("status.verified")}
                         </span>
                       ) : (
                         <button
                           onClick={() => handleVerify()}
-                          title="Cliquer pour vérifier ce compte"
+                          title={t("status.verifyTitle")}
                           className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-800/50 transition-colors cursor-pointer border border-orange-200 dark:border-orange-700"
                         >
                           <CheckCircle className="w-3 h-3" />
-                          Unverified – Verify
+                          {t("status.unverifiedVerify")}
                         </button>
                       )}
                     </td>
@@ -979,7 +971,7 @@ export default function UsersPage() {
                       <button
                         onClick={() => handleToggleActivation(user)}
                         disabled={activatingId === user.id}
-                        title={user.activated ? "Click to deactivate" : "Click to activate"}
+                        title={user.activated ? t("account.clickDeactivate") : t("account.clickActivate")}
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors cursor-pointer border disabled:opacity-60 disabled:cursor-wait ${
                           user.activated
                             ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-800/50 border-emerald-200 dark:border-emerald-700"
@@ -994,19 +986,19 @@ export default function UsersPage() {
                           <PowerOff className="w-3 h-3" />
                         )}
                         {activatingId === user.id
-                          ? "Updating…"
+                          ? t("account.updating")
                           : user.activated
-                          ? "Active"
-                          : "Inactive"}
+                          ? t("status.active")
+                          : t("status.inactive")}
                       </button>
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                      {user.age || "—"}
+                      {user.age || "-"}
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                      {user.sexe || "—"}
+                      {user.sexe || "-"}
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -1019,7 +1011,7 @@ export default function UsersPage() {
                         <button
                           onClick={() => setEditUser(user)}
                           className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-[#156d95]/10 hover:text-[#156d95] transition-all"
-                          title="Edit"
+                          title={t("actions.edit")}
                         >
                           <Pencil size={15} />
                         </button>
@@ -1031,7 +1023,7 @@ export default function UsersPage() {
                               ? "text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/30"
                               : "text-gray-400 hover:bg-green-50 hover:text-green-500 dark:hover:bg-green-900/30"
                           }`}
-                          title={user.activated ? "Deactivate account" : "Activate account"}
+                          title={user.activated ? t("actions.deactivateAccount") : t("actions.activateAccount")}
                         >
                           {activatingId === user.id ? (
                             <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -1052,8 +1044,8 @@ export default function UsersPage() {
               <div className="py-16 text-center">
                 <p className="text-gray-400 dark:text-gray-500">
                   {search
-                    ? "No users match your search."
-                    : "No users found."}
+                    ? t("empty.noMatch")
+                    : t("empty.noUsers")}
                 </p>
               </div>
             )}
@@ -1061,8 +1053,7 @@ export default function UsersPage() {
 
           <div className="border-t border-gray-100 dark:border-gray-700 px-6 py-3">
             <p className="text-xs text-gray-400">
-              Showing <strong>{filtered.length}</strong> of{" "}
-              <strong>{users.length}</strong> users
+              {t("footer.showing")} <strong>{filtered.length}</strong> {t("footer.of")} <strong>{users.length}</strong> {t("footer.users")}
             </p>
           </div>
         </div>

@@ -1,0 +1,2169 @@
+{
+  "common": {
+    "appName": "DeepSkyn",
+    "language": "Language",
+    "login": "Login",
+    "search": "Search",
+    "toggleSidebar": "Toggle sidebar",
+    "loadingPage": "Loading page...",
+    "loading": "Loading...",
+    "theme": "Theme",
+    "closeMenu": "Close menu",
+    "user": "User"
+  },
+  "components": {
+    "userInfo": {
+      "srMyAccount": "My account",
+      "srUserInformation": "User information",
+      "account": "User Account",
+      "viewProfile": "View profile",
+      "accountSettings": "Account Settings",
+      "logout": "Log out",
+      "defaultName": "User Name",
+      "defaultAdminName": "Admin User"
+    },
+    "userBadgeCard": {
+      "certifiedLabel": "DeepSkyn Certified"
+    },
+    "routineItemScraper": {
+      "searching": "Searching {brand} on {website}...",
+      "error": {
+        "memoryLimit": "Memory limit exceeded.",
+        "creditLimit": "Apify credit limit reached",
+        "unavailable": "Recommendation unavailable"
+      },
+      "actions": {
+        "retry": "Retry search",
+        "viewOnSite": "View on {website}"
+      },
+      "noResults": "No {brand} {action} found on {website}",
+      "defaultSeller": "primini.tn",
+      "productFallback": "{brand} product available on {website}."
+    },
+    "deleteRoutineModal": {
+      "title": "Delete Routine",
+      "confirmText": "Are you sure you want to",
+      "delete": "delete",
+      "routineName": "the routine",
+      "thisRoutine": "this routine",
+      "actionPrompt": "This action is permanent and cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting..."
+    },
+    "composer": {
+      "unsupportedSpeech": "Speech recognition is not supported in your browser",
+      "uploadedImageAlt": "Uploaded image",
+      "removeImage": "Remove image",
+      "sendMessage": "Send message",
+      "stopGenerating": "Stop generating",
+      "startVoiceInput": "Start voice input",
+      "attachImage": "Attach image",
+      "selectAiModel": "Select AI model",
+      "listening": "Listening...",
+      "typeMessage": "Type a message... (Shift+Enter for new line)",
+      "defaultDescribeImage": "Describe this image"
+    },
+    "pageLoader": {
+      "loading": "Loading..."
+    },
+    "themePicker": {
+      "title": "Theme",
+      "selectTheme": "Select {theme} theme"
+    },
+    "listeUtilisateurs": {
+      "title": "Active Users",
+      "headers": {
+        "name": "Name",
+        "visitors": "Visitors",
+        "revenues": "Revenues",
+        "sales": "Sales",
+        "conversion": "Conversion",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    },
+    "notification": {
+      "ariaLabel": "View notifications",
+      "title": "Notifications",
+      "newNotifications": "{count} new notifications",
+      "markAllRead": "Mark all read",
+      "empty": {
+        "heading": "All caught up!",
+        "description": "No new notifications at the moment."
+      },
+      "footer": {
+        "seeAll": "See all notifications"
+      },
+      "types": {
+        "signup": {
+          "title": "{name} joined the team!",
+          "subtitle": "Congratulate them",
+          "toastTitle": "{name} joined!",
+          "toastDescription": "A new user just signed up."
+        },
+        "analyse": {
+          "title": "{name} completed a skin analysis!",
+          "subtitle": "Score: {score}/100 - Analysis details",
+          "toastMessage": "{name} analyzed their skin",
+          "toastDescription": "Skin Score: {score}/100"
+        },
+        "verify": {
+          "title": "{name} verified their account!",
+          "subtitle": "Identity confirmed",
+          "toastTitle": "{name} verified!",
+          "toastDescription": "Account identity has been confirmed."
+        }
+      },
+      "userAlt": "User"
+    },
+    "userCharts": {
+      "visitorsByUser": "Visitors by User",
+      "revenueDistribution": "Revenue Distribution",
+      "totalRevenueLabel": "Total Revenue",
+      "visitors": "Visitors"
+    },
+    "donutChart": {
+      "noData": "No data available",
+      "visitors": "Visitors"
+    },
+    "monthlyRegistrationsChart": {
+      "seriesName": "Registrations"
+    },
+    "paymentsOverviewChart": {
+      "loadingData": "Loading data...",
+      "series": {
+        "received": "Received",
+        "due": "Due"
+      }
+    },
+    "weeksProfitChart": {
+      "loadingData": "Loading data...",
+      "series": {
+        "sales": "Sales",
+        "revenue": "Revenue"
+      }
+    },
+    "regionLabels": {
+      "title": "Region labels"
+    }
+  },
+  "nav": {
+    "mainNavigation": "Main navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "userAccount": "User account",
+    "adminAccount": "Admin account",
+    "administrator": "Administrator",
+    "adminDefaultUserName": "Admin user",
+    "user": {
+      "sections": {
+        "menu": "Menu",
+        "account": "Account",
+        "support": "Support"
+      },
+      "items": {
+        "dashboard": "Dashboard",
+        "routines": "Routines",
+        "questionnaire": "Questionnaire",
+        "analyzes": "Analyzes",
+        "products": "Products",
+        "badge": "Badge",
+        "profile": "Profile",
+        "billing": "Billing",
+        "security": "Security",
+        "settings": "Settings",
+        "helpCenter": "Help Center",
+        "complaints": "Complaints & feedback"
+      }
+    },
+    "admin": {
+      "sections": {
+        "main": "Main",
+        "management": "Management",
+        "administrative": "Administrative",
+        "settings": "Settings"
+      },
+      "items": {
+        "dashboard": "Dashboard",
+        "analytics": "Analytics",
+        "analyzes": "Analyzes",
+        "users": "Users",
+        "badges": "Badges",
+        "quizzes": "Quizzes",
+        "routines": "Routines",
+        "subscriptions": "Subscriptions",
+        "content": "Blog & content",
+        "faqs": "FAQs",
+        "complaints": "Complaints & feedback",
+        "profile": "Profile",
+        "systemSettings": "System settings"
+      },
+      "subItems": {
+        "allUsers": "All users",
+        "verification": "Verification",
+        "articles": "Articles",
+        "categories": "Categories"
+      }
+    }
+  },
+  "auth": {
+    "signin": {
+      "testToast": {
+        "title": "DeepSkyn System",
+        "description": "Notifications are now configured for Top-Center."
+      },
+      "redirecting": "Redirecting to your dashboard...",
+      "backToHome": "Back to Home",
+      "subtitle": "Sign in to your account",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Name@deepskyn.com",
+      "passwordLabel": "Password",
+      "forgotLink": "Forgot?",
+      "rememberMe": "Remember me",
+      "submit": "Sign in",
+      "divider": "Or continue with",
+      "googleButton": "Sign in with Google",
+      "unverifiedToast": {
+        "title": "Verification required",
+        "description": "Please verify your account to continue."
+      },
+      "success": {
+        "title": "Signed in successfully!",
+        "description": "Redirecting..."
+      },
+      "validationFailed": {
+        "description": "Please check the fields in red"
+      },
+      "googleError": {
+        "title": "Google Sign-In Failed"
+      },
+      "blocked": {
+        "title": "Account deactivated",
+        "descriptionTop": "Your account has been deactivated by the administration.",
+        "descriptionBold": "Please contact the application administration",
+        "descriptionBottom": "for more information.",
+        "contactButton": "Contact administration",
+        "closeButton": "Close"
+      },
+      "errors": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Invalid email format",
+        "passwordRequired": "Password is required",
+        "passwordInvalid": "Invalid password (min. 8 characters)",
+        "signinFailed": "Failed to sign in",
+        "sessionNotEstablished": "The session could not be established. Please try again."
+      },
+      "error": {
+        "generic": "An error occurred",
+        "googleGeneric": "An error occurred during sign in",
+        "accountNotVerifiedTitle": "Account Not Verified",
+        "loginFailedTitle": "Login Failed",
+        "invalidCredentialsDescription": "Invalid email or password"
+      },
+      "footer": {
+        "newUser": "New user?",
+        "createAccount": "Create Account",
+        "copyright": "© 2026 DEEPSKYN LTD • PRIVACY PROTECTED"
+      }
+    },
+    "signup": {
+      "backToEntry": "Return to entry",
+      "subtitle": "Create your account",
+      "googleButton": "Sign up with Google",
+      "divider": "Or continue with",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "John Doe",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "name@deepskyn.com",
+      "birthDateLabel": "Date of Birth",
+      "ageLabel": "Age",
+      "ageYears": "{age} YRS",
+      "genderLabel": "Gender",
+      "genderOptions": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm Password",
+      "passwordHint": "Min. 8 chars (1 Num, 1 Spec)",
+      "submit": "Create account",
+      "validationFailed": {
+        "title": "Validation Error",
+        "description": "Please check the fields in red"
+      },
+      "unverifiedToast": {
+        "title": "Account not verified",
+        "description": "Please verify your account to continue."
+      },
+      "success": {
+        "title": "Account Created!",
+        "description": "Please check your email for the verification code"
+      },
+      "googleSuccess": {
+        "title": "Sign-up successful!",
+        "description": "Welcome to DeepSkyn!"
+      },
+      "errors": {
+        "fullNameRequired": "Full name is required",
+        "fullNameInvalid": "Name should only contain letters (2-50 characters)",
+        "emailRequired": "Email address is required",
+        "emailInvalid": "Please enter a valid email address",
+        "birthDateRequired": "Birth date is required",
+        "birthDateFuture": "Birth date cannot be in the future",
+        "birthDateTooYoung": "You must be at least 13 years old",
+        "genderRequired": "Please select your gender",
+        "passwordRequired": "Password is required",
+        "passwordInvalid": "Must be 8+ chars with a number and special char",
+        "confirmPasswordRequired": "Please confirm your password",
+        "passwordMismatch": "Passwords do not match"
+      },
+      "error": {
+        "generic": "Something went wrong",
+        "createAccountFailed": "Failed to create account",
+        "signupFailedTitle": "Signup Failed",
+        "googleFailedTitle": "Google Sign-Up Failed"
+      },
+      "footer": {
+        "acceptPrefix": "By creating an account, you accept our",
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "alreadyRegistered": "Already registered?",
+        "loginLink": "Log Into Portal",
+        "copyright": "© 2026 DEEPSKYN LTD • ENCRYPTED SESSION"
+      }
+    },
+    "forgotPassword": {
+      "backToLogin": "Back to Login",
+      "title": "Reset Password",
+      "description": "Enter your email address and we'll send you a link to reset your password.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "name@company.com",
+      "sending": "Sending...",
+      "submit": "Send Reset Link",
+      "errors": {
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "sendFailed": "Failed to send the reset code"
+      },
+      "success": {
+        "title": "Code sent!",
+        "description": "Check your inbox for the reset code."
+      },
+      "error": {
+        "title": "Error",
+        "description": "An error occurred"
+      }
+    },
+    "resetPassword": {
+      "title": "New Password",
+      "description": "Please enter your new password below. Make sure it's secure.",
+      "newPasswordLabel": "New Password",
+      "confirmPasswordLabel": "Confirm Password",
+      "saving": "Saving...",
+      "submit": "Update Password",
+      "errors": {
+        "passwordTooShortTitle": "Password too short",
+        "passwordTooShortDescription": "Password must be at least 6 characters.",
+        "confirmationTitle": "Confirmation error",
+        "confirmationDescription": "The two passwords do not match.",
+        "sessionExpired": "Session expired. Please restart the process.",
+        "resetFailed": "Failed to reset password"
+      },
+      "success": {
+        "title": "Password updated!",
+        "description": "Your new password has been saved successfully."
+      },
+      "error": {
+        "title": "Error",
+        "description": "An error occurred"
+      }
+    },
+    "verifyCode": {
+      "backToForgot": "Back to reset",
+      "backToSignup": "Back to signup",
+      "titleReset": "Verification",
+      "titleSignup": "Verify Code",
+      "descriptionReset": "Enter the code we sent to reset your password.",
+      "descriptionSignupPrefix": "We sent a 6-digit code to",
+      "descriptionSignupSuffix": ".",
+      "yourEmail": "your email",
+      "verifying": "Verifying...",
+      "submit": "Verify Code",
+      "errors": {
+        "incompleteTitle": "Incomplete code",
+        "incompleteDescription": "Please enter all 6 digits.",
+        "sessionExpired": "Session expired. Please restart the process.",
+        "verifyFailed": "Verification failed"
+      },
+      "resetSuccess": {
+        "title": "Code verified!",
+        "description": "You can now change your password."
+      },
+      "accountVerified": {
+        "title": "Account verified!",
+        "description": "Welcome to DeepSkyn! Redirecting..."
+      },
+      "error": {
+        "title": "Verification error",
+        "description": "Invalid or expired code"
+      },
+      "resend": {
+        "submit": "Resend code",
+        "errors": {
+          "sendFailed": "Failed to send code"
+        },
+        "success": {
+          "title": "Code resent",
+          "description": "A new verification code was sent to your email."
+        },
+        "error": {
+          "title": "Resend failed",
+          "description": "An error occurred"
+        }
+      }
+    }
+  },
+  "home": {
+    "nav": {
+      "products": "Products",
+      "routines": "Routines",
+      "testimonials": "Testimonials",
+      "faq": "FAQ",
+      "journey": "Journey",
+      "mapButton": "DeepSkyn Map",
+      "openMapAria": "Open DeepSkyn experience map",
+      "toggleMobileMenu": "Toggle mobile menu"
+    },
+    "product": {
+      "dailyVolumeLabel": "HAPPY CUSTOMERS",
+      "headline": "Your personalized skincare routine",
+      "subheadline": "DeepSkyn offers a complete range of skincare products for men and women: cleansers, moisturizers, serums, and masks tailored to all skin types.",
+      "description": "Trusted by thousands of users, DeepSkyn provides dermatologically tested skincare formulated with natural ingredients for radiant skin.",
+      "primaryCta": "My routine",
+      "secondaryCta": "View products"
+    },
+    "pricing": {
+      "title": "Choose your plan",
+      "subtitle": "Discover our skincare subscriptions tailored to your needs. All plans include AI skin analysis and mobile app access.",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "savePercent": "Save {percent}%",
+      "mostPopular": "Most popular",
+      "perMonth": "month",
+      "perYear": "year",
+      "selected": "Selected",
+      "selectPlan": "Select plan",
+      "features": "Features",
+      "getStartedWith": "Get started with {plan}",
+      "plans": {
+        "essential": "Essential",
+        "premium": "Premium",
+        "luxury": "Luxury"
+      },
+      "featuresList": {
+        "basicRoutine": "Basic skincare routine (AM/PM)",
+        "threeProducts": "3 essential products",
+        "onlineConsultation": "Online consultation",
+        "usageGuide": "Usage guide & tips",
+        "completeRoutine": "Complete personalized routine",
+        "sixProducts": "6 premium products",
+        "monthlyFollowUp": "Monthly dermatologist follow-up",
+        "priorityShipping": "Free priority shipping",
+        "customFormulas": "Exclusive custom formulas",
+        "unlimitedProducts": "Unlimited products",
+        "dermatologist247": "Dedicated dermatologist 24/7",
+        "homeSpa": "Monthly at-home spa treatment",
+        "aiAnalysis": "AI skin analysis",
+        "mobileApp": "Mobile app access"
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": {
+        "q1": "What is DeepSkyn and how does the app work?",
+        "a1": "DeepSkyn is your personalized beauty assistant that analyzes your skin type using artificial intelligence to provide a tailored skincare routine. Download the app, answer a few questions, and receive recommendations. Our formulas are designed for both men and women, using natural ingredients.",
+        "q2": "How does DeepSkyn personalize my skincare routine?",
+        "a2": "Our AI analysis examines your skin type, concerns (acne, wrinkles, dryness, etc.), and goals. The algorithm then creates a custom routine with the most suitable products. Products are dermatologically tested and formulated without parabens. You keep full control and can adjust your routine anytime.",
+        "q3": "What are the pricing options and how do I order?",
+        "a3": "Getting started is simple: download the app, complete your free skin diagnosis, then choose from our 3 plans: Essential ($39/month), Premium ($89/month), or Luxury ($199/month). All plans include free shipping, AI analysis, and personalized tracking. Save 17% on annual subscriptions."
+      }
+    },
+    "bankingHero": {
+      "tagline": "Premium skincare solutions",
+      "titleMain": "Tailored skincare for every skin type",
+      "titleMuted": "designed to enhance natural beauty for both men and women.",
+      "subtitle": "Discover our premium skincare collection, formulated with natural ingredients for radiant, healthy skin.",
+      "ctaExploreProducts": "Explore Our Products",
+      "stats": {
+        "happyCustomers": "Happy customers\nworldwide",
+        "satisfactionRate": "Satisfaction\nrate",
+        "customerSupport": "Customer\nsupport",
+        "premiumProducts": "Premium skincare\nproducts"
+      }
+    },
+    "integrations": {
+      "buttonText": "Our Partners",
+      "title": "Trusted beauty partnerships worldwide",
+      "subtitle": "DeepSkyn collaborates with leading dermatological labs and premium brands to deliver exceptional skincare quality."
+    },
+    "healthySteps": {
+      "title": "Simple steps to make your skin healthier",
+      "steps": {
+        "quiz": {
+          "title": "Take the quiz",
+          "description": "Answer a few smart questions to help us understand your skin type and concerns.",
+          "previewTitle": "Skin Assessment",
+          "previewText": "Quiz completed successfully"
+        },
+        "analysis": {
+          "title": "Analyze your quiz results",
+          "description": "Our AI evaluates your answers to build your personalized skin profile.",
+          "previewTitle": "AI Analysis",
+          "previewText": "Analyzing hydration & sensitivity..."
+        },
+        "advice": {
+          "title": "Get personalized AI advice",
+          "description": "Receive tailored skincare recommendations powered by advanced AI.",
+          "previewTitle": "AI Recommendations",
+          "previewText": "Custom skincare insights ready"
+        },
+        "routine": {
+          "title": "Get your routine",
+          "description": "Access a customized daily skincare routine designed just for you.",
+          "previewTitle": "Daily Routine",
+          "previewText": "AM & PM routine generated"
+        },
+        "progress": {
+          "title": "Track and share your results",
+          "description": "Monitor your progress over time and share improvements with confidence.",
+          "previewTitle": "Progress Tracking",
+          "previewText": "Skin health improving steadily"
+        }
+      },
+      "preview": {
+        "defaultTitle": "Skin Profile",
+        "defaultText": "Start your journey to healthier skin today.",
+        "aiPowered": "AI Powered",
+        "scoreLabel": "Skin Health Score"
+      }
+    },
+    "experience": {
+      "closeGuide": "Close guide",
+      "badge": "Experience Map",
+      "stepCounter": "Step {current} / {total}",
+      "goToStep": "Go to step {step}",
+      "yourJourney": "Your Journey",
+      "startAdventure": "Start the Adventure",
+      "nextStep": "Next Step",
+      "skipForNow": "Skip for Now",
+      "steps": {
+        "welcome": {
+          "title": "Welcome to DeepSkyn",
+          "subtitle": "Your journey to glowing skin begins here",
+          "description": "DeepSkyn uses artificial intelligence to revolutionize your beauty routine. Follow this guide to discover how to transform your skin.",
+          "cta": "Start the Experience"
+        },
+        "quiz": {
+          "title": "Intelligent Diagnostic",
+          "subtitle": "Getting to know your skin",
+          "description": "Take our intelligent questionnaire. Our algorithms analyze your habits and specific needs for an ultra-precise profile.",
+          "cta": "Launch Diagnostic"
+        },
+        "analysis": {
+          "title": "AI Skin Analysis",
+          "subtitle": "Visualize your progress scientifically",
+          "description": "Access key indicators (hydration, sensitivity, radiance). Track your skin's evolution with our high-definition scans.",
+          "cta": "View My Analysis"
+        },
+        "routines": {
+          "title": "Your Action Plan",
+          "subtitle": "Efficiency, step by step",
+          "description": "Receive a personalized skincare routine. Morning and night, let us guide you to apply the right products in the right order.",
+          "cta": "Manage My Routines"
+        },
+        "products": {
+          "title": "Selective Shopping",
+          "subtitle": "Only the best for you",
+          "description": "Discover a selection of products recommended by our experts based on your unique skin analysis.",
+          "cta": "Explore My Selection"
+        },
+        "achievements": {
+          "title": "Rewards & Progress",
+          "subtitle": "Celebrate every victory",
+          "description": "Unlock exclusive badges by staying consistent. The more you take care of yourself, the more you progress in the DeepSkyn ecosystem.",
+          "cta": "View My Achievements"
+        },
+        "profile": {
+          "title": "Your Personal Space",
+          "subtitle": "Total control, simplified",
+          "description": "Manage your preferences, update your profile, and access DeepSkyn support in one click.",
+          "cta": "My Profile"
+        }
+      }
+    },
+    "caseStudies": {
+      "title": "Customer Success Stories",
+      "subtitle": "See how leading teams use Auralink to gain clarity on collaboration and team alignment.",
+      "navigation": {
+        "goToSlide": "Go to slide {slide}",
+        "previousSlide": "Previous slide",
+        "nextSlide": "Next slide"
+      },
+      "features": {
+        "slackCalls": "Slack Calls",
+        "meetingTranscripts": "Meeting Transcripts",
+        "sentimentReports": "Sentiment Reports"
+      },
+      "cards": {
+        "teamAlignment": {
+          "title": "Team Alignment",
+          "realTime": "Real-time",
+          "designTeam": "Design Team",
+          "engineering": "Engineering",
+          "product": "Product",
+          "activeConversations": "active conversations"
+        },
+        "globalTeamDynamics": {
+          "title": "Global Team Dynamics",
+          "last24h": "Last 24h",
+          "high": "High",
+          "active": "Active",
+          "peak": "Peak",
+          "crossOfficeVelocity": "Cross-office velocity"
+        },
+        "sprintPlanning": {
+          "title": "Sprint Planning",
+          "weekDay": "Week {week} • Day {day}",
+          "designHandoffClarity": "Design handoff clarity",
+          "teamSentiment": "Team sentiment",
+          "frictionDetection": "Friction detection",
+          "low": "Low",
+          "blockersIdentified": "Blockers identified"
+        }
+      },
+      "studies": {
+        "notion": {
+          "title": "Clandestine uses Auralink to understand how their teams collaborate in real-time.",
+          "quote": "Auralink gives us clarity on team alignment we never had before.",
+          "attribution": "Marie Chen, Head of Operations, Clandestine"
+        },
+        "cloudwatch": {
+          "title": "Cloudwatch leverages Auralink to monitor cross-functional team dynamics across global offices.",
+          "quote": "With Auralink, we can see collaboration patterns that directly impact our product velocity.",
+          "attribution": "Sarah Chen, VP Engineering, Cloudwatch"
+        },
+        "eightball": {
+          "title": "EightBall relies on Auralink to track team health metrics and async communication quality.",
+          "quote": "Auralink transformed how we understand our remote-first culture.",
+          "attribution": "Karri Saarinen, Co-founder, EightBall"
+        },
+        "coreos": {
+          "title": "CoreOS uses Auralink to ensure design and engineering teams stay in sync during sprints.",
+          "quote": "The sentiment analysis helps us identify friction points before they become blockers.",
+          "attribution": "Noah Levin, VP Engineering, CoreOS"
+        }
+      }
+    },
+    "footer": {
+      "tagline": "Your personalized skincare routine for men and women",
+      "copyright": "© {year} {company}. All rights reserved.",
+      "status": "Status",
+      "sitemap": "Sitemap",
+      "sections": {
+        "products": {
+          "title": "Products",
+          "cleansers": "Cleansers",
+          "moisturizers": "Moisturizers",
+          "serums": "Serums",
+          "masks": "Masks",
+          "giftSets": "Gift Sets"
+        },
+        "company": {
+          "title": "Company",
+          "about": "About",
+          "careers": "Careers",
+          "beautyBlog": "Beauty Blog",
+          "press": "Press",
+          "contact": "Contact"
+        },
+        "resources": {
+          "title": "Resources",
+          "skincareGuide": "Skincare Guide",
+          "helpCenter": "Help Center",
+          "community": "Community",
+          "testimonials": "Testimonials",
+          "tutorials": "Tutorials"
+        },
+        "legal": {
+          "title": "Legal",
+          "privacyPolicy": "Privacy Policy",
+          "termsOfService": "Terms of Service",
+          "shipping": "Shipping",
+          "returns": "Returns",
+          "cookies": "Cookies"
+        }
+      }
+    }
+  },
+  "userSettingsProfile": {
+    "audioLabel": "Audio Settings",
+    "sections": {
+      "personalInformation": "Personal Information",
+      "security": "Security & Password",
+      "photo": "Your Photo"
+    },
+    "fields": {
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Last name",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "First name",
+      "email": "Email Address",
+      "emailPlaceholder": "email@example.com",
+      "age": "Age",
+      "agePlaceholder": "Age",
+      "gender": "Sex (Gender)",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password"
+    },
+    "genderOptions": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "actions": {
+      "saved": "Saved!",
+      "updateProfile": "Update Profile",
+      "changePassword": "Change Password"
+    },
+    "photo": {
+      "avatarTitle": "Profile Avatar",
+      "avatarDescription": "Update your personal photo",
+      "clickToUpload": "Click to upload",
+      "orDragDrop": "or drag and drop",
+      "formatHint": "PNG, JPG (max 5MB)"
+    },
+    "toasts": {
+      "updateProfileError": "Error updating profile",
+      "passwordMismatch": "Passwords do not match",
+      "changePasswordError": "Error changing password",
+      "imageTooLarge": "Image too large (max 5MB)",
+      "updatePhotoError": "Error updating photo"
+    }
+  },
+  "userProfile": {
+    "audioLabel": "Audio Profile",
+    "memberSince": "Member since",
+    "latestBadgeLabel": "Latest Badge:",
+    "noBadgesHint": "Earn badges by completing routines and scans.",
+    "breadcrumb": {
+      "user": "User",
+      "profile": "My Profile"
+    },
+    "authRequired": {
+      "title": "Please log in",
+      "description": "You must be authenticated to view this page.",
+      "cta": "Go to Sign In"
+    },
+    "sections": {
+      "personalDetails": "Personal Details",
+      "latestAnalysis": "Latest Skin Analysis",
+      "recentBadge": "Recent Badge"
+    },
+    "fields": {
+      "email": "Email Address",
+      "age": "Age",
+      "ageYears": "{age} years old",
+      "ageYearsShort": "{age} yrs",
+      "gender": "Gender",
+      "skinType": "Skin Type"
+    },
+    "actions": {
+      "editProfile": "Edit Profile",
+      "viewHistory": "View History",
+      "startFirstAnalysis": "Start your first analysis",
+      "viewGallery": "View Achievement Gallery"
+    },
+    "security": {
+      "title": "Account Secured",
+      "description": "Your data is protected with 128-bit encryption and DeepSkyn Privacy Protocol."
+    },
+    "fallbacks": {
+      "newUser": "New User",
+      "userName": "User Name",
+      "unknown": "Unknown",
+      "newbie": "Newbie",
+      "notSet": "Not set",
+      "notAnalyzed": "Not analyzed yet",
+      "generalAnalysis": "General Analysis",
+      "achievementEarned": "Achievement Earned"
+    },
+    "toasts": {
+      "imageTooLarge": "Image too large (max 5MB)",
+      "photoUpdated": "Photo updated successfully!",
+      "updatePhotoError": "Error updating photo",
+      "loadProfileError": "Error loading profile data"
+    },
+    "states": {
+      "noAnalysis": "No analysis performed yet."
+    },
+    "speech": {
+      "profileFor": "User profile for {name}. ",
+      "memberSince": "Member since {date}. ",
+      "skinType": "Skin type is {skinType}. ",
+      "age": "Age: {age} years old. ",
+      "email": "Email: {email}. ",
+      "latestScore": "Latest skin analysis score is {score} out of 100 on {date}. ",
+      "latestAchievement": "Latest achievement: {badge}. "
+    }
+  },
+  "adminProfile": {
+    "memberSince": "Member since",
+    "breadcrumb": {
+      "admin": "Admin",
+      "profile": "My Profile"
+    },
+    "sections": {
+      "personalDetails": "Personal Details"
+    },
+    "fields": {
+      "email": "Email Address",
+      "age": "Age",
+      "ageYears": "{age} years old",
+      "gender": "Gender"
+    },
+    "actions": {
+      "editProfile": "Edit Profile"
+    },
+    "security": {
+      "title": "Admin Account Secured",
+      "description": "Your administrative session is protected and monitored by DeepSkyn security policies."
+    },
+    "fallbacks": {
+      "adminUser": "Admin User",
+      "unknown": "Unknown",
+      "notSet": "Not set"
+    },
+    "toasts": {
+      "imageTooLarge": "Image too large (max 5MB)",
+      "photoUpdated": "Photo updated successfully!",
+      "updatePhotoError": "Error updating photo",
+      "loadProfileError": "Error loading profile data"
+    }
+  },
+  "userComplaints": {
+    "audioLabel": "Audio Complaints",
+    "searchPlaceholder": "Search by message or category...",
+    "inboxHint": "Choose a conversation to view detailed history and updates from our security team.",
+    "confirmDelete": "Are you sure you want to delete this claim? This action is irreversible.",
+    "actions": {
+      "newClaim": "New Claim",
+      "deleteClaim": "Delete Claim",
+      "closeDiscussion": "Close discussion"
+    },
+    "empty": {
+      "title": "All clear",
+      "description": "No active complaints found."
+    },
+    "newForm": {
+      "title": "What happened?",
+      "selectCategory": "Select Category",
+      "detailedReport": "Your detailed report",
+      "reportPlaceholder": "Write your reclamation here...",
+      "uploadProof": "Upload Proof (Images, Documents)",
+      "add": "ADD",
+      "submitting": "SUBMITTING...",
+      "confirmSubmit": "CONFIRM & SUBMIT"
+    },
+    "chat": {
+      "myMessage": "My Message",
+      "teamSupport": "Team Support DeepSkyn",
+      "systemProhibition": "System Prohibition",
+      "ticketClosed": "This ticket has been officially closed.",
+      "writeUpdate": "Write an update...",
+      "claimsTitle": "{category} Claims",
+      "brand": "DEEPSKYN"
+    },
+    "toasts": {
+      "fetchFailed": "Failed to fetch complaints",
+      "submitSuccess": "Complaint submitted successfully! (Cleaned from bad words)",
+      "submitError": "An error occurred during submission.",
+      "replySent": "Reply sent (Cleaned from bad words)",
+      "replyError": "An error occurred.",
+      "ticketDeleted": "Ticket deleted successfully.",
+      "deleteFailed": "Failed to delete the ticket."
+    },
+    "categories": {
+      "analysis": "Analysis",
+      "routine": "Routine",
+      "product": "Product",
+      "badge": "Badge",
+      "bug": "Bug",
+      "payment": "Payment",
+      "service": "Service",
+      "other": "Other"
+    },
+    "header": {
+      "title": "RECLAMATION",
+      "titleAccent": "& FEEDBACK",
+      "subtitle": "Your voice matters. Track and manage your reports in real-time."
+    },
+    "speech": {
+      "overview": "Complaints and feedback interface. ",
+      "totalClaims": "You have {count} total claims. ",
+      "breakdown": "{pending} pending, {accepted} accepted, and {closed} closed. ",
+      "searchActive": "Search filter is active with keyword {query}. ",
+      "searchMatches": "{count} claims match your search. ",
+      "newClaimOpen": "New claim form is open. Select category, write details, and optionally upload evidence before submitting. ",
+      "selectedCategory": "Selected claim category is {category}. ",
+      "selectedStatus": "Status is {status}. ",
+      "ticketMessages": "This ticket currently has {count} messages. ",
+      "ticketClosed": "This ticket is officially closed. ",
+      "noneSelected": "No claim is selected. You can open a conversation from the list or create a new claim. "
+    },
+    "inboxTitle": "Support Inbox"
+  },
+  "adminComplaints": {
+    "title": "Feedbacks",
+    "searchPlaceholder": "Search conversations...",
+    "empty": "No results found",
+    "unknownUser": "Unknown User",
+    "userId": "User ID:",
+    "confirmDelete": "Are you sure you want to delete this ticket?",
+    "actions": {
+      "deleteTicket": "Delete Ticket",
+      "closeDiscussion": "Close discussion",
+      "respond": "Respond"
+    },
+    "chat": {
+      "teamSupport": "Team Support Deepskyn",
+      "user": "User",
+      "writeResponse": "Write your response..."
+    },
+    "noSelection": {
+      "title": "No feedback selected",
+      "description": "Select a conversation from the sidebar to view details and respond."
+    },
+    "toasts": {
+      "fetchFailed": "Failed to fetch complaints",
+      "statusUpdated": "Ticket status updated to {status}",
+      "updateStatusFailed": "Failed to update status",
+      "ticketDeleted": "Ticket deleted successfully.",
+      "deleteFailed": "Failed to delete ticket",
+      "sendMessageFailed": "Failed to send message"
+    },
+    "status": {
+      "all": "all",
+      "pending": "pending",
+      "accept": "accept",
+      "reject": "reject"
+    }
+  },
+  "userProducts": {
+    "breadcrumb": {
+      "user": "User",
+      "products": "Products"
+    },
+    "hero": {
+      "poweredBy": "Powered by Apify",
+      "title": "Cosmetic & Medical Product Scraper",
+      "subtitle": "Scrape Google for cosmetic and pharmaceutical products, ingredients, and formulations."
+    },
+    "category": {
+      "title": "Product Category"
+    },
+    "search": {
+      "placeholder": "e.g. Niacinamide serum, Tretinoin 0.025%, CeraVe Hydrating...",
+      "filters": "Filters",
+      "searching": "Searching...",
+      "scrape": "Scrape"
+    },
+    "filters": {
+      "brand": "Brand",
+      "brandPlaceholder": "e.g. CeraVe, L'Oreal",
+      "site": "Restrict to Site",
+      "country": "Country",
+      "maxResults": "Max Results",
+      "language": "Language:",
+      "allSites": "All Sites"
+    },
+    "loading": {
+      "title": "Scraping Google for products...",
+      "description": "Category: {category} · This may take up to 40 seconds."
+    },
+    "results": {
+      "enrichedQuery": "Enriched search query",
+      "noResultsTitle": "No results found",
+      "noResultsDescription": "Try a different product name or adjust the filters.",
+      "productAlt": "Product",
+      "productFallbackAlt": "Product fallback",
+      "titleUnavailable": "Title Unavailable",
+      "noDescription": "No description provided.",
+      "visitPage": "Visit Page",
+      "withImageCount": "{count} product{count, plural, one {} other {s}} with image",
+      "withoutImage": "Products without image",
+      "noImage": "No Image"
+    },
+    "empty": {
+      "ready": "Ready to scrape {category} products",
+      "descriptionPrefix": "Enter a product name, ingredient, or brand above and click",
+      "descriptionSuffix": "to fetch Google results via Apify."
+    },
+    "toasts": {
+      "enterQuery": "Please enter a product name or ingredient.",
+      "scrapeFailed": "Scraping failed.",
+      "resultsFound": "Found {total} results for \"{query}\"",
+      "networkError": "Network error."
+    },
+    "examples": "Examples:",
+    "categories": {
+      "skincare": "Skincare",
+      "sunscreen": "Sunscreen / SPF",
+      "serums": "Serums",
+      "moisturizers": "Moisturizers",
+      "cleansers": "Cleansers",
+      "pharmaceutical": "Pharmaceutical",
+      "derma": "Derma / Medical"
+    }
+  },
+  "userBadge": {
+    "audioLabel": "Audio Mode",
+    "shareTitle": "My DeepSkyn badge",
+    "errors": {
+      "fetchMotivationData": "Failed to fetch motivation data",
+      "initImageCanvas": "Unable to initialize image canvas"
+    },
+    "shareDefaults": {
+      "badgeTitle": "my latest DeepSkyn badge",
+      "shareText": "I just earned {badgeTitle} on DeepSkyn. Consistency pays off. #DeepSkyn #SkinHero",
+      "heroTitle": "DeepSkyn Hero",
+      "description": "Consistency and skin progress unlocked a new achievement.",
+      "level": "BRONZE",
+      "userName": "DeepSkyn User",
+      "user": "User",
+      "beginnerTitle": "DeepSkyn Beginner",
+      "beginnerDescription": "Start completing your routines to earn your first badge."
+    },
+    "shareCard": {
+      "badgeLabel": "DEEPSKYN BADGE",
+      "level": "LEVEL",
+      "user": "USER",
+      "domain": "deepskyn.app"
+    },
+    "breadcrumb": {
+      "user": "User",
+      "title": "Badges & Achievements"
+    },
+    "empty": {
+      "title": "Motivation Data Unavailable",
+      "description": "We were unable to load your achievement data. Please ensure you are logged in and have completed your initial profile.",
+      "retry": "Retry Loading"
+    },
+    "shareModal": {
+      "title": "Share Your Badge",
+      "description": "Post your achievement on social media with a generated DeepSkyn card.",
+      "shareViaDevice": "Share via device apps",
+      "close": "Close"
+    },
+    "toasts": {
+      "imageDownloaded": "Badge image downloaded",
+      "generateImageFailed": "Unable to generate badge image",
+      "linkCopied": "Badge link copied",
+      "copyLinkFailed": "Failed to copy link",
+      "captionCopied": "Caption copied",
+      "copyCaptionFailed": "Failed to copy caption",
+      "facebookReady": "Facebook opened. Your badge image and caption are ready to paste.",
+      "facebookFailed": "Facebook share preparation failed",
+      "instagramReady": "Instagram opened. Upload the downloaded badge and paste the copied caption.",
+      "instagramFailed": "Instagram share preparation failed",
+      "tiktokReady": "TikTok opened. Upload the downloaded badge and paste the copied caption.",
+      "tiktokFailed": "TikTok share preparation failed",
+      "nativeShareUnavailable": "Native share is not available on this device",
+      "shareFailed": "Share failed"
+    },
+    "labels": {
+      "shareAchievement": "SHARE YOUR ACHIEVEMENT",
+      "activeGoal": "Active Goal",
+      "master": "Master",
+      "towardLevel": "Toward {level} level",
+      "detailedProgress": "Detailed progress tracking",
+      "completed": "Completed",
+      "validationTasks": "Validation tasks",
+      "badgeReady": "Badge Ready!",
+      "requirementsCompleted": "All requirements for this tier are completed.",
+      "roadmapTitle": "Roadmap to Mastery",
+      "roadmapSubtitle": "Track your path from beginner to expert",
+      "earned": "Earned",
+      "target": "Target",
+      "locked": "Locked",
+      "missionParameters": "Mission Parameters",
+      "missionComplete": "Mission Complete",
+      "missionsClassified": "Missions classified. Reach previous level to reveal.",
+      "yourTrajectory": "Your Trajectory",
+      "almostThere": "Almost there..."
+    },
+    "stats": {
+      "streak": "Streak",
+      "analyses": "Analyses",
+      "score": "Score"
+    }
+  },
+  "userRoutines": {
+    "audioLabel": "Audio Routines",
+    "breadcrumb": {
+      "user": "User",
+      "routines": "Routines"
+    },
+    "labels": {
+      "motivation": "Motivation:",
+      "warnings": "Warnings:",
+      "goal": "Goal:",
+      "consistency": "Consistency",
+      "glowing": "You're glowing.",
+      "dailyInsight": "Daily Insight",
+      "routineType": "Routine {type}",
+      "aiRoutine": "AI Routine",
+      "routine": "Routine",
+      "step": "Step {step}",
+      "completedOn": "✓ Completed on {date}",
+      "dayStreak": "{streak}-Day Streak!"
+    },
+    "toasts": {
+      "step": "Step",
+      "stepCompleted": "{step} completed! ✨",
+      "stepCompletedDescription": "Your skin thanks you.",
+      "updateFailed": "Failed to update.",
+      "routineDeleted": "Routine deleted ✨",
+      "deleteFailed": "Failed to delete routine"
+    },
+    "progress": {
+      "routineType": "Routine {type}",
+      "sparkle": "Sparkle time! ✨",
+      "halfway": "Halfway there!",
+      "keepGoing": "Keep going!"
+    },
+    "tabs": {
+      "morning": "Morning",
+      "night": "Night",
+      "weekly": "Weekly"
+    },
+    "actions": {
+      "newRoutine": "New Routine",
+      "createRoutine": "Create Routine",
+      "edit": "Edit",
+      "delete": "Delete",
+      "restartRoutine": "Restart Routine"
+    },
+    "states": {
+      "noRoutines": "No {type} routines",
+      "noRoutinesDescription": "Create your first personalized routine"
+    },
+    "meta": {
+      "skin": "Skin",
+      "score": "Score",
+      "duration": "Duration",
+      "weeks": "weeks"
+    },
+    "speech": {
+      "summary": "Hello {userName}. Your {tab} routine has {count} steps. ",
+      "completion": "You are currently {percentage}% complete. ",
+      "streak": "Your current streak is {streak} days. ",
+      "guidelines": "Guidelines for today: ",
+      "step": "Step {index}: {action}. "
+    }
+  },
+  "userBilling": {
+    "title": "Subscription & Billing",
+    "subtitle": "Seamlessly manage your premium access and payment preferences from one elegant dashboard.",
+    "breadcrumb": {
+      "user": "User",
+      "billing": "Billing & Subscription"
+    },
+    "toasts": {
+      "loginRequired": "You must be logged in to make a payment",
+      "checkoutFailed": "Checkout failed",
+      "missingCheckoutUrl": "Missing checkout URL",
+      "paymentError": "Payment error occurred"
+    },
+    "audioLabel": "Audio Billing",
+    "status": {
+      "free": "FREE",
+      "active": "ACTIVE",
+      "daysRemaining": "{days} DAYS REMAINING",
+      "expiringSoon": "EXPIRING SOON",
+      "expired": "EXPIRED"
+    },
+    "speech": {
+      "overview": "Subscription and billing overview. Current plan is {plan}. ",
+      "status": "Status is {status}. ",
+      "billingCycle": "Billing cycle is {cycle}. ",
+      "amount": "Amount is {amount} Tunisian dinars. ",
+      "renewalDate": "Next renewal date is {date}. ",
+      "freePlan": "You are currently on the free plan. ",
+      "expiresIn": "Your subscription expires in {days} days. ",
+      "planChoice": "You can choose between premium monthly and premium yearly plans in the payment section. "
+    },
+    "units": {
+      "year": "Year",
+      "month": "Month"
+    },
+    "labels": {
+      "nextRenewalDate": "Next Renewal Date",
+      "savings": "Savings",
+      "priceLockTitle": "Price Lock Guarantee",
+      "priceLockDescription": "Your current rate is locked until 2026. No price hikes."
+    },
+    "messages": {
+      "freePlan": "You are currently on the Free Plan. Upgrade to Premium to unlock exclusive features.",
+      "activeUntil": "Your subscription is active until {date}.",
+      "expiresSoon": "Action Required: Your subscription expires in {days} days.",
+      "expired": "Your subscription is expired. Renew it to regain access."
+    },
+    "plans": {
+      "choose": "Choose a Plan",
+      "premiumMonthly": "Premium Monthly",
+      "perMonth": "Per Month",
+      "perYear": "Per Year",
+      "saveYearly": "Save 40 TND/year",
+      "premiumYearly": "Premium Yearly"
+    },
+    "checkout": {
+      "title": "Secure Checkout",
+      "subtitle": "Automated Payment",
+      "secureStripe": "Secure Payment with Stripe",
+      "redirectHint": "By clicking the button below, you will be redirected to the secure Stripe payment page.",
+      "testMode": "📝 Test Mode - Test cards accepted",
+      "successCard": "✅ Success:",
+      "failureCard": "❌ Failure:",
+      "testCardHint": "Date: any future date (ex: 12/34) • CVC: 123",
+      "encryption": "256-bit SSL HEAVY Encryption",
+      "vaultSecured": "Vault-Secured Payment",
+      "vaultDescription": "Your payment methods are encrypted and securely stored.",
+      "compliance": "PCI-DSS COMPLIANT • ENCRYPTED GATEWAY"
+    },
+    "summary": {
+      "verification": "Verification",
+      "tax": "Tax",
+      "yearlyDiscount": "Yearly Member Discount",
+      "grandTotal": "Grand Total",
+      "billedAnnually": "Billed annually",
+      "billedMonthly": "Billed monthly",
+      "title": "Order Summary"
+    },
+    "actions": {
+      "changePlan": "Change Plan",
+      "upgradeToPremium": "Upgrade to Premium",
+      "renewAccess": "Renew Access",
+      "extendNow": "Extend Now",
+      "manageSettings": "Manage Settings",
+      "addMethod": "Add Method"
+    }
+  },
+  "adminVerification": {
+    "title": "Verification Center",
+    "loading": "Loading Users...",
+    "searchPlaceholder": "Search {tab} users...",
+    "noUsers": "No {tab} users",
+    "noImage": "No image provided for verification",
+    "emptyTitle": "Select a verification request",
+    "emptyDescription": "Browse the list of pending users on the left to consult their information and manage their identity verification.",
+    "status": {
+      "approved": "approved",
+      "rejected": "rejected"
+    },
+    "breadcrumb": {
+      "admin": "Admin",
+      "center": "Verification Center"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "tabs": {
+      "requests": "Requests",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "total": "Total {tab}",
+    "cards": {
+      "personalIdentity": "Personal Identity",
+      "verificationImage": "Verification Image",
+      "identityPreview": "Identity Preview"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "gender": "Gender",
+      "age": "Age",
+      "ageValue": "{age} years",
+      "joined": "Joined",
+      "notAvailable": "N/A"
+    },
+    "badges": {
+      "efficiency": "Efficiency Focus",
+      "realtime": "Real-time sync"
+    },
+    "toasts": {
+      "loadUsersFailed": "Failed to load users",
+      "userStatusUpdated": "User {status} successfully!",
+      "actionFailed": "Failed to {action} user"
+    }
+  },
+  "userDashboard": {
+    "fallbackName": "there",
+    "welcome": "Welcome back, {name}!",
+    "subtitle": "Here is what's happening with your account today.",
+    "stats": {
+      "totalScans": "Total Scans",
+      "activePlans": "Active Plans",
+      "notifications": "Notifications"
+    },
+    "empty": {
+      "title": "No activity yet",
+      "description": "You haven't performed any skin scans yet. Start your first scan to see your results here.",
+      "cta": "Start New Scan"
+    }
+  },
+  "adminDashboard": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "dashboard": "Dashboard"
+    },
+    "title": "Admin Dashboard",
+    "subtitle": "Monitoring real-time performance and user growth.",
+    "kpis": {
+      "totalUsers": {
+        "title": "Total Users",
+        "trend": "+12.5% vs last month"
+      },
+      "activeSubscriptions": {
+        "title": "Active Subscriptions",
+        "trend": "Real-time from DB"
+      },
+      "growthTrends": {
+        "title": "Growth Trends",
+        "trend": "New users this month"
+      },
+      "estimatedRevenue": {
+        "title": "Est. Revenue",
+        "trend": "Total current period"
+      }
+    },
+    "sections": {
+      "paymentsOverview": {
+        "title": "Payments Overview",
+        "subtitle": "Real statistics from database",
+        "badge": "LAST 9 MONTHS"
+      },
+      "weeklyProfit": "Weekly Profit",
+      "visitorsByCountry": "Visitors by Country"
+    }
+  },
+  "userSettingsPage": {
+    "breadcrumb": {
+      "user": "User",
+      "settings": "Settings"
+    },
+    "title": "Account Settings",
+    "subtitle": "Manage your profile information, password, and preferences."
+  },
+  "billingSuccess": {
+    "title": "Payment Successful!",
+    "sessionIdLabel": "Session ID",
+    "waitMessage": "Please wait while we finalize your account...",
+    "redirectPrefix": "Automatic redirection in",
+    "redirectSuffix": "seconds...",
+    "backToBilling": "Back to Billing",
+    "messages": {
+      "confirming": "We are confirming your subscription and updating your account...",
+      "missingSession": "Missing session id. Please return to billing and retry.",
+      "activated": "Subscription activated successfully.",
+      "unableToConfirm": "Unable to confirm subscription",
+      "confirmationFailed": "Subscription confirmation failed. Please open billing page."
+    }
+  },
+  "billingCancel": {
+    "title": "Payment Cancelled",
+    "description": "No worries. The payment was cancelled. You can try again anytime or explore other options.",
+    "retryPayment": "Retry Payment",
+    "backToDashboard": "Back to Dashboard",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact our support"
+  },
+  "adminSettingsPage": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "settings": "Settings"
+    },
+    "title": "Account Settings",
+    "subtitle": "Manage your profile information, password, and preferences."
+  },
+  "adminSubscriptions": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "subscriptions": "Subscriptions"
+    },
+    "header": {
+      "title": "Subscriptions Management",
+      "subtitle": "Monitor and manage all user subscription plans",
+      "lastUpdated": "Last updated"
+    },
+    "summary": {
+      "totalSubscriptions": "Total Subscriptions",
+      "matchingFilters": "{count} matching current filters",
+      "activeSubscriptions": "Active Subscriptions",
+      "activeRatio": "{ratio}% of all subscriptions",
+      "expiredSubscriptions": "Expired Subscriptions",
+      "expiredHint": "Require renewal attention",
+      "monthlyRevenue": "Monthly Revenue",
+      "monthlyRevenueHint": "From active subscriptions"
+    },
+    "filters": {
+      "button": "Filters",
+      "searchPlaceholder": "Search by name or email...",
+      "export": "Export CSV",
+      "exportTitle": "Export filtered results to CSV",
+      "paymentStatus": "Payment Status",
+      "allStatuses": "All Statuses",
+      "plan": "Plan",
+      "allPlans": "All Plans",
+      "startDateFrom": "Start Date From",
+      "endDateTo": "End Date To"
+    },
+    "statuses": {
+      "paid": "Paid",
+      "expiring": "Expiring",
+      "expired": "Expired"
+    },
+    "billing": {
+      "year": "Year",
+      "month": "Month"
+    },
+    "table": {
+      "user": "User",
+      "plan": "Plan",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "payment": "Payment",
+      "amount": "Amount",
+      "actions": "Actions"
+    },
+    "states": {
+      "loading": "Loading subscriptions...",
+      "noMatch": "No subscriptions match your filters"
+    },
+    "actions": {
+      "view": "View",
+      "viewDetails": "View Details"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "of": "of",
+      "subscriptions": "subscriptions"
+    },
+    "detail": {
+      "tabs": {
+        "info": "Subscription Info",
+        "history": "History"
+      },
+      "fields": {
+        "fullName": "Full Name",
+        "email": "Email",
+        "plan": "Plan",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "paymentStatus": "Payment Status",
+        "renewal": "Renewal",
+        "amount": "Amount",
+        "yearly": "Yearly",
+        "subscriptionStarted": "Subscription started",
+        "close": "Close",
+        "renewSubscription": "Renew Subscription"
+      }
+    },
+    "csv": {
+      "userName": "User Name",
+      "email": "Email",
+      "plan": "Plan",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "paymentStatus": "Payment Status",
+      "amount": "Amount"
+    }
+  },
+  "userAnalyzes": {
+    "header": {
+      "kicker": "Clinical History",
+      "title": "Skin Analysis History",
+      "subtitle": "View and track your skin progress over time through our diagnostic lens."
+    },
+    "filters": {
+      "searchPlaceholder": "Search analyses...",
+      "status": {
+        "all": "All",
+        "improved": "Improved",
+        "stable": "Stable",
+        "worse": "Worse"
+      }
+    },
+    "actions": {
+      "newAnalysis": "New Analysis"
+    },
+    "empty": {
+      "title": "No analyses found",
+      "noAnalyses": "You haven't performed any skin analyses yet. Start your first scan to see your detailed report.",
+      "noMatches": "We couldn't find any analyses matching your search or filters. Try adjusting them or start a new scan.",
+      "firstAnalysis": "Perform First Analysis",
+      "clearFilters": "Clear All Filters"
+    },
+    "audio": {
+      "detailIntro": "Detailed Analysis for {date}.",
+      "score": "Skin Health Score is {score} out of 100.",
+      "skinTypeSensitivity": "Skin type is {skinType} with {sensitivity} sensitivity.",
+      "summary": "Summary: {summary}.",
+      "topRecommendations": "Top Recommendations: {recommendations}.",
+      "history": "Skin Analysis History. You have {count} reports. Your latest score was {score} for {skinType} skin."
+    },
+    "card": {
+      "labels": {
+        "baseline": "Baseline Analysis",
+        "latest": "Latest Analysis",
+        "previous": "Previous Result",
+        "past": "Past History"
+      },
+      "statuses": {
+        "improved": "Improved",
+        "stable": "Stable",
+        "worse": "Worse"
+      },
+      "skinType": "Skin Type",
+      "hydration": "Hydration",
+      "oilProduction": "Oil Production",
+      "sensitivity": {
+        "label": "Sensitivity",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "modal": {
+      "report": "Clinical Analysis Report",
+      "detailed": "Detailed Analysis - {date}",
+      "overallHealthScore": "Overall Health Score",
+      "overallHealthDescription": "Your skin health is significantly above average for your demographic.",
+      "skinType": "Skin Type",
+      "sensitivity": "Sensitivity",
+      "hydration": "Hydration",
+      "oilBalance": "Oil Balance",
+      "identifiedConcerns": "Identified Concerns",
+      "mild": "Mild",
+      "redness": "Redness",
+      "minimal": "Minimal",
+      "aiVision": "AI Vision Analysis",
+      "skinAge": "Skin Age",
+      "actual": "Actual",
+      "riskFactor": "Risk Factor",
+      "targetedRecommendations": "Targeted Recommendations",
+      "recommendationsFallback": "Based on your clinical parameters, we've outlined the following strategic recommendations for your skin health.",
+      "analysisDescription": "Analysis for user {userName} calculated based on clinical parameters.",
+      "prescribedRoutine": "Prescribed Routine",
+      "morningRoutine": "Morning Routine",
+      "nightRoutine": "Night Routine",
+      "step": "Step {number}"
+    }
+  },
+  "adminUsers": {
+    "loading": "Loading users...",
+    "errorPrefix": "Error",
+    "searchPlaceholder": "Search by name, email or role...",
+    "breadcrumb": {
+      "admin": "Admin",
+      "users": "Users",
+      "usersManagement": "Users Management"
+    },
+    "errors": {
+      "fetchUsers": "Failed to fetch users",
+      "updateUser": "Failed to update"
+    },
+    "toasts": {
+      "activated": "{name}'s account activated",
+      "deactivated": "{name}'s account deactivated",
+      "genericError": "An error occurred"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "verified": "Verified",
+      "unverified": "Unverified",
+      "admins": "Admins"
+    },
+    "charts": {
+      "monthlyRegistrations": "Monthly Registrations",
+      "updated": "Updated",
+      "download": "Download chart as PNG",
+      "usersByRole": "Users by Role",
+      "ageGroups": "Age Groups",
+      "accountStatus": "Account Status"
+    },
+    "actions": {
+      "exportCsv": "Export CSV",
+      "addUser": "Add User",
+      "edit": "Edit",
+      "deactivateAccount": "Deactivate account",
+      "activateAccount": "Activate account"
+    },
+    "table": {
+      "user": "User",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "account": "Account",
+      "age": "Age",
+      "gender": "Gender",
+      "joined": "Joined",
+      "actions": "Actions"
+    },
+    "status": {
+      "verified": "Verified",
+      "unverified": "Unverified",
+      "active": "Active",
+      "inactive": "Inactive",
+      "verifyTitle": "Click to verify this account",
+      "unverifiedVerify": "Unverified - Verify"
+    },
+    "account": {
+      "clickDeactivate": "Click to deactivate",
+      "clickActivate": "Click to activate",
+      "updating": "Updating..."
+    },
+    "empty": {
+      "noMatch": "No users match your search.",
+      "noUsers": "No users found."
+    },
+    "footer": {
+      "showing": "Showing",
+      "of": "of",
+      "users": "users"
+    },
+    "csv": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "age": "Age",
+      "gender": "Gender",
+      "joined": "Joined"
+    },
+    "modal": {
+      "titleAdd": "Add New User",
+      "titleEdit": "Edit User",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "password": "Password",
+        "role": "Role",
+        "age": "Age",
+        "gender": "Gender",
+        "accountVerified": "Account Verified"
+      },
+      "placeholders": {
+        "fullName": "Full name",
+        "password": "Minimum 8 characters",
+        "age": "Age"
+      },
+      "options": {
+        "notSpecified": "Not specified",
+        "male": "Male",
+        "female": "Female"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "createUser": "Create User",
+        "saveChanges": "Save Changes"
+      },
+      "errors": {
+        "create": "Failed to create user",
+        "update": "Failed to update user"
+      },
+      "toasts": {
+        "creating": "Creating user...",
+        "updating": "Updating {name}...",
+        "created": "User created successfully",
+        "updated": "{name} updated",
+        "genericError": "An error occurred"
+      }
+    },
+    "toggleModal": {
+      "titleDeactivate": "Deactivate Account",
+      "titleActivate": "Activate Account",
+      "deactivateText": "Are you sure you want to deactivate the account of {name}? The user will no longer be able to sign in.",
+      "activateText": "Activate the account of {name}? The user will be able to sign in again.",
+      "cancel": "Cancel",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    }
+  },
+  "adminProducts": {
+    "title": "Products",
+    "subtitle": "Manage all skincare products in your catalogue.",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "stats": {
+      "totalProducts": "Total Products",
+      "activeProducts": "Active Products",
+      "inactiveItems": "Inactive Items",
+      "totalCategories": "Total Categories"
+    },
+    "filters": {
+      "searchPlaceholder": "Search product or ingredient...",
+      "categoryAll": "Category: All",
+      "skinTypeAll": "Skin Type: All",
+      "statusAll": "Status: All"
+    },
+    "actions": {
+      "addNewProduct": "Add New Product"
+    },
+    "table": {
+      "productInfo": "Product Info",
+      "category": "Category",
+      "skinType": "Skin Type",
+      "ingredientsBenefits": "Ingredients & Benefits",
+      "price": "Price",
+      "status": "Status",
+      "created": "Created",
+      "actions": "Actions",
+      "noProductsFound": "No products found.",
+      "sku": "SKU",
+      "viewDetails": "View details",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "products": "products",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "skinCompatibility": {
+      "title": "Skin Compatibility",
+      "selectAll": "Select all that apply"
+    },
+    "proTip": {
+      "title": "Pro Tip",
+      "description": "Adding specific skin types helps our recommendation engine suggest this product to the right customers."
+    },
+    "scraping": {
+      "title": "Product Web Scraping",
+      "subtitle": "Write only ingredient keywords, then click the button to display matching products.",
+      "useFormIngredients": "Use Form Ingredients",
+      "clearResults": "Clear Results",
+      "ingredientKeywords": "Ingredient Keywords",
+      "typeIngredient": "Type ingredient...",
+      "scraping": "Scraping...",
+      "run": "Run Scraping",
+      "found": "Found {total} matches, showing {returned} results.",
+      "warnings": "Warnings",
+      "errors": {
+        "addIngredient": "Please add at least one ingredient keyword.",
+        "failed": "Scraping failed.",
+        "unable": "Unable to run scraping."
+      },
+      "table": {
+        "image": "Image",
+        "productName": "Product Name",
+        "description": "Description",
+        "matchedIngredients": "Matched Ingredients",
+        "price": "Price",
+        "link": "Link",
+        "noProducts": "No scraped products yet.",
+        "noImage": "No image",
+        "open": "Open"
+      }
+    },
+    "modal": {
+      "sku": "SKU",
+      "noImage": "No image uploaded",
+      "active": "Active",
+      "inactive": "Inactive",
+      "category": "Category",
+      "price": "Price",
+      "created": "Created",
+      "skinTypes": "Skin Types",
+      "keyIngredients": "Key Ingredients",
+      "benefitsDescription": "Benefits & Description",
+      "close": "Close",
+      "editProduct": "Edit Product"
+    },
+    "addForm": {
+      "breadcrumbAdd": "Add New",
+      "title": "Add New Product",
+      "subtitle": "Configure your product details and skin-specific properties.",
+      "actions": {
+        "cancel": "Cancel",
+        "save": "Save Product"
+      },
+      "sections": {
+        "basic": "Basic Information",
+        "formula": "Formula & Ingredients",
+        "image": "Product Image"
+      },
+      "fields": {
+        "name": "Product Name",
+        "namePlaceholder": "e.g. Vitamin C Radiance Serum",
+        "category": "Category",
+        "availability": "Availability Status",
+        "price": "Price (USD)",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe the product features, texture, and application...",
+        "keyIngredients": "Key Ingredients",
+        "ingredientPlaceholder": "Add ingredient...",
+        "ingredientHint": "Press Enter or comma to add an ingredient",
+        "serumsOption": "Serums",
+        "keyBenefits": "Key Benefits",
+        "imageUpload": "Click to upload or drag & drop",
+        "imageFormats": "PNG, JPG up to 10MB"
+      }
+    }
+  },
+  "userQuestionnaire": {
+    "userDefaultName": "User",
+    "breadcrumb": {
+      "user": "User",
+      "skinAnalysis": "Skin Analysis"
+    },
+    "header": {
+      "title": "Skin Analysis",
+      "questions": "{count} Questions"
+    },
+    "thinking": "DeepSkyn is thinking",
+    "analyzingDescription": "Our AI is processing your answers to generate a personalized skincare routine.",
+    "analysis": {
+      "complete": "Analysis complete."
+    },
+    "errors": {
+      "loadAccessStatus": "Failed to load analysis access status.",
+      "unexpected": "Unexpected error",
+      "unknown": "unknown error",
+      "createAnalysisForImages": "Unable to create an analysis to attach images.",
+      "analysisIdMissingAfterCreate": "analysisId is missing after analysis creation.",
+      "analysisIdRequired": "analysisId is required to save images.",
+      "storeImages": "Unable to store images in the database.",
+      "imageAnalysisFailed": "Image analysis request failed",
+      "finalAnalysisFailed": "Final analysis request failed"
+    },
+    "messages": {
+      "ready": "I'm ready when you are. If you see this, n8n might be returning an empty response.",
+      "connectionError": "Connection Error: {error}. Please check if n8n is running and its webhook is active.",
+      "userSessionMissing": "User session not found. Please sign in again and restart the questionnaire.",
+      "finalizeWithImagesError": "Unable to finalize analysis with images: {error}.",
+      "finalizeError": "Unable to finalize analysis: {error}."
+    },
+    "toasts": {
+      "maxImages": "Maximum {count} image(s) allowed.",
+      "maxImagesWarning": "Maximum {count} image(s) allowed. Please remove images before adding more.",
+      "photoCaptured": "Photo captured successfully!"
+    },
+    "limit": {
+      "description": "You have already used your free analysis in the last 24 hours.",
+      "nextAnalysis": "Next analysis",
+      "lessThan24h": "in less than 24h",
+      "viewMyAnalyses": "View my analyses",
+      "goPremium": "Upgrade to Premium",
+      "title": "Limit reached"
+    },
+    "result": {
+      "analysisComplete": "Analysis Complete",
+      "yourSkinScore": "Your Skin Score",
+      "scoreExcellent": "Excellent skin health! Keep it up.",
+      "scoreGood": "Good health with room to improve.",
+      "scoreNeedsCare": "Your skin needs some extra care.",
+      "age": "Age",
+      "analysisConfidence": "Analysis Confidence",
+      "personalizedAnalysis": "Your Personalized Analysis",
+      "strongPoints": "Strong Points",
+      "priorityConcerns": "Priority Concerns",
+      "immediateRecommendations": "Immediate Recommendations",
+      "morningRoutine": "Morning Routine",
+      "eveningRoutine": "Evening Routine",
+      "viewRoutine": "View Routine",
+      "viewHistory": "View History"
+    },
+    "images": {
+      "addForGemini": "Maximum {count} image(s). Gallery, camera, or drag and drop.",
+      "dragHere": "Drag your images here",
+      "orUseButtons": "or use the buttons below",
+      "addFromGallery": "Add from gallery",
+      "takePhoto": "Take a photo",
+      "remove": "Remove",
+      "continueWithout": "Continue without images",
+      "analyzing": "Analyzing...",
+      "analyzeWithGemini": "Analyze with Gemini",
+      "title": "Add images for Gemini"
+    },
+    "analyzingTitle": "Analyzing your skin..."
+  },
+  "adminAnalytics": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "platformAnalytics": "Platform Analytics"
+    },
+    "header": {
+      "title": "Platform Analytics",
+      "subtitle": "Comprehensive insights into DeepSkyn network performance.",
+      "moreFilters": "More Filters",
+      "export": "Export"
+    },
+    "kpis": {
+      "totalUsers": {
+        "label": "Total Users",
+        "description": "Total registered accounts"
+      },
+      "activeUsers": {
+        "label": "Active Users",
+        "description": "DAU: Daily Active Users"
+      },
+      "monthlyRevenue": {
+        "label": "Monthly Revenue",
+        "description": "Subscription & One-time revenue"
+      },
+      "conversionRate": {
+        "label": "Conversion Rate",
+        "description": "Visitor to Premium conversion"
+      }
+    },
+    "sections": {
+      "userGrowth": {
+        "title": "User Growth Trends",
+        "subtitle": "Engagement vs New Acquisition",
+        "new": "New",
+        "active": "Active"
+      },
+      "subscriptions": {
+        "title": "Subscriptions",
+        "noData": "No subscription data found"
+      },
+      "aiInsight": {
+        "textBefore": "Personalized routine recommendations led to a",
+        "textAfter": "increase in user retention this month.",
+        "fullReport": "Full AI Report",
+        "title": "AI Success Insight"
+      },
+      "systemHealth": {
+        "title": "System Health",
+        "items": {
+          "apiGateway": "API Gateway",
+          "aiSync": "AI Model Sync",
+          "dbLatency": "Database Latency",
+          "workerJobs": "Worker Jobs"
+        },
+        "status": {
+          "operational": "Operational",
+          "active24": "Active (24)"
+        }
+      },
+      "alerts": {
+        "title": "Critical Alerts (2)",
+        "highChurn": "High Churn",
+        "twoHoursAgo": "2h ago",
+        "highChurnDescription": "Churn rate increased by 2.4% for 'Expert Plan' users in Germany.",
+        "investigate": "Investigate Case",
+        "paymentFail": "Payment Fail",
+        "fourHoursAgo": "4h ago",
+        "paymentFailDescription": "Increased Stripe errors detected for EU transactions.",
+        "checkLogs": "Check Logs"
+      },
+      "liveActivity": {
+        "title": "Live Activity",
+        "user1": "User #1293",
+        "user2": "User #8821",
+        "user3": "User #4502",
+        "action1": "Completed Morning Routine",
+        "action2": "Upgraded to Pro",
+        "action3": "Added New Product",
+        "justNow": "Just now",
+        "threeMinAgo": "3m ago",
+        "eightMinAgo": "8m ago"
+      }
+    }
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "shortTitle": "Access",
+    "modesCount": "{count, plural, one {# mode} other {# modes}}",
+    "highContrast": "High contrast",
+    "largeText": "Large text",
+    "reducedMotion": "Reduced motion",
+    "colorAssist": "Color assist",
+    "off": "Off",
+    "protan": "Protan (red)",
+    "deutan": "Deutan (green)",
+    "tritan": "Tritan (blue)"
+  },
+  "adminProfilePage": {
+    "title": "Admin Profile - DeepSkyn"
+  },
+  "adminAnalyzes": {
+    "stats": {
+      "totalAnalyzes": "Total Analyzes",
+      "activeUsers": "Active Users",
+      "avgScore": "Avg. Score",
+      "newToday": "New Today",
+      "newValue": "New"
+    },
+    "header": {
+      "title": "Recent Analyzes",
+      "subtitle": "Manage and review all system analyzes from users.",
+      "searchPlaceholder": "Search user or date..."
+    },
+    "table": {
+      "user": "User",
+      "date": "Date",
+      "summary": "Summary",
+      "score": "Score",
+      "details": "Details",
+      "skinTypeType": "{skinType} Type"
+    },
+    "pagination": {
+      "showing": "Showing {filtered} of {total} analyzes",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "adminQuizzes": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "quizzes": "Quiz Management"
+    },
+    "header": {
+      "title": "Quiz Management",
+      "subtitle": "Create and manage assessment quizzes for your users."
+    },
+    "actions": {
+      "createQuiz": "Create Quiz",
+      "deleteQuiz": "Delete quiz",
+      "editQuiz": "Edit quiz",
+      "addNewQuiz": "Add New Quiz",
+      "preview": "Preview",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes"
+    },
+    "search": {
+      "placeholder": "Search by title..."
+    },
+    "filters": {
+      "allCategories": "All Categories"
+    },
+    "stats": {
+      "totalQuizzes": "{count} Total Quizzes",
+      "foundQuizzes": "{found}/{total} Found"
+    },
+    "labels": {
+      "category": "Category"
+    },
+    "preview": {
+      "questions": "Questions Preview",
+      "textAnswer": "Text Answer Preview",
+      "awaitingInput": "Awaited user input...",
+      "noQuestions": "No questions added yet."
+    },
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "category": "Category"
+    },
+    "questions": {
+      "title": "Questions ({count})",
+      "addQuestion": "Add Question",
+      "multipleChoice": "Multiple Choice",
+      "textInput": "Text Input",
+      "addChoice": "Add Choice",
+      "expectedAnswer": "Expected Answer:",
+      "expectedPlaceholder": "e.g. Minimalism...",
+      "expectedHint": "Users will need to type this exactly to get the point.",
+      "appendNew": "Append New Question",
+      "questionPlaceholder": "Question {number}",
+      "optionPlaceholder": "Option {number}",
+      "optionTemplate": "Option {number}"
+    },
+    "categories": {
+      "other": "Other",
+      "skinType": "Skin Type",
+      "skinGlow": "Skin Glow",
+      "ingredients": "Ingredients",
+      "medical": "Medical",
+      "personal": "Personal",
+      "general": "General"
+    },
+    "statuses": {
+      "active": "Active",
+      "draft": "Draft",
+      "unknown": "Unknown"
+    },
+    "defaults": {
+      "untitledQuestion": "Untitled"
+    },
+    "toasts": {
+      "enterTitle": "Please enter a quiz title",
+      "saving": "Saving...",
+      "saveQuizError": "Error while saving quiz",
+      "syncQuestionError": "Error: {question}... {error}",
+      "savedQuizQuestions": "Quiz and {count} questions saved",
+      "saveError": "Save error",
+      "deleting": "Deleting...",
+      "deleted": "Quiz deleted",
+      "deleteError": "Error while deleting"
+    },
+    "confirmDelete": "Are you sure you want to delete this quiz?",
+    "editor": {
+      "editingQuiz": "Editing Quiz",
+      "quizDetails": "Quiz Details",
+      "settings": "Settings",
+      "randomizeQuestions": "Randomize questions",
+      "showResultsAtEnd": "Show results at end",
+      "passScore": "Pass score %"
+    }
+  },
+  "adminBadges": {
+    "holders": "{count} active holders",
+    "historyTitle": "Badge Achievement History",
+    "toasts": {
+      "loadError": "Unable to load badges."
+    },
+    "states": {
+      "loading": "Loading badges...",
+      "noUsers": "No users found",
+      "noUsersHint": "Check search or badge data"
+    },
+    "hero": {
+      "kicker": "Gamification System",
+      "title": "Badges & Achievements",
+      "subtitle": "One user per row with their highest badge. Open details to view full history."
+    },
+    "table": {
+      "title": "User progression",
+      "subtitle": "Ranking by highest badge",
+      "searchPlaceholder": "Search name or email...",
+      "user": "User",
+      "bestBadge": "Best badge",
+      "totalBadges": "Total badges",
+      "details": "Details",
+      "displayedUsers": "{count} user(s) displayed",
+      "pageOne": "Page 1 of 1"
+    },
+    "badgeLevels": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "platinum": "Platinum",
+      "rubyMaster": "Ruby Master"
+    }
+  }
+}

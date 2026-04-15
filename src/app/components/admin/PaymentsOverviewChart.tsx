@@ -4,6 +4,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 
 type PropsType = {
     data: {
@@ -17,6 +18,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function PaymentsOverviewChart({ data }: PropsType) {
+    const t = useTranslations();
     const isMobile = useIsMobile();
 
     const options: ApexOptions = {
@@ -87,7 +89,7 @@ export function PaymentsOverviewChart({ data }: PropsType) {
         },
     };
 
-    if (!data) return <div className="h-[310px] flex items-center justify-center">Loading data...</div>;
+    if (!data) return <div className="h-[310px] flex items-center justify-center">{t('components.paymentsOverviewChart.loadingData')}</div>;
 
     return (
         <div className="-ml-4 -mr-5 h-[310px]">
@@ -95,11 +97,11 @@ export function PaymentsOverviewChart({ data }: PropsType) {
                 options={options}
                 series={[
                     {
-                        name: "Received",
+                        name: t('components.paymentsOverviewChart.series.received'),
                         data: data.received || [],
                     },
                     {
-                        name: "Due",
+                        name: t('components.paymentsOverviewChart.series.due'),
                         data: data.due || [],
                     },
                 ]}

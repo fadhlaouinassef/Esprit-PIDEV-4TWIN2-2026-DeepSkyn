@@ -3,6 +3,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, AlertTriangle, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface DeleteRoutineModalProps {
     isOpen: boolean;
@@ -19,6 +20,9 @@ export const DeleteRoutineModal: React.FC<DeleteRoutineModalProps> = ({
     routineName,
     loading = false,
 }) => {
+    const t = useTranslations();
+    const displayRoutineName = routineName || t('components.deleteRoutineModal.thisRoutine');
+
     if (!isOpen) return null;
 
     return (
@@ -43,14 +47,14 @@ export const DeleteRoutineModal: React.FC<DeleteRoutineModalProps> = ({
                             <AlertTriangle className="w-7 h-7" />
                         </div>
                         <h2 className="text-[24px] font-bold text-[#111827]">
-                            Delete Routine
+                            {t('components.deleteRoutineModal.title')}
                         </h2>
                     </div>
 
                     {/* Content */}
                     <div className="mb-10">
                         <p className="text-[#6B7280] text-[16px] leading-relaxed font-medium">
-                            Are you sure you want to <span className="text-[#DC2626] font-bold">delete</span> the routine <span className="text-[#111827] font-bold">"{routineName || "this routine"}"</span>? This action is permanent and cannot be undone.
+                            {t('components.deleteRoutineModal.confirmText')} <span className="text-[#DC2626] font-bold">{t('components.deleteRoutineModal.delete')}</span> {t('components.deleteRoutineModal.routineName')} <span className="text-[#111827] font-bold">{"\"" + displayRoutineName + "\""}</span>? {t('components.deleteRoutineModal.actionPrompt')}
                         </p>
                     </div>
 
@@ -61,7 +65,7 @@ export const DeleteRoutineModal: React.FC<DeleteRoutineModalProps> = ({
                             onClick={onClose}
                             className="flex-1 py-4 border border-[#E5E7EB] text-[#374151] rounded-[18px] font-bold text-[16px] hover:bg-gray-50 transition-colors"
                         >
-                            Cancel
+                            {t('components.deleteRoutineModal.cancel')}
                         </button>
                         <button
                             type="button"
@@ -69,7 +73,7 @@ export const DeleteRoutineModal: React.FC<DeleteRoutineModalProps> = ({
                             disabled={loading}
                             className="flex-1 py-4 bg-[#DC2626] text-white rounded-[18px] font-bold text-[16px] hover:bg-[#B91C1C] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-red-200"
                         >
-                            {loading ? "Deleting..." : "Delete"}
+                            {loading ? t('components.deleteRoutineModal.deleting') : t('components.deleteRoutineModal.delete')}
                         </button>
                     </div>
                 </motion.div>

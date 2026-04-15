@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface NotificationItem {
     id: string | number;
@@ -27,6 +28,7 @@ interface NotificationItem {
 }
 
 export function Notification() {
+    const t = useTranslations();
     const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -94,11 +96,12 @@ export function Notification() {
 
                 socket.on('signup', (data: any) => {
                     const now = new Date(data.timestamp || Date.now());
+                    const userName = data.nom || t('common.user');
                     const newNotif: NotificationItem = {
                         id: data.id || Date.now(),
                         image: data.image || "/avatar.png",
-                        title: data.nom ? `${data.nom} Joined the Team!` : "New User Joined!",
-                        subTitle: "Congratulate him",
+                        title: t('components.notification.types.signup.title', { name: userName }),
+                        subTitle: t('components.notification.types.signup.subtitle'),
                         type: 'signup',
                         time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                         date: now.toLocaleDateString(),
@@ -109,19 +112,21 @@ export function Notification() {
                     setNotifications(prev => [newNotif, ...prev].slice(0, 50));
                     setUnreadCount(prev => prev + 1);
 
-                    toast.success(`${data.nom || 'A user'} joined!`, {
-                        description: "A new user just signed up.",
+                    toast.success(t('components.notification.types.signup.toastTitle', { name: userName }), {
+                        description: t('components.notification.types.signup.toastDescription'),
                         icon: <UserPlus className="size-4" />,
                     });
                 });
 
                 socket.on('analyse', (data: any) => {
                     const now = new Date(data.timestamp || Date.now());
+                    const userName = data.nom || t('common.user');
+                    const score = data.score ?? 0;
                     const newNotif: NotificationItem = {
                         id: data.id || Date.now(),
                         image: data.image || "/avatar.png",
-                        title: data.nom ? `${data.nom} completed a skin analysis!` : "User completed an analysis!",
-                        subTitle: `Score: ${data.score}/100 - Analysis details`,
+                        title: t('components.notification.types.analyse.title', { name: userName }),
+                        subTitle: t('components.notification.types.analyse.subtitle', { score }),
                         type: 'analyse',
                         time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                         date: now.toLocaleDateString(),
@@ -132,19 +137,20 @@ export function Notification() {
                     setNotifications(prev => [newNotif, ...prev].slice(0, 50));
                     setUnreadCount(prev => prev + 1);
 
-                    toast.message(`${data.nom || 'A user'} analyzed their skin`, {
-                        description: `Skin Score: ${data.score}/100`,
+                    toast.message(t('components.notification.types.analyse.toastMessage', { name: userName }), {
+                        description: t('components.notification.types.analyse.toastDescription', { score }),
                         icon: <FileSearch className="size-4" />,
                     });
                 });
 
                 socket.on('verify', (data: any) => {
                     const now = new Date(data.timestamp || Date.now());
+                    const userName = data.nom || t('common.user');
                     const newNotif: NotificationItem = {
                         id: data.id || Date.now(),
                         image: data.image || "/avatar.png",
-                        title: data.nom ? `${data.nom} Verified their account!` : "User Verified!",
-                        subTitle: "Identity confirmed",
+                        title: t('components.notification.types.verify.title', { name: userName }),
+                        subTitle: t('components.notification.types.verify.subtitle'),
                         type: 'verify',
                         time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                         date: now.toLocaleDateString(),
@@ -155,8 +161,8 @@ export function Notification() {
                     setNotifications(prev => [newNotif, ...prev].slice(0, 50));
                     setUnreadCount(prev => prev + 1);
 
-                    toast.success(`${data.nom || 'A user'} verified!`, {
-                        description: "Account identity has been confirmed.",
+                    toast.success(t('components.notification.types.verify.toastTitle', { name: userName }), {
+                        description: t('components.notification.types.verify.toastDescription'),
                         icon: <ShieldCheck className="size-4" />,
                     });
                 });
@@ -221,7 +227,7 @@ export function Notification() {
             <DropdownTrigger
                 onClick={() => handleOpenChange(!isOpen)}
                 className="relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors group"
-                aria-label="View Notifications"
+                aria-label={t('components.notification.ariaLabel')}
             >
                 <div className="relative">
                     <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:scale-110 transition-transform duration-300" />
@@ -247,16 +253,16 @@ export function Notification() {
                 <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50">
                     <div>
                         <h3 className="text-base font-bold text-gray-900 dark:text-white">
-                            Notifications
+                            {t('components.notification.title')}
                         </h3>
-                        <p className="text-xs text-gray-500 font-medium">{unreadCount} new notifications</p>
+                        <p className="text-xs text-gray-500 font-medium">{t('components.notification.newNotifications', { count: unreadCount })}</p>
                     </div>
                     {notifications.length > 0 && (
                         <button
                             onClick={markAllAsRead}
                             className="text-xs text-[#156d95] hover:text-[#1a85b5] transition-colors font-bold px-2 py-1 rounded-lg hover:bg-[#156d95]/5"
                         >
-                            Mark all read
+                            {t('components.notification.markAllRead')}
                         </button>
                     )}
                 </div>
@@ -272,8 +278,8 @@ export function Notification() {
                                 </div>
                             </div>
                             <div>
-                                <p className="text-sm font-bold text-gray-900 dark:text-white">All caught up!</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">No new notifications at the moment.</p>
+                                <p className="text-sm font-bold text-gray-900 dark:text-white">{t('components.notification.empty.heading')}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('components.notification.empty.description')}</p>
                             </div>
                         </div>
                     ) : (
@@ -305,7 +311,7 @@ export function Notification() {
                                                     className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                     width={48}
                                                     height={48}
-                                                    alt="User"
+                                                    alt={t('components.notification.userAlt')}
                                                 />
                                             </div>
                                             <div className={cn(
@@ -357,7 +363,7 @@ export function Notification() {
                         href="#"
                         className="flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 py-2.5 text-center text-sm font-bold text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#156d95] shadow-sm active:scale-95"
                     >
-                        See all notifications
+                        {t('components.notification.footer.seeAll')}
                     </Link>
                 </div>
             </DropdownContent>

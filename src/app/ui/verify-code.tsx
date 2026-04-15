@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, CheckCircle2, ShieldCheck } from "lucide-react"
 import { motion } from "framer-motion"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { useAppDispatch } from "@/store/hooks"
 import { setUser } from "@/store/slices/authSlice"
 
@@ -14,6 +15,7 @@ const AUTH_MODE_KEY = 'deepskyn_auth_mode'
 export default function VerifyCode() {
     const router = useRouter()
     const dispatch = useAppDispatch()
+    const t = useTranslations()
     const [otp, setOtp] = useState(["", "", "", "", "", ""])
     const [isLoading, setIsLoading] = useState(false)
     const [userEmail, setUserEmail] = useState("")
@@ -54,8 +56,8 @@ export default function VerifyCode() {
         const code = otp.join("")
 
         if (code.length < 6) {
-            toast.error("Code incomplet", {
-                description: "Veuillez entrer les 6 chiffres du code."
+            toast.error(t('auth.verifyCode.errors.incompleteTitle'), {
+                description: t('auth.verifyCode.errors.incompleteDescription')
             })
             return
         }
@@ -65,7 +67,7 @@ export default function VerifyCode() {
         try {
             const userId = sessionStorage.getItem('pendingUserId')
             if (!userId) {
-                throw new Error('Session expirée. Veuillez recommencer.')
+                throw new Error(t('auth.verifyCode.errors.sessionExpired'))
             }
 
             const response = await fetch('/api/auth/verify-otp', {
@@ -82,12 +84,12 @@ export default function VerifyCode() {
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.error || 'Vérification échouée')
+                throw new Error(data.error || t('auth.verifyCode.errors.verifyFailed'))
             }
 
             if (verificationType === 'reset-password') {
-                toast.success("Code validé !", {
-                    description: "Vous pouvez maintenant changer votre mot de passe."
+                toast.success(t('auth.verifyCode.resetSuccess.title'), {
+                    description: t('auth.verifyCode.resetSuccess.description')
                 })
                 setTimeout(() => {
                     router.push('/reset-password')
@@ -111,8 +113,8 @@ export default function VerifyCode() {
                     localStorage.setItem(AUTH_MODE_KEY, 'credentials')
                 }
 
-                toast.success("Compte vérifié !", {
-                    description: "Bienvenue sur DeepSkyn ! Redirection en cours..."
+                toast.success(t('auth.verifyCode.accountVerified.title'), {
+                    description: t('auth.verifyCode.accountVerified.description')
                 })
 
                 const isAdmin = data.user?.role?.toUpperCase() === 'ADMIN';
@@ -123,8 +125,8 @@ export default function VerifyCode() {
                 }, 1500)
             }
         } catch (error: any) {
-            toast.error("Erreur de vérification", {
-                description: error.message || "Code invalide ou expiré"
+            toast.error(t('auth.verifyCode.error.title'), {
+                description: error.message || t('auth.verifyCode.error.description')
             })
         } finally {
             setIsLoading(false)
@@ -135,7 +137,7 @@ export default function VerifyCode() {
         try {
             const userId = sessionStorage.getItem('pendingUserId')
             if (!userId) {
-                throw new Error('Session expirée. Veuillez recommencer.')
+                throw new Error(t('auth.verifyCode.errors.sessionExpired'))
             }
 
             const response = await fetch('/api/auth/resend-otp', {
@@ -149,15 +151,15 @@ export default function VerifyCode() {
             const data = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.error || 'Échec de l\'envoi')
+                throw new Error(data.error || t('auth.verifyCode.resend.errors.sendFailed'))
             }
 
-            toast.info("Code renvoyé", {
-                description: "Un nouveau code de vérification a été envoyé à votre e-mail."
+            toast.info(t('auth.verifyCode.resend.success.title'), {
+                description: t('auth.verifyCode.resend.success.description')
             })
         } catch (error: any) {
-            toast.error("Échec de l'envoi", {
-                description: error.message
+            toast.error(t('auth.verifyCode.resend.error.title'), {
+                description: error.message || t('auth.verifyCode.resend.error.description')
             })
         }
     }
@@ -185,7 +187,11 @@ export default function VerifyCode() {
                         <motion.div whileHover={{ x: -4 }} transition={{ type: "spring", stiffness: 400 }}>
                             <ArrowLeft className="w-5 h-5" />
                         </motion.div>
-                        <span className="text-sm font-medium">Retour {verificationType === 'reset-password' ? 'au reset' : 'à l\'inscription'}</span>
+                        <span className="text-sm font-medium">
+                            {verificationType === 'reset-password'
+                                ? t('auth.verifyCode.backToForgot')
+                                : t('auth.verifyCode.backToSignup')}
+                        </span>
                     </Link>
 
                     {/* Icon */}
@@ -208,12 +214,20 @@ export default function VerifyCode() {
                         className="text-center mb-8"
                     >
                         <h1 className="text-3xl font-bold text-[#202020] mb-3 bg-gradient-to-r from-[#202020] to-[#156d95] bg-clip-text text-transparent" style={{ fontFamily: "Figtree" }}>
-                            {verificationType === 'reset-password' ? "Vérification" : "Vérifier Code"}
+                            {verificationType === 'reset-password'
+                                ? t('auth.verifyCode.titleReset')
+                                : t('auth.verifyCode.titleSignup')}
                         </h1>
                         <p className="text-sm text-[#666666] leading-relaxed" style={{ fontFamily: "Figtree" }}>
                             {verificationType === 'reset-password'
-                                ? "Entrez le code envoyé pour réinitialiser votre mot de passe."
-                                : `Nous avons envoyé un code à 6 chiffres à ${userEmail ? <strong>{userEmail}</strong> : 'votre email'}.`
+                                ? t('auth.verifyCode.descriptionReset')
+                                : (
+                                    <>
+                                        {t('auth.verifyCode.descriptionSignupPrefix')}{" "}
+                                        <strong>{userEmail || t('auth.verifyCode.yourEmail')}</strong>
+                                        {t('auth.verifyCode.descriptionSignupSuffix')}
+                                    </>
+                                )
                             }
                         </p>
                     </motion.div>
@@ -249,7 +263,7 @@ export default function VerifyCode() {
                             className="w-full bg-gradient-to-r from-[#156d95] to-[#0d4a6b] text-white py-3.5 rounded-xl font-semibold hover:from-[#0d4a6b] hover:to-[#156d95] transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
                             style={{ fontFamily: "Figtree" }}
                         >
-                            {isLoading ? "Verifying..." : "Verify Code"}
+                            {isLoading ? t('auth.verifyCode.verifying') : t('auth.verifyCode.submit')}
                             {!isLoading && <CheckCircle2 className="w-4 h-4" />}
                         </motion.button>
 
@@ -259,7 +273,7 @@ export default function VerifyCode() {
                                 onClick={handleResendCode}
                                 className="text-sm text-[#156d95] font-semibold hover:underline"
                             >
-                                Resend code
+                                {t('auth.verifyCode.resend.submit')}
                             </button>
                         </div>
                     </motion.form>

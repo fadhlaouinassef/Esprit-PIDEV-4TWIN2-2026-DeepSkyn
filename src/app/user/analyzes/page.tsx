@@ -27,6 +27,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
+import { useTranslations } from "next-intl";
 
 // --- COMPONENTS ---
 
@@ -82,12 +83,28 @@ const CircularScore = ({ score, size = "md" }: { score: number; size?: "sm" | "m
 };
 
 const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: string; onClick: () => void }) => {
+    const t = useTranslations("userAnalyzes.card");
+
     const getStatusIcon = (status: string) => {
         switch (status) {
             case "Improved": return <TrendingUp className="size-3 text-emerald-500" />;
             case "Worse": return <TrendingDown className="size-3 text-rose-500" />;
             default: return <Minus className="size-3 text-gray-500" />;
         }
+    };
+
+    const statusLabel = (status: string) => {
+        if (status === "Improved") return t("statuses.improved");
+        if (status === "Worse") return t("statuses.worse");
+        if (status === "Stable") return t("statuses.stable");
+        return status;
+    };
+
+    const sensitivityLabel = (sensitivity: string) => {
+        if (sensitivity === "Low") return t("sensitivity.low");
+        if (sensitivity === "Medium") return t("sensitivity.medium");
+        if (sensitivity === "High") return t("sensitivity.high");
+        return sensitivity;
     };
 
     const getStatusStyles = (status: string) => {
@@ -107,7 +124,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
             <div className="flex justify-between items-start mb-6">
                 <div>
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[2px] mb-1 block">
-                        {label || "Baseline Analysis"}
+                        {label || t("labels.baseline")}
                     </span>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
                         {analysis.date}
@@ -115,7 +132,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
                 </div>
                 <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[11px] font-bold ${getStatusStyles(analysis.status)}`}>
                     {getStatusIcon(analysis.status)}
-                    {analysis.status}
+                    {statusLabel(analysis.status)}
                     {analysis.status === "Improved" && <span className="text-[8px]">↑</span>}
                     {analysis.status === "Worse" && <span className="text-[8px]">↓</span>}
                     {analysis.status === "Stable" && <span className="text-[8px]">→</span>}
@@ -127,7 +144,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
 
                 <div className="flex-1 space-y-4">
                     <div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Skin Type</span>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t("skinType")}</span>
                         <div className="bg-[#e0f1f9] text-[#156d95] px-4 py-2 rounded-xl text-sm font-bold inline-block">
                             {analysis.skinType}
                         </div>
@@ -145,7 +162,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
             <div className="space-y-6 flex-1">
                 <div>
                     <div className="flex justify-between text-[11px] font-bold mb-2">
-                        <span className="text-gray-400 uppercase tracking-wider">Hydration</span>
+                        <span className="text-gray-400 uppercase tracking-wider">{t("hydration")}</span>
                         <span className="text-[#156d95]">{analysis.hydration}%</span>
                     </div>
                     <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -160,7 +177,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
 
                 <div>
                     <div className="flex justify-between text-[11px] font-bold mb-2">
-                        <span className="text-gray-400 uppercase tracking-wider">Oil Production</span>
+                        <span className="text-gray-400 uppercase tracking-wider">{t("oilProduction")}</span>
                         <span className="text-[#156d95]">{analysis.oilProduction}%</span>
                     </div>
                     <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -176,11 +193,11 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
 
             <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sensitivity</span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t("sensitivity.label")}</span>
                     <span className={`text-sm font-bold ${analysis.sensitivity === "Low" ? "text-emerald-500" :
                             analysis.sensitivity === "Medium" ? "text-amber-500" : "text-rose-500"
                         }`}>
-                        {analysis.sensitivity}
+                        {sensitivityLabel(analysis.sensitivity)}
                     </span>
                 </div>
                 <div className="size-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#156d95] group-hover:text-white transition-all">
@@ -192,6 +209,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
 };
 
 const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: () => void }) => {
+    const t = useTranslations("userAnalyzes.modal");
     if (!analysis) return null;
 
     return (
@@ -215,10 +233,10 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                     <div className="p-8 pb-4 flex justify-between items-start">
                         <div>
                             <span className="text-[10px] font-bold text-[#156d95] uppercase tracking-[3px] mb-2 block font-mono">
-                                Clinical Analysis Report
+                                {t("report")}
                             </span>
                             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                                Detailed Analysis - {analysis.date}
+                                {t("detailed", { date: analysis.date })}
                             </h2>
                         </div>
                         <button
@@ -236,19 +254,19 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                             <div className="lg:col-span-4 space-y-6">
                                 <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-[32px] p-8 flex flex-col items-center text-center border border-gray-100 dark:border-gray-700">
                                     <CircularScore score={analysis.score} size="lg" />
-                                    <h3 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">Overall Health Score</h3>
+                                    <h3 className="mt-6 text-xl font-bold text-gray-900 dark:text-white">{t("overallHealthScore")}</h3>
                                     <p className="mt-2 text-sm text-gray-500 leading-relaxed max-w-[200px]">
-                                        Your skin health is significantly above average for your demographic.
+                                        {t("overallHealthDescription")}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
-                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Skin Type</span>
+                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t("skinType")}</span>
                                         <p className="font-bold text-gray-900 dark:text-white">{analysis.skinType}</p>
                                     </div>
                                     <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
-                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Sensitivity</span>
+                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t("sensitivity")}</span>
                                         <p className="font-bold text-gray-900 dark:text-white">{analysis.sensitivity}</p>
                                     </div>
                                 </div>
@@ -256,7 +274,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                 <div className="space-y-6 pt-4">
                                     <div>
                                         <div className="flex justify-between text-[11px] font-bold mb-2">
-                                            <span className="text-gray-400 uppercase tracking-wider">Hydration</span>
+                                            <span className="text-gray-400 uppercase tracking-wider">{t("hydration")}</span>
                                             <span className="text-[#156d95]">{analysis.hydration}%</span>
                                         </div>
                                         <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -265,7 +283,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                     </div>
                                     <div>
                                         <div className="flex justify-between text-[11px] font-bold mb-2">
-                                            <span className="text-gray-400 uppercase tracking-wider">Oil Balance</span>
+                                            <span className="text-gray-400 uppercase tracking-wider">{t("oilBalance")}</span>
                                             <span className="text-blue-300">{analysis.oilProduction}%</span>
                                         </div>
                                         <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -275,7 +293,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                 </div>
 
                                 <div className="pt-4">
-                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Identified Concerns</span>
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">{t("identifiedConcerns")}</span>
                                     <div className="space-y-3">
                                         {analysis.concerns.map((concern: string) => (
                                             <div key={concern} className="bg-rose-50/50 dark:bg-rose-900/10 rounded-2xl p-4 flex items-center justify-between border border-rose-100 dark:border-rose-900/20">
@@ -285,7 +303,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                                     </div>
                                                     <span className="font-bold text-gray-900 dark:text-white">{concern}</span>
                                                 </div>
-                                                <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest mr-2">Mild</span>
+                                                <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest mr-2">{t("mild")}</span>
                                             </div>
                                         ))}
                                         <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl p-4 flex items-center justify-between border border-gray-100 dark:border-gray-700">
@@ -293,9 +311,9 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                                 <div className="size-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                                     <CheckCircle2 size={16} />
                                                 </div>
-                                                <span className="font-bold">Redness</span>
+                                                <span className="font-bold">{t("redness")}</span>
                                             </div>
-                                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mr-2">Minimal</span>
+                                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mr-2">{t("minimal")}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -313,14 +331,14 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         </div>
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-bold text-[#156d95] dark:text-blue-300">AI Vision Analysis</h4>
+                                        <h4 className="font-bold text-[#156d95] dark:text-blue-300">{t("aiVision")}</h4>
                                         <div className="flex items-center gap-4 mt-1">
                                             <div className="text-xs text-[#156d95]/70 dark:text-blue-400 font-medium">
-                                                Skin Age: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.skinAge}</span> <span className="opacity-50">(Actual: {analysis.actualAge})</span>
+                                                {t("skinAge")}: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.skinAge}</span> <span className="opacity-50">({t("actual")}: {analysis.actualAge})</span>
                                             </div>
                                             <div className="w-px h-3 bg-[#156d95]/20" />
                                             <div className="text-xs text-[#156d95]/70 dark:text-blue-400 font-medium">
-                                                Risk Factor: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.riskFactor}</span>
+                                                {t("riskFactor")}: <span className="font-bold text-[#156d95] dark:text-blue-300">{analysis.riskFactor}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -332,11 +350,11 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         <div className="size-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-[#156d95]">
                                             <ClipboardList size={18} />
                                         </div>
-                                        <h4 className="font-bold text-gray-900 dark:text-white">Targeted Recommendations</h4>
+                                        <h4 className="font-bold text-gray-900 dark:text-white">{t("targetedRecommendations")}</h4>
                                     </div>
                                     <div className="bg-gray-50/50 dark:bg-gray-800 rounded-[32px] p-8 border border-gray-100 dark:border-gray-700">
                                         <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                                            {analysis.summary || "Based on your clinical parameters, we've outlined the following strategic recommendations for your skin health."}
+                                            {analysis.summary || t("recommendationsFallback")}
                                         </p>
                                         <ul className="space-y-4">
                                             {(() => {
@@ -365,14 +383,14 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         <div className="size-8 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-500">
                                             <Sparkles size={18} />
                                         </div>
-                                        <h4 className="font-bold text-gray-900 dark:text-white">Prescribed Routine</h4>
+                                        <h4 className="font-bold text-gray-900 dark:text-white">{t("prescribedRoutine")}</h4>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         {/* Morning */}
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-2 text-amber-500">
                                                 <Sun size={18} />
-                                                <span className="text-xs font-bold uppercase tracking-widest">Morning Routine</span>
+                                                <span className="text-xs font-bold uppercase tracking-widest">{t("morningRoutine")}</span>
                                             </div>
                                             <div className="space-y-6">
                                                 {(Array.isArray(analysis.routine?.morning) ? analysis.routine.morning : []).map((item: any, idx: number) => {
@@ -381,7 +399,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                                         <div key={idx} className="flex flex-col gap-2">
                                                             <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-amber-200 transition-colors">
                                                                 <div className="flex flex-col">
-                                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
+                                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t("step", { number: idx + 1 })}</span>
                                                                     <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
                                                                 </div>
                                                                 <ChevronRight size={16} className="text-gray-300 group-hover:text-amber-500 transition-colors" />
@@ -399,7 +417,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-2 text-blue-900 dark:text-blue-400">
                                                 <Moon size={18} />
-                                                <span className="text-xs font-bold uppercase tracking-widest">Night Routine</span>
+                                                <span className="text-xs font-bold uppercase tracking-widest">{t("nightRoutine")}</span>
                                             </div>
                                             <div className="space-y-6">
                                                 {(Array.isArray(analysis.routine?.night || analysis.routine?.evening) ? (analysis.routine?.night || analysis.routine?.evening) : []).map((item: any, idx: number) => {
@@ -408,7 +426,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
                                                         <div key={idx} className="flex flex-col gap-2">
                                                             <div className="group flex justify-between items-center bg-gray-50/50 dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-blue-200 transition-colors">
                                                                 <div className="flex flex-col">
-                                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Step {idx + 1}</span>
+                                                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t("step", { number: idx + 1 })}</span>
                                                                     <span className="font-bold text-gray-900 dark:text-white text-sm">{stepName}</span>
                                                                 </div>
                                                                 <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors" />
@@ -436,6 +454,7 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
 // --- MAIN PAGE ---
 
 export default function AnalyzesPage() {
+    const t = useTranslations("userAnalyzes");
     const [analyses, setAnalyses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
@@ -507,12 +526,12 @@ export default function AnalyzesPage() {
     // Auto-read when an analysis is selected
     useEffect(() => {
         if (autoSpeech && selectedAnalysis) {
-            let fullText = `Detailed Analysis for ${selectedAnalysis.date}. `;
-            fullText += `Skin Health Score is ${selectedAnalysis.score} out of 100. `;
-            fullText += `Skin type is ${selectedAnalysis.skinType} with ${selectedAnalysis.sensitivity} sensitivity. `;
+            let fullText = t("audio.detailIntro", { date: selectedAnalysis.date });
+            fullText += ` ${t("audio.score", { score: selectedAnalysis.score })} `;
+            fullText += ` ${t("audio.skinTypeSensitivity", { skinType: selectedAnalysis.skinType, sensitivity: selectedAnalysis.sensitivity })} `;
             
             if (selectedAnalysis.summary) {
-                fullText += `Summary: ${selectedAnalysis.summary}. `;
+                fullText += ` ${t("audio.summary", { summary: selectedAnalysis.summary })} `;
             }
 
             const recs = Array.isArray(selectedAnalysis.recommendations)
@@ -522,16 +541,16 @@ export default function AnalyzesPage() {
                     : [];
             
             if (recs.length > 0) {
-                fullText += "Top Recommendations: " + recs.slice(0, 3).join(". ") + ".";
+                fullText += t("audio.topRecommendations", { recommendations: recs.slice(0, 3).join(". ") });
             }
 
             speakContent(fullText, `analysis-${selectedAnalysis.id}`);
         } else if (autoSpeech && !selectedAnalysis && analyses.length > 0) {
             const latest = analyses[0];
-            const text = `Skin Analysis History. You have ${analyses.length} reports. Your latest score was ${latest.score} for ${latest.skinType} skin.`;
+            const text = t("audio.history", { count: analyses.length, score: latest.score, skinType: latest.skinType });
             speakContent(text, "history-summary");
         }
-    }, [selectedAnalysis, autoSpeech, analyses.length]);
+    }, [selectedAnalysis, autoSpeech, analyses, t]);
 
     useEffect(() => {
         return () => {
@@ -552,7 +571,12 @@ export default function AnalyzesPage() {
         return matchesSearch && matchesStatus;
     });
 
-    const statusOptions = ["All", "Improved", "Stable", "Worse"];
+    const statusOptions = [
+        { value: "All", label: t("filters.status.all") },
+        { value: "Improved", label: t("filters.status.improved") },
+        { value: "Stable", label: t("filters.status.stable") },
+        { value: "Worse", label: t("filters.status.worse") },
+    ];
 
     return (
         <UserLayout>
@@ -561,11 +585,11 @@ export default function AnalyzesPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                     <div className="flex flex-col">
                         <span className="text-[11px] font-bold text-[#156d95] uppercase tracking-[3px] mb-2 block font-mono">
-                            Clinical History
+                            {t("header.kicker")}
                         </span>
                         <div className="flex items-center gap-4">
                             <h1 className="text-5xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight">
-                                Skin Analysis History
+                                {t("header.title")}
                             </h1>
                             <AudioToggleButton
                                 enabled={autoSpeech}
@@ -576,7 +600,7 @@ export default function AnalyzesPage() {
                             />
                         </div>
                         <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg max-w-xl font-medium">
-                            View and track your skin progress over time through our diagnostic lens.
+                            {t("header.subtitle")}
                         </p>
                     </div>
 
@@ -585,7 +609,7 @@ export default function AnalyzesPage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 size-4" />
                             <input
                                 type="text"
-                                placeholder="Search analyses..."
+                                placeholder={t("filters.searchPlaceholder")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-11 pr-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-2xl border-none text-sm w-64 focus:ring-2 focus:ring-[#156d95]/50 transition-all font-bold"
@@ -599,7 +623,7 @@ export default function AnalyzesPage() {
                                 className="bg-transparent border-none outline-none text-sm font-bold cursor-pointer"
                             >
                                 {statusOptions.map(opt => (
-                                    <option key={opt} value={opt}>{opt}</option>
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
                                 ))}
                             </select>
                         </div>
@@ -608,7 +632,7 @@ export default function AnalyzesPage() {
                             className="flex items-center gap-2 px-8 py-4 bg-[#156d95] hover:bg-[#115a7b] rounded-full font-bold text-white shadow-xl shadow-[#156d95]/20 hover:scale-[1.02] transition-all"
                         >
                             <Plus size={20} />
-                            New Analysis
+                            {t("actions.newAnalysis")}
                         </Link>
                     </div>
                 </div>
@@ -621,11 +645,11 @@ export default function AnalyzesPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredAnalyses.map((analysis, index) => {
-                            let label = "Baseline Analysis";
-                            if (index === 0) label = "Latest Analysis";
-                            else if (index === 1) label = "Previous Result";
-                            else if (index === filteredAnalyses.length - 1 && filteredAnalyses.length > 2) label = "Baseline Analysis";
-                            else label = "Past History";
+                            let label = t("card.labels.baseline");
+                            if (index === 0) label = t("card.labels.latest");
+                            else if (index === 1) label = t("card.labels.previous");
+                            else if (index === filteredAnalyses.length - 1 && filteredAnalyses.length > 2) label = t("card.labels.baseline");
+                            else label = t("card.labels.past");
 
                             return (
                                 <AnalysisCard
@@ -645,25 +669,25 @@ export default function AnalyzesPage() {
                         <div className="size-24 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Search className="text-gray-300 size-10" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No analyses found</h3>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("empty.title")}</h3>
                         <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
                             {analyses.length === 0
-                                ? "You haven't performed any skin analyses yet. Start your first scan to see your detailed report."
-                                : "We couldn't find any analyses matching your search or filters. Try adjusting them or start a new scan."}
+                                ? t("empty.noAnalyses")
+                                : t("empty.noMatches")}
                         </p>
                         {analyses.length === 0 ? (
                             <Link
                                 href="/user/questionnaire"
                                 className="mt-8 px-10 py-4 bg-[#156d95] text-white rounded-full font-bold hover:bg-[#115a7b] transition-all inline-block"
                             >
-                                Perform First Analysis
+                                {t("empty.firstAnalysis")}
                             </Link>
                         ) : (
                             <button
                                 onClick={() => { setSearchTerm(""); setStatusFilter("All"); }}
                                 className="mt-8 px-10 py-4 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-white rounded-full font-bold hover:bg-gray-200 transition-all"
                             >
-                                Clear All Filters
+                                {t("empty.clearFilters")}
                             </button>
                         )}
                     </div>

@@ -6,6 +6,7 @@ import { useState, useRef, useCallback, type KeyboardEvent, useEffect } from "re
 import { Square, Mic, MicOff, Brain, Paperclip, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -35,6 +36,7 @@ interface ComposerProps {
 }
 
 export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel, onModelChange }: ComposerProps) {
+    const t = useTranslations()
     const [value, setValue] = useState("")
     const [isRecording, setIsRecording] = useState(false)
     const [uploadedImage, setUploadedImage] = useState<string | null>(null)
@@ -111,7 +113,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
         playClickSound()
 
         if (!recognitionRef.current) {
-            alert("Speech recognition is not supported in your browser")
+            alert(t('components.composer.unsupportedSpeech'))
             return
         }
 
@@ -156,7 +158,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
             recognitionRef.current.stop()
             setIsRecording(false)
         }
-        onSend(value || "Describe this image", uploadedImage || undefined)
+        onSend(value || t('components.composer.defaultDescribeImage'), uploadedImage || undefined)
         setValue("")
         setUploadedImage(null)
         baseTextRef.current = ""
@@ -229,7 +231,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
                                 <button
                                     onClick={removeImage}
                                     className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-stone-800 hover:bg-stone-900 text-white rounded-full flex items-center justify-center transition-colors"
-                                    aria-label="Remove image"
+                                    aria-label={t('components.composer.removeImage')}
                                 >
                                     <X className="w-3 h-3" />
                                 </button>
@@ -244,7 +246,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
                                 handleInput()
                             }}
                             onKeyDown={handleKeyDown}
-                            placeholder={isRecording ? "Listening..." : "Type a message... (Shift+Enter for new line)"}
+                            placeholder={isRecording ? t('components.composer.listening') : t('components.composer.typeMessage')}
                             disabled={isStreaming || disabled}
                             rows={1}
                             className={cn(
@@ -268,7 +270,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
                                     onStop()
                                 }}
                                 className="relative h-9 w-9 shrink-0 transition-all rounded-full flex items-center justify-center cursor-pointer hover:scale-105"
-                                aria-label="Stop generating"
+                                aria-label={t('components.composer.stopGenerating')}
                             >
                                 <AnimatedOrb size={36} variant="red" />
                                 <Square
@@ -287,7 +289,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
                                         ? "opacity-50 cursor-not-allowed"
                                         : "cursor-pointer hover:scale-105",
                                 )}
-                                aria-label="Send message"
+                                aria-label={t('components.composer.sendMessage')}
                             >
                                 <AnimatedOrb size={36} />
                             </button>
@@ -329,7 +331,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
                             disabled={isStreaming || disabled}
                             size="icon"
                             className="h-9 w-9 shrink-0 bg-zinc-100 hover:bg-zinc-200 text-stone-700 rounded-full"
-                            aria-label="Attach image"
+                            aria-label={t('components.composer.attachImage')}
                         >
                             <Paperclip className="w-4 h-4" />
                         </Button>
@@ -341,7 +343,7 @@ export function Composer({ onSend, onStop, isStreaming, disabled, selectedModel,
                                     size="icon"
                                     disabled={isStreaming || disabled}
                                     className="h-9 w-9 shrink-0 bg-zinc-100 hover:bg-zinc-200 text-stone-700 rounded-full"
-                                    aria-label="Select AI model"
+                                    aria-label={t('components.composer.selectAiModel')}
                                     onClick={playClickSound}
                                 >
                                     <Brain className="w-4 h-4" />

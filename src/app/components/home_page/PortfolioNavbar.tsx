@@ -6,39 +6,26 @@ import { Menu, X } from "lucide-react"
 import { LoadingLink } from "../LoadingLink"
 import LanguageSwitcher from "../LanguageSwitcher"
 import { OPEN_DEEPSKYN_EXPERIENCE_MAP_EVENT } from "./DeepSkynExperienceMap"
+import { useTranslations } from "next-intl"
 
 type NavLink = {
-  name: string;
+  id: "products" | "routines" | "testimonials" | "faq" | "journey";
   href: string;
 };
-
-const navigationLinks: NavLink[] = [
-  {
-    name: "Products",
-    href: "#products",
-  },
-  {
-    name: "Routines",
-    href: "#healthy-steps",
-  },
-  {
-    name: "Testimonials",
-    href: "#testimonials",
-  },
-  {
-    name: "FAQ",
-    href: "#faq",
-  },
-  {
-    name: "Journey",
-    href: "#healthy-steps",
-  },
-];
 
 // @component: PortfolioNavbar
 export const PortfolioNavbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const t = useTranslations()
+
+  const navigationLinks: NavLink[] = [
+    { id: "products", href: "#products" },
+    { id: "routines", href: "#healthy-steps" },
+    { id: "testimonials", href: "#testimonials" },
+    { id: "faq", href: "#faq" },
+    { id: "journey", href: "#healthy-steps" },
+  ]
 
   const openExperienceMap = () => {
     window.dispatchEvent(new Event(OPEN_DEEPSKYN_EXPERIENCE_MAP_EVENT))
@@ -98,15 +85,21 @@ export const PortfolioNavbar = () => {
             <div className="ml-10 flex items-baseline space-x-8">
               {navigationLinks.map((link) => (
                 <button
-                  key={link.name}
-                  onClick={() => handleLinkClick(link.href)}
+                  key={link.id}
+                  onClick={() => {
+                    if (link.id === "journey") {
+                      openExperienceMap()
+                      return
+                    }
+                    handleLinkClick(link.href)
+                  }}
                   className="text-foreground hover:text-primary px-3 py-2 text-base font-medium transition-colors duration-200 relative group"
                   style={{
                     fontFamily: "Satoshi",
                     fontWeight: "500",
                   }}
                 >
-                  <span>{link.name}</span>
+                  <span>{t(`home.nav.${link.id}`)}</span>
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></div>
                 </button>
               ))}
@@ -121,9 +114,9 @@ export const PortfolioNavbar = () => {
               style={{
                 fontFamily: "Satoshi",
               }}
-              aria-label="Ouvrir DeepSkyn Experience Map"
+              aria-label={t('home.nav.openMapAria')}
             >
-              DeepSkyn Map
+              {t('home.nav.mapButton')}
             </button>
             <LoadingLink
               href="/signin"
@@ -138,7 +131,7 @@ export const PortfolioNavbar = () => {
                   fontWeight: "500",
                 }}
               >
-                Login
+                {t('common.login')}
               </span>
             </LoadingLink>
           </div>
@@ -148,7 +141,7 @@ export const PortfolioNavbar = () => {
             <button
               onClick={toggleMobileMenu}
               className="text-foreground hover:text-primary p-2 rounded-md transition-colors duration-200"
-              aria-label="Toggle mobile menu"
+              aria-label={t('home.nav.toggleMobileMenu')}
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -180,15 +173,21 @@ export const PortfolioNavbar = () => {
             <div className="px-6 py-6 space-y-4">
               {navigationLinks.map((link) => (
                 <button
-                  key={link.name}
-                  onClick={() => handleLinkClick(link.href)}
+                  key={link.id}
+                  onClick={() => {
+                    if (link.id === "journey") {
+                      openExperienceMap()
+                      return
+                    }
+                    handleLinkClick(link.href)
+                  }}
                   className="block w-full text-left text-foreground hover:text-primary py-3 text-lg font-medium transition-colors duration-200"
                   style={{
                     fontFamily: "Satoshi, sans-serif",
                     fontWeight: "400",
                   }}
                 >
-                  <span>{link.name}</span>
+                  <span>{t(`home.nav.${link.id}`)}</span>
                 </button>
               ))}
               <button
@@ -198,9 +197,9 @@ export const PortfolioNavbar = () => {
                   fontFamily: "Satoshi, sans-serif",
                   fontWeight: "500",
                 }}
-                aria-label="Ouvrir DeepSkyn Experience Map"
+                aria-label={t('home.nav.openMapAria')}
               >
-                DeepSkyn Map
+                {t('home.nav.mapButton')}
               </button>
               <div className="pt-4 border-t border-border">
                 <LoadingLink
@@ -210,7 +209,7 @@ export const PortfolioNavbar = () => {
                     fontFamily: "Satoshi, sans-serif",
                   }}
                 >
-                  <span>Login</span>
+                  <span>{t('common.login')}</span>
                 </LoadingLink>
               </div>
             </div>

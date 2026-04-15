@@ -4,8 +4,10 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { XCircle, ArrowLeft, RefreshCw } from "lucide-react";
 import { UserLayout } from "@/app/ui/UserLayout";
+import { useTranslations } from "next-intl";
 
 export default function BillingCancelPage() {
+  const t = useTranslations("billingCancel");
   const router = useRouter();
 
   // Mock user for layout
@@ -40,7 +42,7 @@ export default function BillingCancelPage() {
             transition={{ delay: 0.3 }}
             className="text-4xl md:text-5xl font-black text-foreground mb-4"
           >
-            Paiement Annulé
+            {t("title")}
           </motion.h1>
 
           {/* Description */}
@@ -50,7 +52,7 @@ export default function BillingCancelPage() {
             transition={{ delay: 0.4 }}
             className="text-lg text-muted-foreground mb-12 max-w-md mx-auto"
           >
-            Aucun problème! Le paiement a été annulé. Tu peux réessayer quand tu veux ou explorer d'autres options.
+            {t("description")}
           </motion.p>
 
           {/* Action Buttons */}
@@ -65,7 +67,7 @@ export default function BillingCancelPage() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-primary/20"
             >
               <RefreshCw className="w-4 h-4" />
-              <span>Réessayer le Paiement</span>
+              <span>{t("retryPayment")}</span>
             </button>
 
             <button
@@ -73,7 +75,7 @@ export default function BillingCancelPage() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-muted text-foreground rounded-xl font-bold hover:scale-105 active:scale-95 transition-transform"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Retour au Dashboard</span>
+              <span>{t("backToDashboard")}</span>
             </button>
           </motion.div>
 
@@ -85,12 +87,12 @@ export default function BillingCancelPage() {
             className="mt-12 p-6 bg-muted/50 border border-border rounded-2xl max-w-md mx-auto"
           >
             <p className="text-sm text-muted-foreground">
-              Besoin d'aide?{" "}
+              {t("needHelp")}{" "}
               <a
                 href="#"
                 className="text-primary font-bold hover:underline"
               >
-                Contacte notre support
+                {t("contactSupport")}
               </a>
             </p>
           </motion.div>

@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { SIDEBAR_THEMES, setSidebarTheme } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { useTranslations } from "next-intl";
 
 interface ThemePickerProps {
   isCollapsed?: boolean;
 }
 
 export function ThemePicker({ isCollapsed }: ThemePickerProps) {
+  const t = useTranslations();
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector((state) => state.uiTheme.sidebarTheme);
   const hydrated = useHydrated();
@@ -25,7 +27,7 @@ export function ThemePicker({ isCollapsed }: ThemePickerProps) {
     >
       {!isCollapsed && (
         <span className="px-1 text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-          Theme
+          {t('components.themePicker.title')}
         </span>
       )}
 
@@ -38,7 +40,7 @@ export function ThemePicker({ isCollapsed }: ThemePickerProps) {
               type="button"
               onClick={() => dispatch(setSidebarTheme(theme))}
               className="relative cursor-pointer rounded-full outline-none transition-transform duration-150 hover:scale-110"
-              aria-label={`Select ${theme.name} theme`}
+              aria-label={t('components.themePicker.selectTheme', { theme: theme.name })}
               title={theme.name}
             >
               <div
