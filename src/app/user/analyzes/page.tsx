@@ -630,85 +630,122 @@ export default function AnalyzesPage() {
         URL.revokeObjectURL(url);
     };
 
-    const exportPdf = () => {
+    const exportPdf = async () => {
+        const { jsPDF } = await import("jspdf");
+        const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
         const stamp = new Date().toLocaleDateString();
-        const logoUrl = `${window.location.origin}/logo.png`;
-        const rows = filteredAnalyses
-            .map((analysis) => {
-                const concerns = Array.isArray(analysis.concerns) ? analysis.concerns.join(", ") : "-";
-                return `
-                <tr>
-                    <td>${analysis.date}</td>
-                    <td>${analysis.score}/100</td>
-                    <td>${analysis.skinType}</td>
-                    <td>${analysis.status}</td>
-                    <td>${analysis.hydration}%</td>
-                    <td>${analysis.oilProduction}%</td>
-                    <td>${analysis.sensitivity}</td>
-                    <td>${concerns}</td>
-                </tr>`;
-            })
-            .join("");
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 24;
+        const lineHeight = 18;
 
-        const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8" />
-            <title>DeepSkyn - Analyses Export</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 24px; color: #111827; }
-                .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-                .brand { display: flex; align-items: center; gap: 12px; }
-                .brand img { width: 44px; height: 44px; object-fit: contain; border-radius: 10px; }
-                h1 { margin: 0; font-size: 24px; }
-                p { margin: 6px 0 18px; color: #4b5563; }
-                table { width: 100%; border-collapse: collapse; font-size: 12px; }
-                th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; vertical-align: top; }
-                th { background: #eff6ff; color: #1e3a8a; font-weight: 700; }
-                tr:nth-child(even) { background: #f9fafb; }
-                .chip { display: inline-block; background: #dbeafe; color: #1e40af; border-radius: 999px; padding: 2px 8px; font-size: 11px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <div class="brand">
-                    <img src="${logoUrl}" alt="DeepSkyn" />
-                    <h1>${t("export.pdfTitle")}</h1>
-                </div>
-            </div>
-            <p>${t("export.generatedOn", { date: stamp })} • <span class="chip">${filteredAnalyses.length} ${t("export.records")}</span></p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>${t("export.columns.date")}</th>
-                        <th>${t("export.columns.score")}</th>
-                        <th>${t("export.columns.skinType")}</th>
-                        <th>${t("export.columns.status")}</th>
-                        <th>${t("export.columns.hydration")}</th>
-                        <th>${t("export.columns.oilProduction")}</th>
-                        <th>${t("export.columns.sensitivity")}</th>
-                        <th>${t("export.columns.concerns")}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${rows}
-                </tbody>
-            </table>
-        </body>
-        </html>`;
+        const toDataUrl = async (url: string): Promise<string> => {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            return await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(String(reader.result));
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        };
 
-        const printWindow = window.open("", "_blank", "width=1200,height=900");
-        if (!printWindow) {
-            alert(t("export.popupBlocked"));
-            return;
+        try {
+            const logoDataUrl = await toDataUrl("/logo.png");
+            doc.addImage(logoDataUrl, "PNG", margin, margin - 4, 34, 34);
+        } catch {
+            // Continue without logo if loading fails.
         }
 
-        printWindow.document.open();
-        printWindow.document.write(html);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text(t("export.pdfTitle"), margin + 42, margin + 14);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(`${t("export.generatedOn", { date: stamp })} • ${filteredAnalyses.length} ${t("export.records")}`, margin + 42, margin + 30);
+
+        const columns = [
+            t("export.columns.date"),
+            t("export.columns.score"),
+            t("export.columns.skinType"),
+            t("export.columns.status"),
+            t("export.columns.hydration"),
+            t("export.columns.oilProduction"),
+            t("export.columns.sensitivity"),
+            t("export.columns.concerns"),
+        ];
+
+        const colWidths = [98, 48, 62, 58, 52, 58, 58, pageWidth - margin * 2 - (98 + 48 + 62 + 58 + 52 + 58 + 58)];
+        const maxChars = [16, 7, 10, 10, 8, 8, 10, 28];
+
+        let y = margin + 48;
+
+        const drawHeader = () => {
+            let x = margin;
+            doc.setDrawColor(229, 231, 235);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8);
+            columns.forEach((col, idx) => {
+                doc.setFillColor(239, 246, 255);
+                doc.rect(x, y, colWidths[idx], lineHeight + 4, "FD");
+                doc.text(col, x + 4, y + 13);
+                x += colWidths[idx];
+            });
+            y += lineHeight + 4;
+        };
+
+        drawHeader();
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+
+        const compactDate = (raw: string) => {
+            const parsed = new Date(raw);
+            if (Number.isNaN(parsed.getTime())) return raw;
+            const date = parsed.toLocaleDateString();
+            const hh = String(parsed.getHours()).padStart(2, "0");
+            const mm = String(parsed.getMinutes()).padStart(2, "0");
+            return `${date} ${hh}:${mm}`;
+        };
+
+        for (const analysis of filteredAnalyses) {
+            const concerns = Array.isArray(analysis.concerns) ? analysis.concerns.join(", ") : "-";
+            const row = [
+                compactDate(String(analysis.date || "-")),
+                `${analysis.score ?? "-"}/100`,
+                String(analysis.skinType || "-"),
+                String(analysis.status || "-"),
+                `${analysis.hydration ?? "-"}%`,
+                `${analysis.oilProduction ?? "-"}%`,
+                String(analysis.sensitivity || "-"),
+                concerns,
+            ];
+
+            const rowHeight = lineHeight;
+            if (y + rowHeight > pageHeight - margin) {
+                doc.addPage();
+                y = margin;
+                drawHeader();
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+            }
+
+            let x = margin;
+            doc.setDrawColor(229, 231, 235);
+
+            row.forEach((cell, idx) => {
+                doc.rect(x, y, colWidths[idx], rowHeight, "S");
+                const max = maxChars[idx] ?? 16;
+                const truncated = cell.length > max ? `${cell.slice(0, max - 1)}...` : cell;
+                doc.text(truncated, x + 4, y + 12);
+                x += colWidths[idx];
+            });
+
+            y += rowHeight;
+        }
+
+        const filename = `deepskyn-analyses-${new Date().toISOString().slice(0, 10)}.pdf`;
+        doc.save(filename);
     };
 
     return (

@@ -3,7 +3,7 @@
 import React from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { useAppSelector } from "@/store/hooks";
-import InteractivePortrait from "@/app/components/home_page/interactive-portrait";
+import InteractivePortrait from "@/app/components/user/interactive-portrait";
 import Image from "next/image";
 import {
     ArrowRight,
