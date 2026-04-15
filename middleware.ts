@@ -1,4 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
+import {getToken} from 'next-auth/jwt';
 import {DEFAULT_LOCALE, isAppLocale, LOCALE_COOKIE_NAME} from './src/i18n/locales';
 
 function pickLocaleFromAcceptLanguage(acceptLanguage: string | null): string | null {
@@ -17,7 +18,38 @@ function pickLocaleFromAcceptLanguage(acceptLanguage: string | null): string | n
   return null;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const {pathname} = request.nextUrl;
+
+  if (pathname.startsWith('/user') || pathname.startsWith('/admin')) {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
+    });
+
+    const tokenRole = token?.role ? String(token.role).toUpperCase() : undefined;
+
+    if (pathname.startsWith('/user')) {
+      if (!token) {
+        return NextResponse.redirect(new URL('/signin', request.url));
+      }
+
+      if (tokenRole === 'ADMIN') {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+    }
+
+    if (pathname.startsWith('/admin')) {
+      if (!token) {
+        return NextResponse.redirect(new URL('/signin', request.url));
+      }
+
+      if (tokenRole !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/user', request.url));
+      }
+    }
+  }
+
   const existing = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
   if (isAppLocale(existing)) {
     return NextResponse.next();
