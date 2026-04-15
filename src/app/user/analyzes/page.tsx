@@ -578,6 +578,139 @@ export default function AnalyzesPage() {
         { value: "Worse", label: t("filters.status.worse") },
     ];
 
+    const csvEscape = (value: string | number) => {
+        const text = String(value ?? "");
+        return `"${text.replace(/"/g, '""')}"`;
+    };
+
+    const exportCsv = () => {
+        const rows = filteredAnalyses.map((analysis) => ({
+            date: analysis.date,
+            score: analysis.score,
+            skinType: analysis.skinType,
+            status: analysis.status,
+            hydration: analysis.hydration,
+            oilProduction: analysis.oilProduction,
+            sensitivity: analysis.sensitivity,
+            concerns: Array.isArray(analysis.concerns) ? analysis.concerns.join(" | ") : "",
+        }));
+
+        const headers = [
+            t("export.columns.date"),
+            t("export.columns.score"),
+            t("export.columns.skinType"),
+            t("export.columns.status"),
+            t("export.columns.hydration"),
+            t("export.columns.oilProduction"),
+            t("export.columns.sensitivity"),
+            t("export.columns.concerns"),
+        ];
+
+        const body = rows.map((row) => [
+            csvEscape(row.date),
+            csvEscape(row.score),
+            csvEscape(row.skinType),
+            csvEscape(row.status),
+            csvEscape(`${row.hydration}%`),
+            csvEscape(`${row.oilProduction}%`),
+            csvEscape(row.sensitivity),
+            csvEscape(row.concerns),
+        ].join(","));
+
+        const csvContent = [headers.map(csvEscape).join(","), ...body].join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const stamp = new Date().toISOString().slice(0, 10);
+        link.href = url;
+        link.setAttribute("download", `deepskyn-analyses-${stamp}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const exportPdf = () => {
+        const stamp = new Date().toLocaleDateString();
+        const logoUrl = `${window.location.origin}/logo.png`;
+        const rows = filteredAnalyses
+            .map((analysis) => {
+                const concerns = Array.isArray(analysis.concerns) ? analysis.concerns.join(", ") : "-";
+                return `
+                <tr>
+                    <td>${analysis.date}</td>
+                    <td>${analysis.score}/100</td>
+                    <td>${analysis.skinType}</td>
+                    <td>${analysis.status}</td>
+                    <td>${analysis.hydration}%</td>
+                    <td>${analysis.oilProduction}%</td>
+                    <td>${analysis.sensitivity}</td>
+                    <td>${concerns}</td>
+                </tr>`;
+            })
+            .join("");
+
+        const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8" />
+            <title>DeepSkyn - Analyses Export</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 24px; color: #111827; }
+                .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+                .brand { display: flex; align-items: center; gap: 12px; }
+                .brand img { width: 44px; height: 44px; object-fit: contain; border-radius: 10px; }
+                h1 { margin: 0; font-size: 24px; }
+                p { margin: 6px 0 18px; color: #4b5563; }
+                table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; vertical-align: top; }
+                th { background: #eff6ff; color: #1e3a8a; font-weight: 700; }
+                tr:nth-child(even) { background: #f9fafb; }
+                .chip { display: inline-block; background: #dbeafe; color: #1e40af; border-radius: 999px; padding: 2px 8px; font-size: 11px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="brand">
+                    <img src="${logoUrl}" alt="DeepSkyn" />
+                    <h1>${t("export.pdfTitle")}</h1>
+                </div>
+            </div>
+            <p>${t("export.generatedOn", { date: stamp })} • <span class="chip">${filteredAnalyses.length} ${t("export.records")}</span></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>${t("export.columns.date")}</th>
+                        <th>${t("export.columns.score")}</th>
+                        <th>${t("export.columns.skinType")}</th>
+                        <th>${t("export.columns.status")}</th>
+                        <th>${t("export.columns.hydration")}</th>
+                        <th>${t("export.columns.oilProduction")}</th>
+                        <th>${t("export.columns.sensitivity")}</th>
+                        <th>${t("export.columns.concerns")}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        </body>
+        </html>`;
+
+        const printWindow = window.open("", "_blank", "width=1200,height=900");
+        if (!printWindow) {
+            alert(t("export.popupBlocked"));
+            return;
+        }
+
+        printWindow.document.open();
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    };
+
     return (
         <UserLayout>
             <div className="user-analyzes-page mx-auto w-full max-w-[1400px]">
@@ -605,6 +738,18 @@ export default function AnalyzesPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <button
+                            onClick={exportCsv}
+                            className="px-5 py-3 rounded-2xl border border-[#156d95]/30 text-[#156d95] bg-white dark:bg-gray-900 dark:text-blue-300 dark:border-blue-400/30 font-bold hover:bg-[#156d95]/5 transition-all"
+                        >
+                            {t("actions.exportCsv")}
+                        </button>
+                        <button
+                            onClick={exportPdf}
+                            className="px-5 py-3 rounded-2xl border border-emerald-500/30 text-emerald-700 bg-white dark:bg-gray-900 dark:text-emerald-300 dark:border-emerald-400/30 font-bold hover:bg-emerald-500/5 transition-all"
+                        >
+                            {t("actions.exportPdf")}
+                        </button>
                         <div className="relative hidden md:block">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 size-4" />
                             <input
