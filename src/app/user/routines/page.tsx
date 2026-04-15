@@ -261,8 +261,6 @@ export default function RoutinePage() {
                 completed: newCompleted
             })).unwrap();
 
-            if (userId) dispatch(fetchUserRoutines(userId));
-
             if (newCompleted) {
                 const stepData = routine?.steps?.find((s) => s.id === stepId);
                 toast.success(t("userRoutines.toasts.stepCompleted", { step: stepData?.action || t("userRoutines.toasts.step") }), {

@@ -22,12 +22,14 @@ interface UiThemeState {
   sidebarTheme: SidebarThemeOption;
   highContrastMode: boolean;
   colorBlindAssistMode: ColorBlindAssistMode;
+  dyslexiaMode: boolean;
 }
 
 const initialState: UiThemeState = {
   sidebarTheme: SIDEBAR_THEMES[0],
   highContrastMode: false,
   colorBlindAssistMode: 'none',
+  dyslexiaMode: false,
 };
 
 const isKnownTheme = (theme: SidebarThemeOption) => {
@@ -52,8 +54,21 @@ const uiThemeSlice = createSlice({
     setColorBlindAssistMode: (state, action: PayloadAction<ColorBlindAssistMode>) => {
       state.colorBlindAssistMode = action.payload;
     },
+    toggleDyslexiaMode: (state) => {
+      state.dyslexiaMode = !state.dyslexiaMode;
+    },
+    setDyslexiaMode: (state, action: PayloadAction<boolean>) => {
+      state.dyslexiaMode = action.payload;
+    },
   },
 });
 
-export const { setSidebarTheme, toggleHighContrastMode, setHighContrastMode, setColorBlindAssistMode } = uiThemeSlice.actions;
+export const {
+  setSidebarTheme,
+  toggleHighContrastMode,
+  setHighContrastMode,
+  setColorBlindAssistMode,
+  toggleDyslexiaMode,
+  setDyslexiaMode,
+} = uiThemeSlice.actions;
 export default uiThemeSlice.reducer;

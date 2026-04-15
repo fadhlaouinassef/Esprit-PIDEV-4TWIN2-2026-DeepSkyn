@@ -1999,6 +1999,7 @@
     "shortTitle": "Accès",
     "modesCount": "{count, plural, one {# mode} other {# modes}}",
     "highContrast": "Contraste élevé",
+    "dyslexiaFont": "Police dyslexie",
     "largeText": "Texte agrandi",
     "reducedMotion": "Animations réduites",
     "colorAssist": "Aide couleurs",

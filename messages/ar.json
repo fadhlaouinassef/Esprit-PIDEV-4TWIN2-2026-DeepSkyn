@@ -1999,6 +1999,7 @@
     "shortTitle": "وصول",
     "modesCount": "{count, plural, zero {لا أوضاع} one {وضع واحد} two {وضعان} few {# أوضاع} many {# وضعًا} other {# وضع}}",
     "highContrast": "تباين عالٍ",
+    "dyslexiaFont": "خط لعسر القراءة",
     "largeText": "نص كبير",
     "reducedMotion": "تقليل الحركة",
     "colorAssist": "مساعدة الألوان",

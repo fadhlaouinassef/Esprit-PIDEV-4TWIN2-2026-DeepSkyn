@@ -358,6 +358,31 @@
     border-color: var(--ring) !important;
   }
 
+  .dyslexia-mode,
+  .dyslexia-mode * {
+    font-family: 'OpenDyslexic', 'Atkinson Hyperlegible', 'Segoe UI', Arial, sans-serif !important;
+  }
+
+  .dyslexia-mode p,
+  .dyslexia-mode li,
+  .dyslexia-mode button,
+  .dyslexia-mode input,
+  .dyslexia-mode textarea,
+  .dyslexia-mode select,
+  .dyslexia-mode label,
+  .dyslexia-mode span,
+  .dyslexia-mode a,
+  .dyslexia-mode h1,
+  .dyslexia-mode h2,
+  .dyslexia-mode h3,
+  .dyslexia-mode h4,
+  .dyslexia-mode h5,
+  .dyslexia-mode h6 {
+    letter-spacing: 0.02em;
+    word-spacing: 0.04em;
+    line-height: 1.6;
+  }
+
   .user-high-contrast input::placeholder,
   .user-high-contrast textarea::placeholder {
     color: #404040 !important;
