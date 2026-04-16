@@ -39,7 +39,7 @@ export default function UserDashboard() {
             <div className="user-dashboard-page mx-auto w-full max-w-330 space-y-8">
                 <div className="space-y-1">
                     <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
-                        Welcome back, {displayName} <span className="align-middle">👋</span>
+                        Welcome back, {displayName}
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg">
                         Here is your skin journey overview today.
