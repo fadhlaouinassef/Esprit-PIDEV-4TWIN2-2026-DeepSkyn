@@ -16,7 +16,7 @@ import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTranslations } from "next-intl";
 
-type AdminSubItem = { title: string; url: string };
+type AdminSubItem = { id: string; title: string; url: string };
 
 export function Sidebar() {
     const pathname = usePathname();
