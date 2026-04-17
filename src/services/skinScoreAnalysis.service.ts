@@ -39,6 +39,50 @@ type ComputeOptions = {
   saveLegacySkinAnalyse?: boolean;
   finalSummaryOverride?: string;
   finalScoreOverride?: number;
+  finalRecommendationsOverride?: unknown;
+  finalRoutineOverride?: unknown;
+};
+
+const toStringList = (value: unknown): string[] =>
+  Array.isArray(value)
+    ? value
+        .map((item) => {
+          if (typeof item === 'string') return item.trim();
+          if (item && typeof item === 'object' && typeof (item as { title?: unknown }).title === 'string') {
+            return String((item as { title?: string }).title || '').trim();
+          }
+          if (item && typeof item === 'object' && typeof (item as { name?: unknown }).name === 'string') {
+            return String((item as { name?: string }).name || '').trim();
+          }
+          return '';
+        })
+        .filter(Boolean)
+    : [];
+
+const hasOverrideRecommendations = (value: unknown): boolean => {
+  if (!value || typeof value !== 'object') return false;
+  const payload = value as Record<string, unknown>;
+
+  return (
+    toStringList(payload.immediate).length > 0 ||
+    toStringList(payload.weekly).length > 0 ||
+    toStringList(payload.avoid).length > 0 ||
+    (Array.isArray(payload.detailedImmediate) && payload.detailedImmediate.length > 0) ||
+    (Array.isArray(payload.detailedWeekly) && payload.detailedWeekly.length > 0) ||
+    (Array.isArray(payload.detailedAvoid) && payload.detailedAvoid.length > 0)
+  );
+};
+
+const hasOverrideRoutine = (value: unknown): boolean => {
+  if (!value || typeof value !== 'object') return false;
+  const payload = value as Record<string, unknown>;
+
+  return (
+    toStringList(payload.morning).length > 0 ||
+    toStringList(payload.evening).length > 0 ||
+    (Array.isArray(payload.morningDetailed) && payload.morningDetailed.length > 0) ||
+    (Array.isArray(payload.eveningDetailed) && payload.eveningDetailed.length > 0)
+  );
 };
 
 const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(max, value));
@@ -323,6 +367,8 @@ export const computeAndStoreSkinScoreAnalysis = async ({
   saveLegacySkinAnalyse = false,
   finalSummaryOverride,
   finalScoreOverride,
+  finalRecommendationsOverride,
+  finalRoutineOverride,
 }: ComputeOptions) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -364,6 +410,14 @@ export const computeAndStoreSkinScoreAnalysis = async ({
 
   if (hasScoreOverride) {
     snapshot.score = clamp(Math.round(Number(finalScoreOverride)), 0, 100);
+  }
+
+  if (hasOverrideRecommendations(finalRecommendationsOverride)) {
+    snapshot.recommendations = finalRecommendationsOverride as AnalysisSnapshot['recommendations'];
+  }
+
+  if (hasOverrideRoutine(finalRoutineOverride)) {
+    snapshot.routine = finalRoutineOverride as AnalysisSnapshot['routine'];
   }
 
   const inserted = await prisma.$queryRawUnsafe<{ id: number }[]>(

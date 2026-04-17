@@ -195,7 +195,7 @@ const AnalysisCard = ({ analysis, label, onClick }: { analysis: any; label?: str
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t("sensitivity.label")}</span>
                     <span className={`text-sm font-bold ${analysis.sensitivity === "Low" ? "text-emerald-500" :
-                            analysis.sensitivity === "Medium" ? "text-amber-500" : "text-rose-500"
+                        analysis.sensitivity === "Medium" ? "text-amber-500" : "text-rose-500"
                         }`}>
                         {sensitivityLabel(analysis.sensitivity)}
                     </span>
@@ -498,7 +498,7 @@ export default function AnalyzesPage() {
         stopSpeaking();
 
         const utterance = new SpeechSynthesisUtterance(text);
-        
+
         // Dynamic language detection
         if (/[\u0600-\u06FF]/.test(text)) {
             utterance.lang = 'ar-SA';
@@ -529,7 +529,7 @@ export default function AnalyzesPage() {
             let fullText = t("audio.detailIntro", { date: selectedAnalysis.date });
             fullText += ` ${t("audio.score", { score: selectedAnalysis.score })} `;
             fullText += ` ${t("audio.skinTypeSensitivity", { skinType: selectedAnalysis.skinType, sensitivity: selectedAnalysis.sensitivity })} `;
-            
+
             if (selectedAnalysis.summary) {
                 fullText += ` ${t("audio.summary", { summary: selectedAnalysis.summary })} `;
             }
@@ -539,7 +539,7 @@ export default function AnalyzesPage() {
                 : selectedAnalysis.recommendations?.immediate
                     ? [...(selectedAnalysis.recommendations.immediate || []), ...(selectedAnalysis.recommendations.weekly || [])]
                     : [];
-            
+
             if (recs.length > 0) {
                 fullText += t("audio.topRecommendations", { recommendations: recs.slice(0, 3).join(". ") });
             }

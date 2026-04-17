@@ -32,13 +32,40 @@ interface AnalysisResult {
         immediate?: string[];
         weekly?: string[];
         avoid?: string[];
+        detailedImmediate?: RecommendationDetail[];
+        detailedWeekly?: RecommendationDetail[];
+        detailedAvoid?: RecommendationDetail[];
     };
     routine?: {
         morning?: string[];
         evening?: string[];
+        morningDetailed?: RoutineStepDetail[];
+        eveningDetailed?: RoutineStepDetail[];
     };
     confidence?: number;
 }
+
+type RecommendationDetail = {
+    title: string;
+    description?: string;
+    why?: string;
+    how?: string;
+    when?: string;
+    frequency?: string;
+    productType?: string;
+    cautions?: string;
+};
+
+type RoutineStepDetail = {
+    step?: number;
+    name: string;
+    purpose?: string;
+    instruction?: string;
+    why?: string;
+    frequency?: string;
+    timing?: string;
+    notes?: string;
+};
 
 interface UploadedSurveyImage {
     dataUrl: string;
@@ -58,6 +85,8 @@ type N8nResult = {
     text?: string;
     analysis?: string;
     score?: number;
+    recommendations?: unknown;
+    routine?: unknown;
 };
 
 type AnalysisAccess = {
@@ -182,6 +211,317 @@ const keepAnalysisOnly = (rawAnalysis: string): string => {
         .trim();
 
     return cleaned;
+};
+
+const toReadableLabel = (value: string): string =>
+    String(value || '')
+        .replace(/\*\*/g, '')
+        .replace(/["']/g, '')
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+const stringifyAnalysisValue = (value: unknown): string[] => {
+    if (value == null) return [];
+
+    if (typeof value === 'string') {
+        const cleaned = value.trim();
+        return cleaned ? [`* ${cleaned}`] : [];
+    }
+
+    if (typeof value === 'number' || typeof value === 'boolean') {
+        return [`* ${String(value)}`];
+    }
+
+    if (Array.isArray(value)) {
+        return value
+            .flatMap((entry) => {
+                if (typeof entry === 'string' || typeof entry === 'number' || typeof entry === 'boolean') {
+                    const text = String(entry).trim();
+                    return text ? [`* ${text}`] : [];
+                }
+
+                if (entry && typeof entry === 'object') {
+                    const chunks: string[] = [];
+                    for (const [k, v] of Object.entries(entry as Record<string, unknown>)) {
+                        const label = toReadableLabel(k);
+                        if (!label) continue;
+
+                        if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+                            const text = String(v).trim();
+                            if (text) chunks.push(`${label}: ${text}`);
+                        }
+                    }
+
+                    if (chunks.length > 0) {
+                        return [`* ${chunks.join(' | ')}`];
+                    }
+                }
+
+                return [];
+            })
+            .filter(Boolean);
+    }
+
+    if (typeof value === 'object') {
+        const lines: string[] = [];
+        for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+            const label = toReadableLabel(k);
+            if (!label) continue;
+
+            if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+                const text = String(v).trim();
+                if (text) lines.push(`* ${label}: ${text}`);
+                continue;
+            }
+
+            if (Array.isArray(v)) {
+                lines.push(`* ${label}:`);
+                lines.push(...stringifyAnalysisValue(v));
+                continue;
+            }
+        }
+
+        return lines;
+    }
+
+    return [];
+};
+
+const normalizeAnalysisForDisplay = (raw: unknown): string => {
+    const rawText = String(raw || '').trim();
+    if (!rawText) return '';
+
+    const cleanedRaw = keepAnalysisOnly(rawText);
+
+    try {
+        const parsed = JSON.parse(rawText) as Record<string, unknown>;
+        const analysisPayload = parsed?.analysis;
+
+        if (typeof analysisPayload === 'string') {
+            return keepAnalysisOnly(analysisPayload);
+        }
+
+        if (analysisPayload && typeof analysisPayload === 'object') {
+            const lines: string[] = [];
+            for (const [sectionKey, sectionValue] of Object.entries(analysisPayload as Record<string, unknown>)) {
+                const section = toReadableLabel(sectionKey);
+                if (!section) continue;
+
+                lines.push(`${section}`);
+                const block = stringifyAnalysisValue(sectionValue);
+                if (block.length > 0) {
+                    lines.push(...block);
+                }
+            }
+
+            const finalText = lines.join('\n').trim();
+            if (finalText) return finalText;
+        }
+
+        const alternate = [parsed?.text, parsed?.summary, parsed?.message]
+            .find((entry) => typeof entry === 'string' && String(entry).trim()) as string | undefined;
+        if (alternate) return keepAnalysisOnly(alternate);
+    } catch {
+        // Not JSON - keep existing markdown/text format.
+    }
+
+    return cleanedRaw;
+};
+
+const extractAnalysisText = (value: unknown): string => {
+    if (typeof value === 'string') {
+        return normalizeAnalysisForDisplay(value);
+    }
+
+    if (!value || typeof value !== 'object') return '';
+
+    const source = value as Record<string, unknown>;
+    const candidates = [
+        source.analysis,
+        source.text,
+        source.content,
+        source.summary,
+        source.message,
+    ];
+
+    for (const candidate of candidates) {
+        if (typeof candidate === 'string' && candidate.trim()) {
+            return normalizeAnalysisForDisplay(candidate);
+        }
+    }
+
+    return '';
+};
+
+const isGenericAnalysisText = (value: string): boolean => {
+    const normalized = String(value || '').trim().toLowerCase();
+    if (!normalized) return true;
+
+    const genericPatterns = [
+        'analysis complete.',
+        'analysis complete',
+        'skin analysis is ready.',
+        'skin analysis is ready',
+        'questionnaire completed. ready for final gemini analysis.',
+        'questionnaire complete',
+    ];
+
+    return genericPatterns.some((pattern) => normalized === pattern);
+};
+
+const toStringList = (value: unknown): string[] => {
+    if (!Array.isArray(value)) return [];
+
+    return value
+        .map((item) => {
+            if (typeof item === 'string') return item.trim();
+            if (item && typeof item === 'object') {
+                const candidate = item as { title?: unknown; name?: unknown; text?: unknown };
+                const first = [candidate.title, candidate.name, candidate.text].find((entry) => typeof entry === 'string');
+                return typeof first === 'string' ? first.trim() : '';
+            }
+            return '';
+        })
+        .filter(Boolean);
+};
+
+const normalizeRecommendationDetails = (value: unknown): RecommendationDetail[] => {
+    if (!Array.isArray(value)) return [];
+
+    const normalized: RecommendationDetail[] = [];
+
+    value.forEach((item) => {
+        if (typeof item === 'string') {
+            const label = item.trim();
+            if (!label) return;
+            normalized.push({ title: label });
+            return;
+        }
+
+        if (!item || typeof item !== 'object') return;
+
+        const raw = item as Record<string, unknown>;
+        const title = String(raw.title || raw.name || raw.product || raw.action || '').trim();
+        if (!title) return;
+
+        normalized.push({
+            title,
+            description: String(raw.description || raw.desc || '').trim() || undefined,
+            why: String(raw.why || raw.reason || raw.benefit || '').trim() || undefined,
+            how: String(raw.how || raw.usage || raw.instructions || '').trim() || undefined,
+            when: String(raw.when || raw.timing || '').trim() || undefined,
+            frequency: String(raw.frequency || raw.freq || '').trim() || undefined,
+            productType: String(raw.productType || raw.type || '').trim() || undefined,
+            cautions: String(raw.cautions || raw.warning || raw.warnings || '').trim() || undefined,
+        });
+    });
+
+    return normalized;
+};
+
+const normalizeRoutineDetails = (value: unknown): RoutineStepDetail[] => {
+    if (!Array.isArray(value)) return [];
+
+    const normalized: RoutineStepDetail[] = [];
+
+    value.forEach((item, index) => {
+        if (typeof item === 'string') {
+            const name = item.trim();
+            if (!name) return;
+            normalized.push({ step: index + 1, name });
+            return;
+        }
+
+        if (!item || typeof item !== 'object') return;
+
+        const raw = item as Record<string, unknown>;
+        const name = String(raw.name || raw.title || raw.action || '').trim();
+        if (!name) return;
+
+        normalized.push({
+            step: Number(raw.step) > 0 ? Number(raw.step) : index + 1,
+            name,
+            purpose: String(raw.purpose || raw.goal || '').trim() || undefined,
+            instruction: String(raw.instruction || raw.how || raw.usage || '').trim() || undefined,
+            why: String(raw.why || raw.reason || '').trim() || undefined,
+            frequency: String(raw.frequency || raw.freq || '').trim() || undefined,
+            timing: String(raw.timing || raw.when || '').trim() || undefined,
+            notes: String(raw.notes || raw.note || '').trim() || undefined,
+        });
+    });
+
+    return normalized;
+};
+
+const normalizeN8nRecommendations = (result: Record<string, unknown>) => {
+    const source = (result.recommendations && typeof result.recommendations === 'object')
+        ? (result.recommendations as Record<string, unknown>)
+        : {};
+
+    const immediate = toStringList(source.immediate);
+    const weekly = toStringList(source.weekly);
+    const avoid = toStringList(source.avoid);
+
+    const detailedImmediate = normalizeRecommendationDetails(
+        source.detailedImmediate || source.immediateDetailed || source.immediateItems || source.itemsImmediate
+    );
+    const detailedWeekly = normalizeRecommendationDetails(
+        source.detailedWeekly || source.weeklyDetailed || source.weeklyItems || source.itemsWeekly
+    );
+    const detailedAvoid = normalizeRecommendationDetails(
+        source.detailedAvoid || source.avoidDetailed || source.avoidItems || source.itemsAvoid
+    );
+
+    const hasContent =
+        immediate.length > 0 ||
+        weekly.length > 0 ||
+        avoid.length > 0 ||
+        detailedImmediate.length > 0 ||
+        detailedWeekly.length > 0 ||
+        detailedAvoid.length > 0;
+
+    if (!hasContent) return undefined;
+
+    return {
+        immediate,
+        weekly,
+        avoid,
+        detailedImmediate,
+        detailedWeekly,
+        detailedAvoid,
+    };
+};
+
+const normalizeN8nRoutine = (result: Record<string, unknown>) => {
+    const source = (result.routine && typeof result.routine === 'object')
+        ? (result.routine as Record<string, unknown>)
+        : {};
+
+    const morningDetailed = normalizeRoutineDetails(
+        source.morningDetailed || source.morningSteps || source.morning
+    );
+    const eveningDetailed = normalizeRoutineDetails(
+        source.eveningDetailed || source.eveningSteps || source.evening
+    );
+
+    const morning = toStringList(source.morning);
+    const evening = toStringList(source.evening);
+
+    const hasContent =
+        morning.length > 0 ||
+        evening.length > 0 ||
+        morningDetailed.length > 0 ||
+        eveningDetailed.length > 0;
+
+    if (!hasContent) return undefined;
+
+    return {
+        morning: morning.length > 0 ? morning : morningDetailed.map((item) => item.name),
+        evening: evening.length > 0 ? evening : eveningDetailed.map((item) => item.name),
+        morningDetailed,
+        eveningDetailed,
+    };
 };
 
 export default function QuestionnairePage() {
@@ -355,9 +695,12 @@ export default function QuestionnairePage() {
 
         try {
             let computed: Partial<AnalysisResult> | null = null;
+            const parsedN8nRecommendations = normalizeN8nRecommendations(result);
+            const parsedN8nRoutine = normalizeN8nRoutine(result);
+            const incomingAnalysis = extractAnalysisText(result.analysis);
+            const hasIncomingAnalysis = incomingAnalysis.length > 0 && !isGenericAnalysisText(incomingAnalysis);
 
             if (userId) {
-                const incomingAnalysis = String(result.analysis || '').trim();
                 const incomingScore = Number(result.score);
                 const response = await fetch('/api/quiz/skin-score', {
                     method: 'POST',
@@ -365,8 +708,11 @@ export default function QuestionnairePage() {
                     body: JSON.stringify({
                         userId,
                         quizId,
-                        finalSummaryOverride: incomingAnalysis,
+                        // Keep old logic: prioritize detailed final analysis from n8n when valid.
+                        finalSummaryOverride: hasIncomingAnalysis ? incomingAnalysis : '',
                         finalScoreOverride: Number.isFinite(incomingScore) ? incomingScore : undefined,
+                        finalRecommendationsOverride: parsedN8nRecommendations,
+                        finalRoutineOverride: parsedN8nRoutine,
                     })
                 });
 
@@ -380,8 +726,12 @@ export default function QuestionnairePage() {
                         skinType: String(data.skinType || ''),
                         strengths: Array.isArray(data.strengths) ? data.strengths : [],
                         concerns: Array.isArray(data.concerns) ? data.concerns : [],
-                        recommendations: data.recommendations,
-                        routine: data.routine,
+                        recommendations: (data.recommendations && typeof data.recommendations === 'object')
+                            ? (data.recommendations as AnalysisResult['recommendations'])
+                            : undefined,
+                        routine: (data.routine && typeof data.routine === 'object')
+                            ? (data.routine as AnalysisResult['routine'])
+                            : undefined,
                         confidence: Number(data.confidence || 0),
                     };
                 } else {
@@ -402,9 +752,7 @@ export default function QuestionnairePage() {
                 }
             }
 
-            const incomingAnalysis = keepAnalysisOnly(String(result.analysis || '').trim());
             const incomingScore = Number(result.score);
-            const hasIncomingAnalysis = incomingAnalysis.length > 0;
             const hasIncomingScore = Number.isFinite(incomingScore);
 
             const fallbackScore = hasIncomingScore ? incomingScore : 85;
@@ -416,26 +764,26 @@ export default function QuestionnairePage() {
             }
 
             setAnalysisResult({
-                // Final n8n/Gemini output has priority for displayed final result.
                 analysis: hasIncomingAnalysis
                     ? incomingAnalysis
-                    : keepAnalysisOnly(String(computed?.analysis || t('analysis.complete'))),
-                score: hasIncomingScore
-                    ? incomingScore
-                    : (Number.isFinite(computed?.score) ? Number(computed?.score) : fallbackScore),
+                    : normalizeAnalysisForDisplay(String(computed?.analysis || t('analysis.complete'))),
+                score: Number.isFinite(computed?.score)
+                    ? Number(computed?.score)
+                    : fallbackScore,
                 scoreEau: computed?.scoreEau,
                 agePeau: computed?.agePeau,
                 skinType: computed?.skinType,
                 strengths: computed?.strengths,
                 concerns: computed?.concerns,
-                recommendations: computed?.recommendations,
-                routine: computed?.routine,
+                recommendations: parsedN8nRecommendations || computed?.recommendations,
+                routine: parsedN8nRoutine || computed?.routine,
                 confidence: computed?.confidence,
             });
         } catch (error) {
             console.error('❌ Finalize analysis error:', error);
+            const incomingAnalysis = extractAnalysisText(result.analysis);
             setAnalysisResult({
-                analysis: keepAnalysisOnly(String(result.analysis || 'Analysis complete.')),
+                analysis: normalizeAnalysisForDisplay(incomingAnalysis || t('analysis.complete')),
                 score: Number(result.score || 85)
             });
         } finally {
@@ -794,7 +1142,7 @@ export default function QuestionnairePage() {
 
                 if (!analysisResponse.ok) {
                     const analysisError = await analysisResponse.json().catch(() => ({}));
-                        throw new Error(analysisError.error || t('errors.createAnalysisForImages'));
+                    throw new Error(analysisError.error || t('errors.createAnalysisForImages'));
                 }
 
                 const analysisData = await analysisResponse.json().catch(() => ({}));
@@ -837,7 +1185,7 @@ export default function QuestionnairePage() {
                     model: selectedModel,
                     sessionId: questionnaireSessionIdRef.current,
                     outputMode: "analysis_only",
-                    includeRecommendations: false,
+                    includeRecommendations: true,
                     answersSoFar,
                     imageParts: uploadedSurveyImages.map((img) => ({
                         inline_data: {
@@ -886,7 +1234,7 @@ export default function QuestionnairePage() {
                     model: selectedModel,
                     sessionId: questionnaireSessionIdRef.current,
                     outputMode: "analysis_only",
-                    includeRecommendations: false,
+                    includeRecommendations: true,
                     answersSoFar,
                     forceFinalAnalysis: true,
                 }),
@@ -1428,80 +1776,167 @@ export default function QuestionnairePage() {
                             )}
 
                             {/* ── Immediate Recommendations ── */}
-                            {analysisAccess.productRecommendationsEnabled && !!analysisResult.recommendations?.immediate?.length && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 shadow-sm"
-                                >
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <Zap className="size-5 text-amber-500" />
-                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm">{t('result.immediateRecommendations')}</h4>
-                                    </div>
-                                    <ul className="space-y-2.5">
-                                        {analysisResult.recommendations.immediate.map((item, idx) => (
-                                            <li key={idx} className="flex items-start gap-3 p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30">
-                                                <div className="flex-shrink-0 size-5 rounded-full bg-amber-400 text-white text-[10px] font-black flex items-center justify-center mt-0.5">{idx + 1}</div>
-                                                <span className="text-xs text-gray-700 dark:text-gray-300">{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </motion.div>
-                            )}
+                            {analysisAccess.productRecommendationsEnabled && (
+                                !!analysisResult.recommendations?.immediate?.length ||
+                                !!analysisResult.recommendations?.detailedImmediate?.length
+                            ) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.3 }}
+                                        className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 shadow-sm"
+                                    >
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <Zap className="size-5 text-amber-500" />
+                                            <h4 className="font-bold text-gray-900 dark:text-white text-sm">{t('result.immediateRecommendations')}</h4>
+                                        </div>
+                                        <ul className="space-y-2.5">
+                                            {(() => {
+                                                const detailedItems = analysisResult.recommendations?.detailedImmediate || [];
+                                                const fallbackItems = analysisResult.recommendations?.immediate || [];
+
+                                                if (detailedItems.length > 0) {
+                                                    return detailedItems.map((item, idx) => (
+                                                        <li key={`detailed-immediate-${idx}`} className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30">
+                                                            <div className="flex items-start gap-3">
+                                                                <div className="flex-shrink-0 size-5 rounded-full bg-amber-400 text-white text-[10px] font-black flex items-center justify-center mt-0.5">{idx + 1}</div>
+                                                                <div className="min-w-0 space-y-1.5">
+                                                                    <p className="text-xs font-extrabold text-amber-900 dark:text-amber-200 leading-relaxed">{item.title}</p>
+                                                                    {item.description ? <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">{item.description}</p> : null}
+                                                                    {item.why ? <p className="text-[11px] text-gray-700 dark:text-gray-300 leading-relaxed"><span className="font-bold text-gray-900 dark:text-gray-100">Why:</span> {item.why}</p> : null}
+                                                                    {item.how ? <p className="text-[11px] text-gray-700 dark:text-gray-300 leading-relaxed"><span className="font-bold text-gray-900 dark:text-gray-100">How:</span> {item.how}</p> : null}
+                                                                    {(item.when || item.frequency || item.productType) ? (
+                                                                        <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
+                                                                            {item.productType ? <span className="font-semibold text-gray-700 dark:text-gray-300">Type: {item.productType}. </span> : null}
+                                                                            {item.when ? <span>When: {item.when}. </span> : null}
+                                                                            {item.frequency ? <span>Frequency: {item.frequency}.</span> : null}
+                                                                        </p>
+                                                                    ) : null}
+                                                                    {item.cautions ? <p className="text-[11px] text-rose-700 dark:text-rose-300 leading-relaxed"><span className="font-bold">Caution:</span> {item.cautions}</p> : null}
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    ));
+                                                }
+
+                                                return fallbackItems.map((item, idx) => (
+                                                    <li key={`immediate-${idx}`} className="flex items-start gap-3 p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30">
+                                                        <div className="flex-shrink-0 size-5 rounded-full bg-amber-400 text-white text-[10px] font-black flex items-center justify-center mt-0.5">{idx + 1}</div>
+                                                        <span className="text-xs text-gray-700 dark:text-gray-300">{item}</span>
+                                                    </li>
+                                                ));
+                                            })()}
+                                        </ul>
+                                    </motion.div>
+                                )}
 
                             {/* ── Morning / Evening Routines ── */}
-                            {(!!analysisResult.routine?.morning?.length || !!analysisResult.routine?.evening?.length) && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.35 }}
-                                    className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                                >
-                                    {!!analysisResult.routine?.morning?.length && (
-                                        <div className="rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800/40 p-5">
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <div className="size-8 rounded-full bg-amber-400 flex items-center justify-center">
-                                                    <Sun className="size-4 text-white" />
+                            {(
+                                !!analysisResult.routine?.morning?.length ||
+                                !!analysisResult.routine?.evening?.length ||
+                                !!analysisResult.routine?.morningDetailed?.length ||
+                                !!analysisResult.routine?.eveningDetailed?.length
+                            ) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.35 }}
+                                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                    >
+                                        {(!!analysisResult.routine?.morning?.length || !!analysisResult.routine?.morningDetailed?.length) && (
+                                            <div className="rounded-3xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800/40 p-5">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <div className="size-8 rounded-full bg-amber-400 flex items-center justify-center">
+                                                        <Sun className="size-4 text-white" />
+                                                    </div>
+                                                    <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">{t('result.morningRoutine')}</h4>
                                                 </div>
-                                                <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">{t('result.morningRoutine')}</h4>
+                                                <ol className="space-y-4">
+                                                    {(() => {
+                                                        const detailed = analysisResult.routine?.morningDetailed || [];
+
+                                                        if (detailed.length > 0) {
+                                                            return detailed.map((item, idx) => {
+                                                                const actionLabel = item.name;
+                                                                return (
+                                                                    <li key={`morning-detailed-${idx}`} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-amber-200/30">
+                                                                        <div className="flex items-start gap-2">
+                                                                            <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{Number(item.step) > 0 ? item.step : idx + 1}</span>
+                                                                            <div className="min-w-0">
+                                                                                <span className="text-xs text-amber-900 dark:text-amber-100 font-bold">{item.name}</span>
+                                                                                {item.purpose ? <p className="text-[11px] text-amber-800/90 dark:text-amber-200/80 mt-1 leading-relaxed"><span className="font-bold">Why:</span> {item.purpose}</p> : null}
+                                                                                {item.instruction ? <p className="text-[11px] text-amber-900/90 dark:text-amber-100/90 mt-1 leading-relaxed"><span className="font-bold">How:</span> {item.instruction}</p> : null}
+                                                                                {(item.frequency || item.timing) ? <p className="text-[11px] text-amber-800/80 dark:text-amber-200/80 mt-1 leading-relaxed">{item.timing ? `When: ${item.timing}. ` : ''}{item.frequency ? `Frequency: ${item.frequency}.` : ''}</p> : null}
+                                                                                {item.notes ? <p className="text-[11px] text-amber-700 dark:text-amber-300 mt-1 leading-relaxed">{item.notes}</p> : null}
+                                                                            </div>
+                                                                        </div>
+                                                                        <RoutineItemScraper action={actionLabel} />
+                                                                    </li>
+                                                                );
+                                                            });
+                                                        }
+
+                                                        return (analysisResult.routine?.morning || []).map((item, idx) => (
+                                                            <li key={`morning-${idx}`} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-amber-200/30">
+                                                                <div className="flex items-start gap-2">
+                                                                    <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                                    <span className="text-xs text-amber-900 dark:text-amber-100 font-bold">{item}</span>
+                                                                </div>
+                                                                <RoutineItemScraper action={item} />
+                                                            </li>
+                                                        ));
+                                                    })()}
+                                                </ol>
                                             </div>
-                                            <ol className="space-y-4">
-                                                {analysisResult.routine.morning.map((item, idx) => (
-                                                    <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-amber-200/30">
-                                                        <div className="flex items-start gap-2">
-                                                            <span className="flex-shrink-0 size-4 rounded-full bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
-                                                            <span className="text-xs text-amber-900 dark:text-amber-100 font-bold">{item}</span>
-                                                        </div>
-                                                        <RoutineItemScraper action={item} />
-                                                    </li>
-                                                ))}
-                                            </ol>
-                                        </div>
-                                    )}
-                                    {!!analysisResult.routine?.evening?.length && (
-                                        <div className="rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-800/40 p-5">
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <div className="size-8 rounded-full bg-indigo-500 flex items-center justify-center">
-                                                    <Moon className="size-4 text-white" />
+                                        )}
+                                        {(!!analysisResult.routine?.evening?.length || !!analysisResult.routine?.eveningDetailed?.length) && (
+                                            <div className="rounded-3xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-800/40 p-5">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <div className="size-8 rounded-full bg-indigo-500 flex items-center justify-center">
+                                                        <Moon className="size-4 text-white" />
+                                                    </div>
+                                                    <h4 className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">{t('result.eveningRoutine')}</h4>
                                                 </div>
-                                                <h4 className="font-bold text-indigo-800 dark:text-indigo-300 text-sm">{t('result.eveningRoutine')}</h4>
+                                                <ol className="space-y-4">
+                                                    {(() => {
+                                                        const detailed = analysisResult.routine?.eveningDetailed || [];
+
+                                                        if (detailed.length > 0) {
+                                                            return detailed.map((item, idx) => {
+                                                                const actionLabel = item.name;
+                                                                return (
+                                                                    <li key={`evening-detailed-${idx}`} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-indigo-200/30">
+                                                                        <div className="flex items-start gap-2">
+                                                                            <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{Number(item.step) > 0 ? item.step : idx + 1}</span>
+                                                                            <div className="min-w-0">
+                                                                                <span className="text-xs text-indigo-900 dark:text-indigo-100 font-bold">{item.name}</span>
+                                                                                {item.purpose ? <p className="text-[11px] text-indigo-800/90 dark:text-indigo-200/80 mt-1 leading-relaxed"><span className="font-bold">Why:</span> {item.purpose}</p> : null}
+                                                                                {item.instruction ? <p className="text-[11px] text-indigo-900/90 dark:text-indigo-100/90 mt-1 leading-relaxed"><span className="font-bold">How:</span> {item.instruction}</p> : null}
+                                                                                {(item.frequency || item.timing) ? <p className="text-[11px] text-indigo-800/80 dark:text-indigo-200/80 mt-1 leading-relaxed">{item.timing ? `When: ${item.timing}. ` : ''}{item.frequency ? `Frequency: ${item.frequency}.` : ''}</p> : null}
+                                                                                {item.notes ? <p className="text-[11px] text-indigo-700 dark:text-indigo-300 mt-1 leading-relaxed">{item.notes}</p> : null}
+                                                                            </div>
+                                                                        </div>
+                                                                        <RoutineItemScraper action={actionLabel} />
+                                                                    </li>
+                                                                );
+                                                            });
+                                                        }
+
+                                                        return (analysisResult.routine?.evening || []).map((item, idx) => (
+                                                            <li key={`evening-${idx}`} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-indigo-200/30">
+                                                                <div className="flex items-start gap-2">
+                                                                    <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
+                                                                    <span className="text-xs text-indigo-900 dark:text-indigo-100 font-bold">{item}</span>
+                                                                </div>
+                                                                <RoutineItemScraper action={item} />
+                                                            </li>
+                                                        ));
+                                                    })()}
+                                                </ol>
                                             </div>
-                                            <ol className="space-y-4">
-                                                {analysisResult.routine.evening.map((item, idx) => (
-                                                    <li key={idx} className="flex flex-col gap-2 p-3 rounded-2xl bg-white/40 dark:bg-black/20 border border-indigo-200/30">
-                                                        <div className="flex items-start gap-2">
-                                                            <span className="flex-shrink-0 size-4 rounded-full bg-indigo-200 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 text-[9px] font-black flex items-center justify-center mt-0.5">{idx + 1}</span>
-                                                            <span className="text-xs text-indigo-900 dark:text-indigo-100 font-bold">{item}</span>
-                                                        </div>
-                                                        <RoutineItemScraper action={item} />
-                                                    </li>
-                                                ))}
-                                            </ol>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
+                                        )}
+                                    </motion.div>
+                                )}
 
                             {/* ── CTA ── */}
                             <div className="flex flex-col sm:flex-row gap-4 w-full">
