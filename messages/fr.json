@@ -1887,7 +1887,16 @@
     "toasts": {
       "maxImages": "Maximum {count} image(s) autorisée(s).",
       "maxImagesWarning": "Maximum {count} image(s) autorisée(s). Supprimez des images avant d’en ajouter.",
-      "photoCaptured": "Photo capturée avec succès !"
+      "photoCaptured": "Photo capturée avec succès !",
+      "faceNotDetected": "Aucun visage détecté. Veuillez envoyer une photo de face claire.",
+      "multipleFacesDetected": "Plusieurs visages détectés. Veuillez envoyer une photo avec un seul visage.",
+      "faceNotFrontal": "Photo non valide : une image de face est obligatoire.",
+      "imageBlurry": "Image floue détectée. Veuillez envoyer une photo nette.",
+      "badFraming": "Le cadrage du visage n’est pas bon. Centrez bien votre visage.",
+      "invalidImageForAnalysis": "Image invalide pour l’analyse. Veuillez envoyer une photo de face nette.",
+      "faceApiNotConfigured": "Service de validation du visage non configuré sur le serveur.",
+      "faceApiAuthError": "Échec d’authentification Face++. Vérifiez FACEPP_API_KEY et FACEPP_API_SECRET.",
+      "faceApiError": "Le service de validation du visage est temporairement indisponible."
     },
     "limit": {
       "description": "Vous avez déjà utilisé votre analyse gratuite dans les dernières 24 heures.",

@@ -538,6 +538,7 @@ export default function QuestionnairePage() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [isImageStep, setIsImageStep] = useState(false);
     const [isSubmittingImages, setIsSubmittingImages] = useState(false);
+    const [imageStepAlert, setImageStepAlert] = useState<string | null>(null);
     const [pendingFinalResult, setPendingFinalResult] = useState<Record<string, unknown> | null>(null);
     const [uploadedSurveyImages, setUploadedSurveyImages] = useState<UploadedSurveyImage[]>([]);
     const [isDraggingImages, setIsDraggingImages] = useState(false);
@@ -572,10 +573,33 @@ export default function QuestionnairePage() {
     const questionFlowRef = useRef<Question[]>([]);
     const maxSurveyImages = Math.max(1, analysisAccess.maxSurveyImages || 1);
     const n8nAnalyzingMessage = locale.startsWith("fr")
-        ? "Analyse en cours via n8n. Veuillez patienter..."
+        ? "Analyse en cours. Veuillez patienter..."
         : locale.startsWith("ar")
-            ? "جاري التحليل عبر n8n. يرجى الانتظار..."
-            : "Analysis in progress via n8n. Please wait...";
+            ? "التحليل قيد التقدم. يرجى الانتظار..."
+            : "Analysis in progress. Please wait...";
+
+    const getImageValidationToastMessage = (code?: string, fallback?: string): string => {
+        switch (code) {
+            case 'FACE_NOT_DETECTED':
+                return t('toasts.faceNotDetected');
+            case 'MULTIPLE_FACES':
+                return t('toasts.multipleFacesDetected');
+            case 'FACE_NOT_FRONTAL':
+                return t('toasts.faceNotFrontal');
+            case 'IMAGE_BLURRY':
+                return t('toasts.imageBlurry');
+            case 'BAD_FRAMING':
+                return t('toasts.badFraming');
+            case 'FACE_API_NOT_CONFIGURED':
+                return t('toasts.faceApiNotConfigured');
+            case 'FACE_API_AUTH_ERROR':
+                return t('toasts.faceApiAuthError');
+            case 'FACE_API_ERROR':
+                return fallback || t('toasts.faceApiError');
+            default:
+                return fallback || t('toasts.invalidImageForAnalysis');
+        }
+    };
 
     const rebuildMessages = useCallback(
         (answers: { questionId: number; answer: string }[], flow: Question[], nextAssistantMessage?: string) => {
@@ -1096,6 +1120,7 @@ export default function QuestionnairePage() {
     const onImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files && files.length > 0) {
+            setImageStepAlert(null);
             await appendFiles(files);
         }
         event.target.value = '';
@@ -1104,6 +1129,7 @@ export default function QuestionnairePage() {
     const handleCameraCapture = async (dataUrl: string) => {
         const parsed = dataUrlToInlinePart(dataUrl);
         if (parsed) {
+            setImageStepAlert(null);
             // Check limits again just in case
             if (uploadedSurveyImages.length >= maxSurveyImages) {
                 toast.error(t('toasts.maxImages', { count: maxSurveyImages }));
@@ -1128,6 +1154,7 @@ export default function QuestionnairePage() {
         }
 
         setIsSubmittingImages(true);
+        setImageStepAlert(null);
         try {
             let analysisId = latestProgressAnalysisId;
 
@@ -1172,6 +1199,18 @@ export default function QuestionnairePage() {
 
                 if (!storeResponse.ok) {
                     const storeError = await storeResponse.json().catch(() => ({}));
+
+                    const readableError = getImageValidationToastMessage(
+                        typeof storeError?.code === 'string' ? storeError.code : undefined,
+                        typeof storeError?.error === 'string' ? storeError.error : undefined
+                    );
+
+                    setImageStepAlert(readableError);
+
+                    if (storeError?.code) {
+                        return;
+                    }
+
                     throw new Error(storeError.error || t('errors.storeImages'));
                 }
             }
@@ -1208,13 +1247,7 @@ export default function QuestionnairePage() {
             await finalizeAndSaveAnalysis((result && result.status === 'complete') ? result : pendingFinalResult);
         } catch (error: unknown) {
             const err = error as { message?: string };
-            setMessages((prev) => [
-                ...prev,
-                {
-                    role: 'assistant',
-                    content: t('messages.finalizeWithImagesError', { error: err.message || t('errors.unknown') }),
-                },
-            ]);
+            setImageStepAlert(t('messages.finalizeWithImagesError', { error: err.message || t('errors.unknown') }));
         } finally {
             setIsSubmittingImages(false);
         }
@@ -1995,6 +2028,12 @@ export default function QuestionnairePage() {
                                                     {uploadedSurveyImages.length}/{maxSurveyImages}
                                                 </span>
                                             </div>
+
+                                            {imageStepAlert && (
+                                                <div className="rounded-2xl border border-rose-300 bg-rose-50 dark:bg-rose-900/20 dark:border-rose-700 px-4 py-3">
+                                                    <p className="text-xs font-semibold text-rose-700 dark:text-rose-300">{imageStepAlert}</p>
+                                                </div>
+                                            )}
 
                                             <input
                                                 ref={imageInputRef}

@@ -1887,7 +1887,16 @@
     "toasts": {
       "maxImages": "الحد الأقصى {count} صورة.",
       "maxImagesWarning": "الحد الأقصى {count} صورة. يرجى إزالة بعض الصور قبل الإضافة.",
-      "photoCaptured": "تم التقاط الصورة بنجاح!"
+      "photoCaptured": "تم التقاط الصورة بنجاح!",
+      "faceNotDetected": "لم يتم اكتشاف وجه. يرجى رفع صورة أمامية واضحة.",
+      "multipleFacesDetected": "تم اكتشاف عدة وجوه. يرجى رفع صورة لوجه واحد فقط.",
+      "faceNotFrontal": "الصورة غير صالحة: يجب رفع صورة أمامية للوجه.",
+      "imageBlurry": "تم اكتشاف صورة ضبابية. يرجى رفع صورة أوضح.",
+      "badFraming": "إطار الوجه غير مناسب. يرجى توسيط الوجه داخل الصورة.",
+      "invalidImageForAnalysis": "صورة غير صالحة للتحليل. يرجى رفع صورة أمامية واضحة.",
+      "faceApiNotConfigured": "خدمة التحقق من الوجه غير مهيأة على الخادم.",
+      "faceApiAuthError": "فشل التحقق مع Face++. يرجى التحقق من FACEPP_API_KEY و FACEPP_API_SECRET.",
+      "faceApiError": "خدمة التحقق من الوجه غير متاحة مؤقتاً."
     },
     "limit": {
       "description": "لقد استخدمت التحليل المجاني خلال آخر 24 ساعة.",

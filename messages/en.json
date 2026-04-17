@@ -1887,7 +1887,16 @@
     "toasts": {
       "maxImages": "Maximum {count} image(s) allowed.",
       "maxImagesWarning": "Maximum {count} image(s) allowed. Please remove images before adding more.",
-      "photoCaptured": "Photo captured successfully!"
+      "photoCaptured": "Photo captured successfully!",
+      "faceNotDetected": "No face detected. Please upload a clear frontal face photo.",
+      "multipleFacesDetected": "Multiple faces detected. Please upload one face only.",
+      "faceNotFrontal": "Invalid photo: a frontal face image is required.",
+      "imageBlurry": "Blurry image detected. Please upload a sharper photo.",
+      "badFraming": "Face framing is not good. Please center your face.",
+      "invalidImageForAnalysis": "Invalid image for analysis. Please upload a clear frontal photo.",
+      "faceApiNotConfigured": "Face validation service is not configured on the server.",
+      "faceApiAuthError": "Face++ authentication failed. Please verify FACEPP_API_KEY and FACEPP_API_SECRET.",
+      "faceApiError": "Face validation service is temporarily unavailable."
     },
     "limit": {
       "description": "You have already used your free analysis in the last 24 hours.",
