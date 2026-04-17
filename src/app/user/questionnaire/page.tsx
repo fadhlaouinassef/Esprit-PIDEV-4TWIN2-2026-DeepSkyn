@@ -164,6 +164,26 @@ const parseN8nResult = (raw: unknown): N8nResult | null => {
     return result as N8nResult;
 };
 
+const keepAnalysisOnly = (rawAnalysis: string): string => {
+    const normalized = String(rawAnalysis || "").trim();
+    if (!normalized) return "";
+
+    // Remove recommendation sections even when "Recommendations:" appears inline in a paragraph.
+    const recommendationMarker = /(?:^|\s)(?:\*\*)?\s*(?:recommendations?|recommandations?)\s*:\s*(?:\*\*)?/i;
+    const markerMatch = recommendationMarker.exec(normalized);
+    const withoutRecommendationBlock = markerMatch
+        ? normalized.slice(0, markerMatch.index).trim()
+        : normalized;
+
+    const cleaned = withoutRecommendationBlock
+        .split("\n")
+        .filter((line) => !/^\s*\d+\.\s*\*\*?(?:recommendations?|recommandations?)?/i.test(line))
+        .join("\n")
+        .trim();
+
+    return cleaned;
+};
+
 export default function QuestionnairePage() {
     const t = useTranslations("userQuestionnaire");
     const locale = useLocale();
@@ -256,6 +276,24 @@ export default function QuestionnairePage() {
         },
         []
     );
+
+    const scrollToQuestionnaireBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+        if (typeof window === "undefined") return;
+
+        requestAnimationFrame(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior,
+                });
+            }
+
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior,
+            });
+        });
+    }, []);
 
     useEffect(() => {
         if (sessionStatus === "loading") return;
@@ -364,7 +402,7 @@ export default function QuestionnairePage() {
                 }
             }
 
-            const incomingAnalysis = String(result.analysis || '').trim();
+            const incomingAnalysis = keepAnalysisOnly(String(result.analysis || '').trim());
             const incomingScore = Number(result.score);
             const hasIncomingAnalysis = incomingAnalysis.length > 0;
             const hasIncomingScore = Number.isFinite(incomingScore);
@@ -379,7 +417,9 @@ export default function QuestionnairePage() {
 
             setAnalysisResult({
                 // Final n8n/Gemini output has priority for displayed final result.
-                analysis: hasIncomingAnalysis ? incomingAnalysis : (computed?.analysis || t('analysis.complete')),
+                analysis: hasIncomingAnalysis
+                    ? incomingAnalysis
+                    : keepAnalysisOnly(String(computed?.analysis || t('analysis.complete'))),
                 score: hasIncomingScore
                     ? incomingScore
                     : (Number.isFinite(computed?.score) ? Number(computed?.score) : fallbackScore),
@@ -395,7 +435,7 @@ export default function QuestionnairePage() {
         } catch (error) {
             console.error('❌ Finalize analysis error:', error);
             setAnalysisResult({
-                analysis: String(result.analysis || 'Analysis complete.'),
+                analysis: keepAnalysisOnly(String(result.analysis || 'Analysis complete.')),
                 score: Number(result.score || 85)
             });
         } finally {
@@ -503,13 +543,8 @@ export default function QuestionnairePage() {
     // Scroll to bottom during chat — but NOT once the analysis result is shown
     useEffect(() => {
         if (analysisResult) return; // let the user scroll freely
-        if (scrollRef.current) {
-            scrollRef.current.scrollTo({
-                top: scrollRef.current.scrollHeight,
-                behavior: "smooth"
-            });
-        }
-    }, [messages, isStreaming, isAnalyzing, analysisResult]);
+        scrollToQuestionnaireBottom("smooth");
+    }, [messages, isStreaming, isAnalyzing, analysisResult, currentQuestion, scrollToQuestionnaireBottom]);
 
     // When analysis first appears, scroll to the analysis section
     useEffect(() => {
@@ -618,6 +653,8 @@ export default function QuestionnairePage() {
                 quizId,
                 model: selectedModel,
                 sessionId: questionnaireSessionIdRef.current,
+                outputMode: "analysis_only",
+                includeRecommendations: false,
                 answersSoFar: currentAnswers,
                 lastQuestionId: lastAnswerData?.questionId,
                 lastAnswer: lastAnswerData?.answer
@@ -799,6 +836,8 @@ export default function QuestionnairePage() {
                     quizId,
                     model: selectedModel,
                     sessionId: questionnaireSessionIdRef.current,
+                    outputMode: "analysis_only",
+                    includeRecommendations: false,
                     answersSoFar,
                     imageParts: uploadedSurveyImages.map((img) => ({
                         inline_data: {
@@ -846,6 +885,8 @@ export default function QuestionnairePage() {
                     quizId,
                     model: selectedModel,
                     sessionId: questionnaireSessionIdRef.current,
+                    outputMode: "analysis_only",
+                    includeRecommendations: false,
                     answersSoFar,
                     forceFinalAnalysis: true,
                 }),
@@ -892,6 +933,7 @@ export default function QuestionnairePage() {
 
         const userMsg = { role: "user" as const, content, image: imageData };
         setMessages(prev => [...prev, userMsg]);
+        scrollToQuestionnaireBottom("auto");
 
         if (editingAnswerIndex !== null) {
             const updatedAnswers = answersSoFar.map((item, idx) =>
@@ -908,8 +950,10 @@ export default function QuestionnairePage() {
             if (nextQuestion) {
                 setCurrentQuestion(nextQuestion);
                 setMessages(rebuildMessages(updatedAnswers, questionFlow, nextQuestion.text));
+                scrollToQuestionnaireBottom("auto");
             } else {
                 setMessages(rebuildMessages(updatedAnswers, questionFlow));
+                scrollToQuestionnaireBottom("auto");
             }
 
             return;
@@ -1289,9 +1333,48 @@ export default function QuestionnairePage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        {analysisResult.analysis.split('\n').filter(l => l.trim()).map((line, i) => (
-                                            <p key={i} className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{line}</p>
-                                        ))}
+                                        {(() => {
+                                            const lines = analysisResult.analysis
+                                                .split('\n')
+                                                .map((line) => line.trim())
+                                                .filter(Boolean);
+
+                                            const looksLikePoints = lines.some((line) => /^(\*\s+|\-\s+|•\s+|\d+\.\s+)/.test(line));
+
+                                            if (!looksLikePoints) {
+                                                return lines.map((line, i) => (
+                                                    /^\*\*(.+)\*\*$/.test(line)
+                                                        ? <p key={i} className="text-sm font-bold text-gray-900 dark:text-white leading-relaxed">{line.replace(/^\*\*(.+)\*\*$/, "$1")}</p>
+                                                        : <p key={i} className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{line}</p>
+                                                ));
+                                            }
+
+                                            return lines.map((line, i) => {
+                                                const headerMatch = line.match(/^\*\*(.+)\*\*$/);
+                                                if (headerMatch) {
+                                                    return (
+                                                        <p key={i} className="text-sm font-bold text-gray-900 dark:text-white leading-relaxed mt-3 first:mt-0">
+                                                            {headerMatch[1]}
+                                                        </p>
+                                                    );
+                                                }
+
+                                                const isBullet = /^(\*\s+|\-\s+|•\s+|\d+\.\s+)/.test(line);
+                                                if (!isBullet) {
+                                                    return (
+                                                        <p key={i} className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{line}</p>
+                                                    );
+                                                }
+
+                                                const content = line.replace(/^(\*\s+|\-\s+|•\s+|\d+\.\s+)/, "").trim();
+                                                return (
+                                                    <div key={i} className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed flex items-start gap-2">
+                                                        <ChevronRight className="size-4 text-primary mt-0.5 flex-shrink-0" />
+                                                        <span>{content}</span>
+                                                    </div>
+                                                );
+                                            });
+                                        })()}
                                     </div>
                                 </div>
                             )}
