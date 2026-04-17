@@ -5,7 +5,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3 } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { CameraModal } from "@/app/components/user/CameraModal";
@@ -168,7 +168,8 @@ export default function QuestionnairePage() {
     const t = useTranslations("userQuestionnaire");
     const locale = useLocale();
     const { data: session, status: sessionStatus } = useSession();
-    const userId = session?.user?.id ? parseInt(session.user.id) : null;
+    const parsedUserId = session?.user?.id ? Number(session.user.id) : NaN;
+    const userId = Number.isFinite(parsedUserId) ? parsedUserId : null;
 
     const [selectedModel, setSelectedModel] = useState<AIModel>("google/gemini-2.0-flash-001");
     const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -204,8 +205,10 @@ export default function QuestionnairePage() {
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     const imageInputRef = useRef<HTMLInputElement>(null);
 
+    const questionnaireContainerRef = useRef<HTMLDivElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const analysisRef = useRef<HTMLDivElement>(null);
+    const editableQuestionRefs = useRef<Record<number, HTMLButtonElement | null>>({});
     const questionFlowRef = useRef<Question[]>([]);
     const maxSurveyImages = Math.max(1, analysisAccess.maxSurveyImages || 1);
     const n8nAnalyzingMessage = locale.startsWith("fr")
@@ -235,8 +238,36 @@ export default function QuestionnairePage() {
         []
     );
 
+    const buildDedupedFlow = useCallback(
+        (answersCount: number, nextQuestion: Question) => {
+            const baseFlow = questionFlowRef.current.slice(0, answersCount);
+
+            // Never append a question that was already asked to avoid duplicated prompts.
+            if (baseFlow.some((q) => Number(q.id) === Number(nextQuestion.id))) {
+                return baseFlow;
+            }
+
+            const lastQuestion = baseFlow[baseFlow.length - 1];
+            if (lastQuestion && Number(lastQuestion.id) === Number(nextQuestion.id)) {
+                return baseFlow;
+            }
+
+            return [...baseFlow, nextQuestion];
+        },
+        []
+    );
+
     useEffect(() => {
-        if (sessionStatus === "loading" || !userId) return;
+        if (sessionStatus === "loading") return;
+
+        if (sessionStatus !== "authenticated") {
+            setAnalysisAccess((prev) => ({
+                ...prev,
+                loading: false,
+                canCreateAnalysis: false,
+            }));
+            return;
+        }
 
         let cancelled = false;
 
@@ -276,7 +307,7 @@ export default function QuestionnairePage() {
         return () => {
             cancelled = true;
         };
-    }, [sessionStatus, userId, t]);
+    }, [sessionStatus, t]);
 
     const finalizeAndSaveAnalysis = async (result: Record<string, unknown>) => {
         setCurrentQuestion(null);
@@ -455,7 +486,7 @@ export default function QuestionnairePage() {
     // Initial call to get the first question
     useEffect(() => {
         if (
-            sessionStatus !== "loading" &&
+            sessionStatus === "authenticated" &&
             !analysisAccess.loading &&
             analysisAccess.canCreateAnalysis &&
             messages.length === 0 &&
@@ -467,7 +498,7 @@ export default function QuestionnairePage() {
             fetchNextStep([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sessionStatus, userId, analysisAccess.loading, analysisAccess.canCreateAnalysis]);
+    }, [sessionStatus, analysisAccess.loading, analysisAccess.canCreateAnalysis]);
 
     // Scroll to bottom during chat — but NOT once the analysis result is shown
     useEffect(() => {
@@ -516,6 +547,47 @@ export default function QuestionnairePage() {
     useEffect(() => {
         questionFlowRef.current = questionFlow;
     }, [questionFlow]);
+
+    useEffect(() => {
+        if (editingAnswerIndex === null) return;
+
+        const targetQuestionBubble = editableQuestionRefs.current[editingAnswerIndex];
+        if (!targetQuestionBubble) return;
+
+        targetQuestionBubble.scrollIntoView({ behavior: "smooth", block: "center" });
+        targetQuestionBubble.focus();
+    }, [editingAnswerIndex]);
+
+    useEffect(() => {
+        const container = questionnaireContainerRef.current;
+        if (!container) return;
+
+        const onWheel = (event: WheelEvent) => {
+            if (analysisResult) return;
+
+            const chatContainer = scrollRef.current;
+            if (!chatContainer) return;
+
+            const maxScrollTop = Math.max(0, chatContainer.scrollHeight - chatContainer.clientHeight);
+            if (maxScrollTop <= 0) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const nextScrollTop = Math.min(
+                maxScrollTop,
+                Math.max(0, chatContainer.scrollTop + event.deltaY)
+            );
+
+            chatContainer.scrollTop = nextScrollTop;
+        };
+
+        container.addEventListener("wheel", onWheel, { passive: false });
+
+        return () => {
+            container.removeEventListener("wheel", onWheel);
+        };
+    }, [analysisResult]);
 
     const fetchNextStep = async (currentAnswers: { questionId: number; answer: string }[], lastAnswerData?: { questionId: number; answer: string }) => {
         setIsStreaming(true);
@@ -579,13 +651,16 @@ export default function QuestionnairePage() {
                     options: normalizeOptions(nextQ.options),
                     quizId: nextQ.quizId
                 };
+                const nextFlow = buildDedupedFlow(currentAnswers.length, normalizedQuestion);
+                const existingPendingQuestion = questionFlowRef.current[currentAnswers.length];
+                const questionToDisplay = nextFlow[currentAnswers.length] || existingPendingQuestion || normalizedQuestion;
+
                 setCurrentQuestion({
-                    ...normalizedQuestion,
+                    ...questionToDisplay,
                 });
-                const nextFlow = [...questionFlowRef.current.slice(0, currentAnswers.length), normalizedQuestion];
                 setQuestionFlow(nextFlow);
                 if (nextQ.quizId) setQuizId(nextQ.quizId);
-                setMessages(rebuildMessages(currentAnswers, nextFlow, normalizedQuestionText));
+                setMessages(rebuildMessages(currentAnswers, nextFlow, questionToDisplay.text));
             } else if (result && result.status === "complete") {
                 setPendingFinalResult(result as Record<string, unknown>);
                 setIsImageStep(true);
@@ -895,12 +970,31 @@ export default function QuestionnairePage() {
         setEditingAnswerIndex(answerIndex);
         setReturnQuestionAfterEdit(pendingQuestion || null);
         setCurrentQuestion(targetQuestion);
-        setMessages(rebuildMessages(answersSoFar, questionFlow, `${targetQuestion.text} (mode modification)`));
+        setMessages(rebuildMessages(answersSoFar, questionFlow));
+    };
+
+    const cancelEditMode = () => {
+        if (editingAnswerIndex === null) return;
+
+        setEditingAnswerIndex(null);
+        setReturnQuestionAfterEdit(null);
+
+        const pendingQuestion = questionFlow[answersSoFar.length] || returnQuestionAfterEdit || currentQuestion;
+        if (pendingQuestion) {
+            setCurrentQuestion(pendingQuestion);
+            setMessages(rebuildMessages(answersSoFar, questionFlow, pendingQuestion.text));
+            return;
+        }
+
+        setMessages(rebuildMessages(answersSoFar, questionFlow));
     };
 
     return (
         <UserLayout userName={session?.user?.name || t('userDefaultName')} userPhoto={session?.user?.image || "/avatar.png"}>
-            <div className="mx-auto w-full max-w-[800px] flex flex-col relative space-y-6">
+            <div
+                ref={questionnaireContainerRef}
+                className="mx-auto w-full max-w-[800px] flex flex-col relative space-y-6"
+            >
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
                     <span>{t('breadcrumb.user')}</span>
@@ -990,30 +1084,72 @@ export default function QuestionnairePage() {
                     ref={scrollRef}
                     className={`space-y-6 pr-2 ${analysisResult
                         ? "" // let <main> scroll naturally with mouse wheel
-                        : "overflow-y-auto max-h-[60vh] pb-2 custom-scrollbar scroll-smooth" // chat mode: keep answers near the question
+                        : "overflow-y-auto max-h-[60vh] pb-2 custom-scrollbar scroll-smooth overscroll-contain" // chat mode: keep answers near the question
                         }`}
                 >
                     <AnimatePresence initial={false}>
                         {messages.map((msg, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                            >
-                                <div className={`max-w-[85%] rounded-3xl p-5 shadow-sm relative ${msg.role === "user"
-                                    ? "bg-primary text-white rounded-tr-none shadow-primary/20"
-                                    : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white rounded-tl-none shadow-gray-200/50 dark:shadow-none"
-                                    }`}>
-                                    {msg.image && (
-                                        <div className="mb-4 rounded-xl overflow-hidden border border-white/10 shadow-inner">
-                                            <img src={msg.image} alt="Upload" className="max-w-full h-auto max-h-72 object-cover" />
-                                        </div>
-                                    )}
-                                    <p className="text-[17px] leading-relaxed font-medium">{msg.content}</p>
-                                </div>
-                            </motion.div>
+                            (() => {
+                                const isAnsweredAssistantQuestion = msg.role === "assistant" && i % 2 === 0 && i / 2 < answersSoFar.length;
+                                const editableAnswerIndex = isAnsweredAssistantQuestion ? i / 2 : null;
+                                const isEditable = editableAnswerIndex !== null;
+                                const isEditingThisQuestion = editingAnswerIndex !== null && editableAnswerIndex === editingAnswerIndex;
+                                const isEditedUserReply = editingAnswerIndex !== null && msg.role === "user" && i === (editingAnswerIndex * 2) + 1;
+                                const isCurrentEditedQuestionBubble = editingAnswerIndex !== null && i === editingAnswerIndex * 2;
+
+                                if (editingAnswerIndex !== null && !isCurrentEditedQuestionBubble) {
+                                    return null;
+                                }
+
+                                if (isEditedUserReply) {
+                                    return null;
+                                }
+
+                                return (
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                                    >
+                                        <button
+                                            ref={(el) => {
+                                                if (editableAnswerIndex !== null) {
+                                                    editableQuestionRefs.current[editableAnswerIndex] = el;
+                                                }
+                                            }}
+                                            type="button"
+                                            onClick={() => {
+                                                if (editableAnswerIndex !== null) {
+                                                    handleEditAnswerAt(editableAnswerIndex);
+                                                }
+                                            }}
+                                            disabled={!isEditable || isStreaming || isAnalyzing || isImageStep}
+                                            title={isEditable ? "Click to edit this question" : undefined}
+                                            className={`max-w-[85%] rounded-3xl p-5 shadow-sm relative text-left transition-all ${msg.role === "user"
+                                                ? "bg-primary text-white rounded-tr-none shadow-primary/20"
+                                                : "bg-white border border-gray-100 dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white rounded-tl-none shadow-gray-200/50 dark:shadow-none"
+                                                } ${isEditable ? "group pr-14 cursor-pointer hover:scale-[1.01] hover:ring-2 hover:ring-primary/30" : "cursor-default"} ${isEditingThisQuestion ? "ring-2 ring-primary/40" : ""}`}
+                                        >
+                                            {isEditable && (
+                                                <span
+                                                    className={`absolute top-3 right-2 inline-flex size-7 items-center justify-center rounded-full border border-primary/30 bg-white/90 text-primary shadow-sm transition-opacity ${isEditingThisQuestion ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"}`}
+                                                    aria-hidden="true"
+                                                >
+                                                    <Pencil className="size-3.5" />
+                                                </span>
+                                            )}
+                                            {msg.image && (
+                                                <div className="mb-4 rounded-xl overflow-hidden border border-white/10 shadow-inner">
+                                                    <img src={msg.image} alt="Upload" className="max-w-full h-auto max-h-72 object-cover" />
+                                                </div>
+                                            )}
+                                            <p className="text-[17px] leading-relaxed font-medium">{msg.content}</p>
+                                        </button>
+                                    </motion.div>
+                                );
+                            })()
                         ))}
                     </AnimatePresence>
 
@@ -1438,7 +1574,7 @@ export default function QuestionnairePage() {
                                 )}
 
                                 {/* Choice UI */}
-                                {!isImageStep && !isStreaming && currentQuestion?.type === "choice" && messages[messages.length - 1]?.role === "assistant" && (
+                                {!isImageStep && !isStreaming && currentQuestion?.type === "choice" && (
                                     <motion.div
                                         key="choices"
                                         initial={{ opacity: 0, y: 30 }}
@@ -1446,23 +1582,18 @@ export default function QuestionnairePage() {
                                         exit={{ opacity: 0, y: 20 }}
                                         className="w-full flex flex-col items-center gap-4"
                                     >
-                                        {answersSoFar.length > 0 && (
-                                            <div className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-3">
-                                                <p className="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2">
-                                                    Modifier une reponse
+                                        {editingAnswerIndex !== null && (
+                                            <div className="w-full rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 flex items-center justify-between gap-3">
+                                                <p className="text-xs font-semibold text-primary">
+                                                    Edit mode active
                                                 </p>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {answersSoFar.map((ans, index) => (
-                                                        <button
-                                                            key={`${index}-${ans.questionId}`}
-                                                            type="button"
-                                                            onClick={() => handleEditAnswerAt(index)}
-                                                            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-[11px] font-semibold text-gray-700 dark:text-gray-200"
-                                                        >
-                                                            Q{index + 1}
-                                                        </button>
-                                                    ))}
-                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={cancelEditMode}
+                                                    className="px-3 py-1.5 rounded-lg border border-primary/30 bg-white text-[11px] font-semibold text-primary"
+                                                >
+                                                    Cancel
+                                                </button>
                                             </div>
                                         )}
 
@@ -1496,14 +1627,14 @@ export default function QuestionnairePage() {
                                                 disabled={selectedChoiceOptionIds.length === 0}
                                                 className="px-6 py-3 rounded-xl bg-primary text-white text-xs font-bold disabled:opacity-60"
                                             >
-                                                {editingAnswerIndex !== null ? "Sauvegarder modification" : "Valider mes choix"}
+                                                {editingAnswerIndex !== null ? "Save changes" : "Submit choices"}
                                             </button>
                                         </div>
                                     </motion.div>
                                 )}
 
                                 {/* Text Input UI */}
-                                {!isImageStep && !isStreaming && (currentQuestion?.type === "text" || !currentQuestion) && (messages[messages.length - 1]?.role === "assistant") && (
+                                {!isImageStep && !isStreaming && (currentQuestion?.type === "text" || (!currentQuestion && messages[messages.length - 1]?.role === "assistant")) && (
                                     <motion.div
                                         key="composer"
                                         initial={{ opacity: 0, y: 30 }}
@@ -1511,30 +1642,34 @@ export default function QuestionnairePage() {
                                         exit={{ opacity: 0, y: 20 }}
                                         className="w-full space-y-3"
                                     >
-                                        {answersSoFar.length > 0 && (
-                                            <div className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-3">
-                                                <p className="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2">
-                                                    Modifier une reponse
+                                        {answersSoFar.length > 0 && editingAnswerIndex === null && (
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 px-1">
+                                                Click on a question in the conversation to edit it.
+                                            </p>
+                                        )}
+                                        {editingAnswerIndex !== null && (
+                                            <div className="w-full rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 flex items-center justify-between gap-3">
+                                                <p className="text-xs font-semibold text-primary">
+                                                    Edit mode active
                                                 </p>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {answersSoFar.map((ans, index) => (
-                                                        <button
-                                                            key={`${index}-${ans.questionId}`}
-                                                            type="button"
-                                                            onClick={() => handleEditAnswerAt(index)}
-                                                            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-[11px] font-semibold text-gray-700 dark:text-gray-200"
-                                                        >
-                                                            Q{index + 1}
-                                                        </button>
-                                                    ))}
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleGoBackToPreviousQuestion}
-                                                        className="px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-[11px] font-semibold text-primary"
-                                                    >
-                                                        Derniere question
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={cancelEditMode}
+                                                    className="px-3 py-1.5 rounded-lg border border-primary/30 bg-white text-[11px] font-semibold text-primary"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        )}
+                                        {answersSoFar.length > 0 && editingAnswerIndex === null && (
+                                            <div className="flex">
+                                                <button
+                                                    type="button"
+                                                    onClick={handleGoBackToPreviousQuestion}
+                                                    className="px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-[11px] font-semibold text-primary"
+                                                >
+                                                    Previous question
+                                                </button>
                                             </div>
                                         )}
                                         <Composer

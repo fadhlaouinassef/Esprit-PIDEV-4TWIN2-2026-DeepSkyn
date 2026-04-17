@@ -49,7 +49,7 @@ const LEVEL_ICONS: Record<string, any> = {
 
 export default function BadgePage() {
     const t = useTranslations();
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [data, setData] = useState<MotivationSummary | null>(null);
     const [loading, setLoading] = useState(true);
     const [shareMenuOpen, setShareMenuOpen] = useState(false);
@@ -58,23 +58,65 @@ export default function BadgePage() {
     const [autoSpeech, setAutoSpeech] = useState(false);
 
     useEffect(() => {
-        fetch("/api/user/motivation")
-            .then(async (res) => {
+        if (status === "loading") {
+            return;
+        }
+
+        if (status === "unauthenticated") {
+            setData(null);
+            setLoading(false);
+            return;
+        }
+
+        let isCancelled = false;
+
+        const fetchMotivation = async () => {
+            try {
+                const res = await fetch("/api/user/motivation", {
+                    cache: "no-store",
+                    credentials: "include",
+                });
+
                 if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error || t("userBadge.errors.fetchMotivationData"));
+                    if (res.status === 401) {
+                        if (!isCancelled) {
+                            setData(null);
+                        }
+                        return;
+                    }
+
+                    let apiError = t("userBadge.errors.fetchMotivationData");
+                    try {
+                        const err = await res.json();
+                        apiError = err.error || apiError;
+                    } catch {
+                        // Ignore JSON parsing failures and use fallback message.
+                    }
+                    throw new Error(apiError);
                 }
-                return res.json();
-            })
-            .then((resData) => {
-                setData(resData);
-                setLoading(false);
-            })
-            .catch((err) => {
+
+                const resData = await res.json();
+                if (!isCancelled) {
+                    setData(resData);
+                }
+            } catch (err) {
                 console.error("Error fetching motivation data:", err);
-                setLoading(false);
-            });
-    }, []);
+                if (!isCancelled) {
+                    setData(null);
+                }
+            } finally {
+                if (!isCancelled) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchMotivation();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [status, t]);
 
     const shareUrl = useMemo(() => {
         if (typeof window === "undefined") return "";
