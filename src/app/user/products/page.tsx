@@ -123,24 +123,23 @@ const COUNTRY_OPTIONS = [
   { value: "tn", label: "🇹🇳 Tunisia" },
 ];
 
-const MAX_RESULTS_OPTIONS = [5, 10, 20, 30];
+const MAX_RESULTS_OPTIONS = [10, 20, 30, 50, 100];
 
 const TRUSTED_SITES = [
-  { value: "", label: "All Sites" },
-  { value: "sephora.com", label: "Sephora" },
-  { value: "ulta.com", label: "Ulta Beauty" },
-  { value: "lookfantastic.com", label: "LookFantastic" },
-  { value: "incidecoder.com", label: "INCIDecoder" },
-  { value: "cosdna.com", label: "CosDNA" },
-  { value: "paulaschoice.com", label: "Paula's Choice" },
-  { value: "amazon.com", label: "Amazon" },
+  { value: "tunisie_parapharmacies", label: "Toutes les Parapharmacies (Tunisie)" },
+  { value: "pharmashop.tn", label: "Pharmashop" },
+  { value: "parashop.tn", label: "Parashop" },
+  { value: "tunisiepara.com", label: "TunisiePara" },
+  { value: "mapara.tn", label: "Mapara" },
+  { value: "mypara.tn", label: "MyPara" },
+  { value: "pointrelais.tn", label: "PointRelais" },
 ];
 
 /* ─────────────────────── Components ── */
 function OgImageFallback({ url, alt }: { url?: string; alt: string }) {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
-  
+
   useEffect(() => {
     if (!url) {
       setLoaded(true);
@@ -151,17 +150,17 @@ function OgImageFallback({ url, alt }: { url?: string; alt: string }) {
       .then(data => {
         if (data.imageUrl) setImgUrl(data.imageUrl);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoaded(true));
   }, [url]);
 
   if (imgUrl) {
     return (
       /* eslint-disable-next-line @next/next/no-img-element */
-      <img 
-        src={imgUrl} 
-        alt={alt} 
-        className="absolute inset-0 w-full h-full object-contain p-8 mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-500" 
+      <img
+        src={imgUrl}
+        alt={alt}
+        className="absolute inset-0 w-full h-full object-contain p-8 mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-500"
       />
     );
   }
@@ -183,16 +182,16 @@ function OgImageFallback({ url, alt }: { url?: string; alt: string }) {
 /* ─────────────────────── Page ── */
 export default function ProductsPage() {
   const t = useTranslations();
-  const [query, setQuery]               = useState("");
-  const [category, setCategory]         = useState("skincare");
-  const [brand, setBrand]               = useState("");
-  const [site, setSite]                 = useState("");
-  const [countryCode, setCountryCode]   = useState("us");
-  const [languageCode, setLanguageCode] = useState("en");
-  const [maxResults, setMaxResults]     = useState(10);
-  const [showFilters, setShowFilters]   = useState(false);
-  const [loading, setLoading]           = useState(false);
-  const [searchData, setSearchData]     = useState<SearchResponse | null>(null);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("skincare");
+  const [brand, setBrand] = useState("");
+  const [site, setSite] = useState("tunisie_parapharmacies");
+  const [countryCode, setCountryCode] = useState("tn");
+  const [languageCode, setLanguageCode] = useState("fr");
+  const [maxResults, setMaxResults]     = useState(30);
+  const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searchData, setSearchData] = useState<SearchResponse | null>(null);
 
   const selectedCategory = CATEGORIES.find((c) => c.value === category) ?? CATEGORIES[0];
 
@@ -290,11 +289,10 @@ export default function ProductsPage() {
                 key={cat.value}
                 type="button"
                 onClick={() => setCategory(cat.value)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                  category === cat.value
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${category === cat.value
                     ? `bg-gradient-to-r ${cat.color} text-white border-transparent shadow-md`
                     : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                }`}
+                  }`}
               >
                 {cat.icon}
                 {getCategoryLabel(cat.value)}
@@ -342,11 +340,10 @@ export default function ProductsPage() {
             <button
               type="button"
               onClick={() => setShowFilters((v) => !v)}
-              className={`flex items-center gap-2 px-4 py-3.5 rounded-2xl border text-sm font-semibold transition-all ${
-                showFilters
+              className={`flex items-center gap-2 px-4 py-3.5 rounded-2xl border text-sm font-semibold transition-all ${showFilters
                   ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400"
                   : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-              }`}
+                }`}
             >
               <Filter className="size-4" />
               {t("userProducts.search.filters")}
@@ -402,7 +399,7 @@ export default function ProductsPage() {
                       className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm text-gray-800 dark:text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                     >
                       {TRUSTED_SITES.map((s) => (
-                        <option key={s.value} value={s.value}>{s.value === "" ? t("userProducts.filters.allSites") : s.label}</option>
+                        <option key={s.value} value={s.value}>{s.label}</option>
                       ))}
                     </select>
                   </div>
@@ -450,11 +447,10 @@ export default function ProductsPage() {
                       key={lang}
                       type="button"
                       onClick={() => setLanguageCode(lang)}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all ${
-                        languageCode === lang
+                      className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all ${languageCode === lang
                           ? "bg-blue-600 text-white border-blue-600"
                           : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100"
-                      }`}
+                        }`}
                     >
                       {lang.toUpperCase()}
                     </button>
@@ -557,14 +553,14 @@ export default function ProductsPage() {
 
               {/* ── Helper to render a single product card ── */}
               {(() => {
-                const withImage    = searchData.results.filter((r) => !!r.imageUrl);
+                const withImage = searchData.results.filter((r) => !!r.imageUrl);
                 const withoutImage = searchData.results.filter((r) => !r.imageUrl);
 
                 const renderCard = (result: OrganicResult, globalIndex: number) => {
                   let domain = "—";
                   try {
                     if (result.url) domain = new URL(result.url).hostname.replace("www.", "");
-                  } catch (_) {}
+                  } catch (_) { }
                   return (
                     <motion.div
                       key={`${result.url}-${globalIndex}`}
