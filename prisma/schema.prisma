@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -45,6 +46,8 @@ model Badge {
   niveau      NiveauBadge
   titre       String
   user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, niveau, titre])
 }
 
 model LoginActivity {

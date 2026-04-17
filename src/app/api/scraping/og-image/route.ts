@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
     const html = await res.text();
 
     // Regex to find og:image content
-    const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["'](.*?)["'][^>]*>/i) 
-                      || html.match(/<meta[^>]*content=["'](.*?)["'][^>]*property=["']og:image["'][^>]*>/i);
+    const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["'](.*?)["'][^>]*>/i)
+      || html.match(/<meta[^>]*content=["'](.*?)["'][^>]*property=["']og:image["'][^>]*>/i);
 
     if (ogImageMatch && ogImageMatch[1]) {
       return NextResponse.json({ imageUrl: ogImageMatch[1] });
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     // Fallback: finding twitter:image
     const twImageMatch = html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["'](.*?)["'][^>]*>/i)
-                      || html.match(/<meta[^>]*content=["'](.*?)["'][^>]*name=["']twitter:image["'][^>]*>/i);
+      || html.match(/<meta[^>]*content=["'](.*?)["'][^>]*name=["']twitter:image["'][^>]*>/i);
 
     if (twImageMatch && twImageMatch[1]) {
       return NextResponse.json({ imageUrl: twImageMatch[1] });

@@ -222,7 +222,7 @@ async function migrate() {
         FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE SET NULL
       );
     `);
-    
+
     await prisma.$executeRawUnsafe(
       'CREATE INDEX IF NOT EXISTS "Notification_created_at_idx" ON "Notification"("created_at");'
     );

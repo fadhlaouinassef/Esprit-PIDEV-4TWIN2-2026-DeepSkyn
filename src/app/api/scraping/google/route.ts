@@ -72,19 +72,22 @@ export async function POST(request: NextRequest) {
     const category = (body.category as ProductCategory) || 'generic';
     const categoryKeyword = CATEGORY_KEYWORDS[category] ?? '';
 
-    // Build an enriched query that focuses on cosmetic/medical products
-    const parts: string[] = [rawQuery];
-    if (categoryKeyword) parts.push(categoryKeyword);
-    if (body.brand)  parts.push(`brand:"${body.brand.trim()}"`);
-    
-    if (body.isTunisia) {
-      // Cibler directement primini.tn avec La Roche-Posay dans la requête
-      parts.push('"La Roche-Posay" site:primini.tn');
-    } else if (body.site) {
-      parts.push(`site:${body.site.trim()}`);
+    // Build an enriched query
+    let parts: string[] = [rawQuery];
+
+    if (body.site) {
+      // If we target specific sites, we don't need much enrichment as these sites are already focused
+      if (body.site === 'tunisie_parapharmacies') {
+        parts.push('(site:pharmashop.tn OR site:parashop.tn OR site:tunisiepara.com OR site:mapara.tn OR site:mypara.tn OR site:pointrelais.tn)');
+      } else {
+        parts.push(`site:${body.site.trim()}`);
+      }
+    } else {
+      // General search enrichment
+      if (categoryKeyword) parts.push(categoryKeyword);
+      if (body.brand)  parts.push(`brand:"${body.brand.trim()}"`);
+      parts.push('product buy ingredients');
     }
-    // Always anchor to product context, but not when Tunisia (query already targeted)
-    if (!body.isTunisia) parts.push('product buy ingredients');
 
     const enrichedQuery = parts.join(' ');
     const maxResults    = Math.min(Number(body.maxResults) || 10, 50);
