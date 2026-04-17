@@ -113,15 +113,7 @@ const CATEGORIES: Category[] = [
   },
 ];
 
-const COUNTRY_OPTIONS = [
-  { value: "us", label: "🇺🇸 United States" },
-  { value: "fr", label: "🇫🇷 France" },
-  { value: "gb", label: "🇬🇧 United Kingdom" },
-  { value: "de", label: "🇩🇪 Germany" },
-  { value: "ma", label: "🇲🇦 Morocco" },
-  { value: "dz", label: "🇩🇿 Algeria" },
-  { value: "tn", label: "🇹🇳 Tunisia" },
-];
+
 
 const MAX_RESULTS_OPTIONS = [10, 20, 30, 50, 100];
 
@@ -188,7 +180,7 @@ export default function ProductsPage() {
   const [site, setSite] = useState("tunisie_parapharmacies");
   const [countryCode, setCountryCode] = useState("tn");
   const [languageCode, setLanguageCode] = useState("fr");
-  const [maxResults, setMaxResults]     = useState(30);
+  const [maxResults, setMaxResults] = useState(30);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchData, setSearchData] = useState<SearchResponse | null>(null);
@@ -290,8 +282,8 @@ export default function ProductsPage() {
                 type="button"
                 onClick={() => setCategory(cat.value)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${category === cat.value
-                    ? `bg-gradient-to-r ${cat.color} text-white border-transparent shadow-md`
-                    : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                  ? `bg-gradient-to-r ${cat.color} text-white border-transparent shadow-md`
+                  : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                   }`}
               >
                 {cat.icon}
@@ -341,8 +333,8 @@ export default function ProductsPage() {
               type="button"
               onClick={() => setShowFilters((v) => !v)}
               className={`flex items-center gap-2 px-4 py-3.5 rounded-2xl border text-sm font-semibold transition-all ${showFilters
-                  ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400"
-                  : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400"
+                : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                 }`}
             >
               <Filter className="size-4" />
@@ -373,7 +365,7 @@ export default function ProductsPage() {
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <div className="pt-4 border-t border-gray-100 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="pt-4 border-t border-gray-100 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {/* Brand filter */}
                   <div className="flex flex-col gap-1.5">
                     <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -404,21 +396,7 @@ export default function ProductsPage() {
                     </select>
                   </div>
 
-                  {/* Country */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <Tag className="size-3" /> {t("userProducts.filters.country")}
-                    </label>
-                    <select
-                      value={countryCode}
-                      onChange={(e) => setCountryCode(e.target.value)}
-                      className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm text-gray-800 dark:text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                    >
-                      {COUNTRY_OPTIONS.map((c) => (
-                        <option key={c.value} value={c.value}>{c.label}</option>
-                      ))}
-                    </select>
-                  </div>
+
 
                   {/* Max Results */}
                   <div className="flex flex-col gap-1.5">
@@ -448,8 +426,8 @@ export default function ProductsPage() {
                       type="button"
                       onClick={() => setLanguageCode(lang)}
                       className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all ${languageCode === lang
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100"
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100"
                         }`}
                     >
                       {lang.toUpperCase()}

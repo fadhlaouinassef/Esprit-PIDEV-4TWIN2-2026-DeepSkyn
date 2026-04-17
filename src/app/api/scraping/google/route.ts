@@ -75,6 +75,10 @@ export async function POST(request: NextRequest) {
     // Build an enriched query
     let parts: string[] = [rawQuery];
 
+    if (body.brand) {
+      parts.push(`"${body.brand.trim()}"`);
+    }
+
     if (body.site) {
       // If we target specific sites, we don't need much enrichment as these sites are already focused
       if (body.site === 'tunisie_parapharmacies') {
@@ -85,7 +89,6 @@ export async function POST(request: NextRequest) {
     } else {
       // General search enrichment
       if (categoryKeyword) parts.push(categoryKeyword);
-      if (body.brand)  parts.push(`brand:"${body.brand.trim()}"`);
       parts.push('product buy ingredients');
     }
 
