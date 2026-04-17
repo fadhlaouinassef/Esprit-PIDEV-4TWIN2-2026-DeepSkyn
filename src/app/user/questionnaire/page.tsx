@@ -5,7 +5,7 @@ import { UserLayout } from "@/app/ui/UserLayout";
 import { Composer, AIModel } from "@/app/components/user/Composer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3, Pencil } from "lucide-react";
+import { Loader2, Award, Zap, Droplets, Sun, Moon, ShieldCheck, AlertTriangle, Sparkles, Star, TrendingUp, ChevronRight, ArrowRight, Upload, Camera, X, History, Lock, Crown, Clock3, Pencil, CircleCheck } from "lucide-react";
 import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { CameraModal } from "@/app/components/user/CameraModal";
@@ -539,6 +539,7 @@ export default function QuestionnairePage() {
     const [isImageStep, setIsImageStep] = useState(false);
     const [isSubmittingImages, setIsSubmittingImages] = useState(false);
     const [imageStepAlert, setImageStepAlert] = useState<string | null>(null);
+    const [topSuccessAlert, setTopSuccessAlert] = useState<string | null>(null);
     const [pendingFinalResult, setPendingFinalResult] = useState<Record<string, unknown> | null>(null);
     const [uploadedSurveyImages, setUploadedSurveyImages] = useState<UploadedSurveyImage[]>([]);
     const [isDraggingImages, setIsDraggingImages] = useState(false);
@@ -565,6 +566,7 @@ export default function QuestionnairePage() {
     });
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     const imageInputRef = useRef<HTMLInputElement>(null);
+    const topSuccessAlertTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const questionnaireContainerRef = useRef<HTMLDivElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -577,6 +579,14 @@ export default function QuestionnairePage() {
         : locale.startsWith("ar")
             ? "التحليل قيد التقدم. يرجى الانتظار..."
             : "Analysis in progress. Please wait...";
+
+    useEffect(() => {
+        return () => {
+            if (topSuccessAlertTimerRef.current) {
+                clearTimeout(topSuccessAlertTimerRef.current);
+            }
+        };
+    }, []);
 
     const getImageValidationToastMessage = (code?: string, fallback?: string): string => {
         switch (code) {
@@ -1136,7 +1146,16 @@ export default function QuestionnairePage() {
                 return;
             }
             setUploadedSurveyImages((prev) => [...prev, parsed].slice(0, maxSurveyImages));
-            toast.success(t('toasts.photoCaptured'));
+            const successMessage = t('toasts.photoCaptured');
+            setTopSuccessAlert(successMessage);
+
+            if (topSuccessAlertTimerRef.current) {
+                clearTimeout(topSuccessAlertTimerRef.current);
+            }
+
+            topSuccessAlertTimerRef.current = setTimeout(() => {
+                setTopSuccessAlert(null);
+            }, 2600);
         }
     };
 
@@ -1416,6 +1435,14 @@ export default function QuestionnairePage() {
 
     return (
         <UserLayout userName={session?.user?.name || t('userDefaultName')} userPhoto={session?.user?.image || "/avatar.png"}>
+            {topSuccessAlert && (
+                <div className="fixed top-4 left-1/2 -translate-x-1/2 z-1000000 w-[min(92vw,640px)] rounded-2xl border border-emerald-300 bg-emerald-500 text-white shadow-2xl px-5 py-4">
+                    <div className="flex items-center gap-3">
+                        <CircleCheck className="size-5 shrink-0" />
+                        <p className="text-base font-semibold">{topSuccessAlert}</p>
+                    </div>
+                </div>
+            )}
             <div
                 ref={questionnaireContainerRef}
                 className="mx-auto w-full max-w-[800px] flex flex-col relative space-y-6"

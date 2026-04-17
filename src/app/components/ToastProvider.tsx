@@ -1,6 +1,6 @@
 'use client';
 
-import { Toaster, toast } from 'sonner';
+import { Toaster } from 'sonner';
 import { useEffect } from 'react';
 
 export function ToastProvider() {
@@ -10,7 +10,7 @@ export function ToastProvider() {
 
   return (
     <Toaster
-      position="top-right"
+      position="top-center"
       richColors
       closeButton
       expand={true}
