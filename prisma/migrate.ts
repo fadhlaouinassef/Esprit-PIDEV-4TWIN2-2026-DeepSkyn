@@ -157,6 +157,11 @@ async function migrate() {
       );
     `);
 
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Subscription"
+      ADD COLUMN IF NOT EXISTS "amount" DOUBLE PRECISION;
+    `);
+
     // Table ChatbotMessage
     await prisma.$executeRawUnsafe(`
       CREATE TABLE IF NOT EXISTS "ChatbotMessage" (

@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import prisma from "@/lib/prisma";
+import { ensureSubscriptionAmountColumn } from "@/lib/subscription-schema";
 import { stripe, PLANS, type PlanKey } from "@/lib/stripe";
 
 type SyncResult = {
@@ -111,6 +112,8 @@ export async function syncSubscriptionFromCheckoutSession(
   const amount = getAmountFromSession(session, planKey);
   const label = billingCycle === "yearly" ? "Premium Yearly" : "Premium Monthly";
 
+  await ensureSubscriptionAmountColumn();
+
   const action = await prisma.$transaction(async (tx) => {
     const activeSubscription = await tx.subscription.findFirst({
       where: {
@@ -118,6 +121,9 @@ export async function syncSubscriptionFromCheckoutSession(
         date_fin: { gte: new Date() },
       },
       orderBy: { date_fin: "desc" },
+      select: {
+        id: true,
+      },
     });
 
     if (activeSubscription) {

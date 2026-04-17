@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { ensureSubscriptionAmountColumn } from '@/lib/subscription-schema';
 
 const isMissingAmountFieldError = (error: unknown): boolean => {
     const message = error instanceof Error ? error.message : String(error);
@@ -9,6 +10,8 @@ const isMissingAmountFieldError = (error: unknown): boolean => {
 
 export async function GET(request: NextRequest) {
     try {
+        await ensureSubscriptionAmountColumn();
+
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');
 
@@ -20,6 +23,13 @@ export async function GET(request: NextRequest) {
         const subscription = await prisma.subscription.findFirst({
             where: { user_id: Number(userId) },
             orderBy: { date_fin: 'desc' },
+            select: {
+                id: true,
+                plan: true,
+                date_debut: true,
+                date_fin: true,
+                amount: true,
+            },
         });
 
         if (!subscription) {
