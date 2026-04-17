@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { CameraModal } from "@/app/components/user/CameraModal";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface Question {
     id: number;
@@ -166,6 +166,7 @@ const parseN8nResult = (raw: unknown): N8nResult | null => {
 
 export default function QuestionnairePage() {
     const t = useTranslations("userQuestionnaire");
+    const locale = useLocale();
     const { data: session, status: sessionStatus } = useSession();
     const userId = session?.user?.id ? parseInt(session.user.id) : null;
 
@@ -182,6 +183,10 @@ export default function QuestionnairePage() {
     const [latestProgressAnalysisId, setLatestProgressAnalysisId] = useState<number | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
     const [answersSoFar, setAnswersSoFar] = useState<{ questionId: number; answer: string }[]>([]);
+    const [questionFlow, setQuestionFlow] = useState<Question[]>([]);
+    const [selectedChoiceOptionIds, setSelectedChoiceOptionIds] = useState<string[]>([]);
+    const [editingAnswerIndex, setEditingAnswerIndex] = useState<number | null>(null);
+    const [returnQuestionAfterEdit, setReturnQuestionAfterEdit] = useState<Question | null>(null);
     const [quizId, setQuizId] = useState<number>(1);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [speakingIndex, setSpeakingIndex] = useState<number | string | null>(null);
@@ -201,7 +206,34 @@ export default function QuestionnairePage() {
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const analysisRef = useRef<HTMLDivElement>(null);
+    const questionFlowRef = useRef<Question[]>([]);
     const maxSurveyImages = Math.max(1, analysisAccess.maxSurveyImages || 1);
+    const n8nAnalyzingMessage = locale.startsWith("fr")
+        ? "Analyse en cours via n8n. Veuillez patienter..."
+        : locale.startsWith("ar")
+            ? "جاري التحليل عبر n8n. يرجى الانتظار..."
+            : "Analysis in progress via n8n. Please wait...";
+
+    const rebuildMessages = useCallback(
+        (answers: { questionId: number; answer: string }[], flow: Question[], nextAssistantMessage?: string) => {
+            const rebuilt: { role: "assistant" | "user"; content: string; image?: string }[] = [];
+
+            answers.forEach((answer, index) => {
+                const question = flow[index];
+                if (question?.text) {
+                    rebuilt.push({ role: "assistant", content: question.text });
+                }
+                rebuilt.push({ role: "user", content: answer.answer });
+            });
+
+            if (nextAssistantMessage) {
+                rebuilt.push({ role: "assistant", content: nextAssistantMessage });
+            }
+
+            return rebuilt;
+        },
+        []
+    );
 
     useEffect(() => {
         if (sessionStatus === "loading" || !userId) return;
@@ -457,6 +489,34 @@ export default function QuestionnairePage() {
         }
     }, [analysisResult]);
 
+    useEffect(() => {
+        if (!currentQuestion || currentQuestion.type !== "choice") {
+            setSelectedChoiceOptionIds([]);
+            return;
+        }
+
+        const existingAnswer = answersSoFar.find((item) => item.questionId === currentQuestion.id)?.answer;
+        if (!existingAnswer || !currentQuestion.options?.length) {
+            setSelectedChoiceOptionIds([]);
+            return;
+        }
+
+        const normalizedTokens = existingAnswer
+            .split(',')
+            .map((token) => token.trim().toLowerCase())
+            .filter(Boolean);
+
+        const matchedIds = currentQuestion.options
+            .filter((opt) => normalizedTokens.includes(opt.text.trim().toLowerCase()))
+            .map((opt) => opt.id);
+
+        setSelectedChoiceOptionIds(matchedIds);
+    }, [currentQuestion, answersSoFar]);
+
+    useEffect(() => {
+        questionFlowRef.current = questionFlow;
+    }, [questionFlow]);
+
     const fetchNextStep = async (currentAnswers: { questionId: number; answer: string }[], lastAnswerData?: { questionId: number; answer: string }) => {
         setIsStreaming(true);
         try {
@@ -512,27 +572,26 @@ export default function QuestionnairePage() {
                 const nextQ = result.nextQuestion || { text: result.text, id: Date.now(), type: 'TEXT' };
                 const normalizedQuestionId = Number(nextQ.id || Date.now());
                 const normalizedQuestionText = String(nextQ.text || 'Please continue.');
-                setCurrentQuestion({
+                const normalizedQuestion: Question = {
                     id: normalizedQuestionId,
                     text: normalizedQuestionText,
                     type: normalizeQuestionType(nextQ.type),
                     options: normalizeOptions(nextQ.options),
                     quizId: nextQ.quizId
+                };
+                setCurrentQuestion({
+                    ...normalizedQuestion,
                 });
+                const nextFlow = [...questionFlowRef.current.slice(0, currentAnswers.length), normalizedQuestion];
+                setQuestionFlow(nextFlow);
                 if (nextQ.quizId) setQuizId(nextQ.quizId);
-                setMessages(prev => [...prev, { role: "assistant", content: normalizedQuestionText }]);
+                setMessages(rebuildMessages(currentAnswers, nextFlow, normalizedQuestionText));
             } else if (result && result.status === "complete") {
                 setPendingFinalResult(result as Record<string, unknown>);
                 setIsImageStep(true);
                 setCurrentQuestion(null);
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: "assistant",
-                        content:
-                            `Quiz complete. Add up to ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} (drag and drop, gallery, or camera) to enrich the Gemini analysis.`,
-                    },
-                ]);
+                const completionMessage = `Quiz complete. Add up to ${maxSurveyImages} image${maxSurveyImages > 1 ? 's' : ''} (drag and drop, gallery, or camera) to enrich the Gemini analysis.`;
+                setMessages(rebuildMessages(currentAnswers, questionFlowRef.current, completionMessage));
             } else {
                 console.warn("⚠️ Unexpected n8n format or empty response", result);
                 if (messages.length === 0) {
@@ -759,6 +818,28 @@ export default function QuestionnairePage() {
         const userMsg = { role: "user" as const, content, image: imageData };
         setMessages(prev => [...prev, userMsg]);
 
+        if (editingAnswerIndex !== null) {
+            const updatedAnswers = answersSoFar.map((item, idx) =>
+                idx === editingAnswerIndex
+                    ? { ...item, answer: content }
+                    : item
+            );
+
+            const nextQuestion = returnQuestionAfterEdit;
+            setAnswersSoFar(updatedAnswers);
+            setEditingAnswerIndex(null);
+            setReturnQuestionAfterEdit(null);
+
+            if (nextQuestion) {
+                setCurrentQuestion(nextQuestion);
+                setMessages(rebuildMessages(updatedAnswers, questionFlow, nextQuestion.text));
+            } else {
+                setMessages(rebuildMessages(updatedAnswers, questionFlow));
+            }
+
+            return;
+        }
+
         const newAnswer = { questionId: currentQuestion.id, answer: content };
         const updatedAnswers = [...answersSoFar, newAnswer];
 
@@ -769,10 +850,57 @@ export default function QuestionnairePage() {
         fetchNextStep(updatedAnswers, newAnswer);
     };
 
+    const handleChoiceToggle = (optionId: string) => {
+        setSelectedChoiceOptionIds((prev) =>
+            prev.includes(optionId)
+                ? prev.filter((id) => id !== optionId)
+                : [...prev, optionId]
+        );
+    };
+
+    const submitChoiceSelection = () => {
+        if (!currentQuestion || currentQuestion.type !== "choice") return;
+
+        const selectedOptions = (currentQuestion.options || []).filter((opt) => selectedChoiceOptionIds.includes(opt.id));
+        if (selectedOptions.length === 0) {
+            toast.error("Choisissez au moins une reponse.");
+            return;
+        }
+
+        const formattedAnswer = selectedOptions.map((opt) => opt.text).join(", ");
+        handleUserResponse(formattedAnswer);
+    };
+
+    const handleGoBackToPreviousQuestion = () => {
+        if (isStreaming || isAnalyzing || isImageStep || answersSoFar.length === 0) return;
+
+        const previousQuestionIndex = answersSoFar.length - 1;
+        const previousQuestion = questionFlow[previousQuestionIndex];
+        if (!previousQuestion) return;
+
+        const truncatedAnswers = answersSoFar.slice(0, previousQuestionIndex);
+        setAnswersSoFar(truncatedAnswers);
+        setCurrentQuestion(previousQuestion);
+        setMessages(rebuildMessages(truncatedAnswers, questionFlow, previousQuestion.text));
+    };
+
+    const handleEditAnswerAt = (answerIndex: number) => {
+        if (isStreaming || isAnalyzing || isImageStep) return;
+        if (answerIndex < 0 || answerIndex >= answersSoFar.length) return;
+
+        const targetQuestion = questionFlow[answerIndex];
+        if (!targetQuestion) return;
+
+        const pendingQuestion = questionFlow[answersSoFar.length] || currentQuestion;
+        setEditingAnswerIndex(answerIndex);
+        setReturnQuestionAfterEdit(pendingQuestion || null);
+        setCurrentQuestion(targetQuestion);
+        setMessages(rebuildMessages(answersSoFar, questionFlow, `${targetQuestion.text} (mode modification)`));
+    };
+
     return (
         <UserLayout userName={session?.user?.name || t('userDefaultName')} userPhoto={session?.user?.image || "/avatar.png"}>
-            <div className={`mx-auto w-full max-w-[800px] flex flex-col relative space-y-6 ${analysisResult ? "" : "h-[calc(100vh-180px)]"
-                }`}>
+            <div className="mx-auto w-full max-w-[800px] flex flex-col relative space-y-6">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 text-sm text-muted-foreground/60">
                     <span>{t('breadcrumb.user')}</span>
@@ -862,7 +990,7 @@ export default function QuestionnairePage() {
                     ref={scrollRef}
                     className={`space-y-6 pr-2 ${analysisResult
                         ? "" // let <main> scroll naturally with mouse wheel
-                        : "flex-1 overflow-y-auto pb-64 custom-scrollbar scroll-smooth" // chat mode: inner scroll
+                        : "overflow-y-auto max-h-[60vh] pb-2 custom-scrollbar scroll-smooth" // chat mode: keep answers near the question
                         }`}
                 >
                     <AnimatePresence initial={false}>
@@ -1184,8 +1312,8 @@ export default function QuestionnairePage() {
 
                 {/* Interaction Overlay (at bottom) */}
                 {!analysisResult && !isAnalyzing && analysisAccess.canCreateAnalysis && (
-                    <div className="absolute bottom-0 left-0 right-0 py-10 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent dark:from-[#0b0b0f] dark:via-[#0b0b0f]/95 z-20 pointer-events-none">
-                        <div className="max-w-2xl mx-auto flex flex-col items-center gap-6 pointer-events-none">
+                    <div className="mt-2 pb-6">
+                        <div className="max-w-2xl mx-auto flex flex-col items-center gap-6">
                             <AnimatePresence mode="wait">
                                 {isImageStep && (
                                     <motion.div
@@ -1193,9 +1321,17 @@ export default function QuestionnairePage() {
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 20 }}
-                                        className="w-full pointer-events-auto"
+                                        className="w-full"
                                     >
                                         <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-xl space-y-4">
+                                            {isSubmittingImages && (
+                                                <div className="rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 flex items-center gap-3">
+                                                    <Loader2 className="size-4 animate-spin text-primary" />
+                                                    <p className="text-xs font-semibold text-primary">
+                                                        {n8nAnalyzingMessage}
+                                                    </p>
+                                                </div>
+                                            )}
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
                                                     <h4 className="text-sm font-black text-gray-900 dark:text-white">{t('images.title')}</h4>
@@ -1308,18 +1444,61 @@ export default function QuestionnairePage() {
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 20 }}
-                                        className="pointer-events-auto flex flex-wrap justify-center gap-3"
+                                        className="w-full flex flex-col items-center gap-4"
                                     >
-                                        {currentQuestion.options?.map((opt) => (
+                                        {answersSoFar.length > 0 && (
+                                            <div className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-3">
+                                                <p className="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2">
+                                                    Modifier une reponse
+                                                </p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {answersSoFar.map((ans, index) => (
+                                                        <button
+                                                            key={`${index}-${ans.questionId}`}
+                                                            type="button"
+                                                            onClick={() => handleEditAnswerAt(index)}
+                                                            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-[11px] font-semibold text-gray-700 dark:text-gray-200"
+                                                        >
+                                                            Q{index + 1}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[36vh] overflow-y-auto pr-1">
+                                            {currentQuestion.options?.map((opt) => {
+                                                const selected = selectedChoiceOptionIds.includes(opt.id);
+
+                                                return (
+                                                    <button
+                                                        key={opt.id}
+                                                        onClick={() => handleChoiceToggle(opt.id)}
+                                                        className={`px-5 py-3 rounded-xl border-2 text-sm font-semibold transition-all shadow-sm active:scale-95 flex items-center gap-2 group text-left ${selected
+                                                            ? "bg-primary text-white border-primary shadow-primary/20"
+                                                            : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white hover:border-primary hover:text-primary"
+                                                            }`}
+                                                    >
+                                                        <div className={`size-2.5 rounded-full transition-colors ${selected
+                                                            ? "bg-white"
+                                                            : "bg-gray-200 dark:bg-gray-700 group-hover:bg-primary"
+                                                            }`}></div>
+                                                        <span className="leading-snug">{opt.text}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <div className="flex flex-wrap justify-center gap-3">
                                             <button
-                                                key={opt.id}
-                                                onClick={() => handleUserResponse(opt.text)}
-                                                className="px-8 py-4 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white font-bold hover:border-primary hover:text-primary hover:shadow-2xl transition-all shadow-xl active:scale-95 flex items-center gap-3 group"
+                                                type="button"
+                                                onClick={submitChoiceSelection}
+                                                disabled={selectedChoiceOptionIds.length === 0}
+                                                className="px-6 py-3 rounded-xl bg-primary text-white text-xs font-bold disabled:opacity-60"
                                             >
-                                                <div className="size-2.5 bg-gray-200 dark:bg-gray-700 rounded-full group-hover:bg-primary transition-colors"></div>
-                                                {opt.text}
+                                                {editingAnswerIndex !== null ? "Sauvegarder modification" : "Valider mes choix"}
                                             </button>
-                                        ))}
+                                        </div>
                                     </motion.div>
                                 )}
 
@@ -1330,8 +1509,34 @@ export default function QuestionnairePage() {
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 20 }}
-                                        className="w-full pointer-events-auto"
+                                        className="w-full space-y-3"
                                     >
+                                        {answersSoFar.length > 0 && (
+                                            <div className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 p-3">
+                                                <p className="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2">
+                                                    Modifier une reponse
+                                                </p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {answersSoFar.map((ans, index) => (
+                                                        <button
+                                                            key={`${index}-${ans.questionId}`}
+                                                            type="button"
+                                                            onClick={() => handleEditAnswerAt(index)}
+                                                            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-[11px] font-semibold text-gray-700 dark:text-gray-200"
+                                                        >
+                                                            Q{index + 1}
+                                                        </button>
+                                                    ))}
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleGoBackToPreviousQuestion}
+                                                        className="px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/5 text-[11px] font-semibold text-primary"
+                                                    >
+                                                        Derniere question
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
                                         <Composer
                                             onSend={handleUserResponse}
                                             onStop={() => setIsStreaming(false)}
