@@ -27,7 +27,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { analyzeUserTrendWithTensorflow, type TrendInsight } from "@/modele/analysisTrendModel";
 
 // --- COMPONENTS ---
 
@@ -455,9 +456,12 @@ const AnalysisDetailModal = ({ analysis, onClose }: { analysis: any; onClose: ()
 
 export default function AnalyzesPage() {
     const t = useTranslations("userAnalyzes");
+    const locale = useLocale();
     const [analyses, setAnalyses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
+    const [trendInsight, setTrendInsight] = useState<TrendInsight | null>(null);
+    const [trendLoading, setTrendLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
@@ -479,6 +483,88 @@ export default function AnalyzesPage() {
         }
         fetchAnalyses();
     }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const computeTrend = async () => {
+            if (!analyses.length || analyses.length < 2) {
+                setTrendInsight(null);
+                return;
+            }
+
+            setTrendLoading(true);
+            try {
+                const insight = await analyzeUserTrendWithTensorflow(analyses, locale);
+                if (!cancelled) {
+                    setTrendInsight(insight);
+                }
+            } catch (error) {
+                console.error("Failed to compute TensorFlow trend insight:", error);
+                if (!cancelled) {
+                    setTrendInsight(null);
+                }
+            } finally {
+                if (!cancelled) {
+                    setTrendLoading(false);
+                }
+            }
+        };
+
+        computeTrend();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [analyses, locale]);
+
+    const trendPanelText = locale.startsWith("fr")
+        ? {
+            title: "Intelligence de tendance TensorFlow",
+            confidence: "Confiance du modele",
+            keyFactors: "Facteurs cles",
+            nextSteps: "Actions recommandees",
+            loading: "Analyse de la tendance en cours...",
+        }
+        : locale.startsWith("ar")
+            ? {
+                title: "تحليل الاتجاه عبر TensorFlow",
+                confidence: "موثوقية النموذج",
+                keyFactors: "العوامل الرئيسية",
+                nextSteps: "الخطوات المقترحة",
+                loading: "جار تحليل الاتجاه...",
+            }
+            : {
+                title: "TensorFlow Trend Intelligence",
+                confidence: "Model confidence",
+                keyFactors: "Key factors",
+                nextSteps: "What to do next",
+                loading: "Analyzing your trend...",
+            };
+
+    const pdfTrendText = locale.startsWith("fr")
+        ? {
+            sectionTitle: "Explication de tendance",
+            summary: "Resume",
+            why: "Cause probable",
+            next: "Actions conseillees",
+            noData: "Pas assez de donnees pour expliquer la tendance.",
+        }
+        : locale.startsWith("ar")
+            ? {
+                sectionTitle: "شرح الاتجاه",
+                summary: "الملخص",
+                why: "السبب المحتمل",
+                next: "الإجراءات المقترحة",
+                noData: "لا توجد بيانات كافية لشرح الاتجاه.",
+            }
+            : {
+                sectionTitle: "Trend explanation",
+                summary: "Summary",
+                why: "Likely reason",
+                next: "Recommended actions",
+                noData: "Not enough data to explain the trend.",
+            };
 
     const stopSpeaking = () => {
         if (typeof window !== 'undefined') {
@@ -637,7 +723,6 @@ export default function AnalyzesPage() {
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
         const margin = 24;
-        const lineHeight = 18;
 
         const toDataUrl = async (url: string): Promise<string> => {
             const res = await fetch(url);
@@ -662,89 +747,289 @@ export default function AnalyzesPage() {
         doc.text(t("export.pdfTitle"), margin + 42, margin + 14);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
-        doc.text(`${t("export.generatedOn", { date: stamp })} • ${filteredAnalyses.length} ${t("export.records")}`, margin + 42, margin + 30);
-
-        const columns = [
-            t("export.columns.date"),
-            t("export.columns.score"),
-            t("export.columns.skinType"),
-            t("export.columns.status"),
-            t("export.columns.hydration"),
-            t("export.columns.oilProduction"),
-            t("export.columns.sensitivity"),
-            t("export.columns.concerns"),
-        ];
-
-        const colWidths = [98, 48, 62, 58, 52, 58, 58, pageWidth - margin * 2 - (98 + 48 + 62 + 58 + 52 + 58 + 58)];
-        const maxChars = [16, 7, 10, 10, 8, 8, 10, 28];
+        doc.text(`${t("export.generatedOn", { date: stamp })} • ${analyses.length} ${t("export.records")}`, margin + 42, margin + 30);
 
         let y = margin + 48;
 
-        const drawHeader = () => {
-            let x = margin;
-            doc.setDrawColor(229, 231, 235);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(8);
-            columns.forEach((col, idx) => {
-                doc.setFillColor(239, 246, 255);
-                doc.rect(x, y, colWidths[idx], lineHeight + 4, "FD");
-                doc.text(col, x + 4, y + 13);
-                x += colWidths[idx];
-            });
-            y += lineHeight + 4;
-        };
-
-        drawHeader();
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-
-        const compactDate = (raw: string) => {
-            const parsed = new Date(raw);
-            if (Number.isNaN(parsed.getTime())) return raw;
-            const date = parsed.toLocaleDateString();
-            const hh = String(parsed.getHours()).padStart(2, "0");
-            const mm = String(parsed.getMinutes()).padStart(2, "0");
-            return `${date} ${hh}:${mm}`;
-        };
-
-        for (const analysis of filteredAnalyses) {
-            const concerns = Array.isArray(analysis.concerns) ? analysis.concerns.join(", ") : "-";
-            const row = [
-                compactDate(String(analysis.date || "-")),
-                `${analysis.score ?? "-"}/100`,
-                String(analysis.skinType || "-"),
-                String(analysis.status || "-"),
-                `${analysis.hydration ?? "-"}%`,
-                `${analysis.oilProduction ?? "-"}%`,
-                String(analysis.sensitivity || "-"),
-                concerns,
-            ];
-
-            const rowHeight = lineHeight;
-            if (y + rowHeight > pageHeight - margin) {
-                doc.addPage();
-                y = margin;
-                drawHeader();
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
+        const allAnalyses = [...analyses];
+        let exportInsight = trendInsight;
+        if (!exportInsight && allAnalyses.length >= 3) {
+            try {
+                exportInsight = await analyzeUserTrendWithTensorflow(allAnalyses, locale);
+            } catch (error) {
+                console.error("Failed to compute trend insight during PDF export:", error);
             }
-
-            let x = margin;
-            doc.setDrawColor(229, 231, 235);
-
-            row.forEach((cell, idx) => {
-                doc.rect(x, y, colWidths[idx], rowHeight, "S");
-                const max = maxChars[idx] ?? 16;
-                const truncated = cell.length > max ? `${cell.slice(0, max - 1)}...` : cell;
-                doc.text(truncated, x + 4, y + 12);
-                x += colWidths[idx];
-            });
-
-            y += rowHeight;
         }
 
-        const filename = `deepskyn-analyses-${new Date().toISOString().slice(0, 10)}.pdf`;
+        const latest = allAnalyses[0];
+        const oldest = allAnalyses[allAnalyses.length - 1];
+        const avgScore = allAnalyses.length
+            ? allAnalyses.reduce((sum, item) => sum + Number(item.score || 0), 0) / allAnalyses.length
+            : 0;
+        const bestAnalysis = allAnalyses.length
+            ? allAnalyses.reduce((best, item) => (Number(item.score || 0) > Number(best.score || 0) ? item : best), allAnalyses[0])
+            : null;
+        const worstAnalysis = allAnalyses.length
+            ? allAnalyses.reduce((worst, item) => (Number(item.score || 0) < Number(worst.score || 0) ? item : worst), allAnalyses[0])
+            : null;
+
+        const statusCounts = allAnalyses.reduce(
+            (acc, item) => {
+                const s = String(item.status || "Stable");
+                if (s === "Improved") acc.improved += 1;
+                else if (s === "Worse") acc.worse += 1;
+                else acc.stable += 1;
+                return acc;
+            },
+            { improved: 0, worse: 0, stable: 0 }
+        );
+
+        const reportLabels = locale.startsWith("fr")
+            ? {
+                title: "Rapport dynamique global",
+                overview: "Vue d'ensemble",
+                progression: "Progression",
+                health: "Lecture clinique",
+                actions: "Actions prioritaires",
+                empty: "Aucune analyse disponible pour generer le rapport.",
+                analyses: "analyses",
+                average: "Score moyen",
+                latest: "Dernier score",
+                first: "Premier score",
+                best: "Meilleur resultat",
+                worst: "Resultat le plus faible",
+                improved: "cycles d'amelioration",
+                stable: "cycles stables",
+                worse: "cycles de recul",
+            }
+            : locale.startsWith("ar")
+                ? {
+                    title: "تقرير ديناميكي شامل",
+                    overview: "نظرة عامة",
+                    progression: "التطور",
+                    health: "قراءة سريرية",
+                    actions: "إجراءات ذات أولوية",
+                    empty: "لا توجد تحاليل كافية لإنشاء التقرير.",
+                    analyses: "تحليلات",
+                    average: "المعدل العام",
+                    latest: "آخر نتيجة",
+                    first: "أول نتيجة",
+                    best: "أفضل نتيجة",
+                    worst: "أضعف نتيجة",
+                    improved: "دورات تحسن",
+                    stable: "دورات مستقرة",
+                    worse: "دورات تراجع",
+                }
+                : {
+                    title: "Dynamic global report",
+                    overview: "Overview",
+                    progression: "Progression",
+                    health: "Clinical reading",
+                    actions: "Priority actions",
+                    empty: "No analyses available to generate the report.",
+                    analyses: "analyses",
+                    average: "Average score",
+                    latest: "Latest score",
+                    first: "First score",
+                    best: "Best result",
+                    worst: "Lowest result",
+                    improved: "improvement cycles",
+                    stable: "stable cycles",
+                    worse: "decline cycles",
+                };
+
+        const trendSummary = exportInsight?.clarity?.headline || exportInsight?.summary || pdfTrendText.noData;
+        const trendWhy = exportInsight?.clarity?.plainWhy || exportInsight?.why || "";
+        const trendActions = (exportInsight?.recommendations || []).slice(0, 2).join(" ");
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        const boxX = margin;
+        const boxW = pageWidth - margin * 2;
+        const textW = boxW - 16;
+
+        const overviewText = allAnalyses.length
+            ? `${allAnalyses.length} ${reportLabels.analyses}. ${reportLabels.average}: ${avgScore.toFixed(1)}/100. ${reportLabels.latest}: ${latest?.score ?? "-"}/100. ${reportLabels.first}: ${oldest?.score ?? "-"}/100.`
+            : reportLabels.empty;
+
+        const riskLabel = exportInsight?.clarity?.riskLevel
+            ? locale.startsWith("fr")
+                ? exportInsight.clarity.riskLevel === "high"
+                    ? "Risque: eleve"
+                    : exportInsight.clarity.riskLevel === "medium"
+                        ? "Risque: moyen"
+                        : "Risque: faible"
+                : locale.startsWith("ar")
+                    ? exportInsight.clarity.riskLevel === "high"
+                        ? "مستوى الخطر: مرتفع"
+                        : exportInsight.clarity.riskLevel === "medium"
+                            ? "مستوى الخطر: متوسط"
+                            : "مستوى الخطر: منخفض"
+                    : exportInsight.clarity.riskLevel === "high"
+                        ? "Risk level: high"
+                        : exportInsight.clarity.riskLevel === "medium"
+                            ? "Risk level: medium"
+                            : "Risk level: low"
+            : "";
+
+        const confidenceLabel = exportInsight?.clarity?.confidenceLabel || "";
+
+        const progressionText = allAnalyses.length
+            ? `${reportLabels.best}: ${bestAnalysis?.score ?? "-"}/100 (${bestAnalysis?.date ?? "-"}). ${reportLabels.worst}: ${worstAnalysis?.score ?? "-"}/100 (${worstAnalysis?.date ?? "-"}). ${statusCounts.improved} ${reportLabels.improved}, ${statusCounts.stable} ${reportLabels.stable}, ${statusCounts.worse} ${reportLabels.worse}.`
+            : "";
+
+        const summaryLines = doc.splitTextToSize(`${reportLabels.overview}: ${overviewText}`, textW);
+        const progressLines = progressionText ? doc.splitTextToSize(`${reportLabels.progression}: ${progressionText}`, textW) : [];
+        const trendLines = doc.splitTextToSize(`${reportLabels.health}: ${trendSummary} ${trendWhy} ${riskLabel} ${confidenceLabel}`.trim(), textW);
+        const thisWeekActions = (exportInsight?.clarity?.thisWeekPlan || []).join(" ");
+        const actionLines = (thisWeekActions || trendActions)
+            ? doc.splitTextToSize(`${reportLabels.actions}: ${thisWeekActions || trendActions}`, textW)
+            : [];
+
+        const lineGap = 11;
+        const boxH = 28 + (summaryLines.length + progressLines.length + trendLines.length + actionLines.length) * lineGap + 12;
+
+        doc.setDrawColor(203, 213, 225);
+        doc.setFillColor(239, 246, 255);
+        doc.roundedRect(boxX, y, boxW, boxH, 8, 8, "FD");
+
+        doc.setTextColor(8, 47, 73);
+        doc.text(reportLabels.title, boxX + 8, y + 16);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+
+        let textY = y + 30;
+        [...summaryLines, ...progressLines, ...trendLines, ...actionLines].forEach((line) => {
+            doc.text(line, boxX + 8, textY);
+            textY += lineGap;
+        });
+
+        y += boxH + 8;
+        doc.setTextColor(0, 0, 0);
+
+        const sectionLabels = locale.startsWith("fr")
+            ? {
+                before: "1) Avant",
+                now: "2) Maintenant",
+                why: "3) Pourquoi",
+                actions: "4) Prochaines actions",
+                noReason: "Aucune cause forte detectee sur la derniere transition.",
+                firstScore: "Score de depart",
+                lastScore: "Score actuel",
+                avg: "Moyenne",
+                confidence: "Niveau de confiance",
+                risk: "Niveau de risque",
+                evidence: "Preuves observees",
+            }
+            : locale.startsWith("ar")
+                ? {
+                    before: "1) قبل",
+                    now: "2) الآن",
+                    why: "3) لماذا",
+                    actions: "4) الخطوات القادمة",
+                    noReason: "لا توجد أسباب قوية واضحة في آخر انتقال.",
+                    firstScore: "النتيجة في البداية",
+                    lastScore: "النتيجة الحالية",
+                    avg: "المتوسط",
+                    confidence: "مستوى الثقة",
+                    risk: "مستوى الخطر",
+                    evidence: "الأدلة المرصودة",
+                }
+                : {
+                    before: "1) Before",
+                    now: "2) Now",
+                    why: "3) Why",
+                    actions: "4) Next actions",
+                    noReason: "No strong reason detected in the latest transition.",
+                    firstScore: "Starting score",
+                    lastScore: "Current score",
+                    avg: "Average",
+                    confidence: "Confidence",
+                    risk: "Risk level",
+                    evidence: "Observed evidence",
+                };
+
+        const ensureSpace = (requiredHeight: number) => {
+            if (y + requiredHeight <= pageHeight - margin) return;
+            doc.addPage();
+            y = margin;
+        };
+
+        const drawSectionTitle = (title: string) => {
+            ensureSpace(24);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor(8, 47, 73);
+            doc.text(title, margin, y + 12);
+            y += 18;
+            doc.setDrawColor(226, 232, 240);
+            doc.line(margin, y, pageWidth - margin, y);
+            y += 8;
+            doc.setTextColor(0, 0, 0);
+        };
+
+        const drawParagraph = (text: string) => {
+            const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
+            ensureSpace(lines.length * 11 + 4);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            lines.forEach((line: string) => {
+                doc.text(line, margin, y + 10);
+                y += 11;
+            });
+            y += 3;
+        };
+
+        const drawBullet = (text: string) => {
+            const lines = doc.splitTextToSize(text, pageWidth - margin * 2 - 14);
+            ensureSpace(lines.length * 11 + 4);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text("•", margin + 2, y + 10);
+            lines.forEach((line: string, idx: number) => {
+                doc.text(line, margin + 12, y + 10 + idx * 11);
+            });
+            y += lines.length * 11 + 2;
+        };
+
+        drawSectionTitle(sectionLabels.before);
+        drawParagraph(`${sectionLabels.firstScore}: ${oldest?.score ?? "-"}/100 • ${sectionLabels.avg}: ${avgScore.toFixed(1)}/100`);
+
+        drawSectionTitle(sectionLabels.now);
+        drawParagraph(`${sectionLabels.lastScore}: ${latest?.score ?? "-"}/100 • ${sectionLabels.risk}: ${riskLabel || "-"} • ${sectionLabels.confidence}: ${confidenceLabel || "-"}`);
+        drawParagraph(trendSummary);
+
+        drawSectionTitle(sectionLabels.why);
+        drawParagraph(trendWhy || sectionLabels.noReason);
+        const importantDrivers = [
+            ...(exportInsight?.declineDrivers || []).slice(0, 2),
+            ...(exportInsight?.improvementDrivers || []).slice(0, 2),
+        ].slice(0, 3);
+
+        if (importantDrivers.length) {
+            drawParagraph(sectionLabels.evidence);
+            importantDrivers.forEach((driver) => {
+                drawBullet(`${driver.short} ${driver.mechanism} ${driver.evidence}`);
+            });
+        }
+
+        const toSensitivityValue = (input: unknown): number => {
+            const value = String(input || "").toLowerCase();
+            if (value.includes("low")) return 20;
+            if (value.includes("medium")) return 55;
+            if (value.includes("high")) return 85;
+            const parsed = Number(input);
+            return Number.isFinite(parsed) ? parsed : 55;
+        };
+
+        drawSectionTitle(sectionLabels.actions);
+        if ((exportInsight?.recommendations || []).length === 0) {
+            drawBullet(trendActions || pdfTrendText.noData);
+        } else {
+            (exportInsight?.recommendations || []).forEach((rec, idx) => drawBullet(`${idx + 1}) ${rec}`));
+        }
+
+        const filename = `deepskyn-dynamic-report-${new Date().toISOString().slice(0, 10)}.pdf`;
         doc.save(filename);
     };
 
@@ -825,24 +1110,75 @@ export default function AnalyzesPage() {
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#156d95]"></div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredAnalyses.map((analysis, index) => {
-                            let label = t("card.labels.baseline");
-                            if (index === 0) label = t("card.labels.latest");
-                            else if (index === 1) label = t("card.labels.previous");
-                            else if (index === filteredAnalyses.length - 1 && filteredAnalyses.length > 2) label = t("card.labels.baseline");
-                            else label = t("card.labels.past");
+                    <>
+                        {(trendLoading || trendInsight) && (
+                            <div className="mb-8 rounded-[28px] border border-[#156d95]/20 bg-gradient-to-br from-[#e8f5fb] to-white dark:from-[#123543]/40 dark:to-gray-900 p-6 shadow-sm">
+                                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                                    <div>
+                                        <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#156d95]">{trendPanelText.title}</span>
+                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mt-1">{trendInsight?.summary || trendPanelText.loading}</h3>
+                                        {trendInsight && (
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 max-w-3xl">
+                                                {trendInsight.why}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {trendInsight && (
+                                        <div className="text-right shrink-0">
+                                            <span className="text-[10px] uppercase tracking-[2px] text-gray-400 font-bold block">{trendPanelText.confidence}</span>
+                                            <span className="text-2xl font-black text-[#156d95]">{Math.round(trendInsight.confidence * 100)}%</span>
+                                        </div>
+                                    )}
+                                </div>
 
-                            return (
-                                <AnalysisCard
-                                    key={analysis.id}
-                                    analysis={analysis}
-                                    label={label}
-                                    onClick={() => setSelectedAnalysis(analysis)}
-                                />
-                            );
-                        })}
-                    </div>
+                                {trendInsight && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                                        <div className="rounded-2xl bg-white/90 dark:bg-gray-800/70 border border-gray-100 dark:border-gray-700 p-4">
+                                            <p className="text-[10px] uppercase tracking-[2px] text-gray-400 font-bold mb-2">{trendPanelText.keyFactors}</p>
+                                            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-200">
+                                                {trendInsight.factors.slice(0, 3).map((factor) => (
+                                                    <li key={factor.metric} className="flex items-center justify-between gap-3">
+                                                        <span>{factor.explanation}</span>
+                                                        <span className="text-[11px] font-bold text-[#156d95]">impact {factor.impact.toFixed(2)}x</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        <div className="rounded-2xl bg-white/90 dark:bg-gray-800/70 border border-gray-100 dark:border-gray-700 p-4">
+                                            <p className="text-[10px] uppercase tracking-[2px] text-gray-400 font-bold mb-2">{trendPanelText.nextSteps}</p>
+                                            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-200">
+                                                {trendInsight.recommendations.map((item, idx) => (
+                                                    <li key={`${idx}-${item.slice(0, 12)}`} className="flex items-start gap-2">
+                                                        <Info size={14} className="mt-0.5 text-[#156d95] shrink-0" />
+                                                        <span>{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {filteredAnalyses.map((analysis, index) => {
+                                let label = t("card.labels.baseline");
+                                if (index === 0) label = t("card.labels.latest");
+                                else if (index === 1) label = t("card.labels.previous");
+                                else if (index === filteredAnalyses.length - 1 && filteredAnalyses.length > 2) label = t("card.labels.baseline");
+                                else label = t("card.labels.past");
+
+                                return (
+                                    <AnalysisCard
+                                        key={analysis.id}
+                                        analysis={analysis}
+                                        label={label}
+                                        onClick={() => setSelectedAnalysis(analysis)}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </>
                 )}
 
                 {/* Empty State if needed */}
