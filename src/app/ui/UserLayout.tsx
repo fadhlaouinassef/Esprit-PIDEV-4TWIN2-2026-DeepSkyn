@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { setUser } from "@/store/slices/authSlice";
 import { SIDEBAR_THEMES } from "@/store/slices/uiThemeSlice";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { FloatingChatbot } from "@/app/components/user/FloatingChatbot";
 import "@/app/css/satoshi.css";
 import { useTranslations } from "next-intl";
 
@@ -88,6 +89,7 @@ function UserLayoutContent({ children }: UserLayoutProps) {
                         </div>
                     )}
                     {children}
+                    <FloatingChatbot />
                 </main>
             </div>
         </div>

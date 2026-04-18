@@ -13,7 +13,9 @@
     "db:add-activated": "tsx prisma/add-activated-field.ts",
     "db:setup": "npm run db:create && npm run db:migrate",
     "db:studio": "npx prisma studio",
-    "test:badges": "tsx src/services/__tests__/badge-rules.test.ts"
+    "test:badges": "tsx src/services/__tests__/badge-rules.test.ts",
+    "chatbot:train": "tsx src/modele/chatbot/trainChatbotModel.ts",
+    "chatbot:train:ham10000": "tsx src/modele/chatbot/trainHam10000Model.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.0",
