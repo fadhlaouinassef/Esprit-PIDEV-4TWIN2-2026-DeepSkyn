@@ -15,7 +15,8 @@
     "db:studio": "npx prisma studio",
     "test:badges": "tsx src/services/__tests__/badge-rules.test.ts",
     "chatbot:train": "tsx src/modele/chatbot/trainChatbotModel.ts",
-    "chatbot:train:ham10000": "tsx src/modele/chatbot/trainHam10000Model.ts"
+    "chatbot:train:ham10000": "tsx src/modele/chatbot/trainHam10000Model.ts",
+    "chatbot:train:images": "tsx src/modele/chatbot/trainImageModel.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.0",
@@ -35,6 +36,7 @@
     "d3-geo": "^3.1.1",
     "framer-motion": "^12.29.2",
     "html2canvas": "^1.4.1",
+    "jimp": "^1.6.1",
     "jspdf": "^4.2.1",
     "jsvectormap": "^1.7.0",
     "lucide-react": "^0.563.0",
