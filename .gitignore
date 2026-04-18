@@ -42,7 +42,9 @@ next-env.d.ts
 
 /src/generated/prisma
 
-# datasets & models
-/src/modele/*/
-!/src/modele/chatbot/
-/src/modele/*.csv
+# large local datasets (skin images)
+/src/modele/Acne and Rosacea Photos/
+/src/modele/Actinic Keratosis Basal Cell Carcinoma and other Malignant Lesions/
+/src/modele/Atopic Dermatitis Photos/
+/src/modele/Bullous Disease Photos/
+/src/modele/Cellulitis Impetigo and other Bacterial Infections/
