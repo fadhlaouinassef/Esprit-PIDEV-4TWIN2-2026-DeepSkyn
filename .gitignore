@@ -43,5 +43,6 @@ next-env.d.ts
 /src/generated/prisma
 
 # datasets & models
-/src/modele/*
+/src/modele/*/
 !/src/modele/chatbot/
+/src/modele/*.csv
