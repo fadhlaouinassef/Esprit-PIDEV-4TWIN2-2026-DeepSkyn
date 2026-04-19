@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-19T20:31:22.234Z",
+  "generatedAt": "2026-04-19T20:41:13.227Z",
   "summary": {
     "rawCount": 1052,
     "cleanedCount": 1052,
@@ -8,10 +8,10 @@
     "vocabularySize": 616
   },
   "metrics": {
-    "accuracy": 0.9858,
-    "macroPrecision": 0.9873,
-    "macroRecall": 0.9851,
-    "macroF1": 0.9859,
+    "accuracy": 0.9906,
+    "macroPrecision": 0.9928,
+    "macroRecall": 0.9911,
+    "macroF1": 0.9919,
     "classes": [
       {
         "label": "product_recommendation",
@@ -22,16 +22,16 @@
       },
       {
         "label": "price_analysis",
-        "precision": 0.9697,
-        "recall": 1,
-        "f1": 0.9846,
+        "precision": 1,
+        "recall": 0.9688,
+        "f1": 0.9841,
         "support": 32
       },
       {
         "label": "ingredient_insight",
-        "precision": 1,
-        "recall": 0.9375,
-        "f1": 0.9677,
+        "precision": 0.9688,
+        "recall": 0.9688,
+        "f1": 0.9688,
         "support": 32
       },
       {
@@ -44,8 +44,8 @@
       {
         "label": "dataset_facts",
         "precision": 1,
-        "recall": 0.9583,
-        "f1": 0.9787,
+        "recall": 1,
+        "f1": 1,
         "support": 24
       },
       {
@@ -57,9 +57,9 @@
       },
       {
         "label": "out_of_scope",
-        "precision": 0.96,
+        "precision": 1,
         "recall": 1,
-        "f1": 0.9796,
+        "f1": 1,
         "support": 24
       }
     ],
@@ -75,8 +75,8 @@
       ],
       [
         0,
-        32,
-        0,
+        31,
+        1,
         0,
         0,
         0,
@@ -84,8 +84,8 @@
       ],
       [
         1,
-        1,
-        30,
+        0,
+        31,
         0,
         0,
         0,
@@ -105,9 +105,9 @@
         0,
         0,
         0,
-        23,
+        24,
         0,
-        1
+        0
       ],
       [
         0,

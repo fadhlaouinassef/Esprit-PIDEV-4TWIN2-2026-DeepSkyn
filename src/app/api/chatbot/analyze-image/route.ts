@@ -92,41 +92,124 @@ const clamp01 = (value: number): number => {
   return value;
 };
 
-const SKIN_CONDITION_DATABASE: Record<string, { problem: string; consequence: string; recommendation: string }> = {
-  "acne_rosacea": {
-    problem: "Symptômes d'Acné Inflammatoire ou de Rosacée",
-    consequence: "L'activité bactérienne et l'inflammation peuvent entraîner des kystes et des cicatrices permanentes.",
-    recommendation: "• **Nettoyage :** Gel nettoyant au Zinc.\n• **Traitement :** Niacinamide (10%).\n• **Correction :** Acide Azélaïque.\n• **Protection :** SPF 30+ fluide."
+type ConditionDetail = {
+  problem: string;
+  description: string;
+  severity: string;
+  rootCause: string;
+  routine: string[];
+  products: string[];
+  timeline: string;
+};
+
+const SKIN_CONDITION_DATABASE: Record<string, ConditionDetail> = {
+  "acne": {
+    problem: "Acné et Imperfections",
+    description: "Présence de comédons, papules ou pustules inflammatoires.",
+    severity: "Modérée (dépend de la densité des lésions)",
+    rootCause: "Excès de sébum, accumulation de cellules mortes et prolifération bactérienne (C. acnes).",
+    routine: [
+      "Nettoyer avec un gel moussant doux au pH neutre",
+      "Appliquer un sérum à l'acide salicylique (BHA) sur les zones cibles",
+      "Hydrater avec un fluide léger non comédogène",
+      "Protéger avec un SPF 30+ matifiant chaque matin"
+    ],
+    products: [
+      "Acide Salicylique 2% (Exfoliant lipophile)",
+      "Niacinamide 10% (Régulateur de sébum et apaisant)",
+      "Peroxyde de Benzoyle (Antibactérien puissant)"
+    ],
+    timeline: "4 à 8 semaines pour une réduction visible des lésions."
   },
-  "aging_wrinkles": {
-    problem: "Signes de Chrono-vieillissement et Rides Sévères",
-    consequence: "Perte de collagène et affaissement des tissus. Les rides s'accentuent sans soins stimulants.",
-    recommendation: "• **Régénération :** Rétinol pur (le soir).\n• **Volume :** Acide Hyaluronique.\n• **Fermeté :** Peptides ou Vitamine C.\n• **Protection :** SPF 50+ quotidien."
+  "blackheads": {
+    problem: "Points Noirs (Comédons Ouverts)",
+    description: "Pores obstrués par du sébum ayant noirci au contact de l'air.",
+    severity: "Légère à Modérée",
+    rootCause: "Accumulation de sébum et kératine dans les follicules pileux dilatés.",
+    routine: [
+      "Double nettoyage chaque soir (huile démaquillante + gel nettoyant)",
+      "Exfoliation chimique régulière (BHA)",
+      "Masque à l'argile hebdomadaire (Argile blanche ou verte)",
+      "Application de soins hydratants légers à base d'eau"
+    ],
+    products: [
+      "Huile de nettoyage relipidante",
+      "Sérum à l'Acide Salicylique (BHA)",
+      "Masque au Charbon actif"
+    ],
+    timeline: "2 à 4 semaines pour une peau plus nette."
   },
-  "eczema_dermatitis": {
-    problem: "Dermatite Atopique ou Eczéma Barrière",
-    consequence: "Sécheresse extrême et risque d'infections bactériennes chroniques.",
-    recommendation: "• **Hygiène :** Huile lavante relipidante.\n• **Barrière :** Baume riche en Céramides.\n• **Apaisement :** Panthénol (B5).\n• **Habitude :** Évitez l'eau trop chaude."
+  "dark_spots": {
+    problem: "Taches Brunes (Hyperpigmentation)",
+    description: "Zones de décoloration sombres résultant d'un surplus de mélanine.",
+    severity: "Variable selon l'ancienneté des taches",
+    rootCause: "Exposition solaire répétée, cicatrices post-inflammatoires ou mélasma.",
+    routine: [
+      "Nettoyage illuminateur doux",
+      "Application de Vitamine C concentrée le matin",
+      "Traitement ciblé à l'Alpha-Arbutine ou Acide Azélaïque le soir",
+      "Protection solaire SPF 50+ stricte (ré-application toutes les 2h)"
+    ],
+    products: [
+      "Vitamine C 10-20% (Antioxydant et éclaircissant)",
+      "Alpha-Arbutine 2% + Acide Hyaluronique",
+      "Crème solaire haute protection à large spectre"
+    ],
+    timeline: "3 à 6 mois de traitement rigoureux."
   },
-  "hyperpigmentation": {
-    problem: "Troubles de la Pigmentation (Mélasma/Lentigos)",
-    consequence: "Taches qui s'assombrissent radicalement à l'exposition UV.",
-    recommendation: "• **Éclat :** Vitamine C le matin.\n• **Correction :** Alpha-Arbutine le soir.\n• **Protection :** SPF 50+ toutes les 2-3 heures."
+  "pores": {
+    problem: "Pores Dilatés",
+    description: "Apparence marquée des orifices folliculaires, souvent en zone T.",
+    severity: "Esthétique",
+    rootCause: "Élasticité réduite de la peau ou production de sébum importante.",
+    routine: [
+      "Nettoyage à l'eau fraîche pour tonifier",
+      "Sérum au Niacinamide pour normaliser les pores",
+      "Exfoliation douce (AHA / Lactic Acid)",
+      "Hydratation équilibrante non grasse"
+    ],
+    products: [
+      "Niacinamide 10% + Zinc 1%",
+      "Lotion à l'Acide Glycolique",
+      "Sérum au Rétinol pour améliorer la texture globale"
+    ],
+    timeline: "4 à 6 semaines pour un grain de peau affiné."
   },
-  "psoriasis_lichen": {
-    problem: "Plaques de Psoriasis ou Lichen Planus",
-    consequence: "Cycle cellulaire accéléré créant des squames épaisses et argentées.",
-    recommendation: "• **Décapage :** Soins à l'Urée (10%+).\n• **Nutrition :** Émollients riches.\n• **Conseil :** Hydratez sur peau humide."
+  "wrinkles": {
+    problem: "Rides et Signes de l'Âge",
+    description: "Lignes fines ou marques profondes dues à l'affaiblissement structurel.",
+    severity: "Modérée à Prononcée",
+    rootCause: "Réduction naturelle du collagène, stress oxydatif et UV.",
+    routine: [
+      "Nettoyage avec un baume ou lait onctueux",
+      "Sérum aux Peptides ou Facteurs de croissance",
+      "Traitement au Rétinol ou Rétinal le soir (commencer 2x par semaine)",
+      "Crème barrière riche et protection solaire quotidienne"
+    ],
+    products: [
+      "Rétinol pur ou Bakuchiol (alternative douce)",
+      "Sérum aux Multi-Peptides (Copper Peptides)",
+      "Acide Hyaluronique de différents poids moléculaires"
+    ],
+    timeline: "Hydratation immédiate, amélioration des rides en 3 à 6 mois."
   },
-  "malignant_lesion": {
-    problem: "Lésion Atypique Suspecte (Besoin de Dermatologue)",
-    consequence: "Risque vital élevé sans diagnostic précoce (mélanome).",
-    recommendation: "• **URGENCE :** Consultez un dermatologue sous 48h.\n• **Interdiction :** Aucun soin maison."
-  },
-  "fungal_infection": {
-    problem: "Infection Fongique (Mycose ou Teigne)",
-    consequence: "Contagion rapide et desquamation circulaire.",
-    recommendation: "• **Antifongique :** Crème locale antifongique.\n• **Hygiène :** Gardez la zone parfaitement sèche."
+  "general": {
+    problem: "Sensibilité ou Fatigue Cutanée",
+    description: "Peau réactive montrant des signes de déshydratation ou rougeurs légères.",
+    severity: "Légère",
+    rootCause: "Barrière cutanée affaiblie, stress environnemental ou fatigue.",
+    routine: [
+      "Nettoyage ultra-doux (sans parfum)",
+      "Sérum apaisant à la Centella Asiatica ou Panthénol",
+      "Hydratation barrière (Céramides)",
+      "SPF minéral protecteur"
+    ],
+    products: [
+      "Sérum au Panthénol (B5)",
+      "Crème aux Céramides et Squalane",
+      "Eau thermale apaisante"
+    ],
+    timeline: "Apaisement en quelques jours."
   }
 };
 
@@ -134,20 +217,16 @@ const identifyConditionFromMetrics = (metrics: AnalyzeImageBody["imageMetrics"])
   const redRatio = toFinite(metrics?.redRatio, 0);
   const contrast = toFinite(metrics?.contrast, 0);
 
-  // PRIORITÉ RIDES : Si on a du relief (contraste) et que la rougeur n'est pas hors norme
-  // Une femme d'un certain âge a souvent un contraste élevé (>45)
-  if (contrast > 45 && redRatio < 0.38) return "aging_wrinkles";
+  // PRIORITÉ RIDES (Peau Mature) : Si le contraste est élevé, c'est un signe fort de relief/rides
+  if (contrast > 40) return "wrinkles";
   
-  // ACNÉ : Seulement si la rougeur est le signe dominant
-  if (redRatio > 0.40) return "acne_rosacea";
+  // ACNÉ : Si la rougeur est le signe dominant après avoir vérifié le relief
+  if (redRatio > 0.38) return "acne";
   
-  // Fallback rides si contraste vraiment marqué
-  if (contrast > 55) return "aging_wrinkles";
-
   // Autres conditions
-  if (redRatio > 0.35 && contrast > 50) return "psoriasis_lichen";
-  if (redRatio > 0.34 && contrast < 40) return "eczema_dermatitis";
-  if (contrast > 60) return "hyperpigmentation";
+  if (redRatio > 0.35 && contrast > 35) return "acne"; 
+  if (redRatio > 0.34 && contrast < 40) return "general";
+  if (contrast > 60) return "dark_spots";
 
   return "general";
 };
@@ -247,12 +326,31 @@ export async function POST(request: Request) {
     const redScore = Math.round(clamp01((redRatio - 0.33) / 0.05) * 100);
 
     const answer = 
-      `### 🔍 Analyse Dermatologique Experte\n` +
-      `**Diagnostic IA :** ${condition.problem}\n` +
-      `- **Indice d'Inflammation :** ${redScore}%\n\n` +
-      `#### ⚠️ Conséquences\n${condition.consequence}\n\n` +
-      `#### 🧴 Recommandation\n${condition.recommendation}\n\n` +
-      `---\n*Note : Analyse basée sur le dataset DeepSkyn local.*`;
+  
+      `ANALYSE DERMATOLOGIQUE EXPERTE\n` +
+      `______________________________________\n\n` +
+      `DIAGNOSTIC PRINCIPAL\n\n` +
+      `${condition.problem}\n` +
+      `Sévérité : ${condition.severity}\n\n` +
+      `_______________________________________\n\n` +
+      `DESCRIPTION DES SYMPTÔMES\n\n` +
+      `${condition.description}\n\n` +
+      `_______________________________________\n\n` +
+      `CAUSE RACINE\n\n` +
+      `${condition.rootCause}\n\n` +
+      `_______________________________________\n\n` +
+      `ROUTINE DE SOINS ETAPE PAR ETAPE\n\n` +
+      (condition.routine || []).map((step, idx) => `${idx + 1}. ${step}`).join('\n\n') + `\n\n` +
+      `_______________________________________\n\n` +
+      `ACTIFS ET PRODUITS RECOMMANDES\n\n` +
+      (condition.products || []).map(p => `- ${p}`).join('\n') + `\n\n` +
+      `_______________________________________\n\n` +
+      `TIMELINE DES RESULTATS\n\n` +
+      `${condition.timeline}\n\n` +
+      `_______________________________________\n\n` +
+      `Note : Cette analyse experte est générée par l'IA DeepSkyn.`;
+
+
 
     return NextResponse.json({
       answer,
