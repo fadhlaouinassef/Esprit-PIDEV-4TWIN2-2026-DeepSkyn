@@ -1,72 +1,72 @@
 {
-  "generatedAt": "2026-04-19T22:58:38.235Z",
+  "generatedAt": "2026-04-19T23:26:20.054Z",
   "summary": {
     "rawCount": 1372,
     "cleanedCount": 1372,
     "trainCount": 1096,
     "testCount": 276,
-    "vocabularySize": 636
+    "vocabularySize": 1731
   },
   "metrics": {
-    "accuracy": 0.9819,
-    "macroPrecision": 0.9829,
-    "macroRecall": 0.9827,
-    "macroF1": 0.9827,
+    "accuracy": 0.9565,
+    "macroPrecision": 0.9624,
+    "macroRecall": 0.9583,
+    "macroF1": 0.9593,
     "classes": [
       {
         "label": "product_recommendation",
-        "precision": 0.9811,
+        "precision": 0.9123,
         "recall": 1,
-        "f1": 0.9905,
+        "f1": 0.9541,
         "support": 52
       },
       {
         "label": "price_analysis",
-        "precision": 0.9688,
-        "recall": 0.9688,
-        "f1": 0.9688,
+        "precision": 0.9333,
+        "recall": 0.875,
+        "f1": 0.9032,
         "support": 32
       },
       {
         "label": "ingredient_insight",
-        "precision": 0.9677,
-        "recall": 0.9375,
-        "f1": 0.9524,
+        "precision": 0.9643,
+        "recall": 0.8438,
+        "f1": 0.9,
         "support": 32
       },
       {
         "label": "brand_info",
+        "precision": 1,
+        "recall": 0.9375,
+        "f1": 0.9677,
+        "support": 32
+      },
+      {
+        "label": "product_comparison",
         "precision": 0.9688,
         "recall": 0.9688,
         "f1": 0.9688,
         "support": 32
       },
       {
-        "label": "product_comparison",
-        "precision": 1,
-        "recall": 0.9688,
-        "f1": 0.9841,
-        "support": 32
-      },
-      {
         "label": "routine_advice",
-        "precision": 0.96,
+        "precision": 1,
         "recall": 1,
-        "f1": 0.9796,
+        "f1": 1,
         "support": 24
       },
       {
         "label": "dataset_facts",
-        "precision": 1,
+        "precision": 0.9231,
         "recall": 1,
-        "f1": 1,
+        "f1": 0.96,
         "support": 24
       },
       {
         "label": "health_warning",
-        "precision": 1,
+        "precision": 0.96,
         "recall": 1,
-        "f1": 1,
+        "f1": 0.9796,
         "support": 24
       },
       {
@@ -90,24 +90,35 @@
         0
       ],
       [
+        3,
+        28,
         0,
-        31,
+        0,
         0,
         0,
         0,
         1,
+        0
+      ],
+      [
+        2,
+        1,
+        27,
         0,
+        1,
+        0,
+        1,
         0,
         0
       ],
       [
-        1,
         0,
+        0,
+        1,
         30,
+        0,
+        0,
         1,
-        0,
-        0,
-        0,
         0,
         0
       ],
@@ -115,17 +126,6 @@
         0,
         1,
         0,
-        31,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        1,
         0,
         31,
         0,
@@ -180,7 +180,138 @@
     ],
     "trainSize": 1096,
     "testSize": 276,
-    "vocabularySize": 636,
-    "epochs": 95
+    "vocabularySize": 1731,
+    "epochs": 95,
+    "confusionHotspots": [
+      {
+        "actual": "price_analysis",
+        "predicted": "product_recommendation",
+        "count": 3
+      },
+      {
+        "actual": "ingredient_insight",
+        "predicted": "product_recommendation",
+        "count": 2
+      },
+      {
+        "actual": "price_analysis",
+        "predicted": "health_warning",
+        "count": 1
+      },
+      {
+        "actual": "ingredient_insight",
+        "predicted": "price_analysis",
+        "count": 1
+      },
+      {
+        "actual": "ingredient_insight",
+        "predicted": "product_comparison",
+        "count": 1
+      },
+      {
+        "actual": "ingredient_insight",
+        "predicted": "dataset_facts",
+        "count": 1
+      },
+      {
+        "actual": "brand_info",
+        "predicted": "ingredient_insight",
+        "count": 1
+      },
+      {
+        "actual": "brand_info",
+        "predicted": "dataset_facts",
+        "count": 1
+      },
+      {
+        "actual": "product_comparison",
+        "predicted": "price_analysis",
+        "count": 1
+      }
+    ],
+    "validationBestAccuracy": 0.9924,
+    "selectedTrainingConfig": {
+      "learningRate": 0.015,
+      "epochs": 95,
+      "batchSize": 16,
+      "units1": 64,
+      "units2": 32,
+      "dropout1": 0.2,
+      "dropout2": 0.1
+    },
+    "unseenEvaluation": {
+      "accuracy": 0.7778,
+      "total": 9,
+      "correct": 7,
+      "cases": [
+        {
+          "question": "best product for acne under 50",
+          "expected": "product_recommendation",
+          "predicted": "product_recommendation",
+          "confidence": 0.9995,
+          "correct": true
+        },
+        {
+          "question": "products from cerave",
+          "expected": "brand_info",
+          "predicted": "ingredient_insight",
+          "confidence": 0.5024,
+          "correct": false
+        },
+        {
+          "question": "compare cerave and bioderma",
+          "expected": "product_comparison",
+          "predicted": "product_comparison",
+          "confidence": 1,
+          "correct": true
+        },
+        {
+          "question": "ingredients in cerave hydrating cleanser",
+          "expected": "ingredient_insight",
+          "predicted": "ingredient_insight",
+          "confidence": 1,
+          "correct": true
+        },
+        {
+          "question": "price of cerave hydrating cleanser",
+          "expected": "price_analysis",
+          "predicted": "product_recommendation",
+          "confidence": 0.9991,
+          "correct": false
+        },
+        {
+          "question": "give me routine for sensitive skin",
+          "expected": "routine_advice",
+          "predicted": "routine_advice",
+          "confidence": 0.9999,
+          "correct": true
+        },
+        {
+          "question": "how many products in your dataset",
+          "expected": "dataset_facts",
+          "predicted": "dataset_facts",
+          "confidence": 1,
+          "correct": true
+        },
+        {
+          "question": "is this medical diagnosis",
+          "expected": "health_warning",
+          "predicted": "health_warning",
+          "confidence": 1,
+          "correct": true
+        },
+        {
+          "question": "write me a football story",
+          "expected": "out_of_scope",
+          "predicted": "out_of_scope",
+          "confidence": 0.9999,
+          "correct": true
+        }
+      ]
+    }
+  },
+  "improvementLoop": {
+    "userFeedbackPath": "C:\\Users\\HP\\Desktop\\ProjectPI\\DeepSkyn\\deepskyn\\src\\modele\\datasets\\chatbot\\user_feedback_examples.json",
+    "loadedFeedbackExamples": 0
   }
 }

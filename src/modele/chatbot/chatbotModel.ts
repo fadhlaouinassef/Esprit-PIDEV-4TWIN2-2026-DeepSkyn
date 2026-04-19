@@ -46,6 +46,27 @@ type ClassMetrics = {
   support: number;
 };
 
+type ConfusionHotspot = {
+  actual: IntentLabel;
+  predicted: IntentLabel;
+  count: number;
+};
+
+type UnseenQuestionEval = {
+  question: string;
+  expected: IntentLabel;
+  predicted: IntentLabel;
+  confidence: number;
+  correct: boolean;
+};
+
+type UnseenEvalSummary = {
+  accuracy: number;
+  total: number;
+  correct: number;
+  cases: UnseenQuestionEval[];
+};
+
 export type ChatbotTrainingMetrics = {
   accuracy: number;
   macroPrecision: number;
@@ -57,6 +78,18 @@ export type ChatbotTrainingMetrics = {
   testSize: number;
   vocabularySize: number;
   epochs: number;
+  confusionHotspots: ConfusionHotspot[];
+  validationBestAccuracy: number;
+  selectedTrainingConfig: {
+    learningRate: number;
+    epochs: number;
+    batchSize: number;
+    units1: number;
+    units2: number;
+    dropout1: number;
+    dropout2: number;
+  };
+  unseenEvaluation?: UnseenEvalSummary;
 };
 
 type PreparedDatasetSummary = {
@@ -71,11 +104,25 @@ export type ChatbotPipelineReport = {
   generatedAt: string;
   summary: PreparedDatasetSummary;
   metrics: ChatbotTrainingMetrics;
+  improvementLoop: {
+    userFeedbackPath: string;
+    loadedFeedbackExamples: number;
+  };
 };
 
 type PrepareDatasetOptions = {
   trainRatio?: number;
   writeFiles?: boolean;
+};
+
+type TrainingConfig = {
+  learningRate: number;
+  epochs: number;
+  batchSize: number;
+  units1: number;
+  units2: number;
+  dropout1: number;
+  dropout2: number;
 };
 
 type TrainingPipelineArtifacts = {
@@ -86,6 +133,7 @@ type TrainingPipelineArtifacts = {
   split: DatasetSplit;
   vocabulary: string[];
   labelToIndex: Record<IntentLabel, number>;
+  feedbackExamplesLoaded: number;
 };
 
 type ProductRecord = {
@@ -269,6 +317,36 @@ const INTENT_LABELS: IntentLabel[] = [
 const TRAIN_EPOCHS = 95;
 const LEARNING_RATE = 0.015;
 const MIN_CONFIDENCE = 0.33;
+
+const USER_FEEDBACK_DATASET_PATH = path.join(
+  process.cwd(),
+  "src",
+  "modele",
+  "datasets",
+  "chatbot",
+  "user_feedback_examples.json"
+);
+
+const TRAINING_CANDIDATES: TrainingConfig[] = [
+  {
+    learningRate: LEARNING_RATE,
+    epochs: TRAIN_EPOCHS,
+    batchSize: 16,
+    units1: 64,
+    units2: 32,
+    dropout1: 0.2,
+    dropout2: 0.1,
+  },
+  {
+    learningRate: 0.01,
+    epochs: 120,
+    batchSize: 20,
+    units1: 72,
+    units2: 36,
+    dropout1: 0.25,
+    dropout2: 0.15,
+  },
+];
 
 const MIN_SAMPLES_PER_INTENT: Record<IntentLabel, number> = {
   product_recommendation: 220,
@@ -574,11 +652,44 @@ const normalizeText = (value: string): string =>
     .replace(/\s+/g, " ")
     .trim();
 
-const tokenize = (value: string): string[] => {
-  return normalizeText(value)
+const isUsefulToken = (token: string): boolean => {
+  if (!token || token.length < 2) return false;
+  if (STOPWORDS.has(token)) return false;
+  if (/^\d+$/.test(token)) return false;
+  if (/^(ml|g|oz|kg|pack|pcs|piece|size|various|shade|shades)$/.test(token)) return false;
+  return true;
+};
+
+const tokenizeNormalized = (normalized: string): string[] => {
+  const rawTokens = normalized
     .split(" ")
     .map((token) => token.trim())
-    .filter((token) => token.length > 1 && !STOPWORDS.has(token));
+    .filter((token) => token.length > 0);
+
+  const cleaned = rawTokens.filter((token) => isUsefulToken(token));
+  const ngrams: string[] = [];
+
+  for (let i = 0; i < cleaned.length - 1; i++) {
+    const bigram = `${cleaned[i]}_${cleaned[i + 1]}`;
+    if (bigram.length <= 40) ngrams.push(bigram);
+  }
+
+  return [...cleaned, ...ngrams];
+};
+
+const tokenize = (value: string): string[] => {
+  return tokenizeNormalized(normalizeText(value));
+};
+
+const normalizeTrainingQuestion = (value: string): string => {
+  const normalized = normalizeText(value)
+    .replace(/\bpls\b/g, "please")
+    .replace(/\bprixx\b/g, "prix")
+    .replace(/\bproduitss\b/g, "produits")
+    .replace(/\bingredientss\b/g, "ingredients")
+    .replace(/\bcomparer\b/g, "compare")
+    .trim();
+  return normalized;
 };
 
 const parseCsvLine = (line: string): string[] => {
@@ -825,6 +936,14 @@ const countTop = (items: string[], take = 6): Array<{ value: string; count: numb
     .map(([value, count]) => ({ value, count }));
 };
 
+const isBrandTokenPlausible = (value: string): boolean => {
+  if (!value || value === "unknown") return false;
+  if (value.length < 3 || value.length > 28) return false;
+  if (!/^[a-z0-9\s]+$/.test(value)) return false;
+  if (BRAND_STOPWORDS.has(value)) return false;
+  return true;
+};
+
 const includesAny = (text: string, terms: string[]): boolean => {
   return terms.some((term) => text.includes(term));
 };
@@ -843,6 +962,51 @@ const uniqueExamples = (examples: TrainingExample[]): TrainingExample[] => {
   }
 
   return output;
+};
+
+const sanitizeTrainingText = (text: string): string => {
+  const normalized = normalizeTrainingQuestion(text);
+  return normalized.length > 0 ? normalized : text.trim();
+};
+
+const loadUserFeedbackExamples = async (): Promise<TrainingExample[]> => {
+  try {
+    const raw = await readFile(USER_FEEDBACK_DATASET_PATH, "utf-8");
+    const parsed = JSON.parse(raw) as Array<{ text?: string; label?: string }>;
+
+    if (!Array.isArray(parsed)) return [];
+
+    const accepted = new Set<IntentLabel>(INTENT_LABELS);
+    const rows: TrainingExample[] = [];
+    for (const item of parsed) {
+      const text = String(item?.text || "").trim();
+      const label = String(item?.label || "") as IntentLabel;
+      if (!text || !accepted.has(label)) continue;
+      rows.push({ text, label });
+    }
+
+    return uniqueExamples(rows);
+  } catch {
+    return [];
+  }
+};
+
+const buildHardNegativeExamples = (stats: DatasetStats): TrainingExample[] => {
+  const hard: TrainingExample[] = [];
+  const topBrands = stats.topBrands.slice(0, 12).map((item) => item.brand);
+
+  for (const brand of topBrands) {
+    hard.push({ text: `compare ${brand} and ${brand} products`, label: "product_comparison" });
+    hard.push({ text: `brand info ${brand}`, label: "brand_info" });
+    hard.push({ text: `price of ${brand} products`, label: "price_analysis" });
+  }
+
+  hard.push({ text: "ingredients list of this product", label: "ingredient_insight" });
+  hard.push({ text: "what ingredients are inside this serum", label: "ingredient_insight" });
+  hard.push({ text: "products from this brand", label: "brand_info" });
+  hard.push({ text: "difference between product a and product b", label: "product_comparison" });
+
+  return hard;
 };
 
 const buildVariantText = (text: string, index: number): string => {
@@ -1109,11 +1273,16 @@ const buildStats = async (): Promise<DatasetStats> => {
     productsFilled.map((item) => item.brand).filter((brand) => brand.length > 0 && brand !== "unknown"),
     60
   )
+    .filter((item) => isBrandTokenPlausible(item.value))
     .filter((item) => item.count >= 2)
     .map((item) => ({ brand: item.value, count: item.count }));
 
   const brands = [
-    ...new Set(productsFilled.map((item) => item.brand).filter((brand) => brand.length > 0 && brand !== "unknown")),
+    ...new Set(
+      productsFilled
+        .map((item) => item.brand)
+        .filter((brand) => brand.length > 0 && brand !== "unknown" && isBrandTokenPlausible(brand))
+    ),
   ];
 
   const topIngredients = countTop(productsFilled.flatMap((item) => item.ingredients), 10).map((item) => ({
@@ -1271,6 +1440,8 @@ const buildTrainingSet = (stats: DatasetStats): TrainingExample[] => {
     base.push({ text: `prix de ${title}`, label: "price_analysis" });
   }
 
+  base.push(...buildHardNegativeExamples(stats));
+
   return rebalanceExamples(base);
 };
 
@@ -1295,7 +1466,7 @@ const dedupeExamples = (examples: TrainingExample[]): CleanedTrainingExample[] =
   const cleaned: CleanedTrainingExample[] = [];
 
   for (const item of examples) {
-    const cleanedText = normalizeText(item.text);
+    const cleanedText = sanitizeTrainingText(item.text);
     if (!cleanedText) continue;
 
     const key = `${item.label}::${cleanedText}`;
@@ -1326,14 +1497,38 @@ const preprocessExamples = (
 const buildVocabularyFromPreprocessed = (
   examples: PreprocessedTrainingExample[]
 ): string[] => {
-  const bucket = new Set<string>();
+  const docsCount = Math.max(1, examples.length);
+  const df = new Map<string, number>();
+
   for (const example of examples) {
-    for (const token of example.tokens) {
-      bucket.add(token);
+    const uniq = new Set(example.tokens);
+    for (const token of uniq) {
+      df.set(token, (df.get(token) || 0) + 1);
     }
   }
 
-  return [...bucket].sort();
+  const protectedTokens = new Set([
+    "price",
+    "prix",
+    "ingredient",
+    "ingredients",
+    "brand",
+    "marque",
+    "compare",
+    "routine",
+    "acne",
+  ]);
+
+  const bucket = [...df.entries()]
+    .filter(([token, freq]) => {
+      if (protectedTokens.has(token)) return true;
+      if (freq < 2) return false;
+      if (freq / docsCount > 0.92) return false;
+      return token.length >= 2 && token.length <= 40;
+    })
+    .map(([token]) => token);
+
+  return bucket.sort();
 };
 
 const encodeExamples = (
@@ -1448,6 +1643,23 @@ const computeMetricsFromConfusion = (matrix: number[][]): ChatbotTrainingMetrics
   const macroRecall = mean(classes.map((item) => item.recall));
   const macroF1 = mean(classes.map((item) => item.f1));
 
+  const hotspots: ConfusionHotspot[] = [];
+  for (let i = 0; i < matrix.length; i++) {
+    for (let j = 0; j < matrix.length; j++) {
+      if (i === j) continue;
+      const count = matrix[i][j];
+      if (count > 0) {
+        hotspots.push({
+          actual: INTENT_LABELS[i],
+          predicted: INTENT_LABELS[j],
+          count,
+        });
+      }
+    }
+  }
+
+  hotspots.sort((a, b) => b.count - a.count);
+
   return {
     accuracy: total === 0 ? 0 : round(correct / total, 4),
     macroPrecision: round(macroPrecision, 4),
@@ -1459,6 +1671,70 @@ const computeMetricsFromConfusion = (matrix: number[][]): ChatbotTrainingMetrics
     testSize: total,
     vocabularySize: 0,
     epochs: TRAIN_EPOCHS,
+    confusionHotspots: hotspots.slice(0, 10),
+    validationBestAccuracy: 0,
+    selectedTrainingConfig: {
+      learningRate: LEARNING_RATE,
+      epochs: TRAIN_EPOCHS,
+      batchSize: 16,
+      units1: 64,
+      units2: 32,
+      dropout1: 0.2,
+      dropout2: 0.1,
+    },
+  };
+};
+
+const evaluateUnseenQuestions = async (runtime: ChatbotRuntime): Promise<UnseenEvalSummary> => {
+  const cases: Array<{ question: string; expected: IntentLabel }> = [
+    { question: "best product for acne under 50", expected: "product_recommendation" },
+    { question: "products from cerave", expected: "brand_info" },
+    { question: "compare cerave and bioderma", expected: "product_comparison" },
+    { question: "ingredients in cerave hydrating cleanser", expected: "ingredient_insight" },
+    { question: "price of cerave hydrating cleanser", expected: "price_analysis" },
+    { question: "give me routine for sensitive skin", expected: "routine_advice" },
+    { question: "how many products in your dataset", expected: "dataset_facts" },
+    { question: "is this medical diagnosis", expected: "health_warning" },
+    { question: "write me a football story", expected: "out_of_scope" },
+  ];
+
+  const outputs: UnseenQuestionEval[] = [];
+  let correct = 0;
+
+  for (const item of cases) {
+    const vector = vectorize(item.question, runtime.vocabulary);
+    const input = tf.tensor2d([vector], [1, runtime.vocabulary.length]);
+    const prediction = runtime.model.predict(input) as tf.Tensor;
+    const probabilities = Array.from(await prediction.data());
+
+    input.dispose();
+    prediction.dispose();
+
+    let bestIndex = 0;
+    for (let i = 1; i < probabilities.length; i++) {
+      if (probabilities[i] > probabilities[bestIndex]) {
+        bestIndex = i;
+      }
+    }
+
+    const predicted = runtime.indexToLabel[bestIndex] || "out_of_scope";
+    const isCorrect = predicted === item.expected;
+    if (isCorrect) correct += 1;
+
+    outputs.push({
+      question: item.question,
+      expected: item.expected,
+      predicted,
+      confidence: round(probabilities[bestIndex] || 0, 4),
+      correct: isCorrect,
+    });
+  }
+
+  return {
+    accuracy: round(correct / Math.max(1, cases.length), 4),
+    total: cases.length,
+    correct,
+    cases: outputs,
   };
 };
 
@@ -1566,6 +1842,10 @@ const persistPreparedDatasets = async (
         vocabularySize: artifacts.vocabulary.length,
       },
       metrics,
+      improvementLoop: {
+        userFeedbackPath: USER_FEEDBACK_DATASET_PATH,
+        loadedFeedbackExamples: artifacts.feedbackExamplesLoaded,
+      },
     };
     await writeFile(reportPath, JSON.stringify(report, null, 2), "utf-8");
   }
@@ -1709,6 +1989,16 @@ const productLinkText = (product: ProductRecord): string => {
   return product.url ? ` Link: ${product.url}.` : "";
 };
 
+const maybeLinkLine = (product: ProductRecord): string => {
+  return product.url ? `Lien produit: ${product.url}` : "";
+};
+
+const lineJoin = (lines: string[]): string => lines.filter((line) => line.trim().length > 0).join("\n");
+
+const formatName = (value: string): string => {
+  return toTitleCase(value || "Produit");
+};
+
 const detectComparisonSignal = (question: string): boolean => {
   const normalized = normalizeText(question);
   return includesAny(normalized, ["compare", "comparison", "versus", "vs", "difference", "diff", "better"]);
@@ -1804,11 +2094,11 @@ const inferIntentByRules = (question: string, stats: DatasetStats): IntentLabel 
 
 const buildSuggestions = (): string[] => {
   return [
-    "best product for acne",
-    "products from CeraVe",
-    "ingredients in this product",
-    "price of product",
-    "compare this product with another",
+    "Quel est le meilleur produit pour l'acne ?",
+    "Montre-moi les produits CeraVe",
+    "Quels sont les ingredients de ce produit ?",
+    "Quel est le prix de ce produit ?",
+    "Compare CeraVe et Bioderma",
   ];
 };
 
@@ -1822,15 +2112,28 @@ const composeResponse = (
   const topTypes = stats.topProductTypes.slice(0, 3).map((item) => item.type).join(", ");
 
   if (intent === "out_of_scope") {
-    return "I don't know the answer to that question. I can help with skincare products, ingredients, prices, routines, and dataset stats.";
+    return "Je peux surtout t'aider sur les produits skincare: recommandations, prix, ingredients, comparaison entre marques/produits et routines simples.";
   }
 
   if (intent === "dataset_facts") {
-    return `Dataset summary: skin_care (${stats.skinCareRows} rows), skincare_products_clean (${stats.productsRowsClean}), skincare_productsparapharmacie (${stats.productsRowsParapharmacie}), diabetes (${stats.diabetesRows}). Clean products after deduplication: ${stats.productsRows} (removed duplicates: ${stats.duplicateProductsRemoved}). Missing fields before imputation -> price: ${stats.missingPriceCount}, brand: ${stats.missingBrandCount}, ingredients: ${stats.missingIngredientsCount}. Active ingredient coverage: ${round(stats.activeIngredientCoverage * 100, 1)}%. Confidence: ${round(confidence, 3)}.`;
+    return lineJoin([
+      `Voici un resume simple de la base:`,
+      `- Produits skincare analyses: ${stats.productsRows}`,
+      `- Nombre de marques: ${stats.brands.length}`,
+      `- Prix moyen observe: ${priceTextTnd(stats.avgProductPrice)}`,
+      `- Qualite des donnees: ${round(stats.activeIngredientCoverage * 100, 1)}% de couverture en ingredients actifs`,
+      "Si tu veux, je peux te donner un resume pour une marque precise.",
+    ]);
   }
 
   if (intent === "health_warning") {
-    return `Dataset signal: Outcome=1 ratio in diabetes is about ${round(stats.highRiskDiabetesRatio * 100, 1)}%, average glucose ${stats.avgGlucose}, average BMI ${stats.avgBmi}. This is informational and not a medical diagnosis.`;
+    return lineJoin([
+      "Information generale (non medicale):",
+      `- Ratio risque eleve observe dans le dataset: ${round(stats.highRiskDiabetesRatio * 100, 1)}%`,
+      `- Glucose moyen: ${stats.avgGlucose}`,
+      `- BMI moyen: ${stats.avgBmi}`,
+      "Pour un conseil de sante, il faut toujours consulter un professionnel.",
+    ]);
   }
 
   if (intent === "brand_info") {
@@ -1842,12 +2145,20 @@ const composeResponse = (
         const topBrandIngredients = countTop(brandProducts.flatMap((item) => item.ingredients), 5)
           .map((item) => toTitleCase(item.value));
         const cheapest = [...brandProducts].sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999))[0];
-        return `Brand ${toTitleCase(matchedBrand)}: ${brandProducts.length} products in dataset. Main categories: ${topBrandTypes.join(", ") || "n/a"}. Frequent ingredients: ${topBrandIngredients.join(", ") || "n/a"}. Average price: ${priceTextTnd(avgPrice(brandProducts))}. Example product: ${cheapest.name} (${priceTextTnd(cheapest.price)}).${productLinkText(cheapest)}`;
+        return lineJoin([
+          `Marque: ${toTitleCase(matchedBrand)}`,
+          `- Nombre de produits trouves: ${brandProducts.length}`,
+          `- Categories principales: ${topBrandTypes.map((x) => toTitleCase(x)).join(", ") || "Non disponible"}`,
+          `- Ingredients souvent presents: ${topBrandIngredients.join(", ") || "Non disponible"}`,
+          `- Prix moyen: ${priceTextTnd(avgPrice(brandProducts))}`,
+          `- Exemple abordable: ${formatName(cheapest.name)} (${priceTextTnd(cheapest.price)})`,
+          maybeLinkLine(cheapest),
+        ]);
       }
     }
 
     const topBrandsText = stats.topBrands.slice(0, 8).map((item) => toTitleCase(item.brand)).join(", ");
-    return `Top brands in the dataset: ${topBrandsText}. Ask for a specific brand to get products, ingredients, and price analysis.`;
+    return `Marques populaires dans la base: ${topBrandsText}. Dis-moi une marque et je te donne une reponse claire (produits, prix, ingredients).`;
   }
 
   if (intent === "product_comparison") {
@@ -1855,7 +2166,12 @@ const composeResponse = (
     if (matchedBrands.length >= 2) {
       const leftBrandProducts = productsByBrand(matchedBrands[0], stats);
       const rightBrandProducts = productsByBrand(matchedBrands[1], stats);
-      return `Brand comparison: ${toTitleCase(matchedBrands[0])} (count=${leftBrandProducts.length}, avg price=${priceTextTnd(avgPrice(leftBrandProducts))}) vs ${toTitleCase(matchedBrands[1])} (count=${rightBrandProducts.length}, avg price=${priceTextTnd(avgPrice(rightBrandProducts))}).`;
+      return lineJoin([
+        `Comparaison marques: ${toTitleCase(matchedBrands[0])} vs ${toTitleCase(matchedBrands[1])}`,
+        `- ${toTitleCase(matchedBrands[0])}: ${leftBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(leftBrandProducts))}`,
+        `- ${toTitleCase(matchedBrands[1])}: ${rightBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(rightBrandProducts))}`,
+        "Si tu veux, je peux aussi comparer 2 produits precis de ces marques.",
+      ]);
     }
 
     const namedProducts = findMentionedProducts(question, stats);
@@ -1871,7 +2187,11 @@ const composeResponse = (
     if (mentionedKinds.length >= 2) {
       const leftItems = stats.products.filter((item) => inferProductKind(item) === mentionedKinds[0]);
       const rightItems = stats.products.filter((item) => inferProductKind(item) === mentionedKinds[1]);
-      return `Comparison by category: ${toTitleCase(mentionedKinds[0])} (count=${leftItems.length}, avg price=${priceTextTnd(avgPrice(leftItems))}) vs ${toTitleCase(mentionedKinds[1])} (count=${rightItems.length}, avg price=${priceTextTnd(avgPrice(rightItems))}).`;
+      return lineJoin([
+        `Comparaison categories: ${toTitleCase(mentionedKinds[0])} vs ${toTitleCase(mentionedKinds[1])}`,
+        `- ${toTitleCase(mentionedKinds[0])}: ${leftItems.length} produits, prix moyen ${priceTextTnd(avgPrice(leftItems))}`,
+        `- ${toTitleCase(mentionedKinds[1])}: ${rightItems.length} produits, prix moyen ${priceTextTnd(avgPrice(rightItems))}`,
+      ]);
     }
 
     const leftBrand = findMatchedBrand(question, stats);
@@ -1880,30 +2200,54 @@ const composeResponse = (
       const competitor = stats.topBrands.map((item) => item.brand).find((brand) => brand !== leftBrand);
       if (competitor) {
         const rightBrandProducts = productsByBrand(competitor, stats);
-        return `Brand comparison: ${toTitleCase(leftBrand)} (count=${leftBrandProducts.length}, avg price=${priceTextTnd(avgPrice(leftBrandProducts))}) vs ${toTitleCase(competitor)} (count=${rightBrandProducts.length}, avg price=${priceTextTnd(avgPrice(rightBrandProducts))}).`;
+        return lineJoin([
+          `Comparaison marques: ${toTitleCase(leftBrand)} vs ${toTitleCase(competitor)}`,
+          `- ${toTitleCase(leftBrand)}: ${leftBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(leftBrandProducts))}`,
+          `- ${toTitleCase(competitor)}: ${rightBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(rightBrandProducts))}`,
+        ]);
       }
     }
 
-    return "To compare precisely, provide two product names, two brands, or two categories (example: cleanser vs serum).";
+    return "Pour une comparaison claire, donne-moi 2 produits, 2 marques ou 2 categories (ex: cleanser vs serum).";
   }
 
   if (intent === "routine_advice") {
     const concerns = detectSkinConcerns(question);
     if (concerns.includes("acne") || concerns.includes("oily")) {
-      return "Suggested oily/acne routine: AM = gentle cleanser + niacinamide serum + SPF 30+, PM = gentle cleanser + salicylic active (progressive use) + non-comedogenic moisturizer. Introduce one active at a time every 10-14 days.";
+      return lineJoin([
+        "Routine simple pour peau acneique/grasse:",
+        "- Matin: nettoyant doux + serum niacinamide + SPF 30+",
+        "- Soir: nettoyant doux + actif salicylique (progressivement) + hydratant non comedogene",
+        "Conseil: ajoute un seul actif a la fois.",
+      ]);
     }
 
     if (concerns.includes("dry") || concerns.includes("sensitive")) {
-      return "Suggested dry/sensitive routine: AM = cream cleanser + hydrating serum (hyaluronate/glycerin) + barrier cream + SPF 30+, PM = gentle cleanser + ceramide/panthenol rich moisturizer. Avoid stacking irritating actives.";
+      return lineJoin([
+        "Routine simple pour peau seche/sensible:",
+        "- Matin: nettoyant creme + serum hydratant + creme barriere + SPF 30+",
+        "- Soir: nettoyant doux + creme riche en ceramides/panthenol",
+        "Conseil: evite de cumuler plusieurs actifs irritants.",
+      ]);
     }
 
-    return "Basic routine: AM = gentle cleanser + hydrating serum + SPF 30+, PM = gentle cleanser + one active (niacinamide or mild salicylic acid) + barrier moisturizer. Introduce one new active every 10-14 days.";
+    return lineJoin([
+      "Routine de base:",
+      "- Matin: nettoyant doux + serum hydratant + SPF 30+",
+      "- Soir: nettoyant doux + un actif leger + creme hydratante",
+      "Si tu veux, je peux personnaliser selon ton type de peau.",
+    ]);
   }
 
   if (intent === "price_analysis") {
     const exactProduct = findProductByNameSignal(question, stats);
     if (exactProduct) {
-      return `Price for ${exactProduct.name}: ${priceTextTnd(exactProduct.price)}. Brand: ${toTitleCase(exactProduct.brand)}. Category: ${toTitleCase(exactProduct.type)}.${productLinkText(exactProduct)}`;
+      return lineJoin([
+        `Prix de ${formatName(exactProduct.name)}: ${priceTextTnd(exactProduct.price)}`,
+        `- Marque: ${toTitleCase(exactProduct.brand)}`,
+        `- Categorie: ${toTitleCase(exactProduct.type)}`,
+        maybeLinkLine(exactProduct),
+      ]);
     }
 
     const requestedKind = detectRequestedProductKind(question);
@@ -1912,7 +2256,14 @@ const composeResponse = (
       if (kindProducts.length > 0) {
         const cheapest = [...kindProducts].sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999))[0];
         const priciest = [...kindProducts].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))[0];
-        return `Price analysis for ${toTitleCase(requestedKind)}: ${kindProducts.length} products, average ${priceTextTnd(avgPrice(kindProducts))}. Cheapest: ${cheapest.name} (${priceTextTnd(cheapest.price)}). Most expensive: ${priciest.name} (${priceTextTnd(priciest.price)}).${productLinkText(cheapest)}`;
+        return lineJoin([
+          `Prix pour la categorie ${toTitleCase(requestedKind)}:`,
+          `- Nombre de produits: ${kindProducts.length}`,
+          `- Prix moyen: ${priceTextTnd(avgPrice(kindProducts))}`,
+          `- Moins cher: ${formatName(cheapest.name)} (${priceTextTnd(cheapest.price)})`,
+          `- Plus cher: ${formatName(priciest.name)} (${priceTextTnd(priciest.price)})`,
+          maybeLinkLine(cheapest),
+        ]);
       }
     }
 
@@ -1920,11 +2271,19 @@ const composeResponse = (
     if (matchedBrand) {
       const brandProducts = productsByBrand(matchedBrand, stats);
       if (brandProducts.length > 0) {
-        return `Price analysis for ${matchedBrand.toUpperCase()}: ${brandProducts.length} products, average ${priceTextTnd(avgPrice(brandProducts))}.`;
+        return lineJoin([
+          `Prix pour la marque ${toTitleCase(matchedBrand)}:`,
+          `- Nombre de produits: ${brandProducts.length}`,
+          `- Prix moyen: ${priceTextTnd(avgPrice(brandProducts))}`,
+        ]);
       }
     }
 
-    return `In our data, average price is ${priceTextTnd(stats.avgProductPrice)} for ingredient datasets and ${priceTextTnd(stats.avgSkinCarePrice)} for skin_care. Average rating is ${stats.avgStars}/5.`;
+    return lineJoin([
+      `Dans la base, le prix moyen des produits est ${priceTextTnd(stats.avgProductPrice)}.`,
+      `La note moyenne observee est ${stats.avgStars}/5.`,
+      "Dis-moi un produit ou une marque pour une reponse plus precise.",
+    ]);
   }
 
   if (intent === "ingredient_insight") {
@@ -1933,7 +2292,12 @@ const composeResponse = (
       const ingredientsText = exactProduct.ingredients.length > 0
         ? exactProduct.ingredients.slice(0, 20).map((item) => toTitleCase(item)).join(", ")
         : "Ingredients not available";
-      return `Ingredients in ${exactProduct.name}: ${ingredientsText}. Active ingredients: ${exactProduct.activeIngredients.map((item) => toTitleCase(item)).join(", ") || "none detected"}.`;
+      const activeText = exactProduct.activeIngredients.map((item) => toTitleCase(item)).join(", ") || "Aucun detecte";
+      return lineJoin([
+        `Ingredients de ${formatName(exactProduct.name)}:`,
+        ingredientsText,
+        `Actifs principaux: ${activeText}`,
+      ]);
     }
 
     const requestedKind = detectRequestedProductKind(question);
@@ -1944,7 +2308,11 @@ const composeResponse = (
           kindProducts.flatMap((item) => item.ingredients),
           8
         ).map((item) => toTitleCase(item.value));
-        return `Frequent ingredients for ${toTitleCase(requestedKind)}: ${topKindIngredients.join(", ")}. Analysis based on ${kindProducts.length} products.`;
+        return lineJoin([
+          `Ingredients frequents pour ${toTitleCase(requestedKind)}:`,
+          topKindIngredients.join(", "),
+          `Analyse basee sur ${kindProducts.length} produits.`,
+        ]);
       }
     }
 
@@ -1956,11 +2324,19 @@ const composeResponse = (
           brandProducts.flatMap((item) => item.ingredients),
           8
         ).map((item) => toTitleCase(item.value));
-        return `Frequent ingredients for ${matchedBrand.toUpperCase()}: ${topBrandIngredients.join(", ")}. Analysis based on ${brandProducts.length} products.`;
+        return lineJoin([
+          `Ingredients frequents pour ${toTitleCase(matchedBrand)}:`,
+          topBrandIngredients.join(", "),
+          `Analyse basee sur ${brandProducts.length} produits.`,
+        ]);
       }
     }
 
-    return `Most frequent ingredients in the database are: ${topIngredients}. This analysis is based on ${stats.productsRows} products.`;
+    return lineJoin([
+      "Ingredients les plus frequents dans la base:",
+      topIngredients,
+      `Analyse basee sur ${stats.productsRows} produits.`,
+    ]);
   }
 
   const picked = pickProductByNeed(question, stats);
@@ -1976,10 +2352,21 @@ const composeResponse = (
       ? insight.cautions.join("; ")
       : "No major caution signal detected";
 
-    return `I recommend ${picked.name} (${toTitleCase(picked.type)}). Estimated price: ${priceTextTnd(picked.price)}. Key ingredients: ${ingredientsText}. Expected benefits: ${benefitsText}. Cautions: ${cautionsText}.${productLinkText(picked)}`;
+    return lineJoin([
+      `Je te recommande: ${formatName(picked.name)}`,
+      `- Type: ${toTitleCase(picked.type)}`,
+      `- Prix estime: ${priceTextTnd(picked.price)}`,
+      `- Ingredients cles: ${ingredientsText}`,
+      `- Ce que ce produit peut apporter: ${benefitsText}`,
+      `- Attention: ${cautionsText}`,
+      maybeLinkLine(picked),
+    ]);
   }
 
-  return `I can suggest products from our skincare data (top categories: ${topTypes}). Please provide your skin concern, preferred product type, or budget.`;
+  return lineJoin([
+    `Je peux te proposer des produits adaptes (categories populaires: ${topTypes}).`,
+    "Dis-moi simplement: ton type de peau, ton besoin (acne, taches, sensibilite...) et ton budget.",
+  ]);
 };
 
 const pickIntentWithoutModel = (question: string, stats: DatasetStats): IntentLabel => {
@@ -2033,7 +2420,8 @@ const buildTrainingPipeline = async (
 ): Promise<TrainingPipelineArtifacts> => {
   const trainRatio = options.trainRatio ?? 0.8;
   const stats = await buildStats();
-  const examplesRaw = buildTrainingSet(stats);
+  const feedbackExamples = await loadUserFeedbackExamples();
+  const examplesRaw = uniqueExamples([...buildTrainingSet(stats), ...feedbackExamples]);
   const examplesClean = dedupeExamples(examplesRaw);
   const examplesPreprocessed = preprocessExamples(examplesClean);
 
@@ -2053,6 +2441,7 @@ const buildTrainingPipeline = async (
     split,
     vocabulary,
     labelToIndex,
+    feedbackExamplesLoaded: feedbackExamples.length,
   };
 
   if (options.writeFiles) {
@@ -2090,6 +2479,17 @@ const evaluateModel = async (
       testSize: 0,
       vocabularySize,
       epochs: TRAIN_EPOCHS,
+      confusionHotspots: [],
+      validationBestAccuracy: 0,
+      selectedTrainingConfig: {
+        learningRate: LEARNING_RATE,
+        epochs: TRAIN_EPOCHS,
+        batchSize: 16,
+        units1: 64,
+        units2: 32,
+        dropout1: 0.2,
+        dropout2: 0.1,
+      },
     };
   }
 
@@ -2118,6 +2518,7 @@ type TrainedRuntimeResult = {
   runtime: ChatbotRuntime;
   metrics: ChatbotTrainingMetrics;
   preparedSummary: PreparedDatasetSummary;
+  feedbackExamplesLoaded: number;
 };
 
 const trainWithPipeline = async (
@@ -2136,66 +2537,118 @@ const trainWithPipeline = async (
   const ysTrainIndices = tf.tensor1d(ysTrainBuffer, "int32");
   const ysTrain = tf.oneHot(ysTrainIndices, INTENT_LABELS.length).asType("float32");
 
-  const model = tf.sequential();
-  model.add(
-    tf.layers.dense({
-      name: `chatbot_dense_1_${runId}`,
-      inputShape: [artifacts.vocabulary.length],
-      units: 64,
-      activation: "relu",
-      kernelInitializer: "glorotUniform",
-    })
-  );
-  model.add(tf.layers.dropout({ name: `chatbot_dropout_${runId}`, rate: 0.2 }));
-  model.add(
-    tf.layers.dense({
-      name: `chatbot_dense_mid_${runId}`,
-      units: 32,
-      activation: "relu",
-      kernelInitializer: "glorotUniform",
-    })
-  );
-  model.add(tf.layers.dropout({ name: `chatbot_dropout_mid_${runId}`, rate: 0.1 }));
-  model.add(
-    tf.layers.dense({
-      name: `chatbot_dense_2_${runId}`,
-      units: INTENT_LABELS.length,
-      activation: "softmax",
-    })
-  );
+  const createModel = (config: TrainingConfig, modelSuffix: string): tf.Sequential => {
+    const model = tf.sequential();
+    model.add(
+      tf.layers.dense({
+        name: `chatbot_dense_1_${modelSuffix}`,
+        inputShape: [artifacts.vocabulary.length],
+        units: config.units1,
+        activation: "relu",
+        kernelInitializer: "glorotUniform",
+      })
+    );
+    model.add(tf.layers.dropout({ name: `chatbot_dropout_1_${modelSuffix}`, rate: config.dropout1 }));
+    model.add(
+      tf.layers.dense({
+        name: `chatbot_dense_2_${modelSuffix}`,
+        units: config.units2,
+        activation: "relu",
+        kernelInitializer: "glorotUniform",
+      })
+    );
+    model.add(tf.layers.dropout({ name: `chatbot_dropout_2_${modelSuffix}`, rate: config.dropout2 }));
+    model.add(
+      tf.layers.dense({
+        name: `chatbot_dense_out_${modelSuffix}`,
+        units: INTENT_LABELS.length,
+        activation: "softmax",
+      })
+    );
 
-  model.compile({
-    optimizer: tf.train.adam(LEARNING_RATE),
-    loss: "categoricalCrossentropy",
-    metrics: ["accuracy"],
-  });
+    model.compile({
+      optimizer: tf.train.adam(config.learningRate),
+      loss: "categoricalCrossentropy",
+      metrics: ["accuracy"],
+    });
 
-  await model.fit(xsTrain, ysTrain, {
-    epochs: TRAIN_EPOCHS,
-    batchSize: Math.min(16, artifacts.split.train.length),
-    shuffle: true,
-    validationSplit: Math.min(0.2, Math.max(0.1, 12 / Math.max(artifacts.split.train.length, 1))),
-    verbose: 0,
-  });
+    return model;
+  };
+
+  let bestModel: tf.Sequential | null = null;
+  let bestConfig = TRAINING_CANDIDATES[0];
+  let bestValAcc = -1;
+
+  for (let i = 0; i < TRAINING_CANDIDATES.length; i++) {
+    const config = TRAINING_CANDIDATES[i];
+    const model = createModel(config, `${runId}_${i}`);
+
+    const history = await model.fit(xsTrain, ysTrain, {
+      epochs: config.epochs,
+      batchSize: Math.min(config.batchSize, Math.max(8, artifacts.split.train.length)),
+      shuffle: true,
+      validationSplit: Math.min(0.22, Math.max(0.12, 24 / Math.max(artifacts.split.train.length, 1))),
+      callbacks: [
+        tf.callbacks.earlyStopping({
+          monitor: "val_loss",
+          patience: 10,
+          minDelta: 0.0008,
+        }),
+      ],
+      verbose: 0,
+    });
+
+    const valHistory = (history.history.val_acc || history.history.val_accuracy || []) as number[];
+    const candidateBestVal = valHistory.length > 0 ? Math.max(...valHistory.map((x) => Number(x || 0))) : 0;
+
+    if (candidateBestVal > bestValAcc) {
+      if (bestModel) bestModel.dispose();
+      bestModel = model;
+      bestConfig = config;
+      bestValAcc = candidateBestVal;
+    } else {
+      model.dispose();
+    }
+  }
+
+  const model = bestModel || createModel(bestConfig, `${runId}_fallback`);
 
   xsTrain.dispose();
   ysTrainIndices.dispose();
   ysTrain.dispose();
 
-  const metrics = await evaluateModel(model, artifacts.split, artifacts.vocabulary.length);
+  const metricsBase = await evaluateModel(model, artifacts.split, artifacts.vocabulary.length);
+
+  const runtime: ChatbotRuntime = {
+    model,
+    vocabulary: artifacts.vocabulary,
+    labelToIndex: artifacts.labelToIndex,
+    indexToLabel: INTENT_LABELS,
+    stats: artifacts.stats,
+  };
+
+  const unseenEvaluation = await evaluateUnseenQuestions(runtime);
+  const metrics: ChatbotTrainingMetrics = {
+    ...metricsBase,
+    validationBestAccuracy: round(bestValAcc, 4),
+    selectedTrainingConfig: {
+      learningRate: bestConfig.learningRate,
+      epochs: bestConfig.epochs,
+      batchSize: Math.min(bestConfig.batchSize, Math.max(8, artifacts.split.train.length)),
+      units1: bestConfig.units1,
+      units2: bestConfig.units2,
+      dropout1: bestConfig.dropout1,
+      dropout2: bestConfig.dropout2,
+    },
+    unseenEvaluation,
+  };
 
   if (options.writeFiles) {
     await persistPreparedDatasets(artifacts, metrics);
   }
 
   return {
-    runtime: {
-      model,
-      vocabulary: artifacts.vocabulary,
-      labelToIndex: artifacts.labelToIndex,
-      indexToLabel: INTENT_LABELS,
-      stats: artifacts.stats,
-    },
+    runtime,
     metrics,
     preparedSummary: {
       rawCount: artifacts.examplesRaw.length,
@@ -2204,6 +2657,7 @@ const trainWithPipeline = async (
       testCount: artifacts.split.test.length,
       vocabularySize: artifacts.vocabulary.length,
     },
+    feedbackExamplesLoaded: artifacts.feedbackExamplesLoaded,
   };
 };
 
@@ -2224,7 +2678,7 @@ export const prepareChatbotDatasets = async (): Promise<PreparedDatasetSummary> 
 };
 
 export const trainAndEvaluateChatbotModel = async (): Promise<ChatbotPipelineReport> => {
-  const { metrics, preparedSummary } = await trainWithPipeline({
+  const { metrics, preparedSummary, feedbackExamplesLoaded } = await trainWithPipeline({
     writeFiles: true,
     trainRatio: 0.8,
   });
@@ -2233,7 +2687,29 @@ export const trainAndEvaluateChatbotModel = async (): Promise<ChatbotPipelineRep
     generatedAt: new Date().toISOString(),
     summary: preparedSummary,
     metrics,
+    improvementLoop: {
+      userFeedbackPath: USER_FEEDBACK_DATASET_PATH,
+      loadedFeedbackExamples: feedbackExamplesLoaded,
+    },
   };
+};
+
+export const addUserFeedbackTrainingExample = async (
+  text: string,
+  label: IntentLabel
+): Promise<{ saved: boolean; total: number }> => {
+  const normalizedText = String(text || "").trim();
+  if (!normalizedText || !INTENT_LABELS.includes(label)) {
+    return { saved: false, total: 0 };
+  }
+
+  const existing = await loadUserFeedbackExamples();
+  const merged = uniqueExamples([...existing, { text: normalizedText, label }]);
+
+  await mkdir(path.dirname(USER_FEEDBACK_DATASET_PATH), { recursive: true });
+  await writeFile(USER_FEEDBACK_DATASET_PATH, JSON.stringify(merged, null, 2), "utf-8");
+
+  return { saved: true, total: merged.length };
 };
 
 const getRuntime = async (): Promise<ChatbotRuntime> => {
@@ -2251,7 +2727,7 @@ export const answerChatbotQuestion = async (question: string): Promise<ChatbotAn
   const trimmed = String(question || "").trim();
   if (!trimmed) {
     return {
-      answer: "Ask your skincare question and I will answer with model-backed data.",
+      answer: "Pose ta question skincare (produit, prix, ingredients, comparaison) et je te reponds clairement.",
       confidence: 0,
       intent: "out_of_scope",
       suggestions: buildSuggestions(),
@@ -2279,8 +2755,16 @@ export const answerChatbotQuestion = async (question: string): Promise<ChatbotAn
   const ruleIntent = inferIntentByRules(trimmed, runtime.stats);
   const hasSignal = hasProductOrBrandSignal(trimmed, runtime.stats);
   const inScope = isInScopeQuestion(trimmed, runtime.stats);
+  const explicitRuleIntents = new Set<IntentLabel>([
+    "price_analysis",
+    "ingredient_insight",
+    "brand_info",
+    "product_comparison",
+  ]);
   const intent: IntentLabel = !inScope
     ? "out_of_scope"
+    : explicitRuleIntents.has(ruleIntent)
+      ? ruleIntent
     : bestConfidence >= MIN_CONFIDENCE && predictedIntent !== "out_of_scope"
       ? ruleIntent === "brand_info" || ruleIntent === "product_comparison"
         ? ruleIntent
