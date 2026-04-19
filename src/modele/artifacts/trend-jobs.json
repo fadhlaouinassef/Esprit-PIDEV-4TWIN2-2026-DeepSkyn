@@ -371,5 +371,20 @@
     "startedAt": "2026-04-19T01:44:16.671Z",
     "endedAt": "2026-04-19T01:44:40.681Z",
     "createdModelId": "trend-model-19-04-2026-02-44-15-20260419014440"
+  },
+  {
+    "id": "trend-job-20260419195657-0r4poc",
+    "modelName": "Trend Model 19/04/2026 02:44:15",
+    "mode": "retrain",
+    "targetModelId": "trend-model-19-04-2026-02-44-15-20260419014440",
+    "status": "failed",
+    "logs": [
+      "[2026-04-19T19:56:57.479Z] Training started.",
+      "[2026-04-19T19:56:57.485Z] Switching legacy artifact to target model trend-model-19-04-2026-02-44-15-20260419014440.",
+      "[2026-04-19T19:56:57.647Z] Job failed: ENOENT: no such file or directory, copyfile 'C:\\Users\\Mostfa Charfedin\\Desktop\\azertyuiop\\Esprit-PIDEV-4TWIN2-2026-DeepSkyn\\src\\modele\\artifacts\\models\\trend-model-19-04-2026-02-44-15-20260419014440.json' -> 'C:\\Users\\nasse\\OneDrive\\Bureau\\PI\\deepskyn\\src\\modele\\artifacts\\trend-model.json'"
+    ],
+    "startedAt": "2026-04-19T19:56:57.463Z",
+    "error": "ENOENT: no such file or directory, copyfile 'C:\\Users\\Mostfa Charfedin\\Desktop\\azertyuiop\\Esprit-PIDEV-4TWIN2-2026-DeepSkyn\\src\\modele\\artifacts\\models\\trend-model-19-04-2026-02-44-15-20260419014440.json' -> 'C:\\Users\\nasse\\OneDrive\\Bureau\\PI\\deepskyn\\src\\modele\\artifacts\\trend-model.json'",
+    "endedAt": "2026-04-19T19:56:57.644Z"
   }
 ]
