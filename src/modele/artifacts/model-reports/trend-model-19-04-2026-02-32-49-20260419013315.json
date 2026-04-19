@@ -1,0 +1,94 @@
+{
+  "generatedAt": "2026-04-19T01:35:16.780Z",
+  "runCount": 3,
+  "bestRun": 1,
+  "bestScore": 5,
+  "artifact": {
+    "epochs": 140,
+    "finalLoss": 8.227497261259487e-8,
+    "inputCols": 8,
+    "trainedAt": "2026-04-19T01:35:16.405Z"
+  },
+  "data": {
+    "users": 1,
+    "trainSeries": 1,
+    "valSeriesCount": 1,
+    "testSeriesCount": 1
+  },
+  "metrics": {
+    "temporalCv": {
+      "samples": 3,
+      "mae": 0,
+      "rmse": 0,
+      "directionAccuracy": 100
+    },
+    "strictTest": {
+      "samples": 1,
+      "mae": 0,
+      "rmse": 0,
+      "directionAccuracy": 100
+    }
+  },
+  "runs": [
+    {
+      "run": 1,
+      "trainedAt": "2026-04-19T01:35:16.405Z",
+      "finalLoss": 8.227497261259487e-8,
+      "epochs": 140,
+      "trainUsers": 1,
+      "trainSeries": 1,
+      "val": {
+        "samples": 1,
+        "mae": 5,
+        "rmse": 5,
+        "directionAccuracy": 0
+      },
+      "temporalCv": {
+        "samples": 3,
+        "mae": 0,
+        "rmse": 0,
+        "directionAccuracy": 100
+      }
+    },
+    {
+      "run": 2,
+      "trainedAt": "2026-04-19T01:35:16.614Z",
+      "finalLoss": 5.5127301834545506e-8,
+      "epochs": 140,
+      "trainUsers": 1,
+      "trainSeries": 1,
+      "val": {
+        "samples": 1,
+        "mae": 5,
+        "rmse": 5,
+        "directionAccuracy": 0
+      },
+      "temporalCv": {
+        "samples": 3,
+        "mae": 0,
+        "rmse": 0,
+        "directionAccuracy": 100
+      }
+    },
+    {
+      "run": 3,
+      "trainedAt": "2026-04-19T01:35:16.763Z",
+      "finalLoss": 2.857678680356912e-7,
+      "epochs": 140,
+      "trainUsers": 1,
+      "trainSeries": 1,
+      "val": {
+        "samples": 1,
+        "mae": 5,
+        "rmse": 5,
+        "directionAccuracy": 0
+      },
+      "temporalCv": {
+        "samples": 3,
+        "mae": 0,
+        "rmse": 0,
+        "directionAccuracy": 100
+      }
+    }
+  ]
+}

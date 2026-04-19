@@ -199,7 +199,8 @@
         "faqs": "FAQs",
         "complaints": "Complaints & feedback",
         "profile": "Profile",
-        "systemSettings": "System settings"
+        "systemSettings": "System settings",
+        "manageModels": "Manage Models"
       },
       "subItems": {
         "allUsers": "All users",
@@ -2037,6 +2038,95 @@
   },
   "adminProfilePage": {
     "title": "Admin Profile - DeepSkyn"
+  },
+  "adminModelsPage": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "manageModels": "Manage Models"
+    },
+    "header": {
+      "title": "Trend Model Manager",
+      "subtitle": "Train, compare, validate and activate models without restarting the app."
+    },
+    "buttons": {
+      "refresh": "Refresh",
+      "trainNewModel": "Train New Model",
+      "retrainSelected": "Retrain Selected"
+    },
+    "cards": {
+      "selectedDataset": "Selected model dataset",
+      "activeDataset": "Active model dataset",
+      "legacyDataset": "Legacy dataset (separate)",
+      "datasetSize": "dataset size",
+      "shape": "shape",
+      "shapeMl": "shape ML",
+      "modelsCount": "Number of models"
+    },
+    "table": {
+      "name": "Name",
+      "created": "Created",
+      "datasetSize": "Dataset size",
+      "strictTestMae": "Strict test MAE",
+      "temporalCvMae": "Temporal CV MAE",
+      "actions": "Actions",
+      "noModels": "No models registered yet."
+    },
+    "comparison": {
+      "title": "Old/New comparison",
+      "selectPrompt": "Select a model to compare.",
+      "selected": "Selected",
+      "strictTestMae": "Strict test MAE",
+      "temporalCvMae": "Temporal CV MAE",
+      "datasetSize": "Dataset size",
+      "datasetShape": "Dataset shape",
+      "datasetShapeMl": "Dataset shape ML",
+      "tinyDatasetWarning": "Very small dataset (<= 3 series): values like MAE = 0.000 can appear but are statistically unreliable.",
+      "deltaMaeVsActive": "MAE delta vs active",
+      "better": "better",
+      "worse": "worse"
+    },
+    "jobLogs": {
+      "title": "Job logs",
+      "noActive": "No active job. Start a training run to view logs here.",
+      "status": "Status",
+      "persistMessage": "State is preserved after refresh. Waiting and streaming logs...",
+      "waiting": "Waiting for logs..."
+    },
+    "actions": {
+      "activate": "Activate",
+      "rename": "Rename",
+      "delete": "Delete"
+    },
+    "prompts": {
+      "newModelName": "New model name",
+      "renameModel": "New model name"
+    },
+    "confirm": {
+      "deleteModel": "Delete model \"{name}\"?"
+    },
+    "errors": {
+      "fetchModels": "Failed to fetch models",
+      "fetchJobs": "Failed to fetch jobs",
+      "refresh": "Failed to refresh models.",
+      "poll": "Training job polling failed.",
+      "jobMissing": "Job no longer exists (server restarted or state was purged). Start training again.",
+      "startTraining": "Failed to start training",
+      "startRetrain": "Failed to start retrain",
+      "activate": "Failed to activate model",
+      "rename": "Failed to rename model",
+      "delete": "Failed to delete model"
+    },
+    "tips": {
+      "shape": "Number of training examples x number of features (trainSeries x inputCols).",
+      "shapeMl": "Compact view: users x trainSeries x inputCols.",
+      "datasetSize": "Number of series used to train the model.",
+      "strictTestMae": "Mean absolute error on strict temporal test split. Lower is better.",
+      "temporalCvMae": "Mean absolute error on rolling-origin temporal cross-validation. Lower is better.",
+      "strictTestMaeShort": "Mean absolute error on strict temporal test split. Lower = better precision.",
+      "temporalCvMaeShort": "Mean absolute error on temporal CV. Lower = better generalization.",
+      "datasetShape": "trainSeries x inputCols (training examples x input variables).",
+      "datasetShapeMl": "users x trainSeries x inputCols for model-level reading."
+    }
   },
   "adminAnalyzes": {
     "stats": {
