@@ -60,11 +60,14 @@
     "arden",
     "aromatherapy",
     "aurelia",
+    "autres",
+    "available",
     "aveda",
     "avene",
     "average",
     "b5",
     "baby",
+    "balance",
     "balm",
     "bamboo",
     "bareminerals",
@@ -78,6 +81,7 @@
     "between",
     "bien",
     "bio",
+    "bioderma",
     "blague",
     "blemish",
     "bmi",
@@ -87,11 +91,12 @@
     "book",
     "boost",
     "boosting",
+    "brands",
+    "brandt",
     "bright",
     "brighten",
     "brightening",
     "brown",
-    "brulee",
     "bubble",
     "buffet",
     "build",
@@ -105,7 +110,6 @@
     "care",
     "case",
     "caudalie",
-    "caviar",
     "cc",
     "cell",
     "cellularose",
@@ -117,11 +121,13 @@
     "chapman",
     "charcoal",
     "chatbot",
+    "chemistry",
     "cher",
     "cherche",
     "cherry",
     "circle",
     "classes",
+    "clay",
     "cleanser",
     "cleansing",
     "clear",
@@ -132,6 +138,7 @@
     "combien",
     "combination",
     "comment",
+    "compare",
     "complications",
     "compose",
     "concentrate",
@@ -169,6 +176,7 @@
     "decleor",
     "defense",
     "dehydrated",
+    "dennis",
     "depuff",
     "dermalogica",
     "details",
@@ -237,6 +245,7 @@
     "frank",
     "frequents",
     "friction",
+    "from",
     "garnier",
     "gel",
     "generate",
@@ -283,6 +292,7 @@
     "improvement",
     "indeed",
     "info",
+    "infos",
     "infusion",
     "ingredient",
     "ingredients",
@@ -320,7 +330,6 @@
     "lifting",
     "light",
     "lignes",
-    "lime",
     "line",
     "linked",
     "lip",
@@ -337,6 +346,7 @@
     "many",
     "marine",
     "marque",
+    "marques",
     "mask",
     "masque",
     "matin",
@@ -348,7 +358,6 @@
     "medium",
     "meilleur",
     "men",
-    "mercier",
     "merged",
     "metabolic",
     "metabolique",
@@ -400,7 +409,9 @@
     "one",
     "order",
     "ordinary",
+    "original",
     "origins",
+    "other",
     "overnight",
     "oxidant",
     "oxidants",
@@ -432,6 +443,7 @@
     "possibles",
     "potent",
     "power",
+    "prai",
     "predict",
     "preprocessing",
     "preserve",
@@ -460,6 +472,7 @@
     "rap",
     "rapid",
     "rapidement",
+    "rapideye",
     "reactive",
     "recommandation",
     "recommend",
@@ -483,6 +496,7 @@
     "restores",
     "result",
     "resurgence",
+    "retexturizing",
     "retinol",
     "revitalising",
     "revitalizing",
@@ -490,11 +504,13 @@
     "risk",
     "risque",
     "risques",
+    "rituals",
     "roche",
     "rose",
     "roth",
     "routine",
     "rub",
+    "salcura",
     "salicylic",
     "samples",
     "sanctuary",
@@ -511,6 +527,7 @@
     "shades",
     "sheertint",
     "sheet",
+    "shiseido",
     "should",
     "show",
     "simple",
@@ -518,6 +535,7 @@
     "size",
     "skin",
     "skincare",
+    "skinceuticals",
     "skinesis",
     "skinlongevity",
     "sleep",
@@ -560,6 +578,7 @@
     "superskin",
     "supreme",
     "surge",
+    "svr",
     "synchronized",
     "tan",
     "teen",
@@ -580,6 +599,7 @@
     "tri",
     "triple",
     "tummy",
+    "two",
     "typiques",
     "ultimate",
     "ultra",
@@ -617,14 +637,92 @@
     "youth",
     "zelens"
   ],
-  "vocabularySize": 616,
+  "vocabularySize": 636,
   "labelToIndex": {
     "product_recommendation": 0,
     "price_analysis": 1,
     "ingredient_insight": 2,
-    "routine_advice": 3,
-    "dataset_facts": 4,
-    "health_warning": 5,
-    "out_of_scope": 6
+    "brand_info": 3,
+    "product_comparison": 4,
+    "routine_advice": 5,
+    "dataset_facts": 6,
+    "health_warning": 7,
+    "out_of_scope": 8
+  },
+  "productFeatureSummary": {
+    "productsRows": 1137,
+    "duplicateProductsRemoved": 1141,
+    "missingPriceCount": 2,
+    "missingBrandCount": 1,
+    "missingIngredientsCount": 1,
+    "minProductPrice": 1.95,
+    "maxProductPrice": 230,
+    "avgProductPrice": 23.9,
+    "activeIngredientCoverage": 0.539,
+    "topConcerns": [
+      {
+        "concern": "hydration",
+        "count": 829
+      },
+      {
+        "concern": "sensitivity",
+        "count": 228
+      },
+      {
+        "concern": "aging",
+        "count": 156
+      },
+      {
+        "concern": "acne",
+        "count": 146
+      },
+      {
+        "concern": "spots",
+        "count": 24
+      }
+    ],
+    "topSkinTypes": [],
+    "topIngredients": [
+      {
+        "ingredient": "glycerin",
+        "count": 790
+      },
+      {
+        "ingredient": "phenoxyethanol",
+        "count": 617
+      },
+      {
+        "ingredient": "parfum",
+        "count": 577
+      },
+      {
+        "ingredient": "linalool",
+        "count": 408
+      },
+      {
+        "ingredient": "limonene",
+        "count": 400
+      },
+      {
+        "ingredient": "citric acid",
+        "count": 397
+      },
+      {
+        "ingredient": "disodium edta",
+        "count": 364
+      },
+      {
+        "ingredient": "tocopherol",
+        "count": 359
+      },
+      {
+        "ingredient": "butylene glycol",
+        "count": 335
+      },
+      {
+        "ingredient": "sodium hyaluronate",
+        "count": 304
+      }
+    ]
   }
 }
