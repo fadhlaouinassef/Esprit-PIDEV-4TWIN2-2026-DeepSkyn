@@ -1,0 +1,4210 @@
+[
+  {
+    "text": "quel produit est bon pour peau seche",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "recommend a moisturizer for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne moi une recommandation produit",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "quel est le meilleur produit",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "recommend mask for my skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je cherche mask pour ma peau",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "recommend body wash for my skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je cherche body wash pour ma peau",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "recommend cleanser for my skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je cherche cleanser pour ma peau",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "recommend moisturiser for my skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je cherche moisturiser pour ma peau",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "recommend serum for my skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je cherche serum pour ma peau",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un moisturizer pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best moisturizer for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un cleanser pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best cleanser for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un serum pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best serum for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un toner pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best toner for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un gel pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best gel for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un mask pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best mask for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un exfoliant pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best exfoliant for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un oil pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best oil for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un balm pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best balm for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je veux un eye-care pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "best eye-care for dry skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits clinique",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque clinique",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits clinique",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits roche",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque roche",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits roche",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits garnier",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque garnier",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits garnier",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits paris",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque paris",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits paris",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits pixi",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque pixi",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits pixi",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits elemis",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque elemis",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits elemis",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits lauder",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque lauder",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits lauder",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits decl",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque decl",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits decl",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits holika",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque holika",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits holika",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits caudalie",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque caudalie",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits caudalie",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits elizabeth",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque elizabeth",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits elizabeth",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits ren",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque ren",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits ren",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits sanctuary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque sanctuary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits sanctuary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits molton",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque molton",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits molton",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits ordinary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque ordinary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits ordinary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits bulldog",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque bulldog",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits bulldog",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits lanc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque lanc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits lanc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits sukin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque sukin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits sukin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits westlab",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque westlab",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits westlab",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits apivita",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque apivita",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits apivita",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits first",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque first",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits first",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits weleda",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque weleda",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits weleda",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits cerave",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque cerave",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits cerave",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits neutrogena",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque neutrogena",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits neutrogena",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits murad",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque murad",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits murad",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits origins",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque origins",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits origins",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits nip",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque nip",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits nip",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits aromatherapy",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque aromatherapy",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits aromatherapy",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits peter",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque peter",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits peter",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits nuxe",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque nuxe",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits nuxe",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits ahava",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque ahava",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits ahava",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits bubble",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque bubble",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits bubble",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits liz",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque liz",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits liz",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits neal",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque neal",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits neal",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits medik",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque medik",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits medik",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits dermalogica",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque dermalogica",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits dermalogica",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits natio",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque natio",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits natio",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits dhc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque dhc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits dhc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits frank",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque frank",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits frank",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits jason",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque jason",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits jason",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits avene",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque avene",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits avene",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits pai",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque pai",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits pai",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits vichy",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque vichy",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits vichy",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits darphin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque darphin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits darphin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "tu connais les produits sea",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "donne les produits de la marque sea",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "effets secondaires possibles des produits sea",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Filorga Scrub and Mask 55ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce mask est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de filorga",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Perfectionist Pro Rapid Firm + Lift Serum Hexapeptide-8 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce serum est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de lauder",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder NightWear Plus Anti-Oxidant Night Detox Crème 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce moisturizer est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de lauder",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder DayWear Advanced Multi-Protection Anti-Oxidant Creme SPF15 N/C 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder DayWear Multi-Protection Anti-Oxidant Creme SPF 15 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de origins",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Elizabeth Arden Prevage Advanced Daily Serum",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de elizabeth",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Sarah Chapman Skinesis Liquid Facial D-Stress 75ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce toner est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur toner de sarah",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Dr.Jart+ Ceramidin Cream 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de jart",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit GLAMGLOW Bright Eyes Cream 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de glamglow",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins Plantscription Anti-Aging Power Serum 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de origins",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Perfectionist Pro Rapid Brightening Treatment with Ferment2+ Vitamin C 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Idealist Pore Minimizing Skin Refinisher 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Peter Thomas Roth Retinol Eye Care 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce eye-care est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de peter",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Murad Time Release Blemish Cleanser 200ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce cleanser est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur cleanser de murad",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Redness Solutions Daily Relief Cream 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de clinique",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de darphin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de lauder",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Holika Holika Good Cera Super Ceramide Toner",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur toner de holika",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Smart SPF 15 Custom Repair Moisturiser - Dry to Combination Skin - 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de first",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins GinZing Ultra Hydrating Energy-Boosting Cream Moisturiser 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Murad Hydro-Dynamic™ Ultimate Moisture (50ml)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de murad",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Murad Retinol Youth Renewal Serum Travel Size",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de murad",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Sarah Chapman Skinesis Supersize Overnight Facial Oil 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce oil est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur oil de sarah",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Peter Thomas Roth Peptide 21 Amino Acid Exfoliating Peel Pads - 60 Pads",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce exfoliant est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur exfoliant de peter",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Zelens Triple Action Advanced Eye Cream",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de zelens",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit The Ordinary Buffet Supersize Serum 60ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de ordinary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins GinZing Refreshing Eye Cream to Brighten and Depuff On-the-Go 10ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Chantecaille Bio Lift Mask - 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de chantecaille",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit APIVITA Express Line Reducing Face Mask - Grape 2x8ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de apivita",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Bobbi Brown Extra Eye Repair Cream 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de bobbi",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit benefit It's Potent Brightening Eye Cream 14g",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de benefit",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit bareMinerals Ageless Genius Firming and Wrinkle Smoothing Eye Cream 15g",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "ce gel est il bien pour peau sensible",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur gel de bareminerals",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit bareMinerals Butter Drench Intense Moisurising Day Cream",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de bareminerals",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de clinique",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de dermalogica",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Alpha-H Beauty Sleep Power Peel 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur exfoliant de alpha",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de decl",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Elemis Superfood Cleansing Wash 150ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur cleanser de elemis",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Elemis Pro-Collagen Marine Cream SPF30 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de elemis",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "quel est le prix moyen des produits",
+    "label": "price_analysis"
+  },
+  {
+    "text": "combien coute un soin dans vos donnees",
+    "label": "price_analysis"
+  },
+  {
+    "text": "what is the average skincare price",
+    "label": "price_analysis"
+  },
+  {
+    "text": "produit cher ou pas",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des moisturizer",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des cleanser",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des serum",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des toner",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des gel",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des mask",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des exfoliant",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des oil",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des balm",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix moyen des eye-care",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits clinique",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits roche",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits garnier",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits paris",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits pixi",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits elemis",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits lauder",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits decl",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits holika",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits caudalie",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits elizabeth",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits ren",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits sanctuary",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits molton",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits ordinary",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits bulldog",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits lanc",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits sukin",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits westlab",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits apivita",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits first",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits weleda",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits cerave",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits neutrogena",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits murad",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits origins",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits nip",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits aromatherapy",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits peter",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits nuxe",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits ahava",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits bubble",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits liz",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits neal",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits medik",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits dermalogica",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits natio",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits dhc",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits frank",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits jason",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits avene",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits pai",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits vichy",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits darphin",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix des produits sea",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Filorga Scrub and Mask 55ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Perfectionist Pro Rapid Firm + Lift Serum Hexapeptide-8 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder NightWear Plus Anti-Oxidant Night Detox Crème 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder DayWear Advanced Multi-Protection Anti-Oxidant Creme SPF15 N/C 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder DayWear Multi-Protection Anti-Oxidant Creme SPF 15 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Elizabeth Arden Prevage Advanced Daily Serum",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Sarah Chapman Skinesis Liquid Facial D-Stress 75ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Dr.Jart+ Ceramidin Cream 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de GLAMGLOW Bright Eyes Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Origins Plantscription Anti-Aging Power Serum 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Perfectionist Pro Rapid Brightening Treatment with Ferment2+ Vitamin C 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Idealist Pore Minimizing Skin Refinisher 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Peter Thomas Roth Retinol Eye Care 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Murad Time Release Blemish Cleanser 200ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Redness Solutions Daily Relief Cream 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Holika Holika Good Cera Super Ceramide Toner",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Smart SPF 15 Custom Repair Moisturiser - Dry to Combination Skin - 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Origins GinZing Ultra Hydrating Energy-Boosting Cream Moisturiser 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Murad Hydro-Dynamic™ Ultimate Moisture (50ml)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Murad Retinol Youth Renewal Serum Travel Size",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Sarah Chapman Skinesis Supersize Overnight Facial Oil 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Peter Thomas Roth Peptide 21 Amino Acid Exfoliating Peel Pads - 60 Pads",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Zelens Triple Action Advanced Eye Cream",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de The Ordinary Buffet Supersize Serum 60ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Origins GinZing Refreshing Eye Cream to Brighten and Depuff On-the-Go 10ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Chantecaille Bio Lift Mask - 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de APIVITA Express Line Reducing Face Mask - Grape 2x8ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Bobbi Brown Extra Eye Repair Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de benefit It's Potent Brightening Eye Cream 14g",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de bareMinerals Ageless Genius Firming and Wrinkle Smoothing Eye Cream 15g",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de bareMinerals Butter Drench Intense Moisurising Day Cream",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Alpha-H Beauty Sleep Power Peel 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Elemis Superfood Cleansing Wash 150ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Elemis Pro-Collagen Marine Cream SPF30 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de DECLÉOR Hydra Floral Anti-Pollution Hydrating Rich Cream",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Tan-Luxe Super Glow Body Hyaluronic Self-Tan Serum 150ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Elizabeth Arden Skin Illuminating Advanced Brightening Day Serum (30ml)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de AMELIORATE Intensive Lip Treatment 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de DECLÉOR Jasmine Eye Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de By Terry Cellularose CC Serum 30ml (Various Shades)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Revitalizing Supreme+ Nourishing and Hydrating Dual Phase Treatment Oil 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Origins Clear Improvement Charcoal Honey Mask to Purify and Nourish 75ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de La Roche-Posay Hyalu B5 Eyes 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Murad Resurgence Renewing Eye Cream (15ml)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Repairwear Anti-Gravity Eye Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Lancôme Rénergie Multi-Lift Eye Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Natio Ageless Brightening Eye Cream (20g)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de The Ordinary Natural Moisturising Factors + HA 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de The Ordinary Natural Moisturizing Factors + HA 100ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de bareMinerals SkinLongevity Vital Power Infusion Serum 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Liz Earle Superskin Face Serum 30ml Pump",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Indeed Labs Eysilix Serum 2 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Aurelia Skincare Firm & Replenish Body Serum 250ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Holika Holika Good Cera Super Ceramide Moisture Balm 40ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de APIVITA Express Radiance Face Mask - Pomegranate 2x8ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Lancôme Advanced Génifique Eye Care 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de StriVectin Tri-Phase Daily Glow Toner 147ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Aveda Hand Relief Night Renewal Serum 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Darphin Intral Redness Relief Recovery Balm",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de NIP+FAB Teen Skin Fix Salicylic Acid Sheet Mask",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Chantecaille Hibiscus and Bamboo Exfoliating Cream",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de First Aid Beauty Coconut Skin Smoothie Priming Moisturiser",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de GLAMGLOW Superserum 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de NARS Cosmetics Aqua Gel Luminous Mask",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de PIXI Peel and Polish",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Pep Start Eye Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Origins Modern Friction™ Exfoliator 75ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Laura Mercier Crème Brûlée Crème Body Wash 200ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de NIOD Hydration Vaccine Face Cream 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Murad Oil and Pore Control Mattifier SPF45 PA 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de By Terry Baume De Rose Nutri-Couleur Lip Balm 7g",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de MONU Recovery Balm (50ml)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de AHAVA Single Use 24K Gold Mineral Mud Mask 6ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Lancer Skincare Caviar Lime Acid Peel 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Dermalogica Intensive Eye Repair (15ml)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Lumene Nordic C [Valo] Bright Eyes All-In-One Treatment 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de AMELIORATE Nourishing Body Wash 200ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de AMELIORATE Nourishing Body Wash 60ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Repairwear Laser Focus Smooths, Restores, Refines 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Maybelline Baby Lips Cherry Me",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de By Terry Baume de Rose Flaconnette 7ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de APIVITA Express Intense Moisturizing Face Mask - Cucumber 2x8ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "quels ingredients sont les plus frequents",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredient for hydration",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "niacinamide ou hyaluronic acid",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "donne les actifs importants",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans moisturizer",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans cleanser",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans serum",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans toner",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans gel",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans mask",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans exfoliant",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans oil",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans balm",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients importants dans eye-care",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de clinique",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de roche",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de garnier",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de paris",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de pixi",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de elemis",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de lauder",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de decl",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de holika",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de caudalie",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de elizabeth",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de ren",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de sanctuary",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de molton",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de ordinary",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de bulldog",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de lanc",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de sukin",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de westlab",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de apivita",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de first",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de weleda",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de cerave",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de neutrogena",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de murad",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de origins",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de nip",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de aromatherapy",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de peter",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de nuxe",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de ahava",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de bubble",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de liz",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de neal",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de medik",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de dermalogica",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de natio",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de dhc",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de frank",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de jason",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de avene",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de pai",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de vichy",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de darphin",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients typiques de sea",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Filorga Scrub and Mask 55ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Perfectionist Pro Rapid Firm + Lift Serum Hexapeptide-8 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder NightWear Plus Anti-Oxidant Night Detox Crème 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder DayWear Advanced Multi-Protection Anti-Oxidant Creme SPF15 N/C 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder DayWear Multi-Protection Anti-Oxidant Creme SPF 15 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Elizabeth Arden Prevage Advanced Daily Serum",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Sarah Chapman Skinesis Liquid Facial D-Stress 75ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Dr.Jart+ Ceramidin Cream 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de GLAMGLOW Bright Eyes Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Origins Plantscription Anti-Aging Power Serum 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Perfectionist Pro Rapid Brightening Treatment with Ferment2+ Vitamin C 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Idealist Pore Minimizing Skin Refinisher 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Peter Thomas Roth Retinol Eye Care 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Murad Time Release Blemish Cleanser 200ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Redness Solutions Daily Relief Cream 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Holika Holika Good Cera Super Ceramide Toner",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Smart SPF 15 Custom Repair Moisturiser - Dry to Combination Skin - 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Origins GinZing Ultra Hydrating Energy-Boosting Cream Moisturiser 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Murad Hydro-Dynamic™ Ultimate Moisture (50ml)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Murad Retinol Youth Renewal Serum Travel Size",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Sarah Chapman Skinesis Supersize Overnight Facial Oil 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Peter Thomas Roth Peptide 21 Amino Acid Exfoliating Peel Pads - 60 Pads",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Zelens Triple Action Advanced Eye Cream",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de The Ordinary Buffet Supersize Serum 60ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Origins GinZing Refreshing Eye Cream to Brighten and Depuff On-the-Go 10ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Chantecaille Bio Lift Mask - 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de APIVITA Express Line Reducing Face Mask - Grape 2x8ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Bobbi Brown Extra Eye Repair Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de benefit It's Potent Brightening Eye Cream 14g",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de bareMinerals Ageless Genius Firming and Wrinkle Smoothing Eye Cream 15g",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de bareMinerals Butter Drench Intense Moisurising Day Cream",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Alpha-H Beauty Sleep Power Peel 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Elemis Superfood Cleansing Wash 150ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Elemis Pro-Collagen Marine Cream SPF30 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de DECLÉOR Hydra Floral Anti-Pollution Hydrating Rich Cream",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Tan-Luxe Super Glow Body Hyaluronic Self-Tan Serum 150ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Elizabeth Arden Skin Illuminating Advanced Brightening Day Serum (30ml)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de AMELIORATE Intensive Lip Treatment 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de DECLÉOR Jasmine Eye Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de By Terry Cellularose CC Serum 30ml (Various Shades)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Revitalizing Supreme+ Nourishing and Hydrating Dual Phase Treatment Oil 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Origins Clear Improvement Charcoal Honey Mask to Purify and Nourish 75ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de La Roche-Posay Hyalu B5 Eyes 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Murad Resurgence Renewing Eye Cream (15ml)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Repairwear Anti-Gravity Eye Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Lancôme Rénergie Multi-Lift Eye Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Natio Ageless Brightening Eye Cream (20g)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de The Ordinary Natural Moisturising Factors + HA 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de The Ordinary Natural Moisturizing Factors + HA 100ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de bareMinerals SkinLongevity Vital Power Infusion Serum 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Liz Earle Superskin Face Serum 30ml Pump",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Indeed Labs Eysilix Serum 2 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Aurelia Skincare Firm & Replenish Body Serum 250ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Holika Holika Good Cera Super Ceramide Moisture Balm 40ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de APIVITA Express Radiance Face Mask - Pomegranate 2x8ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Lancôme Advanced Génifique Eye Care 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de StriVectin Tri-Phase Daily Glow Toner 147ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Aveda Hand Relief Night Renewal Serum 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Darphin Intral Redness Relief Recovery Balm",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de NIP+FAB Teen Skin Fix Salicylic Acid Sheet Mask",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Chantecaille Hibiscus and Bamboo Exfoliating Cream",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de First Aid Beauty Coconut Skin Smoothie Priming Moisturiser",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de GLAMGLOW Superserum 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de NARS Cosmetics Aqua Gel Luminous Mask",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de PIXI Peel and Polish",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Pep Start Eye Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Origins Modern Friction™ Exfoliator 75ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Laura Mercier Crème Brûlée Crème Body Wash 200ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de NIOD Hydration Vaccine Face Cream 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Murad Oil and Pore Control Mattifier SPF45 PA 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de By Terry Baume De Rose Nutri-Couleur Lip Balm 7g",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de MONU Recovery Balm (50ml)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de AHAVA Single Use 24K Gold Mineral Mud Mask 6ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Lancer Skincare Caviar Lime Acid Peel 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Dermalogica Intensive Eye Repair (15ml)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Lumene Nordic C [Valo] Bright Eyes All-In-One Treatment 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de AMELIORATE Nourishing Body Wash 200ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de AMELIORATE Nourishing Body Wash 60ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Repairwear Laser Focus Smooths, Restores, Refines 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Maybelline Baby Lips Cherry Me",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de By Terry Baume de Rose Flaconnette 7ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de APIVITA Express Intense Moisturizing Face Mask - Cucumber 2x8ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "quelle routine pour peau sensible",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine matin et soir",
+    "label": "routine_advice"
+  },
+  {
+    "text": "how should i build a routine",
+    "label": "routine_advice"
+  },
+  {
+    "text": "conseil routine anti acne",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi une routine simple pour debutant",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine peau mixte matin soir",
+    "label": "routine_advice"
+  },
+  {
+    "text": "how many steps should my night routine have",
+    "label": "routine_advice"
+  },
+  {
+    "text": "quelle routine pour peau acneique et sensible",
+    "label": "routine_advice"
+  },
+  {
+    "text": "build me an anti dark spot routine",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine minimaliste pour peau reactive",
+    "label": "routine_advice"
+  },
+  {
+    "text": "what order should i apply skincare products",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine with cleanser serum moisturizer spf",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je cherche une routine anti age douce",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you suggest a weekly routine schedule",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine AM PM for dehydrated skin",
+    "label": "routine_advice"
+  },
+  {
+    "text": "comment construire une routine sans irritation",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine visage pour peau seche en hiver",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine ete pour peau grasse",
+    "label": "routine_advice"
+  },
+  {
+    "text": "best beginner skincare routine for men",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please routine matin et soir",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you how should i build a routine",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you conseil routine anti acne",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me donne moi une routine simple pour debutant",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de routine peau mixte matin soir",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux how many steps should my night routine have",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi quelle routine pour peau acneique et sensible",
+    "label": "routine_advice"
+  },
+  {
+    "text": "build me an anti dark spot routine now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please routine minimaliste pour peau reactive now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you what order should i apply skincare products now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you routine with cleanser serum moisturizer spf now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me je cherche une routine anti age douce now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you suggest a weekly routine schedule now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux routine am pm for dehydrated skin now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi comment construire une routine sans irritation now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "routine visage pour peau seche en hiver please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please routine ete pour peau grasse please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you best beginner skincare routine for men please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you quelle routine pour peau sensible please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please routine matin et soir please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you how should i build a routine please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you conseil routine anti acne please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me donne moi une routine simple pour debutant please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de routine peau mixte matin soir with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux how many steps should my night routine have with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi quelle routine pour peau acneique et sensible with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you build me an anti dark spot routine now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please routine minimaliste pour peau reactive now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you what order should i apply skincare products now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you routine with cleanser serum moisturizer spf now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me je cherche une routine anti age douce now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you suggest a weekly routine schedule now in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux routine am pm for dehydrated skin now in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi comment construire une routine sans irritation now in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you routine visage pour peau seche en hiver please in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please routine ete pour peau grasse please in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you best beginner skincare routine for men please in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you quelle routine pour peau sensible please in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please routine matin et soir please in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you how should i build a routine please rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you conseil routine anti acne please rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me donne moi une routine simple pour debutant please rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de routine peau mixte matin soir with details rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux how many steps should my night routine have with details rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi quelle routine pour peau acneique et sensible with details rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you build me an anti dark spot routine now with details rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please routine minimaliste pour peau reactive now with details rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you what order should i apply skincare products now with details en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you routine with cleanser serum moisturizer spf now with details en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me je cherche une routine anti age douce now with details en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de can you suggest a weekly routine schedule now in simple words en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux routine am pm for dehydrated skin now in simple words en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi comment construire une routine sans irritation now in simple words en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you routine visage pour peau seche en hiver please in simple words en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please routine ete pour peau grasse please in simple words en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you best beginner skincare routine for men please in simple words for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you quelle routine pour peau sensible please in simple words for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me please routine matin et soir please in simple words for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de can you how should i build a routine please rapidement for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux could you conseil routine anti acne please rapidement for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me donne moi une routine simple pour debutant please rapidement for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you j ai besoin de routine peau mixte matin soir with details rapidement for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please je veux how many steps should my night routine have with details rapidement for my case",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you build me an anti dark spot routine now with details rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me please routine minimaliste pour peau reactive now with details rapidement",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de can you what order should i apply skincare products now with details en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux could you routine with cleanser serum moisturizer spf now with details en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me je cherche une routine anti age douce now with details en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you suggest a weekly routine schedule now in simple words en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please je veux routine am pm for dehydrated skin now in simple words en francais",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi comment construire une routine sans irritation now in simple words en francais now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you routine visage pour peau seche en hiver please in simple words en francais now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me please routine ete pour peau grasse please in simple words en francais now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de can you best beginner skincare routine for men please in simple words for my case now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux could you quelle routine pour peau sensible please in simple words for my case now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please routine matin et soir please in simple words for my case now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you how should i build a routine please rapidement for my case now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please je veux could you conseil routine anti acne please rapidement for my case now",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me donne moi une routine simple pour debutant please rapidement for my case please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you j ai besoin de routine peau mixte matin soir with details rapidement for my case please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me please je veux how many steps should my night routine have with details rapidement for my case please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi quelle routine pour peau acneique et sensible with details rapidement please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux could you build me an anti dark spot routine now with details rapidement please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please routine minimaliste pour peau reactive now with details rapidement please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you what order should i apply skincare products now with details en francais please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please je veux could you routine with cleanser serum moisturizer spf now with details en francais please",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me je cherche une routine anti age douce now with details en francais with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you j ai besoin de can you suggest a weekly routine schedule now in simple words en francais with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me please je veux routine am pm for dehydrated skin now in simple words en francais with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi comment construire une routine sans irritation now in simple words en francais now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux could you routine visage pour peau seche en hiver please in simple words en francais now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please routine ete pour peau grasse please in simple words en francais now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you best beginner skincare routine for men please in simple words for my case now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "donne moi help me please je veux could you quelle routine pour peau sensible please in simple words for my case now with details",
+    "label": "routine_advice"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please routine matin et soir please in simple words for my case now in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "please je veux could you j ai besoin de can you how should i build a routine please rapidement for my case now in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "can you donne moi help me please je veux could you conseil routine anti acne please rapidement for my case now in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi help me donne moi une routine simple pour debutant please rapidement for my case please in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "help me please je veux could you j ai besoin de routine peau mixte matin soir with details rapidement for my case please in simple words",
+    "label": "routine_advice"
+  },
+  {
+    "text": "combien de lignes dans vos csv",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "what datasets are used",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "statistiques de vos donnees",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "sources du modele",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "how many products are in your merged dataset",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "list the data sources used for training",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "combien de produits uniques apres nettoyage",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "what is the vocabulary size of the model",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "how many train and test samples do you have",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "what csv files are loaded by the chatbot",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "dataset summary please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "statistiques du dataset chatbot",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "nombre de lignes par fichier csv",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "quel est le nombre de classes du modele",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "what are the intent labels",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "how much data is used for training",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "quelle proportion train test utilisez vous",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "dataset quality metrics",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "show me data preprocessing stats",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please what datasets are used",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you statistiques de vos donnees",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you sources du modele",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me how many products are in your merged dataset",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de list the data sources used for training",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux combien de produits uniques apres nettoyage",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi what is the vocabulary size of the model",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "how many train and test samples do you have now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please what csv files are loaded by the chatbot now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you dataset summary please now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you statistiques du dataset chatbot now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me nombre de lignes par fichier csv now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de quel est le nombre de classes du modele now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux what are the intent labels now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi how much data is used for training now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "quelle proportion train test utilisez vous please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please dataset quality metrics please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you show me data preprocessing stats please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you combien de lignes dans vos csv please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please what datasets are used please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you statistiques de vos donnees please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you sources du modele please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me how many products are in your merged dataset please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de list the data sources used for training with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux combien de produits uniques apres nettoyage with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi what is the vocabulary size of the model with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you how many train and test samples do you have now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please what csv files are loaded by the chatbot now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you dataset summary please now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you statistiques du dataset chatbot now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me nombre de lignes par fichier csv now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de quel est le nombre de classes du modele now in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux what are the intent labels now in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi how much data is used for training now in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you quelle proportion train test utilisez vous please in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please dataset quality metrics please in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you show me data preprocessing stats please in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you combien de lignes dans vos csv please in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please what datasets are used please in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you statistiques de vos donnees please rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you sources du modele please rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me how many products are in your merged dataset please rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de list the data sources used for training with details rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux combien de produits uniques apres nettoyage with details rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi what is the vocabulary size of the model with details rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you how many train and test samples do you have now with details rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please what csv files are loaded by the chatbot now with details rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you dataset summary please now with details en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you statistiques du dataset chatbot now with details en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me nombre de lignes par fichier csv now with details en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de quel est le nombre de classes du modele now in simple words en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux what are the intent labels now in simple words en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi how much data is used for training now in simple words en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you quelle proportion train test utilisez vous please in simple words en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please dataset quality metrics please in simple words en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you show me data preprocessing stats please in simple words for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you combien de lignes dans vos csv please in simple words for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me please what datasets are used please in simple words for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de can you statistiques de vos donnees please rapidement for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux could you sources du modele please rapidement for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me how many products are in your merged dataset please rapidement for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you j ai besoin de list the data sources used for training with details rapidement for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please je veux combien de produits uniques apres nettoyage with details rapidement for my case",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you how many train and test samples do you have now with details rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me please what csv files are loaded by the chatbot now with details rapidement",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de can you dataset summary please now with details en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux could you statistiques du dataset chatbot now with details en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me nombre de lignes par fichier csv now with details en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you j ai besoin de quel est le nombre de classes du modele now in simple words en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please je veux what are the intent labels now in simple words en francais",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi how much data is used for training now in simple words en francais now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you quelle proportion train test utilisez vous please in simple words en francais now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me please dataset quality metrics please in simple words en francais now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de can you show me data preprocessing stats please in simple words for my case now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux could you combien de lignes dans vos csv please in simple words for my case now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please what datasets are used please in simple words for my case now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you statistiques de vos donnees please rapidement for my case now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please je veux could you sources du modele please rapidement for my case now",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me how many products are in your merged dataset please rapidement for my case please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you j ai besoin de list the data sources used for training with details rapidement for my case please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me please je veux combien de produits uniques apres nettoyage with details rapidement for my case please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi what is the vocabulary size of the model with details rapidement please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux could you how many train and test samples do you have now with details rapidement please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please what csv files are loaded by the chatbot now with details rapidement please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you dataset summary please now with details en francais please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please je veux could you statistiques du dataset chatbot now with details en francais please",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me nombre de lignes par fichier csv now with details en francais with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you j ai besoin de quel est le nombre de classes du modele now in simple words en francais with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me please je veux what are the intent labels now in simple words en francais with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi how much data is used for training now in simple words en francais now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux could you quelle proportion train test utilisez vous please in simple words en francais now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please dataset quality metrics please in simple words en francais now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you show me data preprocessing stats please in simple words for my case now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "donne moi help me please je veux could you combien de lignes dans vos csv please in simple words for my case now with details",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please what datasets are used please in simple words for my case now in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "please je veux could you j ai besoin de can you statistiques de vos donnees please rapidement for my case now in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "can you donne moi help me please je veux could you sources du modele please rapidement for my case now in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi help me how many products are in your merged dataset please rapidement for my case please in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "help me please je veux could you j ai besoin de list the data sources used for training with details rapidement for my case please in simple words",
+    "label": "dataset_facts"
+  },
+  {
+    "text": "diabete et peau",
+    "label": "health_warning"
+  },
+  {
+    "text": "high glucose impact on skin",
+    "label": "health_warning"
+  },
+  {
+    "text": "risque metabolique",
+    "label": "health_warning"
+  },
+  {
+    "text": "est ce que jai le diabete",
+    "label": "health_warning"
+  },
+  {
+    "text": "is high glucose linked to skin issues",
+    "label": "health_warning"
+  },
+  {
+    "text": "can diabetes affect skin healing",
+    "label": "health_warning"
+  },
+  {
+    "text": "what does high bmi imply for skin health",
+    "label": "health_warning"
+  },
+  {
+    "text": "donnees diabetiques et risques cutanes",
+    "label": "health_warning"
+  },
+  {
+    "text": "explain metabolic risk and skin",
+    "label": "health_warning"
+  },
+  {
+    "text": "does insulin resistance impact acne",
+    "label": "health_warning"
+  },
+  {
+    "text": "is this a medical diagnosis",
+    "label": "health_warning"
+  },
+  {
+    "text": "health warning about glucose and skin",
+    "label": "health_warning"
+  },
+  {
+    "text": "difference between info and diagnosis",
+    "label": "health_warning"
+  },
+  {
+    "text": "can i replace doctor advice with this model",
+    "label": "health_warning"
+  },
+  {
+    "text": "warning for diabetic skincare",
+    "label": "health_warning"
+  },
+  {
+    "text": "quels risques metabolique pour la peau",
+    "label": "health_warning"
+  },
+  {
+    "text": "impact du diabete sur hydratation cutanee",
+    "label": "health_warning"
+  },
+  {
+    "text": "skin complications and elevated glucose",
+    "label": "health_warning"
+  },
+  {
+    "text": "medical disclaimer for your answers",
+    "label": "health_warning"
+  },
+  {
+    "text": "please high glucose impact on skin",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you risque metabolique",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you est ce que jai le diabete",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me is high glucose linked to skin issues",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can diabetes affect skin healing",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux what does high bmi imply for skin health",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi donnees diabetiques et risques cutanes",
+    "label": "health_warning"
+  },
+  {
+    "text": "explain metabolic risk and skin now",
+    "label": "health_warning"
+  },
+  {
+    "text": "please does insulin resistance impact acne now",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you is this a medical diagnosis now",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you health warning about glucose and skin now",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me difference between info and diagnosis now",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can i replace doctor advice with this model now",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux warning for diabetic skincare now",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi quels risques metabolique pour la peau now",
+    "label": "health_warning"
+  },
+  {
+    "text": "impact du diabete sur hydratation cutanee please",
+    "label": "health_warning"
+  },
+  {
+    "text": "please skin complications and elevated glucose please",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you medical disclaimer for your answers please",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you diabete et peau please",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please high glucose impact on skin please",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you risque metabolique please",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you est ce que jai le diabete please",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me is high glucose linked to skin issues please",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can diabetes affect skin healing with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux what does high bmi imply for skin health with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi donnees diabetiques et risques cutanes with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you explain metabolic risk and skin now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please does insulin resistance impact acne now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you is this a medical diagnosis now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you health warning about glucose and skin now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me difference between info and diagnosis now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can i replace doctor advice with this model now in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux warning for diabetic skincare now in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi quels risques metabolique pour la peau now in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you impact du diabete sur hydratation cutanee please in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please skin complications and elevated glucose please in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you medical disclaimer for your answers please in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you diabete et peau please in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please high glucose impact on skin please in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you risque metabolique please rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you est ce que jai le diabete please rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me is high glucose linked to skin issues please rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can diabetes affect skin healing with details rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux what does high bmi imply for skin health with details rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi donnees diabetiques et risques cutanes with details rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you explain metabolic risk and skin now with details rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please does insulin resistance impact acne now with details rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you is this a medical diagnosis now with details en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you health warning about glucose and skin now with details en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me difference between info and diagnosis now with details en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can i replace doctor advice with this model now in simple words en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux warning for diabetic skincare now in simple words en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi quels risques metabolique pour la peau now in simple words en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you impact du diabete sur hydratation cutanee please in simple words en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please skin complications and elevated glucose please in simple words en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you medical disclaimer for your answers please in simple words for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you diabete et peau please in simple words for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me please high glucose impact on skin please in simple words for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can you risque metabolique please rapidement for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux could you est ce que jai le diabete please rapidement for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me is high glucose linked to skin issues please rapidement for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you j ai besoin de can diabetes affect skin healing with details rapidement for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please je veux what does high bmi imply for skin health with details rapidement for my case",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you explain metabolic risk and skin now with details rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me please does insulin resistance impact acne now with details rapidement",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can you is this a medical diagnosis now with details en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux could you health warning about glucose and skin now with details en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me difference between info and diagnosis now with details en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you j ai besoin de can i replace doctor advice with this model now in simple words en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please je veux warning for diabetic skincare now in simple words en francais",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi quels risques metabolique pour la peau now in simple words en francais now",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you impact du diabete sur hydratation cutanee please in simple words en francais now",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me please skin complications and elevated glucose please in simple words en francais now",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can you medical disclaimer for your answers please in simple words for my case now",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux could you diabete et peau please in simple words for my case now",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please high glucose impact on skin please in simple words for my case now",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you risque metabolique please rapidement for my case now",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please je veux could you est ce que jai le diabete please rapidement for my case now",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me is high glucose linked to skin issues please rapidement for my case please",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you j ai besoin de can diabetes affect skin healing with details rapidement for my case please",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me please je veux what does high bmi imply for skin health with details rapidement for my case please",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi donnees diabetiques et risques cutanes with details rapidement please",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux could you explain metabolic risk and skin now with details rapidement please",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please does insulin resistance impact acne now with details rapidement please",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you is this a medical diagnosis now with details en francais please",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please je veux could you health warning about glucose and skin now with details en francais please",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me difference between info and diagnosis now with details en francais with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you j ai besoin de can i replace doctor advice with this model now in simple words en francais with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me please je veux warning for diabetic skincare now in simple words en francais with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi quels risques metabolique pour la peau now in simple words en francais now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux could you impact du diabete sur hydratation cutanee please in simple words en francais now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please skin complications and elevated glucose please in simple words en francais now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "je veux could you j ai besoin de can you medical disclaimer for your answers please in simple words for my case now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "donne moi help me please je veux could you diabete et peau please in simple words for my case now with details",
+    "label": "health_warning"
+  },
+  {
+    "text": "j ai besoin de can you donne moi help me please high glucose impact on skin please in simple words for my case now in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "please je veux could you j ai besoin de can you risque metabolique please rapidement for my case now in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "can you donne moi help me please je veux could you est ce que jai le diabete please rapidement for my case now in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "could you j ai besoin de can you donne moi help me is high glucose linked to skin issues please rapidement for my case please in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "help me please je veux could you j ai besoin de can diabetes affect skin healing with details rapidement for my case please in simple words",
+    "label": "health_warning"
+  },
+  {
+    "text": "raconte une blague",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "write me a poem",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "write me a javascript sorting algorithm",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "tell me a football result",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "compose a rap song",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "quelle est la capitale du japon",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "convert pdf to word",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "who won the world cup",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "solve this calculus equation",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "raconte moi une histoire",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "book me a flight ticket",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "show latest crypto prices",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "write a cover letter",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "generate a logo for my startup",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "predict tomorrow weather",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "comment installer windows",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "find me a movie to watch",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please write me a poem",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you write me a javascript sorting algorithm",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you tell me a football result",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me compose a rap song",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de quelle est la capitale du japon",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux convert pdf to word",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi who won the world cup",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "solve this calculus equation now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please raconte moi une histoire now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you book me a flight ticket now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you show latest crypto prices now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me write a cover letter now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de generate a logo for my startup now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux predict tomorrow weather now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi comment installer windows now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "find me a movie to watch please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please raconte une blague please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please write me a poem please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you write me a javascript sorting algorithm please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you tell me a football result please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me compose a rap song please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de quelle est la capitale du japon please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux convert pdf to word please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi who won the world cup with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please solve this calculus equation now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please raconte moi une histoire now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you book me a flight ticket now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you show latest crypto prices now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me write a cover letter now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de generate a logo for my startup now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux predict tomorrow weather now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi comment installer windows now in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please find me a movie to watch please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please raconte une blague please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please write me a poem please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you write me a javascript sorting algorithm please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you tell me a football result please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me compose a rap song please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux convert pdf to word please rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi who won the world cup with details rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please solve this calculus equation now with details rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please raconte moi une histoire now with details rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you book me a flight ticket now with details rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you show latest crypto prices now with details rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me write a cover letter now with details rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de generate a logo for my startup now with details rapidement",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux predict tomorrow weather now with details en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi comment installer windows now in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please find me a movie to watch please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please raconte une blague please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you please write me a poem please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you can you write me a javascript sorting algorithm please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me could you tell me a football result please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me compose a rap song please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi je veux convert pdf to word please rapidement for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please donne moi who won the world cup with details rapidement for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please solve this calculus equation now with details rapidement for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you please raconte moi une histoire now with details rapidement for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you can you book me a flight ticket now with details rapidement for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me could you show latest crypto prices now with details rapidement for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me write a cover letter now with details rapidement for my case",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi je veux predict tomorrow weather now with details en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please donne moi comment installer windows now in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please find me a movie to watch please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you please raconte une blague please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you can you please write me a poem please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me could you can you write me a javascript sorting algorithm please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me could you tell me a football result please in simple words en francais",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me compose a rap song please in simple words en francais now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words for my case now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please donne moi je veux convert pdf to word please rapidement for my case now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please donne moi who won the world cup with details rapidement for my case now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you please solve this calculus equation now with details rapidement for my case now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you can you please raconte moi une histoire now with details rapidement for my case now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me could you can you book me a flight ticket now with details rapidement for my case now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me could you show latest crypto prices now with details rapidement for my case now",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me write a cover letter now with details rapidement for my case please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi je veux j ai besoin de generate a logo for my startup now with details rapidement please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please donne moi je veux predict tomorrow weather now with details en francais please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please donne moi comment installer windows now in simple words en francais please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you please find me a movie to watch please in simple words en francais please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you can you please raconte une blague please in simple words en francais please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me could you can you please write me a poem please in simple words en francais please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me could you can you write me a javascript sorting algorithm please in simple words en francais please",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me could you tell me a football result please in simple words en francais with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi je veux j ai besoin de help me compose a rap song please in simple words en francais now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words for my case now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please donne moi je veux convert pdf to word please rapidement for my case now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you please donne moi who won the world cup with details rapidement for my case now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you can you please solve this calculus equation now with details rapidement for my case now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me could you can you please raconte moi une histoire now with details rapidement for my case now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me could you can you book me a flight ticket now with details rapidement for my case now with details",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "donne moi je veux j ai besoin de help me could you show latest crypto prices now with details rapidement for my case now in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "please donne moi je veux j ai besoin de help me write a cover letter now with details rapidement for my case please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "can you please donne moi je veux j ai besoin de generate a logo for my startup now with details rapidement please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "could you can you please donne moi je veux predict tomorrow weather now with details en francais please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "help me could you can you please donne moi comment installer windows now in simple words en francais please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "j ai besoin de help me could you can you please find me a movie to watch please in simple words en francais please in simple words",
+    "label": "out_of_scope"
+  },
+  {
+    "text": "je veux j ai besoin de help me could you can you please raconte une blague please in simple words en francais please in simple words",
+    "label": "out_of_scope"
+  }
+]

@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type IntentLabel =
@@ -16,6 +16,74 @@ type CsvRow = Record<string, string>;
 type TrainingExample = {
   text: string;
   label: IntentLabel;
+};
+
+type CleanedTrainingExample = TrainingExample & {
+  cleanedText: string;
+};
+
+type PreprocessedTrainingExample = CleanedTrainingExample & {
+  tokens: string[];
+};
+
+type EncodedTrainingExample = PreprocessedTrainingExample & {
+  vector: number[];
+  labelIndex: number;
+};
+
+type DatasetSplit = {
+  train: EncodedTrainingExample[];
+  test: EncodedTrainingExample[];
+};
+
+type ClassMetrics = {
+  label: IntentLabel;
+  precision: number;
+  recall: number;
+  f1: number;
+  support: number;
+};
+
+export type ChatbotTrainingMetrics = {
+  accuracy: number;
+  macroPrecision: number;
+  macroRecall: number;
+  macroF1: number;
+  classes: ClassMetrics[];
+  confusionMatrix: number[][];
+  trainSize: number;
+  testSize: number;
+  vocabularySize: number;
+  epochs: number;
+};
+
+type PreparedDatasetSummary = {
+  rawCount: number;
+  cleanedCount: number;
+  trainCount: number;
+  testCount: number;
+  vocabularySize: number;
+};
+
+export type ChatbotPipelineReport = {
+  generatedAt: string;
+  summary: PreparedDatasetSummary;
+  metrics: ChatbotTrainingMetrics;
+};
+
+type PrepareDatasetOptions = {
+  trainRatio?: number;
+  writeFiles?: boolean;
+};
+
+type TrainingPipelineArtifacts = {
+  stats: DatasetStats;
+  examplesRaw: TrainingExample[];
+  examplesClean: CleanedTrainingExample[];
+  examplesPreprocessed: PreprocessedTrainingExample[];
+  split: DatasetSplit;
+  vocabulary: string[];
+  labelToIndex: Record<IntentLabel, number>;
 };
 
 type ProductRecord = {
@@ -66,14 +134,6 @@ type ProductInsight = {
   benefits: string[];
   cautions: string[];
   keyIngredients: string[];
-};
-
-type ProductQuestionFocus = {
-  asksIngredients: boolean;
-  asksPrice: boolean;
-  asksEffects: boolean;
-  asksComparison: boolean;
-  asksRecommendation: boolean;
 };
 
 type IngredientRule = {
@@ -189,6 +249,140 @@ const INTENT_LABELS: IntentLabel[] = [
 const TRAIN_EPOCHS = 95;
 const LEARNING_RATE = 0.015;
 const MIN_CONFIDENCE = 0.33;
+
+const MIN_SAMPLES_PER_INTENT: Record<IntentLabel, number> = {
+  product_recommendation: 220,
+  price_analysis: 120,
+  ingredient_insight: 120,
+  routine_advice: 120,
+  dataset_facts: 120,
+  health_warning: 120,
+  out_of_scope: 120,
+};
+
+const MAX_SAMPLES_PER_INTENT: Record<IntentLabel, number> = {
+  product_recommendation: 260,
+  price_analysis: 160,
+  ingredient_insight: 160,
+  routine_advice: 160,
+  dataset_facts: 160,
+  health_warning: 160,
+  out_of_scope: 160,
+};
+
+const EXTRA_INTENT_EXAMPLES: Record<IntentLabel, string[]> = {
+  product_recommendation: [
+    "recommend a light moisturizer for sensitive skin",
+    "suggest a serum for dark spots",
+    "quel produit me conseillez vous pour acne",
+    "best cleanser for oily skin",
+    "je veux une creme hydratante non comedogene",
+  ],
+  price_analysis: [
+    "compare prices between cleansers and serums",
+    "donne moi la fourchette de prix des produits",
+    "which category is the most expensive",
+    "prix moyen des produits pour peau sensible",
+    "is this product expensive in your dataset",
+  ],
+  ingredient_insight: [
+    "explain what ceramides do",
+    "benefits of niacinamide for oily skin",
+    "ingredient analysis for sensitive skin",
+    "quels actifs pour la barriere cutanee",
+    "does salicylic acid help acne",
+  ],
+  routine_advice: [
+    "donne moi une routine simple pour debutant",
+    "routine peau mixte matin soir",
+    "how many steps should my night routine have",
+    "quelle routine pour peau acneique et sensible",
+    "build me an anti dark spot routine",
+    "routine minimaliste pour peau reactive",
+    "what order should i apply skincare products",
+    "routine with cleanser serum moisturizer spf",
+    "je cherche une routine anti age douce",
+    "can you suggest a weekly routine schedule",
+    "routine AM PM for dehydrated skin",
+    "comment construire une routine sans irritation",
+    "routine visage pour peau seche en hiver",
+    "routine ete pour peau grasse",
+    "best beginner skincare routine for men",
+  ],
+  dataset_facts: [
+    "how many products are in your merged dataset",
+    "list the data sources used for training",
+    "combien de produits uniques apres nettoyage",
+    "what is the vocabulary size of the model",
+    "how many train and test samples do you have",
+    "what csv files are loaded by the chatbot",
+    "dataset summary please",
+    "statistiques du dataset chatbot",
+    "nombre de lignes par fichier csv",
+    "quel est le nombre de classes du modele",
+    "what are the intent labels",
+    "how much data is used for training",
+    "quelle proportion train test utilisez vous",
+    "dataset quality metrics",
+    "show me data preprocessing stats",
+  ],
+  health_warning: [
+    "is high glucose linked to skin issues",
+    "can diabetes affect skin healing",
+    "what does high bmi imply for skin health",
+    "donnees diabetiques et risques cutanes",
+    "explain metabolic risk and skin",
+    "does insulin resistance impact acne",
+    "is this a medical diagnosis",
+    "health warning about glucose and skin",
+    "difference between info and diagnosis",
+    "can i replace doctor advice with this model",
+    "warning for diabetic skincare",
+    "quels risques metabolique pour la peau",
+    "impact du diabete sur hydratation cutanee",
+    "skin complications and elevated glucose",
+    "medical disclaimer for your answers",
+  ],
+  out_of_scope: [
+    "write me a javascript sorting algorithm",
+    "tell me a football result",
+    "compose a rap song",
+    "quelle est la capitale du japon",
+    "convert pdf to word",
+    "who won the world cup",
+    "solve this calculus equation",
+    "raconte moi une histoire",
+    "book me a flight ticket",
+    "show latest crypto prices",
+    "write a cover letter",
+    "generate a logo for my startup",
+    "predict tomorrow weather",
+    "comment installer windows",
+    "find me a movie to watch",
+  ],
+};
+
+const VARIANT_PREFIXES = [
+  "",
+  "please ",
+  "can you ",
+  "could you ",
+  "help me ",
+  "j ai besoin de ",
+  "je veux ",
+  "donne moi ",
+];
+
+const VARIANT_SUFFIXES = [
+  "",
+  " now",
+  " please",
+  " with details",
+  " in simple words",
+  " rapidement",
+  " en francais",
+  " for my case",
+];
 
 const PRODUCT_KIND_KEYWORDS: Array<{ kind: string; keywords: string[] }> = [
   { kind: "serum", keywords: ["serum"] },
@@ -488,15 +682,66 @@ const includesAny = (text: string, terms: string[]): boolean => {
   return terms.some((term) => text.includes(term));
 };
 
-const parseQuestionFocus = (question: string): ProductQuestionFocus => {
-  const normalized = normalizeText(question);
-  return {
-    asksIngredients: includesAny(normalized, ["ingredient", "ingredients", "inci", "actif", "composition"]),
-    asksPrice: includesAny(normalized, ["prix", "price", "coute", "cost", "cher", "budget"]),
-    asksEffects: includesAny(normalized, ["effet", "effets", "benefice", "benefices", "side effect", "indesirable", "risque"]),
-    asksComparison: includesAny(normalized, ["ou", "versus", "vs", "compare", "difference", "mieux"]),
-    asksRecommendation: includesAny(normalized, ["recommande", "recommend", "meilleur", "best", "conseille", "adapte"]),
-  };
+const uniqueExamples = (examples: TrainingExample[]): TrainingExample[] => {
+  const seen = new Set<string>();
+  const output: TrainingExample[] = [];
+
+  for (const item of examples) {
+    const normalized = normalizeText(item.text);
+    if (!normalized) continue;
+    const key = `${item.label}::${normalized}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    output.push({ text: item.text.trim(), label: item.label });
+  }
+
+  return output;
+};
+
+const buildVariantText = (text: string, index: number): string => {
+  const prefix = VARIANT_PREFIXES[index % VARIANT_PREFIXES.length];
+  const suffix = VARIANT_SUFFIXES[Math.floor(index / VARIANT_PREFIXES.length) % VARIANT_SUFFIXES.length];
+  const base = normalizeText(text);
+  return `${prefix}${base}${suffix}`.trim();
+};
+
+const rebalanceExamples = (examples: TrainingExample[]): TrainingExample[] => {
+  const byLabel = new Map<IntentLabel, TrainingExample[]>();
+
+  for (const label of INTENT_LABELS) {
+    byLabel.set(label, []);
+  }
+
+  for (const item of uniqueExamples(examples)) {
+    byLabel.get(item.label)?.push(item);
+  }
+
+  for (const label of INTENT_LABELS) {
+    const bucket = byLabel.get(label) || [];
+    const extras = EXTRA_INTENT_EXAMPLES[label] || [];
+
+    for (const text of extras) {
+      bucket.push({ text, label });
+    }
+
+    let idx = 0;
+    while (bucket.length < MIN_SAMPLES_PER_INTENT[label]) {
+      const source = (bucket[idx % bucket.length] || extras[idx % Math.max(extras.length, 1)] || "help") as TrainingExample | string;
+      const sourceText = typeof source === "string" ? source : source.text;
+      bucket.push({
+        text: buildVariantText(sourceText, idx),
+        label,
+      });
+      idx += 1;
+      if (idx > 6000) break;
+    }
+
+    const dedupedBucket = uniqueExamples(bucket);
+    const maxAllowed = MAX_SAMPLES_PER_INTENT[label];
+    byLabel.set(label, dedupedBucket.slice(0, Math.min(dedupedBucket.length, maxAllowed)));
+  }
+
+  return INTENT_LABELS.flatMap((label) => byLabel.get(label) || []);
 };
 
 const detectSkinConcerns = (question: string): string[] => {
@@ -520,11 +765,6 @@ const parseBudgetMax = (question: string): number | null => {
 
   const parsed = Number(match[2]);
   return Number.isFinite(parsed) ? parsed : null;
-};
-
-const buildConcernSummary = (concerns: string[]): string => {
-  if (concerns.length === 0) return "besoins generaux";
-  return concerns.join(", ");
 };
 
 const productsByBrand = (brand: string, stats: DatasetStats): ProductRecord[] => {
@@ -776,18 +1016,7 @@ const buildTrainingSet = (stats: DatasetStats): TrainingExample[] => {
     base.push({ text: `prix de ${title}`, label: "price_analysis" });
   }
 
-  return base;
-};
-
-const buildVocabulary = (examples: TrainingExample[]): string[] => {
-  const bucket = new Set<string>();
-  for (const example of examples) {
-    for (const token of tokenize(example.text)) {
-      bucket.add(token);
-    }
-  }
-
-  return [...bucket].sort();
+  return rebalanceExamples(base);
 };
 
 const vectorize = (text: string, vocabulary: string[]): number[] => {
@@ -804,6 +1033,273 @@ const vectorize = (text: string, vocabulary: string[]): number[] => {
   }
 
   return vector;
+};
+
+const dedupeExamples = (examples: TrainingExample[]): CleanedTrainingExample[] => {
+  const seen = new Set<string>();
+  const cleaned: CleanedTrainingExample[] = [];
+
+  for (const item of examples) {
+    const cleanedText = normalizeText(item.text);
+    if (!cleanedText) continue;
+
+    const key = `${item.label}::${cleanedText}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    cleaned.push({
+      text: item.text.trim(),
+      label: item.label,
+      cleanedText,
+    });
+  }
+
+  return cleaned;
+};
+
+const preprocessExamples = (
+  examples: CleanedTrainingExample[]
+): PreprocessedTrainingExample[] => {
+  return examples
+    .map((item) => ({
+      ...item,
+      tokens: tokenize(item.cleanedText),
+    }))
+    .filter((item) => item.tokens.length > 0);
+};
+
+const buildVocabularyFromPreprocessed = (
+  examples: PreprocessedTrainingExample[]
+): string[] => {
+  const bucket = new Set<string>();
+  for (const example of examples) {
+    for (const token of example.tokens) {
+      bucket.add(token);
+    }
+  }
+
+  return [...bucket].sort();
+};
+
+const encodeExamples = (
+  examples: PreprocessedTrainingExample[],
+  vocabulary: string[],
+  labelToIndex: Record<IntentLabel, number>
+): EncodedTrainingExample[] => {
+  return examples.map((item) => ({
+    ...item,
+    vector: vectorize(item.cleanedText, vocabulary),
+    labelIndex: labelToIndex[item.label],
+  }));
+};
+
+const seededRandom = (seed: number): (() => number) => {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+};
+
+const shuffleWithSeed = <T>(items: T[], seed: number): T[] => {
+  const random = seededRandom(seed);
+  const clone = [...items];
+  for (let i = clone.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    const tmp = clone[i];
+    clone[i] = clone[j];
+    clone[j] = tmp;
+  }
+  return clone;
+};
+
+const stratifiedSplit = (
+  encoded: EncodedTrainingExample[],
+  trainRatio: number
+): DatasetSplit => {
+  const grouped = new Map<IntentLabel, EncodedTrainingExample[]>();
+  for (const item of encoded) {
+    const list = grouped.get(item.label) || [];
+    list.push(item);
+    grouped.set(item.label, list);
+  }
+
+  const train: EncodedTrainingExample[] = [];
+  const test: EncodedTrainingExample[] = [];
+
+  for (const label of INTENT_LABELS) {
+    const rows = grouped.get(label) || [];
+    const shuffled = shuffleWithSeed(rows, 97 + label.length * 17);
+    const minTrain = rows.length > 1 ? 1 : rows.length;
+    const idealTrain = Math.floor(rows.length * trainRatio);
+    const trainCount = Math.min(rows.length - (rows.length > 1 ? 1 : 0), Math.max(minTrain, idealTrain));
+
+    train.push(...shuffled.slice(0, trainCount));
+    test.push(...shuffled.slice(trainCount));
+  }
+
+  return {
+    train: shuffleWithSeed(train, 2026),
+    test: shuffleWithSeed(test, 2602),
+  };
+};
+
+const buildConfusionMatrix = (
+  trueIndices: number[],
+  predictedIndices: number[],
+  classesCount: number
+): number[][] => {
+  const matrix = Array.from({ length: classesCount }, () =>
+    new Array(classesCount).fill(0)
+  );
+
+  for (let i = 0; i < trueIndices.length; i++) {
+    const actual = trueIndices[i] ?? 0;
+    const predicted = predictedIndices[i] ?? 0;
+    matrix[actual][predicted] += 1;
+  }
+
+  return matrix;
+};
+
+const computeMetricsFromConfusion = (matrix: number[][]): ChatbotTrainingMetrics => {
+  const classes: ClassMetrics[] = [];
+  let total = 0;
+  let correct = 0;
+
+  for (let i = 0; i < matrix.length; i++) {
+    const tp = matrix[i][i];
+    const rowSum = matrix[i].reduce((sum, value) => sum + value, 0);
+    const colSum = matrix.reduce((sum, row) => sum + row[i], 0);
+    const fp = colSum - tp;
+    const fn = rowSum - tp;
+    const precision = tp + fp === 0 ? 0 : tp / (tp + fp);
+    const recall = tp + fn === 0 ? 0 : tp / (tp + fn);
+    const f1 = precision + recall === 0 ? 0 : (2 * precision * recall) / (precision + recall);
+
+    classes.push({
+      label: INTENT_LABELS[i],
+      precision: round(precision, 4),
+      recall: round(recall, 4),
+      f1: round(f1, 4),
+      support: rowSum,
+    });
+
+    total += rowSum;
+    correct += tp;
+  }
+
+  const macroPrecision = mean(classes.map((item) => item.precision));
+  const macroRecall = mean(classes.map((item) => item.recall));
+  const macroF1 = mean(classes.map((item) => item.f1));
+
+  return {
+    accuracy: total === 0 ? 0 : round(correct / total, 4),
+    macroPrecision: round(macroPrecision, 4),
+    macroRecall: round(macroRecall, 4),
+    macroF1: round(macroF1, 4),
+    classes,
+    confusionMatrix: matrix,
+    trainSize: 0,
+    testSize: total,
+    vocabularySize: 0,
+    epochs: TRAIN_EPOCHS,
+  };
+};
+
+const persistPreparedDatasets = async (
+  artifacts: TrainingPipelineArtifacts,
+  metrics?: ChatbotTrainingMetrics
+): Promise<void> => {
+  const outputDir = path.join(process.cwd(), "src", "modele", "datasets", "chatbot");
+  const artifactsDir = path.join(process.cwd(), "src", "modele", "artifacts");
+
+  await mkdir(outputDir, { recursive: true });
+  await mkdir(artifactsDir, { recursive: true });
+
+  const rawPath = path.join(outputDir, "raw_training_examples.json");
+  const cleanedPath = path.join(outputDir, "cleaned_training_examples.json");
+  const preprocessedPath = path.join(outputDir, "preprocessed_training_examples.json");
+  const featuresPath = path.join(outputDir, "feature_engineering.json");
+  const splitPath = path.join(outputDir, "train_test_split.json");
+  const reportPath = path.join(artifactsDir, "chatbot-training-report.json");
+
+  await writeFile(rawPath, JSON.stringify(artifacts.examplesRaw, null, 2), "utf-8");
+  await writeFile(
+    cleanedPath,
+    JSON.stringify(
+      artifacts.examplesClean.map((item) => ({
+        text: item.text,
+        label: item.label,
+        cleanedText: item.cleanedText,
+      })),
+      null,
+      2
+    ),
+    "utf-8"
+  );
+  await writeFile(
+    preprocessedPath,
+    JSON.stringify(
+      artifacts.examplesPreprocessed.map((item) => ({
+        text: item.text,
+        label: item.label,
+        cleanedText: item.cleanedText,
+        tokens: item.tokens,
+      })),
+      null,
+      2
+    ),
+    "utf-8"
+  );
+  await writeFile(
+    featuresPath,
+    JSON.stringify(
+      {
+        vocabulary: artifacts.vocabulary,
+        vocabularySize: artifacts.vocabulary.length,
+        labelToIndex: artifacts.labelToIndex,
+      },
+      null,
+      2
+    ),
+    "utf-8"
+  );
+  await writeFile(
+    splitPath,
+    JSON.stringify(
+      {
+        train: artifacts.split.train.map((item) => ({
+          text: item.text,
+          label: item.label,
+          labelIndex: item.labelIndex,
+        })),
+        test: artifacts.split.test.map((item) => ({
+          text: item.text,
+          label: item.label,
+          labelIndex: item.labelIndex,
+        })),
+      },
+      null,
+      2
+    ),
+    "utf-8"
+  );
+
+  if (metrics) {
+    const report: ChatbotPipelineReport = {
+      generatedAt: new Date().toISOString(),
+      summary: {
+        rawCount: artifacts.examplesRaw.length,
+        cleanedCount: artifacts.examplesClean.length,
+        trainCount: artifacts.split.train.length,
+        testCount: artifacts.split.test.length,
+        vocabularySize: artifacts.vocabulary.length,
+      },
+      metrics,
+    };
+    await writeFile(reportPath, JSON.stringify(report, null, 2), "utf-8");
+  }
 };
 
 const pickProductByNeed = (question: string, stats: DatasetStats): ProductRecord | null => {
@@ -844,13 +1340,6 @@ const pickProductByNeed = (question: string, stats: DatasetStats): ProductRecord
     .sort((a, b) => b.score - a.score || (a.product.price ?? 9999) - (b.product.price ?? 9999));
 
   return scored[0]?.product || null;
-};
-
-const findExactProductMatch = (question: string, stats: DatasetStats): ProductRecord | null => {
-  const normalized = normalizeText(question);
-  return (
-    stats.products.find((product) => normalized.includes(normalizeText(product.name))) || null
-  );
 };
 
 const findMatchedBrand = (question: string, stats: DatasetStats): string | null => {
@@ -914,22 +1403,13 @@ const toTnd = (gbp: number): number => {
   return gbp * GBP_TO_TND;
 };
 
-const priceText = (price: number | null): string => {
-  if (price === null || !Number.isFinite(price) || price <= 0) return "prix non disponible";
-  return `${round(toTnd(price), 2)} TND (~${round(price, 2)} GBP)`;
-};
-
 const priceTextTnd = (price: number | null): string => {
   if (price === null || !Number.isFinite(price) || price <= 0) return "prix non disponible";
   return `${round(toTnd(price), 2)} TND`;
 };
 
 const productLinkText = (product: ProductRecord): string => {
-  return product.url ? ` Lien: ${product.url}.` : "";
-};
-
-const formatProductExample = (product: ProductRecord): string => {
-  return `${product.name} (${toTitleCase(product.type)}, ${priceTextTnd(product.price)})${productLinkText(product)}`;
+  return product.url ? ` Link: ${product.url}.` : "";
 };
 
 const buildSuggestions = (): string[] => {
@@ -949,192 +1429,29 @@ const composeResponse = (
   const topIngredients = stats.topIngredients.slice(0, 3).map((item) => item.ingredient).join(", ");
   const topTypes = stats.topProductTypes.slice(0, 3).map((item) => item.type).join(", ");
 
-  if (intent === "product_recommendation") {
-    const focus = parseQuestionFocus(question);
-    const requestedKind = detectRequestedProductKind(question);
+  if (intent === "out_of_scope") {
+    return "I don't know the answer to that question. I can help with skincare products, ingredients, prices, routines, and dataset stats.";
+  }
+
+  if (intent === "dataset_facts") {
+    return `The model was trained on 4 CSV files: skin_care (${stats.skinCareRows} rows), skincare_products_clean (${stats.productsRowsClean}), skincare_productsparapharmacie (${stats.productsRowsParapharmacie}), and diabetes (${stats.diabetesRows}). Deduplicated merged products: ${stats.productsRows}. Current confidence: ${round(confidence, 3)}.`;
+  }
+
+  if (intent === "health_warning") {
+    return `Dataset signal: Outcome=1 ratio in diabetes is about ${round(stats.highRiskDiabetesRatio * 100, 1)}%, average glucose ${stats.avgGlucose}, average BMI ${stats.avgBmi}. This is informational and not a medical diagnosis.`;
+  }
+
+  if (intent === "routine_advice") {
     const concerns = detectSkinConcerns(question);
-    const budgetMax = parseBudgetMax(question);
-    const exactProduct = findExactProductMatch(question, stats);
-
-    if (exactProduct) {
-      const insight = getProductInsight(exactProduct);
-      const ingredientsText = insight.keyIngredients.length
-        ? insight.keyIngredients.join(", ")
-        : "Ingredients non disponibles";
-      const benefitsText = insight.benefits.length
-        ? insight.benefits.join("; ")
-        : "Benefices dependants de la formule complete";
-      const cautionsText = insight.cautions.length
-        ? insight.cautions.join("; ")
-        : "Pas de signal d'alerte majeur detecte";
-      const productKind = toTitleCase(inferProductKind(exactProduct));
-      const urlText = exactProduct.url ? ` Voir le produit: ${exactProduct.url}.` : "";
-
-      if (focus.asksIngredients && !focus.asksEffects && !focus.asksPrice) {
-        return `Voici les ingredients principaux de ${exactProduct.name}: ${ingredientsText}.${urlText}`;
-      }
-
-      if (focus.asksPrice && !focus.asksIngredients && !focus.asksEffects) {
-        return `Le prix estime de ${exactProduct.name} est ${priceTextTnd(exactProduct.price)}.${urlText}`;
-      }
-
-      if (focus.asksEffects && !focus.asksIngredients && !focus.asksPrice) {
-        return `Pour ${exactProduct.name}, les effets attendus sont: ${benefitsText}. Precautions possibles: ${cautionsText}. Profil detecte: ${buildConcernSummary(concerns)}.${urlText}`;
-      }
-
-      return `Voici un resume clair pour ${exactProduct.name} (${productKind}): prix estime ${priceTextTnd(exactProduct.price)}, ingredients cles ${ingredientsText}, effets attendus ${benefitsText}, precautions ${cautionsText}.${urlText}`;
+    if (concerns.includes("acne") || concerns.includes("oily")) {
+      return "Suggested oily/acne routine: AM = gentle cleanser + niacinamide serum + SPF 30+, PM = gentle cleanser + salicylic active (progressive use) + non-comedogenic moisturizer. Introduce one active at a time every 10-14 days.";
     }
 
-    if (requestedKind) {
-      const kindProducts = stats.products
-        .filter((product) => inferProductKind(product) === requestedKind)
-        .sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999));
-
-      if (kindProducts.length > 0 && !findMatchedBrand(question, stats)) {
-        const budgetFiltered = budgetMax
-          ? kindProducts.filter((item) => (item.price ?? 9999) <= budgetMax)
-          : kindProducts;
-        const scopedProducts = budgetFiltered.length > 0 ? budgetFiltered : kindProducts;
-        const avgKindPrice = avgPrice(kindProducts);
-        const preview = scopedProducts
-          .slice(0, 3)
-          .map((item) => formatProductExample(item))
-          .join(" | ");
-
-        if (focus.asksPrice && !focus.asksRecommendation) {
-          return `Pour la categorie ${toTitleCase(requestedKind)}, nous avons ${kindProducts.length} produits. Le prix moyen est ${priceTextTnd(avgKindPrice)}. Exemples utiles: ${preview}`;
-        }
-
-        if (focus.asksIngredients && !focus.asksRecommendation) {
-          const topKindIngredients = countTop(
-            kindProducts.flatMap((item) => item.ingredients),
-            8
-          ).map((item) => toTitleCase(item.value));
-          return `Dans la categorie ${toTitleCase(requestedKind)}, les ingredients les plus frequents sont: ${topKindIngredients.join(", ")}. Analyse basee sur ${kindProducts.length} produits.`;
-        }
-
-        if (focus.asksRecommendation || !focus.asksEffects) {
-          const best = scopedProducts
-            .map((item) => ({
-              item,
-              score: scoreProductForQuestion(item, question, concerns, requestedKind, budgetMax),
-            }))
-            .sort((a, b) => b.score - a.score || (a.item.price ?? 9999) - (b.item.price ?? 9999))[0]?.item;
-
-          if (best) {
-            return `Je vous recommande ${best.name} pour votre besoin (${buildConcernSummary(concerns)}${budgetMax ? `, budget max ${priceTextTnd(budgetMax)}` : ""}). Prix estime: ${priceTextTnd(best.price)}.${productLinkText(best)} Autres options: ${preview}`;
-          }
-
-          return `Je vous propose ${kindProducts[0].name} en premiere option (${priceTextTnd(kindProducts[0].price)}).${productLinkText(kindProducts[0])} Autres options: ${preview}`;
-        }
-      }
+    if (concerns.includes("dry") || concerns.includes("sensitive")) {
+      return "Suggested dry/sensitive routine: AM = cream cleanser + hydrating serum (hyaluronate/glycerin) + barrier cream + SPF 30+, PM = gentle cleanser + ceramide/panthenol rich moisturizer. Avoid stacking irritating actives.";
     }
 
-    const matchedBrand = findMatchedBrand(question, stats);
-    if (matchedBrand) {
-      const brandProducts = productsByBrand(matchedBrand, stats)
-        .sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999));
-
-      if (brandProducts.length > 0) {
-        const preview = brandProducts
-          .slice(0, 3)
-          .map((product) => formatProductExample(product))
-          .join(" | ");
-
-        const cheapest = brandProducts[0];
-        const priciest = [...brandProducts].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))[0];
-
-        if (focus.asksComparison) {
-          const normalized = normalizeText(question);
-          const otherBrand = stats.brands.find(
-            (brand) => brand !== matchedBrand && textHasBrand(normalized, brand)
-          );
-
-          if (otherBrand) {
-            const otherProducts = productsByBrand(otherBrand, stats);
-            const thisAvg = avgPrice(brandProducts);
-            const otherAvg = avgPrice(otherProducts);
-            return `Comparaison ${matchedBrand.toUpperCase()} vs ${otherBrand.toUpperCase()}: ${brandProducts.length} produits contre ${otherProducts.length}. Prix moyen: ${priceTextTnd(thisAvg)} contre ${priceTextTnd(otherAvg)}. Exemples ${matchedBrand.toUpperCase()}: ${preview}`;
-          }
-        }
-
-        if (focus.asksIngredients) {
-          const topBrandIngredients = countTop(
-            brandProducts.flatMap((item) => item.ingredients),
-            8
-          ).map((item) => toTitleCase(item.value));
-          return `Pour la marque ${matchedBrand.toUpperCase()}, les ingredients les plus frequents sont: ${topBrandIngredients.join(", ")}. Analyse sur ${brandProducts.length} produits.`;
-        }
-
-        if (focus.asksPrice) {
-          return `Pour ${matchedBrand.toUpperCase()}, j'ai trouve ${brandProducts.length} produits. Prix moyen: ${priceTextTnd(avgPrice(brandProducts))}. Le moins cher: ${cheapest.name} (${priceTextTnd(cheapest.price)}). Le plus cher: ${priciest.name} (${priceTextTnd(priciest.price)}).`;
-        }
-
-        if (focus.asksEffects) {
-          const representative = pickProductByNeed(question, stats) || cheapest;
-          const insight = getProductInsight(representative);
-          const benefitsText = insight.benefits.length
-            ? insight.benefits.join("; ")
-            : "Benefices dependants de la formule precise";
-          const cautionsText = insight.cautions.length
-            ? insight.cautions.join("; ")
-            : "Pas de signal d'alerte majeur detecte";
-          return `Pour la marque ${matchedBrand.toUpperCase()}, un bon exemple est ${representative.name}. Effets attendus: ${benefitsText}. Precautions possibles: ${cautionsText}.${productLinkText(representative)}`;
-        }
-
-        if (focus.asksRecommendation) {
-          const scopedByBudget = budgetMax
-            ? brandProducts.filter((item) => (item.price ?? 9999) <= budgetMax)
-            : brandProducts;
-          const candidates = scopedByBudget.length > 0 ? scopedByBudget : brandProducts;
-          const recommended = [...candidates]
-            .map((item) => ({
-              item,
-              score: scoreProductForQuestion(item, question, concerns, requestedKind, budgetMax),
-            }))
-            .sort((a, b) => b.score - a.score || (a.item.price ?? 9999) - (b.item.price ?? 9999))[0]?.item;
-
-          if (!recommended) {
-            return `Marque detectee: ${matchedBrand.toUpperCase()}. Aucun produit n'a pu etre recommande pour ce contexte.`;
-          }
-
-          return `Je vous recommande ${recommended.name} (${toTitleCase(recommended.type)}) pour la marque ${matchedBrand.toUpperCase()}. Prix estime: ${priceTextTnd(recommended.price)}.${productLinkText(recommended)} Alternatives: ${preview}`;
-        }
-
-        return `Voici ce que j'ai trouve pour la marque ${matchedBrand.toUpperCase()}: ${brandProducts.length} produits. Exemples: ${preview} Vous pouvez me demander le prix, les ingredients, les effets ou une recommandation personnalisee.`;
-      }
-    }
-
-    const picked = pickProductByNeed(question, stats);
-    const selected = picked?.name || stats.topRatedTitles[0] || "CeraVe Facial Moisturising Lotion SPF 25";
-    const selectedPrice = picked?.price ?? null;
-    const insight = picked ? getProductInsight(picked) : null;
-    const ingredientsText = insight?.keyIngredients.length
-      ? insight.keyIngredients.join(", ")
-      : "Ingredients non disponibles";
-    const benefitsText = insight?.benefits.length
-      ? insight.benefits.join("; ")
-      : "Benefices dependants de la formule complete";
-    const cautionsText = insight?.cautions.length
-      ? insight.cautions.join("; ")
-      : "Pas de signal d'alerte majeur detecte dans les ingredients disponibles";
-    const typeText = picked?.type ? toTitleCase(picked.type) : "General";
-    const sourceText = picked?.source ? picked.source : "clean";
-    const urlText = picked?.url ? ` Voir le produit: ${picked.url}.` : "";
-
-    if (focus.asksIngredients && !focus.asksEffects && !focus.asksPrice) {
-      return `Pour ${selected}, les ingredients cles sont: ${ingredientsText}.${urlText}`;
-    }
-
-    if (focus.asksPrice && !focus.asksIngredients && !focus.asksEffects) {
-      return `Le prix estime de ${selected} (${typeText}) est ${priceTextTnd(selectedPrice)}. Estimation basee sur notre base de produits.${urlText}`;
-    }
-
-    if (focus.asksEffects && !focus.asksIngredients && !focus.asksPrice) {
-      return `Pour ${selected}, les effets attendus sont: ${benefitsText}. Precautions possibles: ${cautionsText}.${urlText}`;
-    }
-
-    return `Je vous recommande ${selected} (${typeText}). Prix estime: ${priceTextTnd(selectedPrice)}. Pourquoi ce choix: correspondance avec votre question et notre base de ${stats.productsRows} produits (${topTypes}). Ingredients cles: ${ingredientsText}. Effets attendus: ${benefitsText}. Precautions: ${cautionsText}. Source: ${sourceText}.${urlText}`;
+    return "Basic routine: AM = gentle cleanser + hydrating serum + SPF 30+, PM = gentle cleanser + one active (niacinamide or mild salicylic acid) + barrier moisturizer. Introduce one new active every 10-14 days.";
   }
 
   if (intent === "price_analysis") {
@@ -1144,7 +1461,7 @@ const composeResponse = (
       if (kindProducts.length > 0) {
         const cheapest = [...kindProducts].sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999))[0];
         const priciest = [...kindProducts].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))[0];
-        return `Prix pour ${toTitleCase(requestedKind)}: ${kindProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(kindProducts))}. Le moins cher: ${cheapest.name} (${priceTextTnd(cheapest.price)}). Le plus cher: ${priciest.name} (${priceTextTnd(priciest.price)}).${productLinkText(cheapest)}`;
+        return `Price analysis for ${toTitleCase(requestedKind)}: ${kindProducts.length} products, average ${priceTextTnd(avgPrice(kindProducts))}. Cheapest: ${cheapest.name} (${priceTextTnd(cheapest.price)}). Most expensive: ${priciest.name} (${priceTextTnd(priciest.price)}).${productLinkText(cheapest)}`;
       }
     }
 
@@ -1152,11 +1469,11 @@ const composeResponse = (
     if (matchedBrand) {
       const brandProducts = productsByBrand(matchedBrand, stats);
       if (brandProducts.length > 0) {
-        return `Prix pour ${matchedBrand.toUpperCase()}: ${brandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(brandProducts))}.`;
+        return `Price analysis for ${matchedBrand.toUpperCase()}: ${brandProducts.length} products, average ${priceTextTnd(avgPrice(brandProducts))}.`;
       }
     }
 
-    return `Dans nos donnees, le prix moyen est ${priceTextTnd(stats.avgProductPrice)} pour la base ingredients et ${priceTextTnd(stats.avgSkinCarePrice)} pour la base skin_care. Note moyenne observee: ${stats.avgStars}/5.`;
+    return `In our data, average price is ${priceTextTnd(stats.avgProductPrice)} for ingredient datasets and ${priceTextTnd(stats.avgSkinCarePrice)} for skin_care. Average rating is ${stats.avgStars}/5.`;
   }
 
   if (intent === "ingredient_insight") {
@@ -1168,7 +1485,7 @@ const composeResponse = (
           kindProducts.flatMap((item) => item.ingredients),
           8
         ).map((item) => toTitleCase(item.value));
-        return `Ingredients frequents pour ${toTitleCase(requestedKind)}: ${topKindIngredients.join(", ")}. Analyse sur ${kindProducts.length} produits.`;
+        return `Frequent ingredients for ${toTitleCase(requestedKind)}: ${topKindIngredients.join(", ")}. Analysis based on ${kindProducts.length} products.`;
       }
     }
 
@@ -1180,35 +1497,30 @@ const composeResponse = (
           brandProducts.flatMap((item) => item.ingredients),
           8
         ).map((item) => toTitleCase(item.value));
-        return `Ingredients frequents pour la marque ${matchedBrand.toUpperCase()}: ${topBrandIngredients.join(", ")}. Analyse sur ${brandProducts.length} produits.`;
+        return `Frequent ingredients for ${matchedBrand.toUpperCase()}: ${topBrandIngredients.join(", ")}. Analysis based on ${brandProducts.length} products.`;
       }
     }
 
-    return `Les ingredients les plus frequents dans la base sont: ${topIngredients}. Cette analyse est basee sur ${stats.productsRows} produits.`;
+    return `Most frequent ingredients in the database are: ${topIngredients}. This analysis is based on ${stats.productsRows} products.`;
   }
 
-  if (intent === "routine_advice") {
-    const concerns = detectSkinConcerns(question);
-    if (concerns.includes("acne") || concerns.includes("oily")) {
-      return "Routine ciblee peau grasse/imparfaite: AM = cleanser doux + serum niacinamide + SPF 30+, PM = cleanser doux + actif salicylique progressif + hydratant non comedogene. Introduire un seul actif a la fois sur 10-14 jours.";
-    }
+  const picked = pickProductByNeed(question, stats);
+  if (picked) {
+    const insight = getProductInsight(picked);
+    const ingredientsText = insight.keyIngredients.length
+      ? insight.keyIngredients.join(", ")
+      : "Ingredients not available";
+    const benefitsText = insight.benefits.length
+      ? insight.benefits.join("; ")
+      : "Benefits depend on full formula";
+    const cautionsText = insight.cautions.length
+      ? insight.cautions.join("; ")
+      : "No major caution signal detected";
 
-    if (concerns.includes("dry") || concerns.includes("sensitive")) {
-      return "Routine ciblee peau seche/sensible: AM = cleanser creme doux + serum hydratant (hyaluronate/glycerin) + creme barriere + SPF 30+, PM = cleanser doux + creme riche ceramides/panthenol. Eviter la surcharge d'actifs irritants.";
-    }
-
-    return "Precise routine: AM = gentle cleanser + hydrating serum + SPF 30+, PM = gentle cleanser + one active (niacinamide or mild salicylic acid) + barrier moisturizer. Add only one new active every 10-14 days.";
+    return `I recommend ${picked.name} (${toTitleCase(picked.type)}). Estimated price: ${priceTextTnd(picked.price)}. Key ingredients: ${ingredientsText}. Expected benefits: ${benefitsText}. Cautions: ${cautionsText}.${productLinkText(picked)}`;
   }
 
-  if (intent === "dataset_facts") {
-    return `Le modele est entraine avec 4 CSV: skin_care (${stats.skinCareRows} lignes), skincare_products_clean (${stats.productsRowsClean}), skincare_productsparapharmacie (${stats.productsRowsParapharmacie}), diabetes (${stats.diabetesRows}). Produits fusionnes (sans doublons): ${stats.productsRows}. Confiance courante: ${round(confidence, 3)}.`;
-  }
-
-  if (intent === "health_warning") {
-    return `Dataset signal: Outcome=1 ratio in diabetes is about ${round(stats.highRiskDiabetesRatio * 100, 1)}%, average glucose ${stats.avgGlucose}, average BMI ${stats.avgBmi}. This is informational and not a medical diagnosis.`;
-  }
-
-  return "I can answer precisely about product recommendations, ingredients, prices, routines, and CSV statistics. Please rephrase your question within that scope.";
+  return `I can suggest products from our skincare data (top categories: ${topTypes}). Please provide your skin concern, preferred product type, or budget.`;
 };
 
 const pickIntentWithoutModel = (question: string, stats: DatasetStats): IntentLabel => {
@@ -1259,31 +1571,154 @@ const pickIntentWithoutModel = (question: string, stats: DatasetStats): IntentLa
   return "out_of_scope";
 };
 
-const trainRuntime = async (): Promise<ChatbotRuntime> => {
-  await tf.ready();
-  await tf.setBackend("cpu");
+const isInScopeQuestion = (question: string, stats: DatasetStats): boolean => {
+  const normalized = normalizeText(question);
 
+  if (hasProductOrBrandSignal(question, stats)) return true;
+
+  const scopeTerms = [
+    "skin",
+    "skincare",
+    "peau",
+    "product",
+    "produit",
+    "ingredient",
+    "ingredients",
+    "price",
+    "prix",
+    "routine",
+    "acne",
+    "oily",
+    "dry",
+    "sensitive",
+    "serum",
+    "cleanser",
+    "moisturizer",
+    "spf",
+    "dataset",
+    "csv",
+    "diabetes",
+    "glucose",
+    "bmi",
+    "metabolic",
+  ];
+
+  return scopeTerms.some((term) => normalized.includes(term));
+};
+
+const buildTrainingPipeline = async (
+  options: PrepareDatasetOptions = {}
+): Promise<TrainingPipelineArtifacts> => {
+  const trainRatio = options.trainRatio ?? 0.8;
   const stats = await buildStats();
-  const examples = buildTrainingSet(stats);
-  const vocabulary = buildVocabulary(examples);
-  const runId = `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+  const examplesRaw = buildTrainingSet(stats);
+  const examplesClean = dedupeExamples(examplesRaw);
+  const examplesPreprocessed = preprocessExamples(examplesClean);
 
   const labelToIndex = Object.fromEntries(
     INTENT_LABELS.map((label, index) => [label, index])
   ) as Record<IntentLabel, number>;
 
-  const xsBuffer = examples.map((example) => vectorize(example.text, vocabulary));
-  const ysBuffer = examples.map((example) => labelToIndex[example.label]);
+  const vocabulary = buildVocabularyFromPreprocessed(examplesPreprocessed);
+  const encoded = encodeExamples(examplesPreprocessed, vocabulary, labelToIndex);
+  const split = stratifiedSplit(encoded, trainRatio);
 
-  const xs = tf.tensor2d(xsBuffer, [xsBuffer.length, vocabulary.length]);
-  const ysIndices = tf.tensor1d(ysBuffer, "int32");
-  const ys = tf.oneHot(ysIndices, INTENT_LABELS.length).asType("float32");
+  const artifacts: TrainingPipelineArtifacts = {
+    stats,
+    examplesRaw,
+    examplesClean,
+    examplesPreprocessed,
+    split,
+    vocabulary,
+    labelToIndex,
+  };
+
+  if (options.writeFiles) {
+    await persistPreparedDatasets(artifacts);
+  }
+
+  return artifacts;
+};
+
+const evaluateModel = async (
+  model: tf.Sequential,
+  split: DatasetSplit,
+  vocabularySize: number
+): Promise<ChatbotTrainingMetrics> => {
+  const testVectors = split.test.map((item) => item.vector);
+  const trueIndices = split.test.map((item) => item.labelIndex);
+
+  if (testVectors.length === 0) {
+    return {
+      accuracy: 0,
+      macroPrecision: 0,
+      macroRecall: 0,
+      macroF1: 0,
+      classes: INTENT_LABELS.map((label) => ({
+        label,
+        precision: 0,
+        recall: 0,
+        f1: 0,
+        support: 0,
+      })),
+      confusionMatrix: Array.from({ length: INTENT_LABELS.length }, () =>
+        new Array(INTENT_LABELS.length).fill(0)
+      ),
+      trainSize: split.train.length,
+      testSize: 0,
+      vocabularySize,
+      epochs: TRAIN_EPOCHS,
+    };
+  }
+
+  const xTest = tf.tensor2d(testVectors, [testVectors.length, vocabularySize]);
+  const predictionsTensor = model.predict(xTest) as tf.Tensor;
+  const predictedIndicesTensor = predictionsTensor.argMax(1);
+  const predictedIndices = Array.from(await predictedIndicesTensor.data()).map((x) => Number(x));
+
+  xTest.dispose();
+  predictionsTensor.dispose();
+  predictedIndicesTensor.dispose();
+
+  const confusionMatrix = buildConfusionMatrix(trueIndices, predictedIndices, INTENT_LABELS.length);
+  const summary = computeMetricsFromConfusion(confusionMatrix);
+
+  return {
+    ...summary,
+    trainSize: split.train.length,
+    testSize: split.test.length,
+    vocabularySize,
+    epochs: TRAIN_EPOCHS,
+  };
+};
+
+type TrainedRuntimeResult = {
+  runtime: ChatbotRuntime;
+  metrics: ChatbotTrainingMetrics;
+  preparedSummary: PreparedDatasetSummary;
+};
+
+const trainWithPipeline = async (
+  options: PrepareDatasetOptions = {}
+): Promise<TrainedRuntimeResult> => {
+  await tf.ready();
+  await tf.setBackend("cpu");
+
+  const artifacts = await buildTrainingPipeline(options);
+  const runId = `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+
+  const xsTrainBuffer = artifacts.split.train.map((item) => item.vector);
+  const ysTrainBuffer = artifacts.split.train.map((item) => item.labelIndex);
+
+  const xsTrain = tf.tensor2d(xsTrainBuffer, [xsTrainBuffer.length, artifacts.vocabulary.length]);
+  const ysTrainIndices = tf.tensor1d(ysTrainBuffer, "int32");
+  const ysTrain = tf.oneHot(ysTrainIndices, INTENT_LABELS.length).asType("float32");
 
   const model = tf.sequential();
   model.add(
     tf.layers.dense({
       name: `chatbot_dense_1_${runId}`,
-      inputShape: [vocabulary.length],
+      inputShape: [artifacts.vocabulary.length],
       units: 64,
       activation: "relu",
       kernelInitializer: "glorotUniform",
@@ -1313,24 +1748,69 @@ const trainRuntime = async (): Promise<ChatbotRuntime> => {
     metrics: ["accuracy"],
   });
 
-  await model.fit(xs, ys, {
+  await model.fit(xsTrain, ysTrain, {
     epochs: TRAIN_EPOCHS,
-    batchSize: Math.min(16, examples.length),
+    batchSize: Math.min(16, artifacts.split.train.length),
     shuffle: true,
-    validationSplit: 0.15,
+    validationSplit: Math.min(0.2, Math.max(0.1, 12 / Math.max(artifacts.split.train.length, 1))),
     verbose: 0,
   });
 
-  xs.dispose();
-  ysIndices.dispose();
-  ys.dispose();
+  xsTrain.dispose();
+  ysTrainIndices.dispose();
+  ysTrain.dispose();
+
+  const metrics = await evaluateModel(model, artifacts.split, artifacts.vocabulary.length);
+
+  if (options.writeFiles) {
+    await persistPreparedDatasets(artifacts, metrics);
+  }
 
   return {
-    model,
-    vocabulary,
-    labelToIndex,
-    indexToLabel: INTENT_LABELS,
-    stats,
+    runtime: {
+      model,
+      vocabulary: artifacts.vocabulary,
+      labelToIndex: artifacts.labelToIndex,
+      indexToLabel: INTENT_LABELS,
+      stats: artifacts.stats,
+    },
+    metrics,
+    preparedSummary: {
+      rawCount: artifacts.examplesRaw.length,
+      cleanedCount: artifacts.examplesClean.length,
+      trainCount: artifacts.split.train.length,
+      testCount: artifacts.split.test.length,
+      vocabularySize: artifacts.vocabulary.length,
+    },
+  };
+};
+
+const trainRuntime = async (): Promise<ChatbotRuntime> => {
+  const { runtime } = await trainWithPipeline({ writeFiles: false, trainRatio: 0.8 });
+  return runtime;
+};
+
+export const prepareChatbotDatasets = async (): Promise<PreparedDatasetSummary> => {
+  const artifacts = await buildTrainingPipeline({ writeFiles: true, trainRatio: 0.8 });
+  return {
+    rawCount: artifacts.examplesRaw.length,
+    cleanedCount: artifacts.examplesClean.length,
+    trainCount: artifacts.split.train.length,
+    testCount: artifacts.split.test.length,
+    vocabularySize: artifacts.vocabulary.length,
+  };
+};
+
+export const trainAndEvaluateChatbotModel = async (): Promise<ChatbotPipelineReport> => {
+  const { metrics, preparedSummary } = await trainWithPipeline({
+    writeFiles: true,
+    trainRatio: 0.8,
+  });
+
+  return {
+    generatedAt: new Date().toISOString(),
+    summary: preparedSummary,
+    metrics,
   };
 };
 
@@ -1375,8 +1855,11 @@ export const answerChatbotQuestion = async (question: string): Promise<ChatbotAn
   const bestConfidence = probabilities[bestIndex] || 0;
   const predictedIntent = runtime.indexToLabel[bestIndex] || "out_of_scope";
   const hasSignal = hasProductOrBrandSignal(trimmed, runtime.stats);
+  const inScope = isInScopeQuestion(trimmed, runtime.stats);
   const intent: IntentLabel = hasSignal
     ? "product_recommendation"
+    : !inScope
+      ? "out_of_scope"
     : bestConfidence >= MIN_CONFIDENCE
       ? predictedIntent
       : "out_of_scope";
@@ -1405,7 +1888,9 @@ export const answerChatbotQuestionWithoutModel = async (
   }
 
   const stats = await buildStats();
-  const intent = pickIntentWithoutModel(trimmed, stats);
+  const intent = isInScopeQuestion(trimmed, stats)
+    ? pickIntentWithoutModel(trimmed, stats)
+    : "out_of_scope";
   const confidence = intent === "out_of_scope" ? 0.25 : 0.61;
 
   return {
