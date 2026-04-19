@@ -1,4 +1,4 @@
-import * as tf from "@tensorflow/tfjs";
+﻿import * as tf from "@tensorflow/tfjs";
 
 export type TrendDirection = "improving" | "declining" | "stable";
 export type TrendLocale = "en" | "fr" | "ar";
@@ -62,6 +62,209 @@ const TRAIN_EPOCHS = 140;
 type TrainingRow = {
   x: number[];
   y: number;
+};
+
+type CachedTrendModel = {
+  signature: string;
+  model: tf.Sequential;
+  xMeans: number[];
+  xStds: number[];
+  yMean: number;
+  yStd: number;
+  finalLoss: number;
+  epochs: number;
+};
+
+export type SerializedDenseLayer = {
+  kernel: number[];
+  kernelShape: number[];
+  bias: number[];
+  biasShape: number[];
+};
+
+export type SerializedTrendModelArtifact = {
+  version: number;
+  inputCols: number;
+  xMeans: number[];
+  xStds: number[];
+  yMean: number;
+  yStd: number;
+  finalLoss: number;
+  epochs: number;
+  trainedAt: string;
+  layers: SerializedDenseLayer[];
+};
+
+export type TrendAnalyzeOptions = {
+  cacheKey?: string;
+  pretrainedArtifact?: SerializedTrendModelArtifact;
+  disableTraining?: boolean;
+};
+
+const trendModelCache = new Map<string, CachedTrendModel>();
+
+const createCompiledTrendModel = (xCols: number): tf.Sequential => {
+  const model = tf.sequential({
+    layers: [
+      tf.layers.dense({ inputShape: [xCols], units: 18, activation: "relu" }),
+      tf.layers.dense({ units: 10, activation: "relu" }),
+      tf.layers.dense({ units: 1 }),
+    ],
+  });
+
+  model.compile({
+    optimizer: tf.train.adam(0.02),
+    loss: "meanSquaredError",
+  });
+
+  return model;
+};
+
+const parseAnalyzeOptions = (optionsOrCacheKey?: string | TrendAnalyzeOptions): TrendAnalyzeOptions => {
+  if (typeof optionsOrCacheKey === "string") {
+    return { cacheKey: optionsOrCacheKey };
+  }
+  return optionsOrCacheKey || {};
+};
+
+const serializeModelToArtifact = (
+  model: tf.Sequential,
+  xMeans: number[],
+  xStds: number[],
+  yMean: number,
+  yStd: number,
+  finalLoss: number,
+  epochs: number
+): SerializedTrendModelArtifact => {
+  const weights = model.getWeights();
+  const layers: SerializedDenseLayer[] = [];
+
+  for (let i = 0; i < weights.length; i += 2) {
+    const kernelTensor = weights[i];
+    const biasTensor = weights[i + 1];
+
+    layers.push({
+      kernel: Array.from(kernelTensor.dataSync()),
+      kernelShape: [...kernelTensor.shape],
+      bias: Array.from(biasTensor.dataSync()),
+      biasShape: [...biasTensor.shape],
+    });
+  }
+
+  return {
+    version: 1,
+    inputCols: xMeans.length,
+    xMeans,
+    xStds,
+    yMean,
+    yStd,
+    finalLoss,
+    epochs,
+    trainedAt: new Date().toISOString(),
+    layers,
+  };
+};
+
+const modelFromArtifact = (artifact: SerializedTrendModelArtifact): tf.Sequential => {
+  const model = createCompiledTrendModel(artifact.inputCols);
+  const tensors: tf.Tensor[] = [];
+
+  for (const layer of artifact.layers) {
+    tensors.push(tf.tensor(layer.kernel, layer.kernelShape));
+    tensors.push(tf.tensor(layer.bias, layer.biasShape));
+  }
+
+  model.setWeights(tensors);
+  tensors.forEach((tensor) => tensor.dispose());
+  return model;
+};
+
+const toMetrics = (points: TrendInputPoint[]): [number, number, number, number][] => {
+  const chronological = [...points].reverse();
+  return chronological.map((point) => [
+    toNumber(point.score),
+    toNumber(point.hydration),
+    toNumber(point.oilProduction),
+    sensitivityToNumeric(point.sensitivity),
+  ]) as [number, number, number, number][];
+};
+
+export const trainTrendModelArtifactFromSeries = async (
+  series: TrendInputPoint[][]
+): Promise<SerializedTrendModelArtifact | null> => {
+  if (!Array.isArray(series) || !series.length) return null;
+
+  const trainingRows: TrainingRow[] = [];
+  for (const points of series) {
+    if (!Array.isArray(points) || points.length < 3) continue;
+    const metrics = toMetrics(points);
+    const rows = buildTrainingRows(metrics);
+    if (rows.length) trainingRows.push(...rows);
+  }
+
+  if (trainingRows.length < 2) return null;
+
+  const xCols = trainingRows[0].x.length;
+  const xMeans = Array.from({ length: xCols }, (_, col) => mean(trainingRows.map((row) => row.x[col])));
+  const xStds = Array.from({ length: xCols }, (_, col) => stdev(trainingRows.map((row) => row.x[col]), xMeans[col]));
+
+  const yValues = trainingRows.map((row) => row.y);
+  const yMean = mean(yValues);
+  const yStd = stdev(yValues, yMean);
+
+  const xNorm = trainingRows.map((row) => row.x.map((value, col) => (value - xMeans[col]) / xStds[col]));
+  const yNorm = yValues.map((value) => (value - yMean) / yStd);
+
+  const xs = tf.tensor2d(xNorm);
+  const ys = tf.tensor2d(yNorm, [yNorm.length, 1]);
+
+  const model = createCompiledTrendModel(xCols);
+
+  const validationSplit = trainingRows.length >= 8 ? 0.2 : 0;
+  const history = await model.fit(xs, ys, {
+    epochs: TRAIN_EPOCHS,
+    batchSize: Math.min(16, trainingRows.length),
+    shuffle: true,
+    validationSplit,
+    verbose: 0,
+    callbacks: validationSplit > 0
+      ? [tf.callbacks.earlyStopping({ monitor: "val_loss", patience: 12 })]
+      : undefined,
+  });
+
+  const finalLoss = safeFinite(Number(history.history.loss?.slice(-1)[0] ?? 1), 1);
+  const trainedEpochs = Number(history.epoch.length || TRAIN_EPOCHS);
+
+  const artifact = serializeModelToArtifact(
+    model,
+    xMeans,
+    xStds,
+    yMean,
+    yStd,
+    finalLoss,
+    trainedEpochs
+  );
+
+  model.dispose();
+  xs.dispose();
+  ys.dispose();
+
+  return artifact;
+};
+
+const buildPointsSignature = (points: TrendInputPoint[]): string => {
+  return points
+    .map((point) => {
+      return [
+        String(point.id ?? ""),
+        String(point.date ?? ""),
+        toNumber(point.score),
+        toNumber(point.hydration),
+        toNumber(point.oilProduction),
+        sensitivityToNumeric(point.sensitivity),
+      ].join("|");
+    })
+    .join("~");
 };
 
 const resolveLocale = (rawLocale?: string): TrendLocale => {
@@ -649,7 +852,8 @@ const buildShortSeriesInsight = (
 
 export const analyzeUserTrendWithTensorflow = async (
   points: TrendInputPoint[],
-  rawLocale?: string
+  rawLocale?: string,
+  optionsOrCacheKey?: string | TrendAnalyzeOptions
 ): Promise<TrendInsight | null> => {
   if (!Array.isArray(points) || points.length < 3) {
     return null;
@@ -657,58 +861,114 @@ export const analyzeUserTrendWithTensorflow = async (
 
   const locale = resolveLocale(rawLocale);
 
-  const chronological = [...points].reverse();
+  const options = parseAnalyzeOptions(optionsOrCacheKey);
+  const { cacheKey, pretrainedArtifact, disableTraining } = options;
 
-  const metrics = chronological.map((point) => [
-    toNumber(point.score),
-    toNumber(point.hydration),
-    toNumber(point.oilProduction),
-    sensitivityToNumeric(point.sensitivity),
-  ]) as [number, number, number, number][];
+  const metrics = toMetrics(points);
 
   const trainingRows = buildTrainingRows(metrics);
   if (trainingRows.length < 2) {
     return buildShortSeriesInsight(metrics, locale);
   }
 
+  const signature = buildPointsSignature(points);
   const xCols = trainingRows[0].x.length;
-  const xMeans = Array.from({ length: xCols }, (_, col) => mean(trainingRows.map((row) => row.x[col])));
-  const xStds = Array.from({ length: xCols }, (_, col) => stdev(trainingRows.map((row) => row.x[col]), xMeans[col]));
+  let model: tf.Sequential;
+  let xMeans: number[];
+  let xStds: number[];
+  let yMean: number;
+  let yStd: number;
+  let finalLoss = 1;
+  let trainedEpochs = TRAIN_EPOCHS;
+  let shouldDisposeModel = false;
 
-  const yValues = trainingRows.map((row) => row.y);
-  const yMean = mean(yValues);
-  const yStd = stdev(yValues, yMean);
+  const cached = cacheKey && !pretrainedArtifact ? trendModelCache.get(cacheKey) : undefined;
+  const canUseCachedModel =
+    Boolean(cached) &&
+    Boolean(cacheKey) &&
+    cached?.signature === signature;
 
-  const xNorm = trainingRows.map((row) => row.x.map((value, col) => (value - xMeans[col]) / xStds[col]));
-  const yNorm = yValues.map((value) => (value - yMean) / yStd);
+  if (pretrainedArtifact) {
+    if (pretrainedArtifact.inputCols !== xCols || pretrainedArtifact.xMeans.length !== xCols) {
+      return null;
+    }
 
-  const xs = tf.tensor2d(xNorm);
-  const ys = tf.tensor2d(yNorm, [yNorm.length, 1]);
+    model = modelFromArtifact(pretrainedArtifact);
+    xMeans = pretrainedArtifact.xMeans;
+    xStds = pretrainedArtifact.xStds;
+    yMean = pretrainedArtifact.yMean;
+    yStd = pretrainedArtifact.yStd;
+    finalLoss = pretrainedArtifact.finalLoss;
+    trainedEpochs = pretrainedArtifact.epochs;
+    shouldDisposeModel = true;
+  } else if (canUseCachedModel && cached) {
+    model = cached.model;
+    xMeans = cached.xMeans;
+    xStds = cached.xStds;
+    yMean = cached.yMean;
+    yStd = cached.yStd;
+    finalLoss = cached.finalLoss;
+    trainedEpochs = cached.epochs;
+  } else {
+    if (disableTraining) {
+      return null;
+    }
 
-  const model = tf.sequential({
-    layers: [
-      tf.layers.dense({ inputShape: [xCols], units: 18, activation: "relu" }),
-      tf.layers.dense({ units: 10, activation: "relu" }),
-      tf.layers.dense({ units: 1 }),
-    ],
-  });
+    xMeans = Array.from({ length: xCols }, (_, col) => mean(trainingRows.map((row) => row.x[col])));
+    xStds = Array.from({ length: xCols }, (_, col) => stdev(trainingRows.map((row) => row.x[col]), xMeans[col]));
 
-  model.compile({
-    optimizer: tf.train.adam(0.02),
-    loss: "meanSquaredError",
-  });
+    const yValues = trainingRows.map((row) => row.y);
+    yMean = mean(yValues);
+    yStd = stdev(yValues, yMean);
 
-  const validationSplit = trainingRows.length >= 8 ? 0.2 : 0;
-  const history = await model.fit(xs, ys, {
-    epochs: TRAIN_EPOCHS,
-    batchSize: Math.min(8, trainingRows.length),
-    shuffle: true,
-    validationSplit,
-    verbose: 0,
-    callbacks: validationSplit > 0
-      ? [tf.callbacks.earlyStopping({ monitor: "val_loss", patience: 12 })]
-      : undefined,
-  });
+    const xNorm = trainingRows.map((row) => row.x.map((value, col) => (value - xMeans[col]) / xStds[col]));
+    const yNorm = yValues.map((value) => (value - yMean) / yStd);
+
+    const xs = tf.tensor2d(xNorm);
+    const ys = tf.tensor2d(yNorm, [yNorm.length, 1]);
+
+    model = createCompiledTrendModel(xCols);
+
+    const validationSplit = trainingRows.length >= 8 ? 0.2 : 0;
+    const history = await model.fit(xs, ys, {
+      epochs: TRAIN_EPOCHS,
+      batchSize: Math.min(8, trainingRows.length),
+      shuffle: true,
+      validationSplit,
+      verbose: 0,
+      callbacks: validationSplit > 0
+        ? [tf.callbacks.earlyStopping({ monitor: "val_loss", patience: 12 })]
+        : undefined,
+    });
+
+    finalLoss = safeFinite(Number(history.history.loss?.slice(-1)[0] ?? 1), 1);
+    trainedEpochs = Number(history.epoch.length || TRAIN_EPOCHS);
+
+    if (cacheKey) {
+      const previous = trendModelCache.get(cacheKey);
+      if (previous) {
+        previous.model.dispose();
+      }
+
+      trendModelCache.set(cacheKey, {
+        signature,
+        model,
+        xMeans,
+        xStds,
+        yMean,
+        yStd,
+        finalLoss,
+        epochs: trainedEpochs,
+      });
+    }
+
+    xs.dispose();
+    ys.dispose();
+
+    if (!cacheKey) {
+      shouldDisposeModel = true;
+    }
+  }
 
   const latest = metrics[metrics.length - 1];
   const previous = metrics[metrics.length - 2];
@@ -726,8 +986,6 @@ export const analyzeUserTrendWithTensorflow = async (
   const predictedNextScore = predictNextScore(latestFeatures);
   const scoreDelta = latest[0] - previous[0];
   const expectedDelta = predictedNextScore - latest[0];
-  const finalLossRaw = Number(history.history.loss?.slice(-1)[0] ?? 1);
-  const finalLoss = safeFinite(finalLossRaw, 1);
   const sampleTrust = clamp01((trainingRows.length - 1) / 12);
   const modelTrust = clamp01(1 / (1 + Math.max(0, finalLoss)));
   const modelWeight = clamp(0.15 + 0.55 * sampleTrust * modelTrust, 0.15, 0.7);
@@ -900,9 +1158,9 @@ export const analyzeUserTrendWithTensorflow = async (
     recommendations
   );
 
-  model.dispose();
-  xs.dispose();
-  ys.dispose();
+  if (shouldDisposeModel) {
+    model.dispose();
+  }
 
   return {
     direction,
@@ -918,7 +1176,7 @@ export const analyzeUserTrendWithTensorflow = async (
     recommendations,
     model: {
       samples: trainingRows.length,
-      epochs: Number(history.epoch.length || TRAIN_EPOCHS),
+      epochs: trainedEpochs,
       finalLoss: Number(finalLoss.toFixed(4)),
       predictedNextScore: Number(predictedNextScore.toFixed(1)),
     },

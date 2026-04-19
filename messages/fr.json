@@ -199,7 +199,8 @@
         "faqs": "FAQ",
         "complaints": "Réclamations & avis",
         "profile": "Profil",
-        "systemSettings": "Paramètres système"
+        "systemSettings": "Paramètres système",
+        "models": "Gestion des modeles"
       },
       "subItems": {
         "allUsers": "Tous les utilisateurs",
@@ -2192,6 +2193,98 @@
       "gold": "Or",
       "platinum": "Platine",
       "rubyMaster": "Maître Rubis"
+    }
+  },
+  "adminModelsPage": {
+    "breadcrumb": {
+      "admin": "Admin",
+      "manageModels": "Gestion des modèles"
+    },
+    "header": {
+      "title": "Gestion des modèles de tendance",
+      "subtitle": "Entraîner, réentraîner, comparer et activer les modèles ML avec historique des jobs et logs persistants."
+    },
+    "buttons": {
+      "refresh": "Rafraîchir",
+      "trainNewModel": "Entraîner un nouveau modèle",
+      "retrainSelected": "Réentraîner le modèle sélectionné"
+    },
+    "actions": {
+      "activate": "Activer",
+      "rename": "Renommer",
+      "delete": "Supprimer"
+    },
+    "prompts": {
+      "newModelName": "Entrez le nom du nouveau modèle",
+      "renameModel": "Entrez le nouveau nom du modèle"
+    },
+    "confirm": {
+      "deleteModel": "Supprimer le modèle \"{name}\" ? Cette action est irréversible."
+    },
+    "errors": {
+      "fetchModels": "Échec du chargement des modèles",
+      "fetchJobs": "Échec du chargement des jobs",
+      "refresh": "Impossible de rafraîchir les données",
+      "jobMissing": "Job introuvable",
+      "poll": "Erreur pendant la mise à jour du statut du job",
+      "startTraining": "Impossible de démarrer l'entraînement",
+      "startRetrain": "Impossible de démarrer le réentraînement",
+      "activate": "Impossible d'activer ce modèle",
+      "rename": "Impossible de renommer ce modèle",
+      "delete": "Impossible de supprimer ce modèle"
+    },
+    "table": {
+      "name": "Nom",
+      "created": "Créé le",
+      "datasetSize": "Taille dataset",
+      "strictTestMae": "MAE test strict",
+      "temporalCvMae": "MAE validation temporelle",
+      "actions": "Actions",
+      "noModels": "Aucun modèle disponible."
+    },
+    "cards": {
+      "selectedDataset": "Dataset sélectionné",
+      "activeDataset": "Dataset actif",
+      "legacyDataset": "Dataset legacy",
+      "datasetSize": "Taille dataset",
+      "shape": "Shape",
+      "shapeMl": "Shape ML",
+      "modelsCount": "Nombre de modèles"
+    },
+    "comparison": {
+      "title": "Comparaison ancien/nouveau",
+      "selectPrompt": "Sélectionnez un modèle pour voir la comparaison.",
+      "selected": "Sélectionné",
+      "strictTestMae": "MAE test strict",
+      "temporalCvMae": "MAE validation temporelle",
+      "datasetSize": "Taille dataset",
+      "datasetShape": "Shape",
+      "datasetShapeMl": "Shape ML",
+      "tinyDatasetWarning": "Ce modèle est entraîné sur un dataset très petit (<= 3 séries). La fiabilité statistique est limitée.",
+      "deltaMaeVsActive": "Delta MAE vs modèle actif",
+      "better": "meilleur",
+      "worse": "moins bon",
+      "active": "Actif",
+      "maeDelta": "Delta MAE (sélectionné - actif)",
+      "rmseDelta": "Delta RMSE (sélectionné - actif)"
+    },
+    "jobLogs": {
+      "title": "Jobs d'entrainement et logs",
+      "noActive": "Aucun job actif pour le moment.",
+      "status": "Statut",
+      "persistMessage": "Le job continue en arrière-plan même si vous changez de page.",
+      "waiting": "En attente des premières lignes de log..."
+    },
+    "tips": {
+      "shape": "Shape = trainSeries x inputCols",
+      "shapeMl": "Shape ML = users x trainSeries x inputCols",
+      "datasetSize": "Nombre de séries utilisées pour l'entraînement",
+      "strictTestMae": "MAE sur test strict temporel (plus bas = meilleur)",
+      "temporalCvMae": "MAE moyenne en validation croisée temporelle",
+      "strictTestMaeShort": "Erreur moyenne absolue sur test strict",
+      "temporalCvMaeShort": "Erreur moyenne absolue sur validation temporelle",
+      "datasetShape": "trainSeries x inputCols",
+      "datasetShapeMl": "users x trainSeries x inputCols"
     }
   }
 }
