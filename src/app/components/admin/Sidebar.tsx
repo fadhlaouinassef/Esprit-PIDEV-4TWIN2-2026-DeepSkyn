@@ -178,7 +178,7 @@ export function Sidebar() {
                                                                 role="menu"
                                                             >
                                                                 {item.items.map((subItem: AdminSubItem) => (
-                                                                    <li key={subItem.title} role="none">
+                                                                    <li key={subItem.id} role="none">
                                                                         <MenuItem
                                                                             as="link"
                                                                             href={subItem.url}
