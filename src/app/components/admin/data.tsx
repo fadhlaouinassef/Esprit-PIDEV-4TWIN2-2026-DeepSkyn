@@ -12,7 +12,6 @@ import {
     MessageSquare,
     ClipboardList,
     Activity,
-    Globe,
     Award,
     LucideIcon
 } from "lucide-react";
@@ -105,6 +104,13 @@ export const NAV_DATA: NavSection[] = [
                 title: "Subscriptions",
                 url: "/admin/subscriptions",
                 icon: CreditCard,
+                items: [],
+            },
+            {
+                id: "models",
+                title: "Manage Models",
+                url: "/admin/models",
+                icon: Package,
                 items: [],
             },
 

@@ -199,7 +199,8 @@
         "faqs": "الأسئلة الشائعة",
         "complaints": "الشكاوى والتقييمات",
         "profile": "الملف الشخصي",
-        "systemSettings": "إعدادات النظام"
+        "systemSettings": "إعدادات النظام",
+        "manageModels": "إدارة النماذج"
       },
       "subItems": {
         "allUsers": "كل المستخدمين",
@@ -2037,6 +2038,95 @@
   },
   "adminProfilePage": {
     "title": "Admin Profile - DeepSkyn"
+  },
+  "adminModelsPage": {
+    "breadcrumb": {
+      "admin": "الإدارة",
+      "manageModels": "إدارة النماذج"
+    },
+    "header": {
+      "title": "مدير نموذج الاتجاه",
+      "subtitle": "درّب وقارن وحقق وفعّل النماذج بدون إعادة تشغيل التطبيق."
+    },
+    "buttons": {
+      "refresh": "تحديث",
+      "trainNewModel": "تدريب نموذج جديد",
+      "retrainSelected": "إعادة تدريب النموذج المحدد"
+    },
+    "cards": {
+      "selectedDataset": "بيانات النموذج المحدد",
+      "activeDataset": "بيانات النموذج النشط",
+      "legacyDataset": "بيانات Legacy (منفصلة)",
+      "datasetSize": "حجم البيانات",
+      "shape": "الأبعاد",
+      "shapeMl": "أبعاد ML",
+      "modelsCount": "عدد النماذج"
+    },
+    "table": {
+      "name": "الاسم",
+      "created": "تاريخ الإنشاء",
+      "datasetSize": "حجم البيانات",
+      "strictTestMae": "MAE اختبار صارم",
+      "temporalCvMae": "MAE التحقق الزمني",
+      "actions": "الإجراءات",
+      "noModels": "لا توجد نماذج مسجلة حتى الآن."
+    },
+    "comparison": {
+      "title": "مقارنة القديم/الجديد",
+      "selectPrompt": "اختر نموذجًا للمقارنة.",
+      "selected": "المحدد",
+      "strictTestMae": "MAE اختبار صارم",
+      "temporalCvMae": "MAE التحقق الزمني",
+      "datasetSize": "حجم البيانات",
+      "datasetShape": "أبعاد البيانات",
+      "datasetShapeMl": "أبعاد البيانات ML",
+      "tinyDatasetWarning": "البيانات صغيرة جدًا (<= 3 سلاسل): قد تظهر قيم مثل MAE = 0.000 لكنها غير موثوقة إحصائيًا.",
+      "deltaMaeVsActive": "فرق MAE مقابل النموذج النشط",
+      "better": "أفضل",
+      "worse": "أسوأ"
+    },
+    "jobLogs": {
+      "title": "سجلات المهمة",
+      "noActive": "لا توجد مهمة نشطة. ابدأ تدريبًا لعرض السجلات هنا.",
+      "status": "الحالة",
+      "persistMessage": "يتم الحفاظ على الحالة بعد التحديث. انتظار وبث السجلات...",
+      "waiting": "بانتظار السجلات..."
+    },
+    "actions": {
+      "activate": "تفعيل",
+      "rename": "إعادة تسمية",
+      "delete": "حذف"
+    },
+    "prompts": {
+      "newModelName": "اسم النموذج الجديد",
+      "renameModel": "الاسم الجديد للنموذج"
+    },
+    "confirm": {
+      "deleteModel": "حذف النموذج \"{name}\"؟"
+    },
+    "errors": {
+      "fetchModels": "فشل تحميل النماذج",
+      "fetchJobs": "فشل تحميل المهام",
+      "refresh": "فشل تحديث النماذج.",
+      "poll": "فشل متابعة مهمة التدريب.",
+      "jobMissing": "المهمة لم تعد موجودة (أعيد تشغيل الخادم أو تم تنظيف الحالة). ابدأ التدريب مرة أخرى.",
+      "startTraining": "فشل بدء التدريب",
+      "startRetrain": "فشل بدء إعادة التدريب",
+      "activate": "فشل تفعيل النموذج",
+      "rename": "فشل إعادة تسمية النموذج",
+      "delete": "فشل حذف النموذج"
+    },
+    "tips": {
+      "shape": "عدد أمثلة التدريب × عدد الميزات (trainSeries x inputCols).",
+      "shapeMl": "عرض مضغوط: users x trainSeries x inputCols.",
+      "datasetSize": "عدد السلاسل المستخدمة لتدريب النموذج.",
+      "strictTestMae": "متوسط الخطأ المطلق على تقسيم الاختبار الزمني الصارم. الأقل أفضل.",
+      "temporalCvMae": "متوسط الخطأ المطلق على التحقق المتقاطع الزمني rolling-origin. الأقل أفضل.",
+      "strictTestMaeShort": "متوسط الخطأ المطلق على اختبار زمني صارم. الأقل = دقة أفضل.",
+      "temporalCvMaeShort": "متوسط الخطأ المطلق على التحقق الزمني. الأقل = تعميم أفضل.",
+      "datasetShape": "trainSeries x inputCols (أمثلة التدريب × متغيرات الإدخال).",
+      "datasetShapeMl": "users x trainSeries x inputCols لقراءة على مستوى النموذج."
+    }
   },
   "adminAnalyzes": {
     "stats": {

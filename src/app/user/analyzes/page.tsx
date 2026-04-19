@@ -28,7 +28,7 @@ import Link from "next/link";
 import { RoutineItemScraper } from "@/app/components/user/RoutineItemScraper";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 import { useLocale, useTranslations } from "next-intl";
-import { analyzeUserTrendWithTensorflow, type TrendInsight } from "@/modele/analysisTrendModel";
+import type { TrendInsight } from "@/modele/analysisTrendModel";
 
 // --- COMPONENTS ---
 
@@ -488,14 +488,15 @@ export default function AnalyzesPage() {
         let cancelled = false;
 
         const computeTrend = async () => {
-            if (!analyses.length || analyses.length < 2) {
-                setTrendInsight(null);
-                return;
-            }
-
             setTrendLoading(true);
             try {
-                const insight = await analyzeUserTrendWithTensorflow(analyses, locale);
+                const res = await fetch(`/api/user/analyses/trend?locale=${encodeURIComponent(locale)}`);
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch trend report: ${res.status}`);
+                }
+
+                const payload = await res.json();
+                const insight = payload?.insight ?? null;
                 if (!cancelled) {
                     setTrendInsight(insight);
                 }
@@ -516,7 +517,7 @@ export default function AnalyzesPage() {
         return () => {
             cancelled = true;
         };
-    }, [analyses, locale]);
+    }, [locale]);
 
     const trendPanelText = locale.startsWith("fr")
         ? {
@@ -565,6 +566,46 @@ export default function AnalyzesPage() {
                 next: "Recommended actions",
                 noData: "Not enough data to explain the trend.",
             };
+
+    const simplifyForEveryone = (text: string) => {
+        return String(text || "")
+            .replace(/\s+/g, " ")
+            .replace(/\bimpact\s+\d+(\.\d+)?x\b/gi, "")
+            .replace(/\brelative impact\s+\d+(\.\d+)?x\b/gi, "")
+            .replace(/\bvariation\s+[+\-]?\d+(\.\d+)?\b/gi, "")
+            .replace(/\bchange\s+[+\-]?\d+(\.\d+)?\b/gi, "")
+            .replace(/\s+([,.;:!?])/g, "$1")
+            .trim();
+    };
+
+    const readableTrend = (insight: TrendInsight | null) => {
+        const fallback = {
+            summary: pdfTrendText.noData,
+            why: "",
+            actions: [] as string[],
+            factors: [] as string[],
+        };
+
+        if (!insight) return fallback;
+
+        const summary = simplifyForEveryone(insight.clarity?.headline || insight.summary || pdfTrendText.noData);
+        const why = simplifyForEveryone(insight.clarity?.plainWhy || insight.why || "");
+        const actionsSource = (insight.clarity?.thisWeekPlan && insight.clarity.thisWeekPlan.length > 0)
+            ? insight.clarity.thisWeekPlan
+            : insight.recommendations;
+
+        const actions = actionsSource
+            .map((item) => simplifyForEveryone(item))
+            .filter(Boolean)
+            .slice(0, 3);
+
+        const factors = (insight.factors || [])
+            .slice(0, 3)
+            .map((factor) => simplifyForEveryone(factor.explanation))
+            .filter(Boolean);
+
+        return { summary, why, actions, factors };
+    };
 
     const stopSpeaking = () => {
         if (typeof window !== 'undefined') {
@@ -755,11 +796,17 @@ export default function AnalyzesPage() {
         let exportInsight = trendInsight;
         if (!exportInsight && allAnalyses.length >= 3) {
             try {
-                exportInsight = await analyzeUserTrendWithTensorflow(allAnalyses, locale);
+                const res = await fetch(`/api/user/analyses/trend?locale=${encodeURIComponent(locale)}`);
+                if (res.ok) {
+                    const payload = await res.json();
+                    exportInsight = payload?.insight ?? null;
+                }
             } catch (error) {
                 console.error("Failed to compute trend insight during PDF export:", error);
             }
         }
+
+        const readableExport = readableTrend(exportInsight);
 
         const latest = allAnalyses[0];
         const oldest = allAnalyses[allAnalyses.length - 1];
@@ -838,9 +885,9 @@ export default function AnalyzesPage() {
                     worse: "decline cycles",
                 };
 
-        const trendSummary = exportInsight?.clarity?.headline || exportInsight?.summary || pdfTrendText.noData;
-        const trendWhy = exportInsight?.clarity?.plainWhy || exportInsight?.why || "";
-        const trendActions = (exportInsight?.recommendations || []).slice(0, 2).join(" ");
+        const trendSummary = readableExport.summary;
+        const trendWhy = readableExport.why;
+        const trendActions = readableExport.actions.slice(0, 2).join(" ");
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10);
@@ -881,7 +928,7 @@ export default function AnalyzesPage() {
         const summaryLines = doc.splitTextToSize(`${reportLabels.overview}: ${overviewText}`, textW);
         const progressLines = progressionText ? doc.splitTextToSize(`${reportLabels.progression}: ${progressionText}`, textW) : [];
         const trendLines = doc.splitTextToSize(`${reportLabels.health}: ${trendSummary} ${trendWhy} ${riskLabel} ${confidenceLabel}`.trim(), textW);
-        const thisWeekActions = (exportInsight?.clarity?.thisWeekPlan || []).join(" ");
+        const thisWeekActions = readableExport.actions.join(" ");
         const actionLines = (thisWeekActions || trendActions)
             ? doc.splitTextToSize(`${reportLabels.actions}: ${thisWeekActions || trendActions}`, textW)
             : [];
@@ -1009,29 +1056,22 @@ export default function AnalyzesPage() {
         if (importantDrivers.length) {
             drawParagraph(sectionLabels.evidence);
             importantDrivers.forEach((driver) => {
-                drawBullet(`${driver.short} ${driver.mechanism} ${driver.evidence}`);
+                drawBullet(simplifyForEveryone(`${driver.short} ${driver.mechanism}`));
             });
         }
 
-        const toSensitivityValue = (input: unknown): number => {
-            const value = String(input || "").toLowerCase();
-            if (value.includes("low")) return 20;
-            if (value.includes("medium")) return 55;
-            if (value.includes("high")) return 85;
-            const parsed = Number(input);
-            return Number.isFinite(parsed) ? parsed : 55;
-        };
-
         drawSectionTitle(sectionLabels.actions);
-        if ((exportInsight?.recommendations || []).length === 0) {
+        if (readableExport.actions.length === 0) {
             drawBullet(trendActions || pdfTrendText.noData);
         } else {
-            (exportInsight?.recommendations || []).forEach((rec, idx) => drawBullet(`${idx + 1}) ${rec}`));
+            readableExport.actions.forEach((rec, idx) => drawBullet(`${idx + 1}) ${rec}`));
         }
 
         const filename = `deepskyn-dynamic-report-${new Date().toISOString().slice(0, 10)}.pdf`;
         doc.save(filename);
     };
+
+    const readableTrendInsight = readableTrend(trendInsight);
 
     return (
         <UserLayout>
@@ -1116,10 +1156,10 @@ export default function AnalyzesPage() {
                                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                                     <div>
                                         <span className="text-[10px] font-bold uppercase tracking-[2px] text-[#156d95]">{trendPanelText.title}</span>
-                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mt-1">{trendInsight?.summary || trendPanelText.loading}</h3>
+                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mt-1">{readableTrendInsight.summary || trendPanelText.loading}</h3>
                                         {trendInsight && (
                                             <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 max-w-3xl">
-                                                {trendInsight.why}
+                                                {readableTrendInsight.why}
                                             </p>
                                         )}
                                     </div>
@@ -1136,10 +1176,10 @@ export default function AnalyzesPage() {
                                         <div className="rounded-2xl bg-white/90 dark:bg-gray-800/70 border border-gray-100 dark:border-gray-700 p-4">
                                             <p className="text-[10px] uppercase tracking-[2px] text-gray-400 font-bold mb-2">{trendPanelText.keyFactors}</p>
                                             <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-200">
-                                                {trendInsight.factors.slice(0, 3).map((factor) => (
-                                                    <li key={factor.metric} className="flex items-center justify-between gap-3">
-                                                        <span>{factor.explanation}</span>
-                                                        <span className="text-[11px] font-bold text-[#156d95]">impact {factor.impact.toFixed(2)}x</span>
+                                                {readableTrendInsight.factors.map((item, idx) => (
+                                                    <li key={`${idx}-${item.slice(0, 12)}`} className="flex items-start gap-2">
+                                                        <Info size={14} className="mt-0.5 text-[#156d95] shrink-0" />
+                                                        <span>{item}</span>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -1147,7 +1187,7 @@ export default function AnalyzesPage() {
                                         <div className="rounded-2xl bg-white/90 dark:bg-gray-800/70 border border-gray-100 dark:border-gray-700 p-4">
                                             <p className="text-[10px] uppercase tracking-[2px] text-gray-400 font-bold mb-2">{trendPanelText.nextSteps}</p>
                                             <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-200">
-                                                {trendInsight.recommendations.map((item, idx) => (
+                                                {readableTrendInsight.actions.map((item, idx) => (
                                                     <li key={`${idx}-${item.slice(0, 12)}`} className="flex items-start gap-2">
                                                         <Info size={14} className="mt-0.5 text-[#156d95] shrink-0" />
                                                         <span>{item}</span>
