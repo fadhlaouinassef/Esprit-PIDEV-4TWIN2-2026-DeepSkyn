@@ -12,8 +12,60 @@ import {
 // World Map TopoJSON URL
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-export default function Map() {
+type CountryMetric = {
+    country: string;
+    users: number;
+    logins?: number;
+};
+
+type MapProps = {
+    countries?: CountryMetric[];
+};
+
+const normalizeCountry = (value: string): string => {
+    const input = value.trim().toLowerCase();
+    const aliases: Record<string, string> = {
+        "united states": "united states of america",
+        "usa": "united states of america",
+        "us": "united states of america",
+        "russia": "russian federation",
+    };
+    return aliases[input] || input;
+};
+
+const getCountryName = (geo: any): string => {
+    return String(
+        geo?.properties?.name ||
+        geo?.properties?.NAME ||
+        geo?.properties?.admin ||
+        ""
+    );
+};
+
+const getCountryFill = (count: number, maxCount: number): string => {
+    if (count <= 0 || maxCount <= 0) return "#D6D6DA";
+
+    const ratio = Math.min(1, count / maxCount);
+    const light = [173, 216, 255];
+    const dark = [21, 109, 149];
+
+    const channel = (from: number, to: number) => Math.round(from + (to - from) * ratio);
+    const r = channel(light[0], dark[0]);
+    const g = channel(light[1], dark[1]);
+    const b = channel(light[2], dark[2]);
+    return `rgb(${r}, ${g}, ${b})`;
+};
+
+export default function VisitorsMap({ countries = [] }: MapProps = {}) {
     const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
+
+    const countByCountry = new Map<string, number>();
+    countries.forEach((item) => {
+        if (!item.country) return;
+        countByCountry.set(normalizeCountry(item.country), Number(item.users || 0));
+    });
+
+    const maxUsers = countries.reduce((max, item) => Math.max(max, Number(item.users || 0)), 0);
 
     function handleZoomIn() {
         if (position.zoom >= 4) return;
@@ -25,8 +77,8 @@ export default function Map() {
         setPosition((pos) => ({ ...pos, zoom: pos.zoom / 1.5 }));
     }
 
-    function handleMoveEnd(position: any) {
-        setPosition(position);
+    function handleMoveEnd(nextPosition: { coordinates: [number, number]; zoom: number }) {
+        setPosition(nextPosition);
     }
 
     return (
@@ -48,18 +100,26 @@ export default function Map() {
                     <Geographies geography={geoUrl}>
                         {({ geographies }: { geographies: any[] }) =>
                             geographies.map((geo) => (
-                                <Geography
-                                    key={geo.rsmKey}
-                                    geography={geo}
-                                    fill="#D6D6DA"
-                                    stroke="#FFFFFF"
-                                    strokeWidth={0.5}
-                                    style={{
-                                        default: { fill: "#D6D6DA", outline: "none" },
-                                        hover: { fill: "#156d95", outline: "none" },
-                                        pressed: { fill: "#0d4a6b", outline: "none" }
-                                    }}
-                                />
+                                (() => {
+                                    const countryName = getCountryName(geo);
+                                    const users = countByCountry.get(normalizeCountry(countryName)) || 0;
+                                    const fill = getCountryFill(users, maxUsers);
+
+                                    return (
+                                        <Geography
+                                            key={geo.rsmKey}
+                                            geography={geo}
+                                            fill={fill}
+                                            stroke="#FFFFFF"
+                                            strokeWidth={0.5}
+                                            style={{
+                                                default: { fill, outline: "none" },
+                                                hover: { fill: "#156d95", outline: "none" },
+                                                pressed: { fill: "#0d4a6b", outline: "none" }
+                                            }}
+                                        />
+                                    );
+                                })()
                             ))
                         }
                     </Geographies>
@@ -93,7 +153,7 @@ export default function Map() {
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Active Regions</p>
                 <div className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">Global Distribution</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">Darker = More Users</span>
                 </div>
             </div>
         </div>

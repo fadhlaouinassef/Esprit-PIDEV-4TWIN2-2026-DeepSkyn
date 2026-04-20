@@ -132,9 +132,32 @@ async function migrate() {
         "user_id" INTEGER NOT NULL,
         "source" VARCHAR(100) NOT NULL,
         "day_key" VARCHAR(10) NOT NULL,
+        "location" VARCHAR(255),
+        "latitude" DOUBLE PRECISION,
+        "longitude" DOUBLE PRECISION,
         "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE
       );
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      ADD COLUMN IF NOT EXISTS "location" VARCHAR(255);
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      ADD COLUMN IF NOT EXISTS "latitude" DOUBLE PRECISION;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      ADD COLUMN IF NOT EXISTS "longitude" DOUBLE PRECISION;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      DROP COLUMN IF EXISTS "altitude";
     `);
 
     await prisma.$executeRawUnsafe(
@@ -466,6 +489,12 @@ async function migrate() {
 
     // Badge: titre
     await addColumnIfMissing('Badge', `"titre" VARCHAR(255) NOT NULL DEFAULT 'Badge'`);
+
+    // LoginActivity: geolocation fields
+    await addColumnIfMissing('LoginActivity', '"location" VARCHAR(255)');
+    await addColumnIfMissing('LoginActivity', '"latitude" DOUBLE PRECISION');
+    await addColumnIfMissing('LoginActivity', '"longitude" DOUBLE PRECISION');
+    await prisma.$executeRawUnsafe('ALTER TABLE "LoginActivity" DROP COLUMN IF EXISTS "altitude";');
 
     // Routine: envie
     await addColumnIfMissing('Routine', '"envie" TEXT');

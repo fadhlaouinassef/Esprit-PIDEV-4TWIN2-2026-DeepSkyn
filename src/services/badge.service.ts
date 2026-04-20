@@ -126,12 +126,20 @@ export const evaluateBadgeRules = (metrics: BadgeRuleMetrics): RuleResult[] => [
 export const trackLoginActivity = async (
   userId: number,
   source: 'credentials' | 'google' | 'oauth' = 'credentials',
-  at: Date = new Date()
+  at: Date = new Date(),
+  geo?: {
+    location?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+  }
 ) => {
   const dayKey = toDayStringUTC(at);
+  const locationValue = geo?.location?.trim() || 'Unknown';
+  const latitude = geo?.latitude ?? null;
+  const longitude = geo?.longitude ?? null;
   await prisma.$executeRaw`
-    INSERT INTO "LoginActivity" ("user_id", "source", "day_key", "created_at")
-    VALUES (${userId}, ${source}, ${dayKey}, ${at});
+    INSERT INTO "LoginActivity" ("user_id", "source", "day_key", "created_at", "location", "latitude", "longitude")
+    VALUES (${userId}, ${source}, ${dayKey}, ${at}, ${locationValue}, ${latitude}, ${longitude});
   `;
 };
 

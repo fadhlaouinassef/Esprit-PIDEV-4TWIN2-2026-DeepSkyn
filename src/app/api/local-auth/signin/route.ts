@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { signin } from '@/services/auth.service';
+import { resolveLoginLocation } from '@/lib/loginLocation';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email, password, geolocation } = body;
 
     if (!email || !password) {
       return NextResponse.json(
@@ -13,7 +14,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await signin({ email, password });
+    const resolvedGeo = await resolveLoginLocation(request.headers, geolocation);
+    const result = await signin({ email, password }, resolvedGeo);
 
     return NextResponse.json(result, { status: 200 });
   } catch (error: unknown) {
