@@ -16,6 +16,14 @@
     "label": "product_recommendation"
   },
   {
+    "text": "recommend toner for my skin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "je cherche toner pour ma peau",
+    "label": "product_recommendation"
+  },
+  {
     "text": "recommend mask for my skin",
     "label": "product_recommendation"
   },
@@ -40,19 +48,11 @@
     "label": "product_recommendation"
   },
   {
-    "text": "recommend moisturiser for my skin",
+    "text": "recommend moisturizer for my skin",
     "label": "product_recommendation"
   },
   {
-    "text": "je cherche moisturiser pour ma peau",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "recommend serum for my skin",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "je cherche serum pour ma peau",
+    "text": "je cherche moisturizer pour ma peau",
     "label": "product_recommendation"
   },
   {
@@ -140,23 +140,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque clinique",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits clinique",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits roche",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque roche",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits roche",
     "label": "product_recommendation"
   },
   {
@@ -164,23 +148,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque garnier",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits garnier",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits paris",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque paris",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits paris",
     "label": "product_recommendation"
   },
   {
@@ -188,23 +156,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque pixi",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits pixi",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits elemis",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque elemis",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits elemis",
     "label": "product_recommendation"
   },
   {
@@ -212,23 +164,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque lauder",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits lauder",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits decl",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque decl",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits decl",
     "label": "product_recommendation"
   },
   {
@@ -236,23 +172,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque holika",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits holika",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits caudalie",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque caudalie",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits caudalie",
     "label": "product_recommendation"
   },
   {
@@ -260,23 +180,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque elizabeth",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits elizabeth",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits ren",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque ren",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits ren",
     "label": "product_recommendation"
   },
   {
@@ -284,23 +188,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque sanctuary",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits sanctuary",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits molton",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque molton",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits molton",
     "label": "product_recommendation"
   },
   {
@@ -308,23 +196,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque ordinary",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits ordinary",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits bulldog",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque bulldog",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits bulldog",
     "label": "product_recommendation"
   },
   {
@@ -332,23 +204,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque lanc",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits lanc",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits sukin",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque sukin",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits sukin",
     "label": "product_recommendation"
   },
   {
@@ -356,23 +212,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque westlab",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits westlab",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits apivita",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque apivita",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits apivita",
     "label": "product_recommendation"
   },
   {
@@ -380,23 +220,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque first",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits first",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits weleda",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque weleda",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits weleda",
     "label": "product_recommendation"
   },
   {
@@ -404,23 +228,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque cerave",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits cerave",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits neutrogena",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque neutrogena",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits neutrogena",
     "label": "product_recommendation"
   },
   {
@@ -428,23 +236,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque murad",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits murad",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits origins",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque origins",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits origins",
     "label": "product_recommendation"
   },
   {
@@ -452,23 +244,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque nip",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits nip",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits aromatherapy",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque aromatherapy",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits aromatherapy",
     "label": "product_recommendation"
   },
   {
@@ -476,23 +252,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque peter",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits peter",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits nuxe",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque nuxe",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits nuxe",
     "label": "product_recommendation"
   },
   {
@@ -500,23 +260,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque ahava",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits ahava",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits bubble",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque bubble",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits bubble",
     "label": "product_recommendation"
   },
   {
@@ -524,23 +268,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque liz",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits liz",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits neal",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque neal",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits neal",
     "label": "product_recommendation"
   },
   {
@@ -548,23 +276,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque medik",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits medik",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits dermalogica",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque dermalogica",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits dermalogica",
     "label": "product_recommendation"
   },
   {
@@ -572,23 +284,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque natio",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits natio",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits dhc",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque dhc",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits dhc",
     "label": "product_recommendation"
   },
   {
@@ -596,23 +292,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque frank",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits frank",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits jason",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque jason",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits jason",
     "label": "product_recommendation"
   },
   {
@@ -620,23 +300,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque avene",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits avene",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits pai",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque pai",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits pai",
     "label": "product_recommendation"
   },
   {
@@ -644,35 +308,11 @@
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque vichy",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits vichy",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits darphin",
     "label": "product_recommendation"
   },
   {
-    "text": "donne les produits de la marque darphin",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits darphin",
-    "label": "product_recommendation"
-  },
-  {
     "text": "tu connais les produits sea",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "donne les produits de la marque sea",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "effets secondaires possibles des produits sea",
     "label": "product_recommendation"
   },
   {
@@ -720,15 +360,15 @@
     "label": "product_recommendation"
   },
   {
+    "text": "explique le produit Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
+    "label": "product_recommendation"
+  },
+  {
     "text": "explique le produit Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
     "label": "product_recommendation"
   },
   {
     "text": "meilleur moisturizer de origins",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "explique le produit Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
     "label": "product_recommendation"
   },
   {
@@ -752,19 +392,19 @@
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Dr.Jart+ Ceramidin Cream 50ml",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "meilleur moisturizer de jart",
-    "label": "product_recommendation"
-  },
-  {
     "text": "explique le produit GLAMGLOW Bright Eyes Cream 15ml",
     "label": "product_recommendation"
   },
   {
     "text": "meilleur moisturizer de glamglow",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Dr.Jart+ Ceramidin Cream 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de jart",
     "label": "product_recommendation"
   },
   {
@@ -808,7 +448,15 @@
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Clinique Redness Solutions Daily Relief Cream 50ml",
+    "text": "explique le produit Holika Holika Good Cera Super Ceramide Toner",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur toner de holika",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Smart SPF 15 Custom Repair Moisturiser - Dry to Combination Skin - 50ml",
     "label": "product_recommendation"
   },
   {
@@ -824,6 +472,14 @@
     "label": "product_recommendation"
   },
   {
+    "text": "explique le produit First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de first",
+    "label": "product_recommendation"
+  },
+  {
     "text": "explique le produit Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
     "label": "product_recommendation"
   },
@@ -832,23 +488,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Holika Holika Good Cera Super Ceramide Toner",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "meilleur toner de holika",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "explique le produit Clinique Smart SPF 15 Custom Repair Moisturiser - Dry to Combination Skin - 50ml",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "explique le produit First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "meilleur moisturizer de first",
+    "text": "explique le produit Clinique Redness Solutions Daily Relief Cream 50ml",
     "label": "product_recommendation"
   },
   {
@@ -869,10 +509,6 @@
   },
   {
     "text": "meilleur serum de murad",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "explique le produit Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
     "label": "product_recommendation"
   },
   {
@@ -908,11 +544,19 @@
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
+    "text": "explique le produit Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml",
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml",
+    "text": "explique le produit Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins GinZing Refreshing Eye Cream to Brighten and Depuff On-the-Go 10ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
     "label": "product_recommendation"
   },
   {
@@ -924,19 +568,7 @@
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Origins GinZing Refreshing Eye Cream to Brighten and Depuff On-the-Go 10ml",
-    "label": "product_recommendation"
-  },
-  {
     "text": "explique le produit Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "explique le produit Chantecaille Bio Lift Mask - 50ml",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "meilleur mask de chantecaille",
     "label": "product_recommendation"
   },
   {
@@ -953,14 +585,6 @@
   },
   {
     "text": "meilleur moisturizer de bobbi",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "explique le produit benefit It's Potent Brightening Eye Cream 14g",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "meilleur moisturizer de benefit",
     "label": "product_recommendation"
   },
   {
@@ -984,6 +608,58 @@
     "label": "product_recommendation"
   },
   {
+    "text": "explique le produit Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de dermalogica",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Chantecaille Bio Lift Mask - 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de chantecaille",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Alpha-H Beauty Sleep Power Peel 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur exfoliant de alpha",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit benefit It's Potent Brightening Eye Cream 14g",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de benefit",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Elemis Pro-Collagen Marine Cream SPF30 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de elemis",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de mama",
+    "label": "product_recommendation"
+  },
+  {
     "text": "explique le produit Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 50ml",
     "label": "product_recommendation"
   },
@@ -996,31 +672,23 @@
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "text": "explique le produit AMELIORATE Intensive Lip Treatment 15ml",
     "label": "product_recommendation"
   },
   {
-    "text": "meilleur mask de dermalogica",
+    "text": "ce balm est il bien pour peau sensible",
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Alpha-H Beauty Sleep Power Peel 50ml",
+    "text": "meilleur balm de ameliorate",
     "label": "product_recommendation"
   },
   {
-    "text": "meilleur exfoliant de alpha",
+    "text": "explique le produit DECLÉOR Jasmine Eye Cream 15ml",
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "meilleur eye-care de decl",
-    "label": "product_recommendation"
-  },
-  {
-    "text": "explique le produit Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "text": "meilleur moisturizer de decl",
     "label": "product_recommendation"
   },
   {
@@ -1032,11 +700,343 @@
     "label": "product_recommendation"
   },
   {
-    "text": "explique le produit Elemis Pro-Collagen Marine Cream SPF30 50ml",
+    "text": "explique le produit DECLÉOR Hydra Floral Anti-Pollution Hydrating Rich Cream",
     "label": "product_recommendation"
   },
   {
-    "text": "meilleur moisturizer de elemis",
+    "text": "explique le produit By Terry Cellularose CC Serum 30ml (Various Shades)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de terry",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Tan-Luxe Super Glow Body Hyaluronic Self-Tan Serum 150ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de tan",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Elizabeth Arden Skin Illuminating Advanced Brightening Day Serum (30ml)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Estée Lauder Revitalizing Supreme+ Nourishing and Hydrating Dual Phase Treatment Oil 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins Clear Improvement Charcoal Honey Mask to Purify and Nourish 75ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de origins",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Repairwear Anti-Gravity Eye Cream 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Lancôme Rénergie Multi-Lift Eye Cream 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de lanc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de decl",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Natio Ageless Brightening Eye Cream (20g)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur gel de natio",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit The Ordinary Natural Moisturising Factors + HA 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de ordinary",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit The Ordinary Natural Moisturizing Factors + HA 100ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit bareMinerals SkinLongevity Vital Power Infusion Serum 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de bareminerals",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Holika Holika Good Cera Super Ceramide Moisture Balm 40ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de holika",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit La Roche-Posay Hyalu B5 Eyes 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de roche",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit StriVectin Tri-Phase Daily Glow Toner 147ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur toner de strivectin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Liz Earle Superskin Face Serum 30ml Pump",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de liz",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Aurelia Skincare Firm & Replenish Body Serum 250ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de aurelia",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Aveda Hand Relief Night Renewal Serum 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de aveda",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Darphin Intral Redness Relief Recovery Balm",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur balm de darphin",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit APIVITA Express Radiance Face Mask - Pomegranate 2x8ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Lancôme Advanced Génifique Eye Care 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de lanc",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Murad Resurgence Renewing Eye Cream (15ml)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Indeed Labs Eysilix Serum 2 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de indeed",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit NIP+FAB Teen Skin Fix Salicylic Acid Sheet Mask",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de nip",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit PIXI Peel and Polish",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur exfoliant de pixi",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Pep Start Eye Cream 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Chantecaille Hibiscus and Bamboo Exfoliating Cream",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de chantecaille",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit NIOD Hydration Vaccine Face Cream 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de niod",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit First Aid Beauty Coconut Skin Smoothie Priming Moisturiser",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit GLAMGLOW Superserum 30ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de glamglow",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur serum de foreo",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit MONU Recovery Balm (50ml)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur balm de monu",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de pixi",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit NARS Cosmetics Aqua Gel Luminous Mask",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur gel de nars",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit AHAVA Single Use 24K Gold Mineral Mud Mask 6ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur mask de ahava",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Dermalogica Intensive Eye Repair (15ml)",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de dermalogica",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Lumene Nordic C [Valo] Bright Eyes All-In-One Treatment 15ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur eye-care de lumene",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins Modern Friction™ Exfoliator 75ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur exfoliant de origins",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit AMELIORATE Nourishing Body Wash 200ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur cleanser de ameliorate",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit AMELIORATE Nourishing Body Wash 60ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Murad Oil and Pore Control Mattifier SPF45 PA 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Repairwear Laser Focus Smooths, Restores, Refines 50ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Maybelline Baby Lips Cherry Me",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur balm de maybelline",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit By Terry Baume de Rose Flaconnette 7ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur balm de terry",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit By Terry Baume De Rose Nutri-Couleur Lip Balm 7g",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit APIVITA Express Intense Moisturizing Face Mask - Cucumber 2x8ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "meilleur moisturizer de apivita",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Clinique Moisture Surge Overnight Mask 100ml",
+    "label": "product_recommendation"
+  },
+  {
+    "text": "explique le produit Origins Original Skin Retexturizing Mask with Rose Clay 75ml",
     "label": "product_recommendation"
   },
   {
@@ -1296,11 +1296,11 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
+    "text": "prix de Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
     "label": "price_analysis"
   },
   {
-    "text": "prix de Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
+    "text": "prix de Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
     "label": "price_analysis"
   },
   {
@@ -1312,11 +1312,11 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Dr.Jart+ Ceramidin Cream 50ml",
+    "text": "prix de GLAMGLOW Bright Eyes Cream 15ml",
     "label": "price_analysis"
   },
   {
-    "text": "prix de GLAMGLOW Bright Eyes Cream 15ml",
+    "text": "prix de Dr.Jart+ Ceramidin Cream 50ml",
     "label": "price_analysis"
   },
   {
@@ -1340,18 +1340,6 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Clinique Redness Solutions Daily Relief Cream 50ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de Holika Holika Good Cera Super Ceramide Toner",
     "label": "price_analysis"
   },
@@ -1360,7 +1348,19 @@
     "label": "price_analysis"
   },
   {
+    "text": "prix de Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml",
+    "label": "price_analysis"
+  },
+  {
     "text": "prix de First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Redness Solutions Daily Relief Cream 50ml",
     "label": "price_analysis"
   },
   {
@@ -1376,10 +1376,6 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de Sarah Chapman Skinesis Supersize Overnight Facial Oil 30ml",
     "label": "price_analysis"
   },
@@ -1392,15 +1388,11 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml",
     "label": "price_analysis"
   },
   {
-    "text": "prix de The Ordinary Buffet Supersize Serum 60ml",
+    "text": "prix de Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
     "label": "price_analysis"
   },
   {
@@ -1408,11 +1400,15 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
+    "text": "prix de Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
     "label": "price_analysis"
   },
   {
-    "text": "prix de Chantecaille Bio Lift Mask - 50ml",
+    "text": "prix de The Ordinary Buffet Supersize Serum 60ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
     "label": "price_analysis"
   },
   {
@@ -1424,15 +1420,39 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de benefit It's Potent Brightening Eye Cream 14g",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de bareMinerals Ageless Genius Firming and Wrinkle Smoothing Eye Cream 15g",
     "label": "price_analysis"
   },
   {
     "text": "prix de bareMinerals Butter Drench Intense Moisurising Day Cream",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Chantecaille Bio Lift Mask - 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Alpha-H Beauty Sleep Power Peel 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de benefit It's Potent Brightening Eye Cream 14g",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Elemis Pro-Collagen Marine Cream SPF30 50ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint",
     "label": "price_analysis"
   },
   {
@@ -1444,19 +1464,11 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "text": "prix de AMELIORATE Intensive Lip Treatment 15ml",
     "label": "price_analysis"
   },
   {
-    "text": "prix de Alpha-H Beauty Sleep Power Peel 50ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "text": "prix de DECLÉOR Jasmine Eye Cream 15ml",
     "label": "price_analysis"
   },
   {
@@ -1464,15 +1476,11 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Elemis Pro-Collagen Marine Cream SPF30 50ml",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de DECLÉOR Hydra Floral Anti-Pollution Hydrating Rich Cream",
     "label": "price_analysis"
   },
   {
-    "text": "prix de Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint",
+    "text": "prix de By Terry Cellularose CC Serum 30ml (Various Shades)",
     "label": "price_analysis"
   },
   {
@@ -1484,18 +1492,6 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de AMELIORATE Intensive Lip Treatment 15ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de DECLÉOR Jasmine Eye Cream 15ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de By Terry Cellularose CC Serum 30ml (Various Shades)",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de Estée Lauder Revitalizing Supreme+ Nourishing and Hydrating Dual Phase Treatment Oil 30ml",
     "label": "price_analysis"
   },
@@ -1504,19 +1500,15 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de La Roche-Posay Hyalu B5 Eyes 15ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Murad Resurgence Renewing Eye Cream (15ml)",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de Clinique Repairwear Anti-Gravity Eye Cream 15ml",
     "label": "price_analysis"
   },
   {
     "text": "prix de Lancôme Rénergie Multi-Lift Eye Cream 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
     "label": "price_analysis"
   },
   {
@@ -1536,27 +1528,11 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Liz Earle Superskin Face Serum 30ml Pump",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Indeed Labs Eysilix Serum 2 15ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Aurelia Skincare Firm & Replenish Body Serum 250ml",
-    "label": "price_analysis"
-  },
-  {
     "text": "prix de Holika Holika Good Cera Super Ceramide Moisture Balm 40ml",
     "label": "price_analysis"
   },
   {
-    "text": "prix de APIVITA Express Radiance Face Mask - Pomegranate 2x8ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Lancôme Advanced Génifique Eye Care 15ml",
+    "text": "prix de La Roche-Posay Hyalu B5 Eyes 15ml",
     "label": "price_analysis"
   },
   {
@@ -1564,11 +1540,11 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml",
+    "text": "prix de Liz Earle Superskin Face Serum 30ml Pump",
     "label": "price_analysis"
   },
   {
-    "text": "prix de FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve",
+    "text": "prix de Aurelia Skincare Firm & Replenish Body Serum 250ml",
     "label": "price_analysis"
   },
   {
@@ -1580,27 +1556,27 @@
     "label": "price_analysis"
   },
   {
+    "text": "prix de APIVITA Express Radiance Face Mask - Pomegranate 2x8ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Lancôme Advanced Génifique Eye Care 15ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Murad Resurgence Renewing Eye Cream (15ml)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Indeed Labs Eysilix Serum 2 15ml",
+    "label": "price_analysis"
+  },
+  {
     "text": "prix de NIP+FAB Teen Skin Fix Salicylic Acid Sheet Mask",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Chantecaille Hibiscus and Bamboo Exfoliating Cream",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de First Aid Beauty Coconut Skin Smoothie Priming Moisturiser",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de GLAMGLOW Superserum 30ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3)",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de NARS Cosmetics Aqua Gel Luminous Mask",
     "label": "price_analysis"
   },
   {
@@ -1612,11 +1588,7 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Origins Modern Friction™ Exfoliator 75ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Laura Mercier Crème Brûlée Crème Body Wash 200ml",
+    "text": "prix de Chantecaille Hibiscus and Bamboo Exfoliating Cream",
     "label": "price_analysis"
   },
   {
@@ -1624,11 +1596,15 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de Murad Oil and Pore Control Mattifier SPF45 PA 50ml",
+    "text": "prix de First Aid Beauty Coconut Skin Smoothie Priming Moisturiser",
     "label": "price_analysis"
   },
   {
-    "text": "prix de By Terry Baume De Rose Nutri-Couleur Lip Balm 7g",
+    "text": "prix de GLAMGLOW Superserum 30ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve",
     "label": "price_analysis"
   },
   {
@@ -1636,15 +1612,15 @@
     "label": "price_analysis"
   },
   {
-    "text": "prix de APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml",
+    "text": "prix de PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3)",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de NARS Cosmetics Aqua Gel Luminous Mask",
     "label": "price_analysis"
   },
   {
     "text": "prix de AHAVA Single Use 24K Gold Mineral Mud Mask 6ml",
-    "label": "price_analysis"
-  },
-  {
-    "text": "prix de Lancer Skincare Caviar Lime Acid Peel 50ml",
     "label": "price_analysis"
   },
   {
@@ -1656,11 +1632,19 @@
     "label": "price_analysis"
   },
   {
+    "text": "prix de Origins Modern Friction™ Exfoliator 75ml",
+    "label": "price_analysis"
+  },
+  {
     "text": "prix de AMELIORATE Nourishing Body Wash 200ml",
     "label": "price_analysis"
   },
   {
     "text": "prix de AMELIORATE Nourishing Body Wash 60ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Murad Oil and Pore Control Mattifier SPF45 PA 50ml",
     "label": "price_analysis"
   },
   {
@@ -1676,7 +1660,23 @@
     "label": "price_analysis"
   },
   {
+    "text": "prix de By Terry Baume De Rose Nutri-Couleur Lip Balm 7g",
+    "label": "price_analysis"
+  },
+  {
     "text": "prix de APIVITA Express Intense Moisturizing Face Mask - Cucumber 2x8ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Clinique Moisture Surge Overnight Mask 100ml",
+    "label": "price_analysis"
+  },
+  {
+    "text": "prix de Origins Original Skin Retexturizing Mask with Rose Clay 75ml",
     "label": "price_analysis"
   },
   {
@@ -1936,11 +1936,11 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
+    "text": "ingredients de Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml",
+    "text": "ingredients de Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml",
     "label": "ingredient_insight"
   },
   {
@@ -1952,11 +1952,11 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Dr.Jart+ Ceramidin Cream 50ml",
+    "text": "ingredients de GLAMGLOW Bright Eyes Cream 15ml",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de GLAMGLOW Bright Eyes Cream 15ml",
+    "text": "ingredients de Dr.Jart+ Ceramidin Cream 50ml",
     "label": "ingredient_insight"
   },
   {
@@ -1980,18 +1980,6 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Clinique Redness Solutions Daily Relief Cream 50ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de Holika Holika Good Cera Super Ceramide Toner",
     "label": "ingredient_insight"
   },
@@ -2000,7 +1988,19 @@
     "label": "ingredient_insight"
   },
   {
+    "text": "ingredients de Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml",
+    "label": "ingredient_insight"
+  },
+  {
     "text": "ingredients de First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Redness Solutions Daily Relief Cream 50ml",
     "label": "ingredient_insight"
   },
   {
@@ -2016,10 +2016,6 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de Sarah Chapman Skinesis Supersize Overnight Facial Oil 30ml",
     "label": "ingredient_insight"
   },
@@ -2032,15 +2028,11 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de The Ordinary Buffet Supersize Serum 60ml",
+    "text": "ingredients de Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml",
     "label": "ingredient_insight"
   },
   {
@@ -2048,11 +2040,15 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
+    "text": "ingredients de Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Chantecaille Bio Lift Mask - 50ml",
+    "text": "ingredients de The Ordinary Buffet Supersize Serum 60ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants",
     "label": "ingredient_insight"
   },
   {
@@ -2064,15 +2060,39 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de benefit It's Potent Brightening Eye Cream 14g",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de bareMinerals Ageless Genius Firming and Wrinkle Smoothing Eye Cream 15g",
     "label": "ingredient_insight"
   },
   {
     "text": "ingredients de bareMinerals Butter Drench Intense Moisurising Day Cream",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Chantecaille Bio Lift Mask - 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Alpha-H Beauty Sleep Power Peel 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de benefit It's Potent Brightening Eye Cream 14g",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Elemis Pro-Collagen Marine Cream SPF30 50ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint",
     "label": "ingredient_insight"
   },
   {
@@ -2084,19 +2104,11 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml",
+    "text": "ingredients de AMELIORATE Intensive Lip Treatment 15ml",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Alpha-H Beauty Sleep Power Peel 50ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Clinique Superdefense SPF20 Age Defense Eye Cream 15ml",
+    "text": "ingredients de DECLÉOR Jasmine Eye Cream 15ml",
     "label": "ingredient_insight"
   },
   {
@@ -2104,15 +2116,11 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Elemis Pro-Collagen Marine Cream SPF30 50ml",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de DECLÉOR Hydra Floral Anti-Pollution Hydrating Rich Cream",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint",
+    "text": "ingredients de By Terry Cellularose CC Serum 30ml (Various Shades)",
     "label": "ingredient_insight"
   },
   {
@@ -2124,18 +2132,6 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de AMELIORATE Intensive Lip Treatment 15ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de DECLÉOR Jasmine Eye Cream 15ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de By Terry Cellularose CC Serum 30ml (Various Shades)",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de Estée Lauder Revitalizing Supreme+ Nourishing and Hydrating Dual Phase Treatment Oil 30ml",
     "label": "ingredient_insight"
   },
@@ -2144,19 +2140,15 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de La Roche-Posay Hyalu B5 Eyes 15ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Murad Resurgence Renewing Eye Cream (15ml)",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de Clinique Repairwear Anti-Gravity Eye Cream 15ml",
     "label": "ingredient_insight"
   },
   {
     "text": "ingredients de Lancôme Rénergie Multi-Lift Eye Cream 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml",
     "label": "ingredient_insight"
   },
   {
@@ -2176,27 +2168,11 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Liz Earle Superskin Face Serum 30ml Pump",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Indeed Labs Eysilix Serum 2 15ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Aurelia Skincare Firm & Replenish Body Serum 250ml",
-    "label": "ingredient_insight"
-  },
-  {
     "text": "ingredients de Holika Holika Good Cera Super Ceramide Moisture Balm 40ml",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de APIVITA Express Radiance Face Mask - Pomegranate 2x8ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Lancôme Advanced Génifique Eye Care 15ml",
+    "text": "ingredients de La Roche-Posay Hyalu B5 Eyes 15ml",
     "label": "ingredient_insight"
   },
   {
@@ -2204,11 +2180,11 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml",
+    "text": "ingredients de Liz Earle Superskin Face Serum 30ml Pump",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve",
+    "text": "ingredients de Aurelia Skincare Firm & Replenish Body Serum 250ml",
     "label": "ingredient_insight"
   },
   {
@@ -2220,27 +2196,27 @@
     "label": "ingredient_insight"
   },
   {
+    "text": "ingredients de APIVITA Express Radiance Face Mask - Pomegranate 2x8ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Lancôme Advanced Génifique Eye Care 15ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Murad Resurgence Renewing Eye Cream (15ml)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Indeed Labs Eysilix Serum 2 15ml",
+    "label": "ingredient_insight"
+  },
+  {
     "text": "ingredients de NIP+FAB Teen Skin Fix Salicylic Acid Sheet Mask",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Chantecaille Hibiscus and Bamboo Exfoliating Cream",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de First Aid Beauty Coconut Skin Smoothie Priming Moisturiser",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de GLAMGLOW Superserum 30ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3)",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de NARS Cosmetics Aqua Gel Luminous Mask",
     "label": "ingredient_insight"
   },
   {
@@ -2252,11 +2228,7 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Origins Modern Friction™ Exfoliator 75ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Laura Mercier Crème Brûlée Crème Body Wash 200ml",
+    "text": "ingredients de Chantecaille Hibiscus and Bamboo Exfoliating Cream",
     "label": "ingredient_insight"
   },
   {
@@ -2264,11 +2236,15 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de Murad Oil and Pore Control Mattifier SPF45 PA 50ml",
+    "text": "ingredients de First Aid Beauty Coconut Skin Smoothie Priming Moisturiser",
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de By Terry Baume De Rose Nutri-Couleur Lip Balm 7g",
+    "text": "ingredients de GLAMGLOW Superserum 30ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve",
     "label": "ingredient_insight"
   },
   {
@@ -2276,15 +2252,15 @@
     "label": "ingredient_insight"
   },
   {
-    "text": "ingredients de APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml",
+    "text": "ingredients de PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3)",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de NARS Cosmetics Aqua Gel Luminous Mask",
     "label": "ingredient_insight"
   },
   {
     "text": "ingredients de AHAVA Single Use 24K Gold Mineral Mud Mask 6ml",
-    "label": "ingredient_insight"
-  },
-  {
-    "text": "ingredients de Lancer Skincare Caviar Lime Acid Peel 50ml",
     "label": "ingredient_insight"
   },
   {
@@ -2296,11 +2272,19 @@
     "label": "ingredient_insight"
   },
   {
+    "text": "ingredients de Origins Modern Friction™ Exfoliator 75ml",
+    "label": "ingredient_insight"
+  },
+  {
     "text": "ingredients de AMELIORATE Nourishing Body Wash 200ml",
     "label": "ingredient_insight"
   },
   {
     "text": "ingredients de AMELIORATE Nourishing Body Wash 60ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Murad Oil and Pore Control Mattifier SPF45 PA 50ml",
     "label": "ingredient_insight"
   },
   {
@@ -2316,8 +2300,1304 @@
     "label": "ingredient_insight"
   },
   {
+    "text": "ingredients de By Terry Baume De Rose Nutri-Couleur Lip Balm 7g",
+    "label": "ingredient_insight"
+  },
+  {
     "text": "ingredients de APIVITA Express Intense Moisturizing Face Mask - Cucumber 2x8ml",
     "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Clinique Moisture Surge Overnight Mask 100ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "ingredients de Origins Original Skin Retexturizing Mask with Rose Clay 75ml",
+    "label": "ingredient_insight"
+  },
+  {
+    "text": "products from cerave",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne moi les produits de la marque svr",
+    "label": "brand_info"
+  },
+  {
+    "text": "infos marque bioderma",
+    "label": "brand_info"
+  },
+  {
+    "text": "what brands are available",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque clinique",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits clinique",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque roche",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits roche",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque garnier",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits garnier",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque paris",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits paris",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque pixi",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits pixi",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque elemis",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits elemis",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque lauder",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits lauder",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque decl",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits decl",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque holika",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits holika",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque caudalie",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits caudalie",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque elizabeth",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits elizabeth",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque ren",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits ren",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque sanctuary",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits sanctuary",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque molton",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits molton",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque ordinary",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits ordinary",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque bulldog",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits bulldog",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque lanc",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits lanc",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque sukin",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits sukin",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque westlab",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits westlab",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque apivita",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits apivita",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque first",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits first",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque weleda",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits weleda",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque cerave",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits cerave",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque neutrogena",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits neutrogena",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque murad",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits murad",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque origins",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits origins",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque nip",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits nip",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque aromatherapy",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits aromatherapy",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque peter",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits peter",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque nuxe",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits nuxe",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque ahava",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits ahava",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque bubble",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits bubble",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque liz",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits liz",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque neal",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits neal",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque medik",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits medik",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque dermalogica",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits dermalogica",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque natio",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits natio",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque dhc",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits dhc",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque frank",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits frank",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque jason",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits jason",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque avene",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits avene",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque pai",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits pai",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque vichy",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits vichy",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque darphin",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits darphin",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les produits de la marque sea",
+    "label": "brand_info"
+  },
+  {
+    "text": "effets secondaires possibles des produits sea",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque filorga",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque lauder",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque origins",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque elizabeth",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque sarah",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque glamglow",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque jart",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque peter",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque murad",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque holika",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque clinique",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque darphin",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque first",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque zelens",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque ordinary",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque apivita",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque bobbi",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque bareminerals",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque dermalogica",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque chantecaille",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque alpha",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque benefit",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque elemis",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque mama",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque ameliorate",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque decl",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque terry",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque tan",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque lanc",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque natio",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque roche",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque strivectin",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque liz",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque aurelia",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque aveda",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque indeed",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque nip",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque pixi",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque niod",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque foreo",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque monu",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque nars",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque ahava",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque lumene",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque maybelline",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque lancer",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque svr",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque dennis",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque molton",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque laura",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque chemistry",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque paris",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque brandt",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque avene",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque salcura",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque rituals",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque shiseido",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque skinceuticals",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque sanctuary",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque radical",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque cerave",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque balance",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque medik",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque rapideye",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque prai",
+    "label": "brand_info"
+  },
+  {
+    "text": "donne les infos de marque caudalie",
+    "label": "brand_info"
+  },
+  {
+    "text": "compare cerave and bioderma",
+    "label": "product_comparison"
+  },
+  {
+    "text": "difference between cleanser and serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare prices of two products",
+    "label": "product_comparison"
+  },
+  {
+    "text": "which is better for acne serum or cream",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare clinique avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare roche avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare garnier avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare paris avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare pixi avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare elemis avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare lauder avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare decl avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare holika avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare caudalie avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare elizabeth avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare ren avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare sanctuary avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare molton avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare ordinary avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare bulldog avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare lanc avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare sukin avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare westlab avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare apivita avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare first avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare weleda avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare cerave avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare neutrogena avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare murad avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare origins avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare nip avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare aromatherapy avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare peter avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare nuxe avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare ahava avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare bubble avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare liz avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare neal avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare medik avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare dermalogica avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare natio avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare dhc avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare frank avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare jason avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare avene avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare pai avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare vichy avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare darphin avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare sea avec les autres marques",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare clinique and roche",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare roche and garnier",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare garnier and paris",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare paris and pixi",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare pixi and elemis",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare elemis and lauder",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare lauder and decl",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare decl and holika",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare holika and caudalie",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Filorga Scrub and Mask 55ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Perfectionist Pro Rapid Firm + Lift Serum Hexapeptide-8 50ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder NightWear Plus Anti-Oxidant Night Detox Crème 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder DayWear Advanced Multi-Protection Anti-Oxidant Creme SPF15 N/C 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder DayWear Multi-Protection Anti-Oxidant Creme SPF 15 30ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Perfectionist [CP+R] Wrinkle Lifting/Firming Serum 30ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Origins GinZing™ Energy-Boosting Tinted Moisturiser SPF40 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Elizabeth Arden Prevage Advanced Daily Serum with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Sarah Chapman Skinesis Liquid Facial D-Stress 75ml with other toner",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare GLAMGLOW Bright Eyes Cream 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Dr.Jart+ Ceramidin Cream 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Origins Plantscription Anti-Aging Power Serum 50ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Perfectionist Pro Rapid Brightening Treatment with Ferment2+ Vitamin C 50ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Idealist Pore Minimizing Skin Refinisher 30ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Peter Thomas Roth Retinol Eye Care 15ml with other eye-care",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Murad Time Release Blemish Cleanser 200ml with other cleanser",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Holika Holika Good Cera Super Ceramide Toner with other toner",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Smart SPF 15 Custom Repair Moisturiser - Dry to Combination Skin - 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Darphin Dark Circle Relief and De-Puffing Eye Serum 15ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare First Aid Beauty Skin Lab Retinol Eye Cream with Triple Hyaluronic Acid 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Advanced Night Repair Matrix Synchronized Recovery Eye Concentrate 15ml with other eye-care",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Redness Solutions Daily Relief Cream 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Origins GinZing Ultra Hydrating Energy-Boosting Cream Moisturiser 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Murad Hydro-Dynamic™ Ultimate Moisture (50ml) with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Murad Retinol Youth Renewal Serum Travel Size with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Sarah Chapman Skinesis Supersize Overnight Facial Oil 30ml with other oil",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Peter Thomas Roth Peptide 21 Amino Acid Exfoliating Peel Pads - 60 Pads with other exfoliant",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Zelens Triple Action Advanced Eye Cream with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder DayWear Anti-Oxidant 72H-Hydration Sorbet Creme SPF 15 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Moisture Surge Eye 96-Hour Hydro-Filler Concentrate 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Origins GinZing Refreshing Eye Cream to Brighten and Depuff On-the-Go 10ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Revitalising Supreme + Global Anti-ageing Cell Power Crème 30ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare The Ordinary Buffet Supersize Serum 60ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Perfectionist Pro Multi-Defense Aqua UV Gel SPF 50 with 8 Anti-Oxidants with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare APIVITA Express Line Reducing Face Mask - Grape 2x8ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Bobbi Brown Extra Eye Repair Cream 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare bareMinerals Ageless Genius Firming and Wrinkle Smoothing Eye Cream 15g with other gel",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare bareMinerals Butter Drench Intense Moisurising Day Cream with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Dermalogica Age Smart Multivitamin Power Recovery Masque 75ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Chantecaille Bio Lift Mask - 50ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Alpha-H Beauty Sleep Power Peel 50ml with other exfoliant",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare benefit It's Potent Brightening Eye Cream 14g with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Superdefense SPF20 Age Defense Eye Cream 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Elemis Pro-Collagen Marine Cream SPF30 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Mama Mio The Tummy Rub Butter 120ml - Lavender and Mint with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 50ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Even Better Clinical Radical Dark Spot Corrector + Interrupter 30ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare AMELIORATE Intensive Lip Treatment 15ml with other balm",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare DECLÉOR Jasmine Eye Cream 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Elemis Superfood Cleansing Wash 150ml with other cleanser",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare DECLÉOR Hydra Floral Anti-Pollution Hydrating Rich Cream with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare By Terry Cellularose CC Serum 30ml (Various Shades) with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Tan-Luxe Super Glow Body Hyaluronic Self-Tan Serum 150ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Elizabeth Arden Skin Illuminating Advanced Brightening Day Serum (30ml) with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Estée Lauder Revitalizing Supreme+ Nourishing and Hydrating Dual Phase Treatment Oil 30ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Origins Clear Improvement Charcoal Honey Mask to Purify and Nourish 75ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Repairwear Anti-Gravity Eye Cream 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Lancôme Rénergie Multi-Lift Eye Cream 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare DECLÉOR Prolagène Lift Lavandula Iris - Lift and Firm Eye Care 15ml with other eye-care",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Natio Ageless Brightening Eye Cream (20g) with other gel",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare The Ordinary Natural Moisturising Factors + HA 30ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare The Ordinary Natural Moisturizing Factors + HA 100ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare bareMinerals SkinLongevity Vital Power Infusion Serum 50ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Holika Holika Good Cera Super Ceramide Moisture Balm 40ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare La Roche-Posay Hyalu B5 Eyes 15ml with other eye-care",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare StriVectin Tri-Phase Daily Glow Toner 147ml with other toner",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Liz Earle Superskin Face Serum 30ml Pump with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Aurelia Skincare Firm & Replenish Body Serum 250ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Aveda Hand Relief Night Renewal Serum 30ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Darphin Intral Redness Relief Recovery Balm with other balm",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare APIVITA Express Radiance Face Mask - Pomegranate 2x8ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Lancôme Advanced Génifique Eye Care 15ml with other eye-care",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Murad Resurgence Renewing Eye Cream (15ml) with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Moisture Surge SPF25 Sheertint Hydrator - Universal Light Medium 40ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Indeed Labs Eysilix Serum 2 15ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare NIP+FAB Teen Skin Fix Salicylic Acid Sheet Mask with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare PIXI Peel and Polish with other exfoliant",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Pep Start Eye Cream 15ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Chantecaille Hibiscus and Bamboo Exfoliating Cream with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare NIOD Hydration Vaccine Face Cream 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare First Aid Beauty Coconut Skin Smoothie Priming Moisturiser with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare GLAMGLOW Superserum 30ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare FOREO 'Serum Serum Serum' Micro-Capsule Youth Preserve with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare MONU Recovery Balm (50ml) with other balm",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare PIXI PLUMP Collagen Boost Sheet Mask (Pack of 3) with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare NARS Cosmetics Aqua Gel Luminous Mask with other gel",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare AHAVA Single Use 24K Gold Mineral Mud Mask 6ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Dermalogica Intensive Eye Repair (15ml) with other eye-care",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Lumene Nordic C [Valo] Bright Eyes All-In-One Treatment 15ml with other eye-care",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Origins Modern Friction™ Exfoliator 75ml with other exfoliant",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare AMELIORATE Nourishing Body Wash 200ml with other cleanser",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare AMELIORATE Nourishing Body Wash 60ml with other cleanser",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Murad Oil and Pore Control Mattifier SPF45 PA 50ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Repairwear Laser Focus Smooths, Restores, Refines 50ml with other serum",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Maybelline Baby Lips Cherry Me with other balm",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare By Terry Baume de Rose Flaconnette 7ml with other balm",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare By Terry Baume De Rose Nutri-Couleur Lip Balm 7g with other balm",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare APIVITA Express Intense Moisturizing Face Mask - Cucumber 2x8ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare APIVITA Express Moisturizing Face Mask - Sea Lavender 2x8ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Moisture Surge Overnight Mask 100ml with other moisturizer",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Origins Original Skin Retexturizing Mask with Rose Clay 75ml with other mask",
+    "label": "product_comparison"
+  },
+  {
+    "text": "compare Clinique Moisture Surge Overnight Mask 15ml with other moisturizer",
+    "label": "product_comparison"
   },
   {
     "text": "quelle routine pour peau sensible",

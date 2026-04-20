@@ -29,7 +29,7 @@ type LocalImageMetrics = {
 const INITIAL_MESSAGE: ChatMessage = {
   role: "assistant",
   content:
-    "I am your TensorFlow.js skincare assistant. Ask a precise question about products, ingredients, routine, or pricing.",
+    "I am your DeepSkyn assistant. I am here to analyze your skincare needs and help you with products, ingredients, routines, and pricing.",
 };
 
 export function FloatingChatbot() {

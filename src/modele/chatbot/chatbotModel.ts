@@ -6,6 +6,8 @@ type IntentLabel =
   | "product_recommendation"
   | "price_analysis"
   | "ingredient_insight"
+  | "brand_info"
+  | "product_comparison"
   | "routine_advice"
   | "dataset_facts"
   | "health_warning"
@@ -44,6 +46,27 @@ type ClassMetrics = {
   support: number;
 };
 
+type ConfusionHotspot = {
+  actual: IntentLabel;
+  predicted: IntentLabel;
+  count: number;
+};
+
+type UnseenQuestionEval = {
+  question: string;
+  expected: IntentLabel;
+  predicted: IntentLabel;
+  confidence: number;
+  correct: boolean;
+};
+
+type UnseenEvalSummary = {
+  accuracy: number;
+  total: number;
+  correct: number;
+  cases: UnseenQuestionEval[];
+};
+
 export type ChatbotTrainingMetrics = {
   accuracy: number;
   macroPrecision: number;
@@ -55,6 +78,18 @@ export type ChatbotTrainingMetrics = {
   testSize: number;
   vocabularySize: number;
   epochs: number;
+  confusionHotspots: ConfusionHotspot[];
+  validationBestAccuracy: number;
+  selectedTrainingConfig: {
+    learningRate: number;
+    epochs: number;
+    batchSize: number;
+    units1: number;
+    units2: number;
+    dropout1: number;
+    dropout2: number;
+  };
+  unseenEvaluation?: UnseenEvalSummary;
 };
 
 type PreparedDatasetSummary = {
@@ -69,11 +104,25 @@ export type ChatbotPipelineReport = {
   generatedAt: string;
   summary: PreparedDatasetSummary;
   metrics: ChatbotTrainingMetrics;
+  improvementLoop: {
+    userFeedbackPath: string;
+    loadedFeedbackExamples: number;
+  };
 };
 
 type PrepareDatasetOptions = {
   trainRatio?: number;
   writeFiles?: boolean;
+};
+
+type TrainingConfig = {
+  learningRate: number;
+  epochs: number;
+  batchSize: number;
+  units1: number;
+  units2: number;
+  dropout1: number;
+  dropout2: number;
 };
 
 type TrainingPipelineArtifacts = {
@@ -84,13 +133,21 @@ type TrainingPipelineArtifacts = {
   split: DatasetSplit;
   vocabulary: string[];
   labelToIndex: Record<IntentLabel, number>;
+  feedbackExamplesLoaded: number;
 };
 
 type ProductRecord = {
   name: string;
+  brand: string;
   url: string | null;
   type: string;
+  productCategory: string;
   ingredients: string[];
+  ingredientCount: number;
+  activeIngredients: string[];
+  hasActiveIngredient: boolean;
+  concerns: string[];
+  skinType: string[];
   price: number | null;
   source: string;
 };
@@ -113,16 +170,25 @@ type DatasetStats = {
   productsRows: number;
   productsRowsClean: number;
   productsRowsParapharmacie: number;
+  duplicateProductsRemoved: number;
+  missingPriceCount: number;
+  missingBrandCount: number;
+  missingIngredientsCount: number;
   diabetesRows: number;
   avgStars: number;
   avgSkinCarePrice: number;
   avgProductPrice: number;
+  minProductPrice: number;
+  maxProductPrice: number;
   topRatedTitles: string[];
   topProductTypes: Array<{ type: string; count: number }>;
   topProductKinds: Array<{ kind: string; count: number }>;
   topBrands: Array<{ brand: string; count: number }>;
   brands: string[];
   topIngredients: Array<{ ingredient: string; count: number }>;
+  topConcerns: Array<{ concern: string; count: number }>;
+  topSkinTypes: Array<{ skinType: string; count: number }>;
+  activeIngredientCoverage: number;
   highRiskDiabetesRatio: number;
   avgGlucose: number;
   avgBmi: number;
@@ -240,6 +306,8 @@ const INTENT_LABELS: IntentLabel[] = [
   "product_recommendation",
   "price_analysis",
   "ingredient_insight",
+  "brand_info",
+  "product_comparison",
   "routine_advice",
   "dataset_facts",
   "health_warning",
@@ -250,10 +318,42 @@ const TRAIN_EPOCHS = 95;
 const LEARNING_RATE = 0.015;
 const MIN_CONFIDENCE = 0.33;
 
+const USER_FEEDBACK_DATASET_PATH = path.join(
+  process.cwd(),
+  "src",
+  "modele",
+  "datasets",
+  "chatbot",
+  "user_feedback_examples.json"
+);
+
+const TRAINING_CANDIDATES: TrainingConfig[] = [
+  {
+    learningRate: LEARNING_RATE,
+    epochs: TRAIN_EPOCHS,
+    batchSize: 16,
+    units1: 64,
+    units2: 32,
+    dropout1: 0.2,
+    dropout2: 0.1,
+  },
+  {
+    learningRate: 0.01,
+    epochs: 120,
+    batchSize: 20,
+    units1: 72,
+    units2: 36,
+    dropout1: 0.25,
+    dropout2: 0.15,
+  },
+];
+
 const MIN_SAMPLES_PER_INTENT: Record<IntentLabel, number> = {
   product_recommendation: 220,
   price_analysis: 120,
   ingredient_insight: 120,
+  brand_info: 120,
+  product_comparison: 120,
   routine_advice: 120,
   dataset_facts: 120,
   health_warning: 120,
@@ -264,6 +364,8 @@ const MAX_SAMPLES_PER_INTENT: Record<IntentLabel, number> = {
   product_recommendation: 260,
   price_analysis: 160,
   ingredient_insight: 160,
+  brand_info: 160,
+  product_comparison: 160,
   routine_advice: 160,
   dataset_facts: 160,
   health_warning: 160,
@@ -291,6 +393,20 @@ const EXTRA_INTENT_EXAMPLES: Record<IntentLabel, string[]> = {
     "ingredient analysis for sensitive skin",
     "quels actifs pour la barriere cutanee",
     "does salicylic acid help acne",
+  ],
+  brand_info: [
+    "products from cerave",
+    "show me products by la roche posay",
+    "infos sur la marque svr",
+    "what brands are in your dataset",
+    "donne les produits de la marque bioderma",
+  ],
+  product_comparison: [
+    "compare cerave foaming cleanser and cetaphil gentle cleanser",
+    "which is better serum or cream for dry skin",
+    "compare prices between cerave and bioderma",
+    "difference between niacinamide serum and vitamin c serum",
+    "compare these two products",
   ],
   routine_advice: [
     "donne moi une routine simple pour debutant",
@@ -397,6 +513,51 @@ const PRODUCT_KIND_KEYWORDS: Array<{ kind: string; keywords: string[] }> = [
   { kind: "exfoliant", keywords: ["peel", "exfol", "aha", "bha", "glycolic", "salicylic"] },
 ];
 
+const PRODUCT_TYPE_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
+  { canonical: "cleanser", aliases: ["cleanser", "face wash", "washing", "nettoyant", "foam", "gel wash"] },
+  { canonical: "serum", aliases: ["serum", "serums", "concentrate"] },
+  { canonical: "moisturizer", aliases: ["moisturizer", "moisturiser", "cream", "creme", "lotion", "hydrating cream"] },
+  { canonical: "toner", aliases: ["toner", "mist", "essence water"] },
+  { canonical: "sunscreen", aliases: ["sunscreen", "sun screen", "spf", "uv"] },
+  { canonical: "mask", aliases: ["mask", "sheet mask", "sleeping mask", "patch"] },
+  { canonical: "balm", aliases: ["balm", "baume"] },
+  { canonical: "eye-care", aliases: ["eye", "eye cream", "contour eyes"] },
+  { canonical: "exfoliant", aliases: ["exfoliant", "peeling", "aha", "bha"] },
+];
+
+const BRAND_CANONICAL_MAP: Record<string, string> = {
+  "cerave": "cerave",
+  "cera ve": "cerave",
+  "la roche posay": "la roche posay",
+  "larocheposay": "la roche posay",
+  "la roche-posay": "la roche posay",
+  "loreal": "loreal",
+  "l oreal": "loreal",
+  "loreal paris": "loreal",
+  "la mer": "la mer",
+  "paulas choice": "paulas choice",
+  "paula s choice": "paulas choice",
+};
+
+const ACTIVE_INGREDIENT_MATCHERS = [
+  "niacinamide",
+  "hyaluronic acid",
+  "sodium hyaluronate",
+  "salicylic acid",
+  "retinol",
+  "retinal",
+  "adapalene",
+  "azelaic acid",
+  "glycolic acid",
+  "lactic acid",
+  "vitamin c",
+  "ascorbic acid",
+  "ceramide",
+  "panthenol",
+  "zinc",
+  "peptide",
+];
+
 const INGREDIENT_RULES: IngredientRule[] = [
   {
     matchers: ["niacinamide"],
@@ -491,11 +652,44 @@ const normalizeText = (value: string): string =>
     .replace(/\s+/g, " ")
     .trim();
 
-const tokenize = (value: string): string[] => {
-  return normalizeText(value)
+const isUsefulToken = (token: string): boolean => {
+  if (!token || token.length < 2) return false;
+  if (STOPWORDS.has(token)) return false;
+  if (/^\d+$/.test(token)) return false;
+  if (/^(ml|g|oz|kg|pack|pcs|piece|size|various|shade|shades)$/.test(token)) return false;
+  return true;
+};
+
+const tokenizeNormalized = (normalized: string): string[] => {
+  const rawTokens = normalized
     .split(" ")
     .map((token) => token.trim())
-    .filter((token) => token.length > 1 && !STOPWORDS.has(token));
+    .filter((token) => token.length > 0);
+
+  const cleaned = rawTokens.filter((token) => isUsefulToken(token));
+  const ngrams: string[] = [];
+
+  for (let i = 0; i < cleaned.length - 1; i++) {
+    const bigram = `${cleaned[i]}_${cleaned[i + 1]}`;
+    if (bigram.length <= 40) ngrams.push(bigram);
+  }
+
+  return [...cleaned, ...ngrams];
+};
+
+const tokenize = (value: string): string[] => {
+  return tokenizeNormalized(normalizeText(value));
+};
+
+const normalizeTrainingQuestion = (value: string): string => {
+  const normalized = normalizeText(value)
+    .replace(/\bpls\b/g, "please")
+    .replace(/\bprixx\b/g, "prix")
+    .replace(/\bproduitss\b/g, "produits")
+    .replace(/\bingredientss\b/g, "ingredients")
+    .replace(/\bcomparer\b/g, "compare")
+    .trim();
+  return normalized;
 };
 
 const parseCsvLine = (line: string): string[] => {
@@ -557,7 +751,11 @@ const parseCsv = async (filePath: string): Promise<CsvRow[]> => {
 
 const parsePrice = (value: string): number | null => {
   if (!value) return null;
-  const cleaned = value.replace(/[^0-9.]/g, "").trim();
+  const normalized = String(value)
+    .replace(/,/g, ".")
+    .replace(/\s+/g, " ")
+    .trim();
+  const cleaned = normalized.replace(/[^0-9.]/g, "").trim();
   if (!cleaned) return null;
   const parsed = Number(cleaned);
   if (!Number.isFinite(parsed)) return null;
@@ -576,12 +774,72 @@ const safeNumber = (value: string, fallback = 0): number => {
 
 const parseIngredientList = (raw: string): string[] => {
   if (!raw) return [];
-  return raw
+
+  const normalized = String(raw)
     .replace(/^\[/, "")
     .replace(/\]$/, "")
+    .replace(/[|]/g, ",")
+    .replace(/[;]/g, ",");
+
+  return normalized
     .split(",")
-    .map((item) => item.replace(/['\"]/g, "").trim().toLowerCase())
-    .filter((item) => item.length > 1);
+    .map((item) => normalizeText(item.replace(/['\"]/g, "").trim().toLowerCase()))
+    .filter((item) => item.length > 1)
+    .filter((item, index, all) => all.indexOf(item) === index);
+};
+
+const normalizeBrandName = (value: string): string => {
+  const normalized = normalizeText(value);
+  if (!normalized) return "unknown";
+  return BRAND_CANONICAL_MAP[normalized] || normalized;
+};
+
+const normalizeProductType = (value: string): string => {
+  const normalized = normalizeText(value);
+  if (!normalized) return "general";
+
+  for (const item of PRODUCT_TYPE_ALIASES) {
+    if (item.aliases.some((alias) => normalized.includes(normalizeText(alias)))) {
+      return item.canonical;
+    }
+  }
+
+  return normalized;
+};
+
+const parseTagList = (raw: string): string[] => {
+  if (!raw) return [];
+  return raw
+    .split(/[,;|/]/)
+    .map((item) => normalizeText(item))
+    .filter((item) => item.length > 1)
+    .filter((item, index, all) => all.indexOf(item) === index);
+};
+
+const extractActiveIngredients = (ingredients: string[]): string[] => {
+  const matches = new Set<string>();
+  for (const ingredient of ingredients) {
+    for (const active of ACTIVE_INGREDIENT_MATCHERS) {
+      if (ingredient.includes(active)) {
+        matches.add(active);
+      }
+    }
+  }
+  return [...matches];
+};
+
+const inferConcernsFromIngredients = (ingredients: string[]): string[] => {
+  const concerns = new Set<string>();
+
+  for (const ingredient of ingredients) {
+    if (ingredient.includes("salicylic") || ingredient.includes("niacinamide")) concerns.add("acne");
+    if (ingredient.includes("hyaluronic") || ingredient.includes("glycerin") || ingredient.includes("ceramide")) concerns.add("hydration");
+    if (ingredient.includes("panthenol") || ingredient.includes("allantoin") || ingredient.includes("centella")) concerns.add("sensitivity");
+    if (ingredient.includes("vitamin c") || ingredient.includes("retinol") || ingredient.includes("azelaic")) concerns.add("spots");
+    if (ingredient.includes("retinol") || ingredient.includes("peptide") || ingredient.includes("glycolic")) concerns.add("aging");
+  }
+
+  return [...concerns];
 };
 
 const BRAND_STOPWORDS = new Set([
@@ -623,7 +881,7 @@ const extractBrand = (productName: string): string => {
     .filter((chunk) => chunk.length > 0);
 
   const brand = tokens.find((token) => token.length >= 3 && !BRAND_STOPWORDS.has(token));
-  return brand || "";
+  return normalizeBrandName(brand || "");
 };
 
 const textHasBrand = (normalizedQuestion: string, brand: string): boolean => {
@@ -678,6 +936,14 @@ const countTop = (items: string[], take = 6): Array<{ value: string; count: numb
     .map(([value, count]) => ({ value, count }));
 };
 
+const isBrandTokenPlausible = (value: string): boolean => {
+  if (!value || value === "unknown") return false;
+  if (value.length < 3 || value.length > 28) return false;
+  if (!/^[a-z0-9\s]+$/.test(value)) return false;
+  if (BRAND_STOPWORDS.has(value)) return false;
+  return true;
+};
+
 const includesAny = (text: string, terms: string[]): boolean => {
   return terms.some((term) => text.includes(term));
 };
@@ -696,6 +962,51 @@ const uniqueExamples = (examples: TrainingExample[]): TrainingExample[] => {
   }
 
   return output;
+};
+
+const sanitizeTrainingText = (text: string): string => {
+  const normalized = normalizeTrainingQuestion(text);
+  return normalized.length > 0 ? normalized : text.trim();
+};
+
+const loadUserFeedbackExamples = async (): Promise<TrainingExample[]> => {
+  try {
+    const raw = await readFile(USER_FEEDBACK_DATASET_PATH, "utf-8");
+    const parsed = JSON.parse(raw) as Array<{ text?: string; label?: string }>;
+
+    if (!Array.isArray(parsed)) return [];
+
+    const accepted = new Set<IntentLabel>(INTENT_LABELS);
+    const rows: TrainingExample[] = [];
+    for (const item of parsed) {
+      const text = String(item?.text || "").trim();
+      const label = String(item?.label || "") as IntentLabel;
+      if (!text || !accepted.has(label)) continue;
+      rows.push({ text, label });
+    }
+
+    return uniqueExamples(rows);
+  } catch {
+    return [];
+  }
+};
+
+const buildHardNegativeExamples = (stats: DatasetStats): TrainingExample[] => {
+  const hard: TrainingExample[] = [];
+  const topBrands = stats.topBrands.slice(0, 12).map((item) => item.brand);
+
+  for (const brand of topBrands) {
+    hard.push({ text: `compare ${brand} and ${brand} products`, label: "product_comparison" });
+    hard.push({ text: `brand info ${brand}`, label: "brand_info" });
+    hard.push({ text: `price of ${brand} products`, label: "price_analysis" });
+  }
+
+  hard.push({ text: "ingredients list of this product", label: "ingredient_insight" });
+  hard.push({ text: "what ingredients are inside this serum", label: "ingredient_insight" });
+  hard.push({ text: "products from this brand", label: "brand_info" });
+  hard.push({ text: "difference between product a and product b", label: "product_comparison" });
+
+  return hard;
 };
 
 const buildVariantText = (text: string, index: number): string => {
@@ -768,7 +1079,8 @@ const parseBudgetMax = (question: string): number | null => {
 };
 
 const productsByBrand = (brand: string, stats: DatasetStats): ProductRecord[] => {
-  return stats.products.filter((product) => extractBrand(product.name) === brand);
+  const canonical = normalizeBrandName(brand);
+  return stats.products.filter((product) => product.brand === canonical);
 };
 
 const avgPrice = (products: ProductRecord[]): number => {
@@ -833,24 +1145,72 @@ const buildStats = async (): Promise<DatasetStats> => {
     price: parsePrice(row.price),
   }));
 
-  const mapProductRow = (row: CsvRow, source: string): ProductRecord => ({
-    name: row.product_name || "Unknown product",
-    url: row.product_url || null,
-    type: (row.product_type || "general").toLowerCase(),
-    ingredients: parseIngredientList(row.clean_ingreds || ""),
-    price: parsePrice(row.price),
-    source,
-  });
+  const readFirst = (row: CsvRow, keys: string[]): string => {
+    for (const key of keys) {
+      const value = String(row[key] || "").trim();
+      if (value) return value;
+    }
+    return "";
+  };
+
+  const mapProductRow = (row: CsvRow, source: string): ProductRecord => {
+    const nameRaw = readFirst(row, ["product_name", "title", "name"]);
+    const typeRaw = readFirst(row, ["product_type", "type", "category"]);
+    const ingredientsRaw = readFirst(row, ["clean_ingreds", "ingredients", "inci"]);
+    const brandRaw = readFirst(row, ["brand", "product_brand"]);
+    const skinTypeRaw = readFirst(row, ["skin_type", "skin_types"]);
+    const concernsRaw = readFirst(row, ["concerns", "concern", "skin_concerns"]);
+
+    const name = nameRaw || "Unknown product";
+    const inferredBrand = extractBrand(name);
+    const brand = normalizeBrandName(brandRaw || inferredBrand || "unknown");
+    const ingredients = parseIngredientList(ingredientsRaw || "");
+    const concerns = parseTagList(concernsRaw);
+    const concernsInferred = inferConcernsFromIngredients(ingredients);
+    const mergedConcerns = [...new Set([...concerns, ...concernsInferred])];
+    const skinType = parseTagList(skinTypeRaw);
+    const activeIngredients = extractActiveIngredients(ingredients);
+
+    return {
+      name,
+      brand,
+      url: readFirst(row, ["product_url", "url", "link"]) || null,
+      type: normalizeProductType(typeRaw || "general"),
+      productCategory: inferProductKind({
+        name,
+        brand,
+        url: null,
+        type: normalizeProductType(typeRaw || "general"),
+        productCategory: "general",
+        ingredients,
+        ingredientCount: ingredients.length,
+        activeIngredients,
+        hasActiveIngredient: activeIngredients.length > 0,
+        concerns: mergedConcerns,
+        skinType,
+        price: null,
+        source,
+      }),
+      ingredients,
+      ingredientCount: ingredients.length,
+      activeIngredients,
+      hasActiveIngredient: activeIngredients.length > 0,
+      concerns: mergedConcerns,
+      skinType,
+      price: parsePrice(readFirst(row, ["price", "product_price", "sale_price"])),
+      source,
+    };
+  };
 
   const productsCombined = [
     ...productsRaw.map((row) => mapProductRow(row, "clean")),
     ...productsParapharmacieRaw.map((row) => mapProductRow(row, "parapharmacie")),
   ];
 
-  // Keep one canonical product per name and prefer richer entries.
+  // Keep one canonical product per (brand, name) and prefer richer entries.
   const productsByName = new Map<string, ProductRecord>();
   for (const product of productsCombined) {
-    const key = normalizeText(product.name);
+    const key = `${product.brand}::${normalizeText(product.name)}`;
     const existing = productsByName.get(key);
     if (!existing) {
       productsByName.set(key, product);
@@ -867,7 +1227,22 @@ const buildStats = async (): Promise<DatasetStats> => {
     }
   }
 
+  const duplicateProductsRemoved = productsCombined.length - productsByName.size;
   const products = [...productsByName.values()];
+
+  const pricesKnown = products.map((item) => item.price).filter((p): p is number => p !== null && p > 0);
+  const priceMedianFallback = pricesKnown.length > 0
+    ? [...pricesKnown].sort((a, b) => a - b)[Math.floor(pricesKnown.length / 2)]
+    : 0;
+
+  const productsFilled = products.map((product) => ({
+    ...product,
+    price: product.price ?? (priceMedianFallback > 0 ? round(priceMedianFallback, 2) : null),
+  }));
+
+  const missingPriceCount = products.filter((item) => item.price === null).length;
+  const missingBrandCount = products.filter((item) => !item.brand || item.brand === "unknown").length;
+  const missingIngredientsCount = products.filter((item) => item.ingredients.length === 0).length;
 
   const diabetes: DiabetesRecord[] = diabetesRaw.map((row) => ({
     glucose: safeNumber(row.Glucose, 0),
@@ -889,46 +1264,77 @@ const buildStats = async (): Promise<DatasetStats> => {
     count: item.count,
   }));
 
-  const topProductKinds = countTop(products.map((item) => inferProductKind(item)), 10).map((item) => ({
+  const topProductKinds = countTop(productsFilled.map((item) => item.productCategory || inferProductKind(item)), 10).map((item) => ({
     kind: item.value,
     count: item.count,
   }));
 
   const topBrands = countTop(
-    products.map((item) => extractBrand(item.name)).filter((brand) => brand.length > 0),
+    productsFilled.map((item) => item.brand).filter((brand) => brand.length > 0 && brand !== "unknown"),
     60
   )
+    .filter((item) => isBrandTokenPlausible(item.value))
     .filter((item) => item.count >= 2)
     .map((item) => ({ brand: item.value, count: item.count }));
 
   const brands = [
-    ...new Set(products.map((item) => extractBrand(item.name)).filter((brand) => brand.length > 0)),
+    ...new Set(
+      productsFilled
+        .map((item) => item.brand)
+        .filter((brand) => brand.length > 0 && brand !== "unknown" && isBrandTokenPlausible(brand))
+    ),
   ];
 
-  const topIngredients = countTop(products.flatMap((item) => item.ingredients), 6).map((item) => ({
+  const topIngredients = countTop(productsFilled.flatMap((item) => item.ingredients), 10).map((item) => ({
     ingredient: item.value,
     count: item.count,
   }));
 
+  const topConcerns = countTop(productsFilled.flatMap((item) => item.concerns), 8).map((item) => ({
+    concern: item.value,
+    count: item.count,
+  }));
+
+  const topSkinTypes = countTop(productsFilled.flatMap((item) => item.skinType), 6).map((item) => ({
+    skinType: item.value,
+    count: item.count,
+  }));
+
+  const activeIngredientCoverage = productsFilled.length === 0
+    ? 0
+    : round(productsFilled.filter((item) => item.hasActiveIngredient).length / productsFilled.length, 3);
+
+  const minProductPrice = pricesKnown.length > 0 ? round(Math.min(...pricesKnown), 2) : 0;
+  const maxProductPrice = pricesKnown.length > 0 ? round(Math.max(...pricesKnown), 2) : 0;
+
   return {
     skinCareRows: skinCare.length,
-    productsRows: products.length,
+    productsRows: productsFilled.length,
     productsRowsClean: productsRaw.length,
     productsRowsParapharmacie: productsParapharmacieRaw.length,
+    duplicateProductsRemoved,
+    missingPriceCount,
+    missingBrandCount,
+    missingIngredientsCount,
     diabetesRows: diabetes.length,
     avgStars: round(mean(skinCare.map((item) => item.stars))),
     avgSkinCarePrice: round(mean(skinCare.map((item) => item.price ?? 0).filter((p) => p > 0))),
-    avgProductPrice: round(mean(products.map((item) => item.price ?? 0).filter((p) => p > 0))),
+    avgProductPrice: round(mean(pricesKnown)),
+    minProductPrice,
+    maxProductPrice,
     topRatedTitles,
     topProductTypes: topTypes,
     topProductKinds,
     topBrands,
     brands,
     topIngredients,
+    topConcerns,
+    topSkinTypes,
+    activeIngredientCoverage,
     highRiskDiabetesRatio: round(mean(diabetes.map((item) => (item.outcome > 0 ? 1 : 0))), 3),
     avgGlucose: round(mean(diabetes.map((item) => item.glucose))),
     avgBmi: round(mean(diabetes.map((item) => item.bmi))),
-    products,
+    products: productsFilled,
     skinCare,
   };
 };
@@ -949,6 +1355,16 @@ const buildTrainingSet = (stats: DatasetStats): TrainingExample[] => {
     { text: "ingredient for hydration", label: "ingredient_insight" },
     { text: "niacinamide ou hyaluronic acid", label: "ingredient_insight" },
     { text: "donne les actifs importants", label: "ingredient_insight" },
+
+    { text: "products from cerave", label: "brand_info" },
+    { text: "donne moi les produits de la marque svr", label: "brand_info" },
+    { text: "infos marque bioderma", label: "brand_info" },
+    { text: "what brands are available", label: "brand_info" },
+
+    { text: "compare cerave and bioderma", label: "product_comparison" },
+    { text: "difference between cleanser and serum", label: "product_comparison" },
+    { text: "compare prices of two products", label: "product_comparison" },
+    { text: "which is better for acne serum or cream", label: "product_comparison" },
 
     { text: "quelle routine pour peau sensible", label: "routine_advice" },
     { text: "routine matin et soir", label: "routine_advice" },
@@ -983,10 +1399,16 @@ const buildTrainingSet = (stats: DatasetStats): TrainingExample[] => {
 
   for (const brand of stats.topBrands.slice(0, 45).map((item) => item.brand)) {
     base.push({ text: `tu connais les produits ${brand}`, label: "product_recommendation" });
-    base.push({ text: `donne les produits de la marque ${brand}`, label: "product_recommendation" });
+    base.push({ text: `donne les produits de la marque ${brand}`, label: "brand_info" });
     base.push({ text: `prix des produits ${brand}`, label: "price_analysis" });
     base.push({ text: `ingredients typiques de ${brand}`, label: "ingredient_insight" });
-    base.push({ text: `effets secondaires possibles des produits ${brand}`, label: "product_recommendation" });
+    base.push({ text: `compare ${brand} avec les autres marques`, label: "product_comparison" });
+    base.push({ text: `effets secondaires possibles des produits ${brand}`, label: "brand_info" });
+  }
+
+  const topBrandNames = stats.topBrands.slice(0, 10).map((item) => item.brand);
+  for (let i = 0; i < topBrandNames.length - 1; i++) {
+    base.push({ text: `compare ${topBrandNames[i]} and ${topBrandNames[i + 1]}`, label: "product_comparison" });
   }
 
   const productSamples = stats.products
@@ -996,13 +1418,15 @@ const buildTrainingSet = (stats: DatasetStats): TrainingExample[] => {
 
   for (const product of productSamples) {
     const kind = inferProductKind(product);
-    const brand = extractBrand(product.name);
+    const brand = product.brand;
     base.push({ text: `explique le produit ${product.name}`, label: "product_recommendation" });
     base.push({ text: `ingredients de ${product.name}`, label: "ingredient_insight" });
     base.push({ text: `prix de ${product.name}`, label: "price_analysis" });
+    base.push({ text: `compare ${product.name} with other ${kind}`, label: "product_comparison" });
     base.push({ text: `ce ${kind} est il bien pour peau sensible`, label: "product_recommendation" });
     if (brand) {
       base.push({ text: `meilleur ${kind} de ${brand}`, label: "product_recommendation" });
+      base.push({ text: `donne les infos de marque ${brand}`, label: "brand_info" });
     }
   }
 
@@ -1015,6 +1439,8 @@ const buildTrainingSet = (stats: DatasetStats): TrainingExample[] => {
     base.push({ text: `product ${title} is it good`, label: "product_recommendation" });
     base.push({ text: `prix de ${title}`, label: "price_analysis" });
   }
+
+  base.push(...buildHardNegativeExamples(stats));
 
   return rebalanceExamples(base);
 };
@@ -1040,7 +1466,7 @@ const dedupeExamples = (examples: TrainingExample[]): CleanedTrainingExample[] =
   const cleaned: CleanedTrainingExample[] = [];
 
   for (const item of examples) {
-    const cleanedText = normalizeText(item.text);
+    const cleanedText = sanitizeTrainingText(item.text);
     if (!cleanedText) continue;
 
     const key = `${item.label}::${cleanedText}`;
@@ -1071,14 +1497,38 @@ const preprocessExamples = (
 const buildVocabularyFromPreprocessed = (
   examples: PreprocessedTrainingExample[]
 ): string[] => {
-  const bucket = new Set<string>();
+  const docsCount = Math.max(1, examples.length);
+  const df = new Map<string, number>();
+
   for (const example of examples) {
-    for (const token of example.tokens) {
-      bucket.add(token);
+    const uniq = new Set(example.tokens);
+    for (const token of uniq) {
+      df.set(token, (df.get(token) || 0) + 1);
     }
   }
 
-  return [...bucket].sort();
+  const protectedTokens = new Set([
+    "price",
+    "prix",
+    "ingredient",
+    "ingredients",
+    "brand",
+    "marque",
+    "compare",
+    "routine",
+    "acne",
+  ]);
+
+  const bucket = [...df.entries()]
+    .filter(([token, freq]) => {
+      if (protectedTokens.has(token)) return true;
+      if (freq < 2) return false;
+      if (freq / docsCount > 0.92) return false;
+      return token.length >= 2 && token.length <= 40;
+    })
+    .map(([token]) => token);
+
+  return bucket.sort();
 };
 
 const encodeExamples = (
@@ -1193,6 +1643,23 @@ const computeMetricsFromConfusion = (matrix: number[][]): ChatbotTrainingMetrics
   const macroRecall = mean(classes.map((item) => item.recall));
   const macroF1 = mean(classes.map((item) => item.f1));
 
+  const hotspots: ConfusionHotspot[] = [];
+  for (let i = 0; i < matrix.length; i++) {
+    for (let j = 0; j < matrix.length; j++) {
+      if (i === j) continue;
+      const count = matrix[i][j];
+      if (count > 0) {
+        hotspots.push({
+          actual: INTENT_LABELS[i],
+          predicted: INTENT_LABELS[j],
+          count,
+        });
+      }
+    }
+  }
+
+  hotspots.sort((a, b) => b.count - a.count);
+
   return {
     accuracy: total === 0 ? 0 : round(correct / total, 4),
     macroPrecision: round(macroPrecision, 4),
@@ -1204,6 +1671,70 @@ const computeMetricsFromConfusion = (matrix: number[][]): ChatbotTrainingMetrics
     testSize: total,
     vocabularySize: 0,
     epochs: TRAIN_EPOCHS,
+    confusionHotspots: hotspots.slice(0, 10),
+    validationBestAccuracy: 0,
+    selectedTrainingConfig: {
+      learningRate: LEARNING_RATE,
+      epochs: TRAIN_EPOCHS,
+      batchSize: 16,
+      units1: 64,
+      units2: 32,
+      dropout1: 0.2,
+      dropout2: 0.1,
+    },
+  };
+};
+
+const evaluateUnseenQuestions = async (runtime: ChatbotRuntime): Promise<UnseenEvalSummary> => {
+  const cases: Array<{ question: string; expected: IntentLabel }> = [
+    { question: "best product for acne under 50", expected: "product_recommendation" },
+    { question: "products from cerave", expected: "brand_info" },
+    { question: "compare cerave and bioderma", expected: "product_comparison" },
+    { question: "ingredients in cerave hydrating cleanser", expected: "ingredient_insight" },
+    { question: "price of cerave hydrating cleanser", expected: "price_analysis" },
+    { question: "give me routine for sensitive skin", expected: "routine_advice" },
+    { question: "how many products in your dataset", expected: "dataset_facts" },
+    { question: "is this medical diagnosis", expected: "health_warning" },
+    { question: "write me a football story", expected: "out_of_scope" },
+  ];
+
+  const outputs: UnseenQuestionEval[] = [];
+  let correct = 0;
+
+  for (const item of cases) {
+    const vector = vectorize(item.question, runtime.vocabulary);
+    const input = tf.tensor2d([vector], [1, runtime.vocabulary.length]);
+    const prediction = runtime.model.predict(input) as tf.Tensor;
+    const probabilities = Array.from(await prediction.data());
+
+    input.dispose();
+    prediction.dispose();
+
+    let bestIndex = 0;
+    for (let i = 1; i < probabilities.length; i++) {
+      if (probabilities[i] > probabilities[bestIndex]) {
+        bestIndex = i;
+      }
+    }
+
+    const predicted = runtime.indexToLabel[bestIndex] || "out_of_scope";
+    const isCorrect = predicted === item.expected;
+    if (isCorrect) correct += 1;
+
+    outputs.push({
+      question: item.question,
+      expected: item.expected,
+      predicted,
+      confidence: round(probabilities[bestIndex] || 0, 4),
+      correct: isCorrect,
+    });
+  }
+
+  return {
+    accuracy: round(correct / Math.max(1, cases.length), 4),
+    total: cases.length,
+    correct,
+    cases: outputs,
   };
 };
 
@@ -1259,6 +1790,20 @@ const persistPreparedDatasets = async (
         vocabulary: artifacts.vocabulary,
         vocabularySize: artifacts.vocabulary.length,
         labelToIndex: artifacts.labelToIndex,
+        productFeatureSummary: {
+          productsRows: artifacts.stats.productsRows,
+          duplicateProductsRemoved: artifacts.stats.duplicateProductsRemoved,
+          missingPriceCount: artifacts.stats.missingPriceCount,
+          missingBrandCount: artifacts.stats.missingBrandCount,
+          missingIngredientsCount: artifacts.stats.missingIngredientsCount,
+          minProductPrice: artifacts.stats.minProductPrice,
+          maxProductPrice: artifacts.stats.maxProductPrice,
+          avgProductPrice: artifacts.stats.avgProductPrice,
+          activeIngredientCoverage: artifacts.stats.activeIngredientCoverage,
+          topConcerns: artifacts.stats.topConcerns,
+          topSkinTypes: artifacts.stats.topSkinTypes,
+          topIngredients: artifacts.stats.topIngredients,
+        },
       },
       null,
       2
@@ -1297,6 +1842,10 @@ const persistPreparedDatasets = async (
         vocabularySize: artifacts.vocabulary.length,
       },
       metrics,
+      improvementLoop: {
+        userFeedbackPath: USER_FEEDBACK_DATASET_PATH,
+        loadedFeedbackExamples: artifacts.feedbackExamplesLoaded,
+      },
     };
     await writeFile(reportPath, JSON.stringify(report, null, 2), "utf-8");
   }
@@ -1307,7 +1856,7 @@ const pickProductByNeed = (question: string, stats: DatasetStats): ProductRecord
   const requestedKind = detectRequestedProductKind(question);
   const concerns = detectSkinConcerns(question);
   const budgetMax = parseBudgetMax(question);
-  const exactName = stats.products.find((product) => normalized.includes(normalizeText(product.name)));
+  const exactName = findProductByNameSignal(question, stats);
   if (exactName) return exactName;
 
   const matchedBrand = findMatchedBrand(question, stats);
@@ -1346,6 +1895,34 @@ const findMatchedBrand = (question: string, stats: DatasetStats): string | null 
   const normalized = normalizeText(question);
   const sortedBrands = [...stats.brands].sort((a, b) => b.length - a.length);
   return sortedBrands.find((brand) => textHasBrand(normalized, brand)) || null;
+};
+
+const findMatchedBrands = (question: string, stats: DatasetStats): string[] => {
+  const normalized = normalizeText(question);
+  return [...stats.brands]
+    .sort((a, b) => b.length - a.length)
+    .filter((brand) => textHasBrand(normalized, brand));
+};
+
+const findProductByNameSignal = (question: string, stats: DatasetStats): ProductRecord | null => {
+  const normalized = normalizeText(question);
+  const exact = stats.products.find((product) => normalized.includes(normalizeText(product.name)));
+  if (exact) return exact;
+
+  const questionTokens = tokenize(question);
+  let bestScore = 0;
+  let best: ProductRecord | null = null;
+
+  for (const product of stats.products) {
+    const nameTokens = tokenize(product.name);
+    const overlap = nameTokens.filter((token) => questionTokens.includes(token)).length;
+    if (overlap > bestScore && overlap >= 2) {
+      bestScore = overlap;
+      best = product;
+    }
+  }
+
+  return best;
 };
 
 const hasProductOrBrandSignal = (question: string, stats: DatasetStats): boolean => {
@@ -1412,121 +1989,59 @@ const productLinkText = (product: ProductRecord): string => {
   return product.url ? ` Link: ${product.url}.` : "";
 };
 
-const buildSuggestions = (): string[] => {
-  return [
-    "What is the best moisturizer in your data?",
-    "Give me a simple AM/PM routine.",
-    "Which ingredients appear most frequently?",
-  ];
+const maybeLinkLine = (product: ProductRecord): string => {
+  return product.url ? `Lien produit: ${product.url}` : "";
 };
 
-const composeResponse = (
-  question: string,
-  intent: IntentLabel,
-  confidence: number,
-  stats: DatasetStats
-): string => {
-  const topIngredients = stats.topIngredients.slice(0, 3).map((item) => item.ingredient).join(", ");
-  const topTypes = stats.topProductTypes.slice(0, 3).map((item) => item.type).join(", ");
+const lineJoin = (lines: string[]): string => lines.filter((line) => line.trim().length > 0).join("\n");
 
-  if (intent === "out_of_scope") {
-    return "I don't know the answer to that question. I can help with skincare products, ingredients, prices, routines, and dataset stats.";
-  }
-
-  if (intent === "dataset_facts") {
-    return `The model was trained on 4 CSV files: skin_care (${stats.skinCareRows} rows), skincare_products_clean (${stats.productsRowsClean}), skincare_productsparapharmacie (${stats.productsRowsParapharmacie}), and diabetes (${stats.diabetesRows}). Deduplicated merged products: ${stats.productsRows}. Current confidence: ${round(confidence, 3)}.`;
-  }
-
-  if (intent === "health_warning") {
-    return `Dataset signal: Outcome=1 ratio in diabetes is about ${round(stats.highRiskDiabetesRatio * 100, 1)}%, average glucose ${stats.avgGlucose}, average BMI ${stats.avgBmi}. This is informational and not a medical diagnosis.`;
-  }
-
-  if (intent === "routine_advice") {
-    const concerns = detectSkinConcerns(question);
-    if (concerns.includes("acne") || concerns.includes("oily")) {
-      return "Suggested oily/acne routine: AM = gentle cleanser + niacinamide serum + SPF 30+, PM = gentle cleanser + salicylic active (progressive use) + non-comedogenic moisturizer. Introduce one active at a time every 10-14 days.";
-    }
-
-    if (concerns.includes("dry") || concerns.includes("sensitive")) {
-      return "Suggested dry/sensitive routine: AM = cream cleanser + hydrating serum (hyaluronate/glycerin) + barrier cream + SPF 30+, PM = gentle cleanser + ceramide/panthenol rich moisturizer. Avoid stacking irritating actives.";
-    }
-
-    return "Basic routine: AM = gentle cleanser + hydrating serum + SPF 30+, PM = gentle cleanser + one active (niacinamide or mild salicylic acid) + barrier moisturizer. Introduce one new active every 10-14 days.";
-  }
-
-  if (intent === "price_analysis") {
-    const requestedKind = detectRequestedProductKind(question);
-    if (requestedKind) {
-      const kindProducts = stats.products.filter((product) => inferProductKind(product) === requestedKind);
-      if (kindProducts.length > 0) {
-        const cheapest = [...kindProducts].sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999))[0];
-        const priciest = [...kindProducts].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))[0];
-        return `Price analysis for ${toTitleCase(requestedKind)}: ${kindProducts.length} products, average ${priceTextTnd(avgPrice(kindProducts))}. Cheapest: ${cheapest.name} (${priceTextTnd(cheapest.price)}). Most expensive: ${priciest.name} (${priceTextTnd(priciest.price)}).${productLinkText(cheapest)}`;
-      }
-    }
-
-    const matchedBrand = findMatchedBrand(question, stats);
-    if (matchedBrand) {
-      const brandProducts = productsByBrand(matchedBrand, stats);
-      if (brandProducts.length > 0) {
-        return `Price analysis for ${matchedBrand.toUpperCase()}: ${brandProducts.length} products, average ${priceTextTnd(avgPrice(brandProducts))}.`;
-      }
-    }
-
-    return `In our data, average price is ${priceTextTnd(stats.avgProductPrice)} for ingredient datasets and ${priceTextTnd(stats.avgSkinCarePrice)} for skin_care. Average rating is ${stats.avgStars}/5.`;
-  }
-
-  if (intent === "ingredient_insight") {
-    const requestedKind = detectRequestedProductKind(question);
-    if (requestedKind) {
-      const kindProducts = stats.products.filter((product) => inferProductKind(product) === requestedKind);
-      if (kindProducts.length > 0) {
-        const topKindIngredients = countTop(
-          kindProducts.flatMap((item) => item.ingredients),
-          8
-        ).map((item) => toTitleCase(item.value));
-        return `Frequent ingredients for ${toTitleCase(requestedKind)}: ${topKindIngredients.join(", ")}. Analysis based on ${kindProducts.length} products.`;
-      }
-    }
-
-    const matchedBrand = findMatchedBrand(question, stats);
-    if (matchedBrand) {
-      const brandProducts = productsByBrand(matchedBrand, stats);
-      if (brandProducts.length > 0) {
-        const topBrandIngredients = countTop(
-          brandProducts.flatMap((item) => item.ingredients),
-          8
-        ).map((item) => toTitleCase(item.value));
-        return `Frequent ingredients for ${matchedBrand.toUpperCase()}: ${topBrandIngredients.join(", ")}. Analysis based on ${brandProducts.length} products.`;
-      }
-    }
-
-    return `Most frequent ingredients in the database are: ${topIngredients}. This analysis is based on ${stats.productsRows} products.`;
-  }
-
-  const picked = pickProductByNeed(question, stats);
-  if (picked) {
-    const insight = getProductInsight(picked);
-    const ingredientsText = insight.keyIngredients.length
-      ? insight.keyIngredients.join(", ")
-      : "Ingredients not available";
-    const benefitsText = insight.benefits.length
-      ? insight.benefits.join("; ")
-      : "Benefits depend on full formula";
-    const cautionsText = insight.cautions.length
-      ? insight.cautions.join("; ")
-      : "No major caution signal detected";
-
-    return `I recommend ${picked.name} (${toTitleCase(picked.type)}). Estimated price: ${priceTextTnd(picked.price)}. Key ingredients: ${ingredientsText}. Expected benefits: ${benefitsText}. Cautions: ${cautionsText}.${productLinkText(picked)}`;
-  }
-
-  return `I can suggest products from our skincare data (top categories: ${topTypes}). Please provide your skin concern, preferred product type, or budget.`;
+const formatName = (value: string): string => {
+  return toTitleCase(value || "Produit");
 };
 
-const pickIntentWithoutModel = (question: string, stats: DatasetStats): IntentLabel => {
+const detectComparisonSignal = (question: string): boolean => {
   const normalized = normalizeText(question);
+  return includesAny(normalized, ["compare", "comparison", "versus", "vs", "difference", "diff", "better"]);
+};
 
-  if (hasProductOrBrandSignal(question, stats)) return "product_recommendation";
+const findMentionedProducts = (question: string, stats: DatasetStats): ProductRecord[] => {
+  const normalized = normalizeText(question);
+  const strict = stats.products
+    .filter((product) => normalized.includes(normalizeText(product.name)))
+    .slice(0, 2);
+
+  if (strict.length >= 2) return strict;
+
+  const best = findProductByNameSignal(question, stats);
+  if (!best) return strict;
+
+  const fallback = strict.some((item) => item.name === best.name) ? strict : [...strict, best];
+  return fallback.slice(0, 2);
+};
+
+const compareTwoProducts = (left: ProductRecord, right: ProductRecord): string => {
+  const leftSet = new Set(left.ingredients);
+  const sharedIngredients = right.ingredients.filter((item) => leftSet.has(item)).slice(0, 8);
+  const concernsUnion = [...new Set([...left.concerns, ...right.concerns])].slice(0, 6);
+
+  return [
+    `Comparison between ${left.name} and ${right.name}:`,
+    `${left.name}: type ${toTitleCase(left.type)}, brand ${toTitleCase(left.brand)}, price ${priceTextTnd(left.price)}.`,
+    `${right.name}: type ${toTitleCase(right.type)}, brand ${toTitleCase(right.brand)}, price ${priceTextTnd(right.price)}.`,
+    `Shared ingredients: ${sharedIngredients.length > 0 ? sharedIngredients.map((x) => toTitleCase(x)).join(", ") : "none detected"}.`,
+    `Main concerns covered: ${concernsUnion.length > 0 ? concernsUnion.join(", ") : "not explicitly tagged"}.`,
+  ].join(" ");
+};
+
+const inferIntentByRules = (question: string, stats: DatasetStats): IntentLabel => {
+  const normalized = normalizeText(question);
+  const matchedBrand = findMatchedBrand(question, stats);
+
+  if (detectComparisonSignal(question)) return "product_comparison";
+
+  if (includesAny(normalized, ["best", "recommend", "recommand", "meilleur", "suggest", "conseille"])) {
+    return "product_recommendation";
+  }
 
   if (
     normalized.includes("prix") ||
@@ -1545,6 +2060,12 @@ const pickIntentWithoutModel = (question: string, stats: DatasetStats): IntentLa
   ) {
     return "ingredient_insight";
   }
+
+  if (matchedBrand && (includesAny(normalized, ["brand", "marque", "from", "produits"]) || !hasProductOrBrandSignal(question, stats))) {
+    return "brand_info";
+  }
+
+  if (hasProductOrBrandSignal(question, stats)) return "product_recommendation";
 
   if (normalized.includes("routine") || normalized.includes("matin") || normalized.includes("soir")) {
     return "routine_advice";
@@ -1571,6 +2092,287 @@ const pickIntentWithoutModel = (question: string, stats: DatasetStats): IntentLa
   return "out_of_scope";
 };
 
+const buildSuggestions = (): string[] => {
+  return [
+    "Quel est le meilleur produit pour l'acne ?",
+    "Montre-moi les produits CeraVe",
+    "Quels sont les ingredients de ce produit ?",
+    "Quel est le prix de ce produit ?",
+    "Compare CeraVe et Bioderma",
+  ];
+};
+
+const composeResponse = (
+  question: string,
+  intent: IntentLabel,
+  confidence: number,
+  stats: DatasetStats
+): string => {
+  const topIngredients = stats.topIngredients.slice(0, 3).map((item) => item.ingredient).join(", ");
+  const topTypes = stats.topProductTypes.slice(0, 3).map((item) => item.type).join(", ");
+
+  if (intent === "out_of_scope") {
+    return "Je peux surtout t'aider sur les produits skincare: recommandations, prix, ingredients, comparaison entre marques/produits et routines simples.";
+  }
+
+  if (intent === "dataset_facts") {
+    return lineJoin([
+      `Voici un resume simple de la base:`,
+      `- Produits skincare analyses: ${stats.productsRows}`,
+      `- Nombre de marques: ${stats.brands.length}`,
+      `- Prix moyen observe: ${priceTextTnd(stats.avgProductPrice)}`,
+      `- Qualite des donnees: ${round(stats.activeIngredientCoverage * 100, 1)}% de couverture en ingredients actifs`,
+      "Si tu veux, je peux te donner un resume pour une marque precise.",
+    ]);
+  }
+
+  if (intent === "health_warning") {
+    return lineJoin([
+      "Information generale (non medicale):",
+      `- Ratio risque eleve observe dans le dataset: ${round(stats.highRiskDiabetesRatio * 100, 1)}%`,
+      `- Glucose moyen: ${stats.avgGlucose}`,
+      `- BMI moyen: ${stats.avgBmi}`,
+      "Pour un conseil de sante, il faut toujours consulter un professionnel.",
+    ]);
+  }
+
+  if (intent === "brand_info") {
+    const matchedBrand = findMatchedBrand(question, stats);
+    if (matchedBrand) {
+      const brandProducts = productsByBrand(matchedBrand, stats);
+      if (brandProducts.length > 0) {
+        const topBrandTypes = countTop(brandProducts.map((item) => item.type), 3).map((item) => item.value);
+        const topBrandIngredients = countTop(brandProducts.flatMap((item) => item.ingredients), 5)
+          .map((item) => toTitleCase(item.value));
+        const cheapest = [...brandProducts].sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999))[0];
+        return lineJoin([
+          `Marque: ${toTitleCase(matchedBrand)}`,
+          `- Nombre de produits trouves: ${brandProducts.length}`,
+          `- Categories principales: ${topBrandTypes.map((x) => toTitleCase(x)).join(", ") || "Non disponible"}`,
+          `- Ingredients souvent presents: ${topBrandIngredients.join(", ") || "Non disponible"}`,
+          `- Prix moyen: ${priceTextTnd(avgPrice(brandProducts))}`,
+          `- Exemple abordable: ${formatName(cheapest.name)} (${priceTextTnd(cheapest.price)})`,
+          maybeLinkLine(cheapest),
+        ]);
+      }
+    }
+
+    const topBrandsText = stats.topBrands.slice(0, 8).map((item) => toTitleCase(item.brand)).join(", ");
+    return `Marques populaires dans la base: ${topBrandsText}. Dis-moi une marque et je te donne une reponse claire (produits, prix, ingredients).`;
+  }
+
+  if (intent === "product_comparison") {
+    const matchedBrands = findMatchedBrands(question, stats);
+    if (matchedBrands.length >= 2) {
+      const leftBrandProducts = productsByBrand(matchedBrands[0], stats);
+      const rightBrandProducts = productsByBrand(matchedBrands[1], stats);
+      return lineJoin([
+        `Comparaison marques: ${toTitleCase(matchedBrands[0])} vs ${toTitleCase(matchedBrands[1])}`,
+        `- ${toTitleCase(matchedBrands[0])}: ${leftBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(leftBrandProducts))}`,
+        `- ${toTitleCase(matchedBrands[1])}: ${rightBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(rightBrandProducts))}`,
+        "Si tu veux, je peux aussi comparer 2 produits precis de ces marques.",
+      ]);
+    }
+
+    const namedProducts = findMentionedProducts(question, stats);
+    if (namedProducts.length >= 2) {
+      return compareTwoProducts(namedProducts[0], namedProducts[1]);
+    }
+
+    const mentionedKinds = PRODUCT_KIND_KEYWORDS
+      .filter((item) => item.keywords.some((keyword) => normalizeText(question).includes(keyword)))
+      .map((item) => item.kind)
+      .slice(0, 2);
+
+    if (mentionedKinds.length >= 2) {
+      const leftItems = stats.products.filter((item) => inferProductKind(item) === mentionedKinds[0]);
+      const rightItems = stats.products.filter((item) => inferProductKind(item) === mentionedKinds[1]);
+      return lineJoin([
+        `Comparaison categories: ${toTitleCase(mentionedKinds[0])} vs ${toTitleCase(mentionedKinds[1])}`,
+        `- ${toTitleCase(mentionedKinds[0])}: ${leftItems.length} produits, prix moyen ${priceTextTnd(avgPrice(leftItems))}`,
+        `- ${toTitleCase(mentionedKinds[1])}: ${rightItems.length} produits, prix moyen ${priceTextTnd(avgPrice(rightItems))}`,
+      ]);
+    }
+
+    const leftBrand = findMatchedBrand(question, stats);
+    if (leftBrand) {
+      const leftBrandProducts = productsByBrand(leftBrand, stats);
+      const competitor = stats.topBrands.map((item) => item.brand).find((brand) => brand !== leftBrand);
+      if (competitor) {
+        const rightBrandProducts = productsByBrand(competitor, stats);
+        return lineJoin([
+          `Comparaison marques: ${toTitleCase(leftBrand)} vs ${toTitleCase(competitor)}`,
+          `- ${toTitleCase(leftBrand)}: ${leftBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(leftBrandProducts))}`,
+          `- ${toTitleCase(competitor)}: ${rightBrandProducts.length} produits, prix moyen ${priceTextTnd(avgPrice(rightBrandProducts))}`,
+        ]);
+      }
+    }
+
+    return "Pour une comparaison claire, donne-moi 2 produits, 2 marques ou 2 categories (ex: cleanser vs serum).";
+  }
+
+  if (intent === "routine_advice") {
+    const concerns = detectSkinConcerns(question);
+    if (concerns.includes("acne") || concerns.includes("oily")) {
+      return lineJoin([
+        "Routine simple pour peau acneique/grasse:",
+        "- Matin: nettoyant doux + serum niacinamide + SPF 30+",
+        "- Soir: nettoyant doux + actif salicylique (progressivement) + hydratant non comedogene",
+        "Conseil: ajoute un seul actif a la fois.",
+      ]);
+    }
+
+    if (concerns.includes("dry") || concerns.includes("sensitive")) {
+      return lineJoin([
+        "Routine simple pour peau seche/sensible:",
+        "- Matin: nettoyant creme + serum hydratant + creme barriere + SPF 30+",
+        "- Soir: nettoyant doux + creme riche en ceramides/panthenol",
+        "Conseil: evite de cumuler plusieurs actifs irritants.",
+      ]);
+    }
+
+    return lineJoin([
+      "Routine de base:",
+      "- Matin: nettoyant doux + serum hydratant + SPF 30+",
+      "- Soir: nettoyant doux + un actif leger + creme hydratante",
+      "Si tu veux, je peux personnaliser selon ton type de peau.",
+    ]);
+  }
+
+  if (intent === "price_analysis") {
+    const exactProduct = findProductByNameSignal(question, stats);
+    if (exactProduct) {
+      return lineJoin([
+        `Prix de ${formatName(exactProduct.name)}: ${priceTextTnd(exactProduct.price)}`,
+        `- Marque: ${toTitleCase(exactProduct.brand)}`,
+        `- Categorie: ${toTitleCase(exactProduct.type)}`,
+        maybeLinkLine(exactProduct),
+      ]);
+    }
+
+    const requestedKind = detectRequestedProductKind(question);
+    if (requestedKind) {
+      const kindProducts = stats.products.filter((product) => inferProductKind(product) === requestedKind);
+      if (kindProducts.length > 0) {
+        const cheapest = [...kindProducts].sort((a, b) => (a.price ?? 9999) - (b.price ?? 9999))[0];
+        const priciest = [...kindProducts].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))[0];
+        return lineJoin([
+          `Prix pour la categorie ${toTitleCase(requestedKind)}:`,
+          `- Nombre de produits: ${kindProducts.length}`,
+          `- Prix moyen: ${priceTextTnd(avgPrice(kindProducts))}`,
+          `- Moins cher: ${formatName(cheapest.name)} (${priceTextTnd(cheapest.price)})`,
+          `- Plus cher: ${formatName(priciest.name)} (${priceTextTnd(priciest.price)})`,
+          maybeLinkLine(cheapest),
+        ]);
+      }
+    }
+
+    const matchedBrand = findMatchedBrand(question, stats);
+    if (matchedBrand) {
+      const brandProducts = productsByBrand(matchedBrand, stats);
+      if (brandProducts.length > 0) {
+        return lineJoin([
+          `Prix pour la marque ${toTitleCase(matchedBrand)}:`,
+          `- Nombre de produits: ${brandProducts.length}`,
+          `- Prix moyen: ${priceTextTnd(avgPrice(brandProducts))}`,
+        ]);
+      }
+    }
+
+    return lineJoin([
+      `Dans la base, le prix moyen des produits est ${priceTextTnd(stats.avgProductPrice)}.`,
+      `La note moyenne observee est ${stats.avgStars}/5.`,
+      "Dis-moi un produit ou une marque pour une reponse plus precise.",
+    ]);
+  }
+
+  if (intent === "ingredient_insight") {
+    const exactProduct = findProductByNameSignal(question, stats);
+    if (exactProduct) {
+      const ingredientsText = exactProduct.ingredients.length > 0
+        ? exactProduct.ingredients.slice(0, 20).map((item) => toTitleCase(item)).join(", ")
+        : "Ingredients not available";
+      const activeText = exactProduct.activeIngredients.map((item) => toTitleCase(item)).join(", ") || "Aucun detecte";
+      return lineJoin([
+        `Ingredients de ${formatName(exactProduct.name)}:`,
+        ingredientsText,
+        `Actifs principaux: ${activeText}`,
+      ]);
+    }
+
+    const requestedKind = detectRequestedProductKind(question);
+    if (requestedKind) {
+      const kindProducts = stats.products.filter((product) => inferProductKind(product) === requestedKind);
+      if (kindProducts.length > 0) {
+        const topKindIngredients = countTop(
+          kindProducts.flatMap((item) => item.ingredients),
+          8
+        ).map((item) => toTitleCase(item.value));
+        return lineJoin([
+          `Ingredients frequents pour ${toTitleCase(requestedKind)}:`,
+          topKindIngredients.join(", "),
+          `Analyse basee sur ${kindProducts.length} produits.`,
+        ]);
+      }
+    }
+
+    const matchedBrand = findMatchedBrand(question, stats);
+    if (matchedBrand) {
+      const brandProducts = productsByBrand(matchedBrand, stats);
+      if (brandProducts.length > 0) {
+        const topBrandIngredients = countTop(
+          brandProducts.flatMap((item) => item.ingredients),
+          8
+        ).map((item) => toTitleCase(item.value));
+        return lineJoin([
+          `Ingredients frequents pour ${toTitleCase(matchedBrand)}:`,
+          topBrandIngredients.join(", "),
+          `Analyse basee sur ${brandProducts.length} produits.`,
+        ]);
+      }
+    }
+
+    return lineJoin([
+      "Ingredients les plus frequents dans la base:",
+      topIngredients,
+      `Analyse basee sur ${stats.productsRows} produits.`,
+    ]);
+  }
+
+  const picked = pickProductByNeed(question, stats);
+  if (picked) {
+    const insight = getProductInsight(picked);
+    const ingredientsText = insight.keyIngredients.length
+      ? insight.keyIngredients.join(", ")
+      : "Ingredients not available";
+    const benefitsText = insight.benefits.length
+      ? insight.benefits.join("; ")
+      : "Benefits depend on full formula";
+    const cautionsText = insight.cautions.length
+      ? insight.cautions.join("; ")
+      : "No major caution signal detected";
+
+    return lineJoin([
+      `Je te recommande: ${formatName(picked.name)}`,
+      `- Type: ${toTitleCase(picked.type)}`,
+      `- Prix estime: ${priceTextTnd(picked.price)}`,
+      `- Ingredients cles: ${ingredientsText}`,
+      `- Ce que ce produit peut apporter: ${benefitsText}`,
+      `- Attention: ${cautionsText}`,
+      maybeLinkLine(picked),
+    ]);
+  }
+
+  return lineJoin([
+    `Je peux te proposer des produits adaptes (categories populaires: ${topTypes}).`,
+    "Dis-moi simplement: ton type de peau, ton besoin (acne, taches, sensibilite...) et ton budget.",
+  ]);
+};
+
+const pickIntentWithoutModel = (question: string, stats: DatasetStats): IntentLabel => {
+  return inferIntentByRules(question, stats);
+};
+
 const isInScopeQuestion = (question: string, stats: DatasetStats): boolean => {
   const normalized = normalizeText(question);
 
@@ -1584,6 +2386,13 @@ const isInScopeQuestion = (question: string, stats: DatasetStats): boolean => {
     "produit",
     "ingredient",
     "ingredients",
+    "marque",
+    "brand",
+    "compare",
+    "comparison",
+    "difference",
+    "vs",
+    "versus",
     "price",
     "prix",
     "routine",
@@ -1611,7 +2420,8 @@ const buildTrainingPipeline = async (
 ): Promise<TrainingPipelineArtifacts> => {
   const trainRatio = options.trainRatio ?? 0.8;
   const stats = await buildStats();
-  const examplesRaw = buildTrainingSet(stats);
+  const feedbackExamples = await loadUserFeedbackExamples();
+  const examplesRaw = uniqueExamples([...buildTrainingSet(stats), ...feedbackExamples]);
   const examplesClean = dedupeExamples(examplesRaw);
   const examplesPreprocessed = preprocessExamples(examplesClean);
 
@@ -1631,6 +2441,7 @@ const buildTrainingPipeline = async (
     split,
     vocabulary,
     labelToIndex,
+    feedbackExamplesLoaded: feedbackExamples.length,
   };
 
   if (options.writeFiles) {
@@ -1668,6 +2479,17 @@ const evaluateModel = async (
       testSize: 0,
       vocabularySize,
       epochs: TRAIN_EPOCHS,
+      confusionHotspots: [],
+      validationBestAccuracy: 0,
+      selectedTrainingConfig: {
+        learningRate: LEARNING_RATE,
+        epochs: TRAIN_EPOCHS,
+        batchSize: 16,
+        units1: 64,
+        units2: 32,
+        dropout1: 0.2,
+        dropout2: 0.1,
+      },
     };
   }
 
@@ -1696,6 +2518,7 @@ type TrainedRuntimeResult = {
   runtime: ChatbotRuntime;
   metrics: ChatbotTrainingMetrics;
   preparedSummary: PreparedDatasetSummary;
+  feedbackExamplesLoaded: number;
 };
 
 const trainWithPipeline = async (
@@ -1714,66 +2537,118 @@ const trainWithPipeline = async (
   const ysTrainIndices = tf.tensor1d(ysTrainBuffer, "int32");
   const ysTrain = tf.oneHot(ysTrainIndices, INTENT_LABELS.length).asType("float32");
 
-  const model = tf.sequential();
-  model.add(
-    tf.layers.dense({
-      name: `chatbot_dense_1_${runId}`,
-      inputShape: [artifacts.vocabulary.length],
-      units: 64,
-      activation: "relu",
-      kernelInitializer: "glorotUniform",
-    })
-  );
-  model.add(tf.layers.dropout({ name: `chatbot_dropout_${runId}`, rate: 0.2 }));
-  model.add(
-    tf.layers.dense({
-      name: `chatbot_dense_mid_${runId}`,
-      units: 32,
-      activation: "relu",
-      kernelInitializer: "glorotUniform",
-    })
-  );
-  model.add(tf.layers.dropout({ name: `chatbot_dropout_mid_${runId}`, rate: 0.1 }));
-  model.add(
-    tf.layers.dense({
-      name: `chatbot_dense_2_${runId}`,
-      units: INTENT_LABELS.length,
-      activation: "softmax",
-    })
-  );
+  const createModel = (config: TrainingConfig, modelSuffix: string): tf.Sequential => {
+    const model = tf.sequential();
+    model.add(
+      tf.layers.dense({
+        name: `chatbot_dense_1_${modelSuffix}`,
+        inputShape: [artifacts.vocabulary.length],
+        units: config.units1,
+        activation: "relu",
+        kernelInitializer: "glorotUniform",
+      })
+    );
+    model.add(tf.layers.dropout({ name: `chatbot_dropout_1_${modelSuffix}`, rate: config.dropout1 }));
+    model.add(
+      tf.layers.dense({
+        name: `chatbot_dense_2_${modelSuffix}`,
+        units: config.units2,
+        activation: "relu",
+        kernelInitializer: "glorotUniform",
+      })
+    );
+    model.add(tf.layers.dropout({ name: `chatbot_dropout_2_${modelSuffix}`, rate: config.dropout2 }));
+    model.add(
+      tf.layers.dense({
+        name: `chatbot_dense_out_${modelSuffix}`,
+        units: INTENT_LABELS.length,
+        activation: "softmax",
+      })
+    );
 
-  model.compile({
-    optimizer: tf.train.adam(LEARNING_RATE),
-    loss: "categoricalCrossentropy",
-    metrics: ["accuracy"],
-  });
+    model.compile({
+      optimizer: tf.train.adam(config.learningRate),
+      loss: "categoricalCrossentropy",
+      metrics: ["accuracy"],
+    });
 
-  await model.fit(xsTrain, ysTrain, {
-    epochs: TRAIN_EPOCHS,
-    batchSize: Math.min(16, artifacts.split.train.length),
-    shuffle: true,
-    validationSplit: Math.min(0.2, Math.max(0.1, 12 / Math.max(artifacts.split.train.length, 1))),
-    verbose: 0,
-  });
+    return model;
+  };
+
+  let bestModel: tf.Sequential | null = null;
+  let bestConfig = TRAINING_CANDIDATES[0];
+  let bestValAcc = -1;
+
+  for (let i = 0; i < TRAINING_CANDIDATES.length; i++) {
+    const config = TRAINING_CANDIDATES[i];
+    const model = createModel(config, `${runId}_${i}`);
+
+    const history = await model.fit(xsTrain, ysTrain, {
+      epochs: config.epochs,
+      batchSize: Math.min(config.batchSize, Math.max(8, artifacts.split.train.length)),
+      shuffle: true,
+      validationSplit: Math.min(0.22, Math.max(0.12, 24 / Math.max(artifacts.split.train.length, 1))),
+      callbacks: [
+        tf.callbacks.earlyStopping({
+          monitor: "val_loss",
+          patience: 10,
+          minDelta: 0.0008,
+        }),
+      ],
+      verbose: 0,
+    });
+
+    const valHistory = (history.history.val_acc || history.history.val_accuracy || []) as number[];
+    const candidateBestVal = valHistory.length > 0 ? Math.max(...valHistory.map((x) => Number(x || 0))) : 0;
+
+    if (candidateBestVal > bestValAcc) {
+      if (bestModel) bestModel.dispose();
+      bestModel = model;
+      bestConfig = config;
+      bestValAcc = candidateBestVal;
+    } else {
+      model.dispose();
+    }
+  }
+
+  const model = bestModel || createModel(bestConfig, `${runId}_fallback`);
 
   xsTrain.dispose();
   ysTrainIndices.dispose();
   ysTrain.dispose();
 
-  const metrics = await evaluateModel(model, artifacts.split, artifacts.vocabulary.length);
+  const metricsBase = await evaluateModel(model, artifacts.split, artifacts.vocabulary.length);
+
+  const runtime: ChatbotRuntime = {
+    model,
+    vocabulary: artifacts.vocabulary,
+    labelToIndex: artifacts.labelToIndex,
+    indexToLabel: INTENT_LABELS,
+    stats: artifacts.stats,
+  };
+
+  const unseenEvaluation = await evaluateUnseenQuestions(runtime);
+  const metrics: ChatbotTrainingMetrics = {
+    ...metricsBase,
+    validationBestAccuracy: round(bestValAcc, 4),
+    selectedTrainingConfig: {
+      learningRate: bestConfig.learningRate,
+      epochs: bestConfig.epochs,
+      batchSize: Math.min(bestConfig.batchSize, Math.max(8, artifacts.split.train.length)),
+      units1: bestConfig.units1,
+      units2: bestConfig.units2,
+      dropout1: bestConfig.dropout1,
+      dropout2: bestConfig.dropout2,
+    },
+    unseenEvaluation,
+  };
 
   if (options.writeFiles) {
     await persistPreparedDatasets(artifacts, metrics);
   }
 
   return {
-    runtime: {
-      model,
-      vocabulary: artifacts.vocabulary,
-      labelToIndex: artifacts.labelToIndex,
-      indexToLabel: INTENT_LABELS,
-      stats: artifacts.stats,
-    },
+    runtime,
     metrics,
     preparedSummary: {
       rawCount: artifacts.examplesRaw.length,
@@ -1782,6 +2657,7 @@ const trainWithPipeline = async (
       testCount: artifacts.split.test.length,
       vocabularySize: artifacts.vocabulary.length,
     },
+    feedbackExamplesLoaded: artifacts.feedbackExamplesLoaded,
   };
 };
 
@@ -1802,7 +2678,7 @@ export const prepareChatbotDatasets = async (): Promise<PreparedDatasetSummary> 
 };
 
 export const trainAndEvaluateChatbotModel = async (): Promise<ChatbotPipelineReport> => {
-  const { metrics, preparedSummary } = await trainWithPipeline({
+  const { metrics, preparedSummary, feedbackExamplesLoaded } = await trainWithPipeline({
     writeFiles: true,
     trainRatio: 0.8,
   });
@@ -1811,7 +2687,29 @@ export const trainAndEvaluateChatbotModel = async (): Promise<ChatbotPipelineRep
     generatedAt: new Date().toISOString(),
     summary: preparedSummary,
     metrics,
+    improvementLoop: {
+      userFeedbackPath: USER_FEEDBACK_DATASET_PATH,
+      loadedFeedbackExamples: feedbackExamplesLoaded,
+    },
   };
+};
+
+export const addUserFeedbackTrainingExample = async (
+  text: string,
+  label: IntentLabel
+): Promise<{ saved: boolean; total: number }> => {
+  const normalizedText = String(text || "").trim();
+  if (!normalizedText || !INTENT_LABELS.includes(label)) {
+    return { saved: false, total: 0 };
+  }
+
+  const existing = await loadUserFeedbackExamples();
+  const merged = uniqueExamples([...existing, { text: normalizedText, label }]);
+
+  await mkdir(path.dirname(USER_FEEDBACK_DATASET_PATH), { recursive: true });
+  await writeFile(USER_FEEDBACK_DATASET_PATH, JSON.stringify(merged, null, 2), "utf-8");
+
+  return { saved: true, total: merged.length };
 };
 
 const getRuntime = async (): Promise<ChatbotRuntime> => {
@@ -1829,7 +2727,7 @@ export const answerChatbotQuestion = async (question: string): Promise<ChatbotAn
   const trimmed = String(question || "").trim();
   if (!trimmed) {
     return {
-      answer: "Ask your skincare question and I will answer with model-backed data.",
+      answer: "Pose ta question skincare (produit, prix, ingredients, comparaison) et je te reponds clairement.",
       confidence: 0,
       intent: "out_of_scope",
       suggestions: buildSuggestions(),
@@ -1854,16 +2752,31 @@ export const answerChatbotQuestion = async (question: string): Promise<ChatbotAn
 
   const bestConfidence = probabilities[bestIndex] || 0;
   const predictedIntent = runtime.indexToLabel[bestIndex] || "out_of_scope";
+  const ruleIntent = inferIntentByRules(trimmed, runtime.stats);
   const hasSignal = hasProductOrBrandSignal(trimmed, runtime.stats);
   const inScope = isInScopeQuestion(trimmed, runtime.stats);
-  const intent: IntentLabel = hasSignal
-    ? "product_recommendation"
-    : !inScope
-      ? "out_of_scope"
-    : bestConfidence >= MIN_CONFIDENCE
-      ? predictedIntent
-      : "out_of_scope";
-  const finalConfidence = hasSignal ? Math.max(bestConfidence, 0.62) : bestConfidence;
+  const explicitRuleIntents = new Set<IntentLabel>([
+    "price_analysis",
+    "ingredient_insight",
+    "brand_info",
+    "product_comparison",
+  ]);
+  const intent: IntentLabel = !inScope
+    ? "out_of_scope"
+    : explicitRuleIntents.has(ruleIntent)
+      ? ruleIntent
+    : bestConfidence >= MIN_CONFIDENCE && predictedIntent !== "out_of_scope"
+      ? ruleIntent === "brand_info" || ruleIntent === "product_comparison"
+        ? ruleIntent
+        : predictedIntent
+      : ruleIntent;
+
+  const finalConfidence =
+    intent === "out_of_scope"
+      ? bestConfidence
+      : intent === ruleIntent || hasSignal
+        ? Math.max(bestConfidence, 0.62)
+        : bestConfidence;
 
   const answer = composeResponse(trimmed, intent, finalConfidence, runtime.stats);
   return {
