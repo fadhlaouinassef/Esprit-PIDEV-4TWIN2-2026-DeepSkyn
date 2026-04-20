@@ -208,5 +208,68 @@
     },
     "users": 1,
     "trainSeries": 1
+  },
+  {
+    "generatedAt": "2026-04-19T21:33:44.795Z",
+    "bestRun": 2,
+    "bestScore": 2.1999999999999984,
+    "epochs": 140,
+    "finalLoss": 2.0111951215540103e-8,
+    "temporalCv": {
+      "samples": 6,
+      "mae": 3.5,
+      "rmse": 4.949747468305833,
+      "directionAccuracy": 50
+    },
+    "strictTest": {
+      "samples": 2,
+      "mae": 9.899999999999999,
+      "rmse": 11.42365965879586,
+      "directionAccuracy": 0
+    },
+    "users": 2,
+    "trainSeries": 2
+  },
+  {
+    "generatedAt": "2026-04-19T21:38:11.242Z",
+    "bestRun": 3,
+    "bestScore": 8.134999999999998,
+    "epochs": 140,
+    "finalLoss": 2.146374467049128e-10,
+    "temporalCv": {
+      "samples": 6,
+      "mae": 1.9500000000000004,
+      "rmse": 2.8766299727285056,
+      "directionAccuracy": 83.33333333333334
+    },
+    "strictTest": {
+      "samples": 2,
+      "mae": 15.100000000000001,
+      "rmse": 15.456390264224053,
+      "directionAccuracy": 0
+    },
+    "users": 2,
+    "trainSeries": 2
+  },
+  {
+    "generatedAt": "2026-04-20T00:23:04.214Z",
+    "bestRun": 2,
+    "bestScore": 1.6759354752342608,
+    "epochs": 40,
+    "finalLoss": 0.03502090275287628,
+    "temporalCv": {
+      "samples": 14940,
+      "mae": 1.201333333333337,
+      "rmse": 1.5191683150585782,
+      "directionAccuracy": 70.96385542168674
+    },
+    "strictTest": {
+      "samples": 7470,
+      "mae": 1.3414859437751008,
+      "rmse": 1.6741575115543852,
+      "directionAccuracy": 66.90763052208835
+    },
+    "users": 7470,
+    "trainSeries": 7470
   }
 ]
