@@ -184,7 +184,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer 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"
+              "value": "Bearer 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"
             },
             {
               "name": "Content-Type",
@@ -194,7 +194,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ ({\n  model: 'google/gemini-2.0-flash-001',\n  temperature: 0.2,\n  response_format: { type: 'json_object' },\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a board-certified dermatologist and clinical skin analyst. Return ONLY valid JSON (no markdown, no prose outside JSON) with EXACT top-level keys: status, analysis, score, recommendations. status must be complete. score must be integer 0-100. analysis must follow this exact DeepKyn order with section titles in double asterisks: 1) Global Summary (Quick View) 2) Detected Problems (High Priority) 3) Detected Positive Points 4) Detailed Analysis by Category 5) Causes (Lifestyle Insights) 6) Recommended Priorities (Top 3). Use dynamic bullets. recommendations must be an object with EXACT keys: immediate, weekly, avoid, detailedImmediate, detailedWeekly, detailedAvoid. immediate/weekly/avoid are arrays of concise strings. detailedImmediate/detailedWeekly/detailedAvoid are arrays of objects with keys: title, description, why, how, when, frequency, productType, cautions. Each detailed object must explain clearly why to use and how to use. Generate data from detected analysis signals, never generic placeholders.'\n    },\n    {\n      role: 'user',\n      content: 'Generate final analysis + actionable recommendations JSON from the questionnaire context. Answers JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.answersJSON || '[]') + '. Questions JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.questionsJSON || '[]')\n    }\n  ]\n}) }}"
+        "jsonBody": "={{ ({\n  model: 'google/gemini-2.0-flash-lite-001',\n  temperature: 0.2,\n  response_format: { type: 'json_object' },\n  messages: [\n    {\n      role: 'system',\n      content: 'You are a board-certified dermatologist and clinical skin analyst. Return ONLY valid JSON (no markdown, no prose outside JSON) with EXACT top-level keys: status, analysis, score, recommendations. status must be complete. score must be integer 0-100. analysis must follow this exact DeepKyn order with section titles in double asterisks: 1) Global Summary (Quick View) 2) Detected Problems (High Priority) 3) Detected Positive Points 4) Detailed Analysis by Category 5) Causes (Lifestyle Insights) 6) Recommended Priorities (Top 3). Use dynamic bullets. recommendations must be an object with EXACT keys: immediate, weekly, avoid, detailedImmediate, detailedWeekly, detailedAvoid. immediate/weekly/avoid are arrays of concise strings. detailedImmediate/detailedWeekly/detailedAvoid are arrays of objects with keys: title, description, why, how, when, frequency, productType, cautions. Each detailed object must explain clearly why to use and how to use. Generate data from detected analysis signals, never generic placeholders.'\n    },\n    {\n      role: 'user',\n      content: 'Generate final analysis + actionable recommendations JSON from the questionnaire context. Answers JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.answersJSON || '[]') + '. Questions JSON: ' + ($node[\"Determiner Prochaine Etape\"].json.questionsJSON || '[]')\n    }\n  ]\n}) }}"
       }
     },
     {
@@ -280,7 +280,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer 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"
+              "value": "Bearer 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"
             },
             {
               "name": "Content-Type",
@@ -290,7 +290,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ ({\n  model: 'google/gemini-2.0-flash-001',\n  temperature: 0.1,\n  response_format: { type: 'json_object' },\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert skincare routine generator. Return ONLY valid JSON. No markdown. No prose. No extra keys. Use exactly this schema and key order: {\"title\":\"string\",\"skinType\":\"OILY|DRY|COMBINATION|SENSITIVE|NORMAL\",\"morning\":[{\"step\":1,\"name\":\"string\",\"instruction\":\"string\",\"frequency\":\"daily\"}],\"evening\":[{\"step\":1,\"name\":\"string\",\"instruction\":\"string\",\"frequency\":\"daily\"}],\"weekly\":[{\"day\":\"string\",\"focus\":\"string\",\"instruction\":\"string\"}],\"warnings\":[\"string\"],\"durationWeeks\":4}. Rules: skinType must be one of enum values; morning/evening steps must be sequential starting at 1; frequency must be daily for all morning/evening items; durationWeeks must be integer 4.'\n    },\n    {\n      role: 'user',\n      content: 'Generate a personalized skincare routine JSON from this input. userId=' + String($node[\"Prepare Routine Context\"].json.userId || 0) + '; score=' + String($node[\"Prepare Routine Context\"].json.score || 0) + '; analysis=' + String($node[\"Prepare Routine Context\"].json.analysis || '') + '; answers=' + JSON.stringify($node[\"Prepare Routine Context\"].json.answers || [])\n    }\n  ]\n}) }}"
+        "jsonBody": "={{ ({\n  model: 'google/gemini-2.0-flash-lite-001',\n  temperature: 0.1,\n  response_format: { type: 'json_object' },\n  messages: [\n    {\n      role: 'system',\n      content: 'You are an expert skincare routine generator. Return ONLY valid JSON. No markdown. No prose. No extra keys. Use exactly this schema and key order: {\"title\":\"string\",\"skinType\":\"OILY|DRY|COMBINATION|SENSITIVE|NORMAL\",\"morning\":[{\"step\":1,\"name\":\"string\",\"instruction\":\"string\",\"frequency\":\"daily\"}],\"evening\":[{\"step\":1,\"name\":\"string\",\"instruction\":\"string\",\"frequency\":\"daily\"}],\"weekly\":[{\"day\":\"string\",\"focus\":\"string\",\"instruction\":\"string\"}],\"warnings\":[\"string\"],\"durationWeeks\":4}. Rules: skinType must be one of enum values; morning/evening steps must be sequential starting at 1; frequency must be daily for all morning/evening items; durationWeeks must be integer 4.'\n    },\n    {\n      role: 'user',\n      content: 'Generate a personalized skincare routine JSON from this input. userId=' + String($node[\"Prepare Routine Context\"].json.userId || 0) + '; score=' + String($node[\"Prepare Routine Context\"].json.score || 0) + '; analysis=' + String($node[\"Prepare Routine Context\"].json.analysis || '') + '; answers=' + JSON.stringify($node[\"Prepare Routine Context\"].json.answers || [])\n    }\n  ]\n}) }}"
       }
     },
     {
