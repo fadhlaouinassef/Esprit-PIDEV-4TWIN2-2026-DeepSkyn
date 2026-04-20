@@ -54,13 +54,13 @@ let modelClasses: string[] = [];
 
 async function getOrLoadModel() {
   if (loadedModel) return loadedModel;
-  
+
   if (fs.existsSync(MODEL_PATH)) {
     try {
       const modelJson = JSON.parse(fs.readFileSync(MODEL_PATH, "utf8"));
       const weightsPath = path.join(path.dirname(MODEL_PATH), "model.weights.bin");
       const weightsBuffer = fs.readFileSync(weightsPath);
-      
+
       loadedModel = await tf.loadLayersModel(tf.io.fromMemory(
         modelJson.modelTopology,
         modelJson.weightsManifest[0].weights,
@@ -219,12 +219,12 @@ const identifyConditionFromMetrics = (metrics: AnalyzeImageBody["imageMetrics"])
 
   // PRIORITÉ RIDES (Peau Mature) : Si le contraste est élevé, c'est un signe fort de relief/rides
   if (contrast > 40) return "wrinkles";
-  
+
   // ACNÉ : Si la rougeur est le signe dominant après avoir vérifié le relief
   if (redRatio > 0.38) return "acne";
-  
+
   // Autres conditions
-  if (redRatio > 0.35 && contrast > 35) return "acne"; 
+  if (redRatio > 0.35 && contrast > 35) return "acne";
   if (redRatio > 0.34 && contrast < 40) return "general";
   if (contrast > 60) return "dark_spots";
 
@@ -238,15 +238,15 @@ async function classifyImageWithAI(imageDataUrl: string): Promise<string | null>
   try {
     const base64 = imageDataUrl.split(",")[1];
     const buffer = Buffer.from(base64, "base64");
-    
+
     // Import Jimp 1.6+ style named export
     const { Jimp } = await import("jimp");
     const image = await Jimp.read(buffer as any);
     image.resize({ w: 64, h: 64 });
-    
+
     const floatData = new Float32Array(64 * 64 * 3);
     let i = 0;
-    image.scan(0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
+    image.scan(0, 0, image.bitmap.width, image.bitmap.height, function (x, y, idx) {
       floatData[i++] = (this.bitmap.data[idx + 0] / 127.5) - 1;
       floatData[i++] = (this.bitmap.data[idx + 1] / 127.5) - 1;
       floatData[i++] = (this.bitmap.data[idx + 2] / 127.5) - 1;
@@ -276,12 +276,12 @@ const analyzeWithFacePP = async (imageDataUrl: string, question?: string) => {
   const payload = await response.json() as FacePlusPlusDetectResponse;
 
   if (!response.ok || payload.error_message) throw new Error(payload.error_message);
-  
+
   const faces = payload.faces || [];
   if (faces.length === 0) {
     return { answer: "Aucun visage détecté.", confidence: 0.6, intent: "image_no_face" };
   }
-  
+
   const face = faces[0];
   const faceQuality = toFinite(face.attributes?.facequality?.value, 50);
   const blurry = (face.attributes?.blur?.blurness?.value || 0) > (face.attributes?.blur?.blurness?.threshold || 50);
@@ -325,8 +325,8 @@ export async function POST(request: Request) {
     const redRatio = toFinite(body.imageMetrics?.redRatio, 0);
     const redScore = Math.round(clamp01((redRatio - 0.33) / 0.05) * 100);
 
-    const answer = 
-  
+    const answer =
+
       `ANALYSE DERMATOLOGIQUE EXPERTE\n` +
       `______________________________________\n\n` +
       `DIAGNOSTIC PRINCIPAL\n\n` +

@@ -21,6 +21,20 @@
       "artifactPath": "C:\\Users\\Mostfa Charfedin\\Desktop\\azertyuiop\\Esprit-PIDEV-4TWIN2-2026-DeepSkyn\\src\\modele\\artifacts\\models\\trend-model-19-04-2026-02-44-15-20260419014440.json",
       "reportPath": "C:\\Users\\Mostfa Charfedin\\Desktop\\azertyuiop\\Esprit-PIDEV-4TWIN2-2026-DeepSkyn\\src\\modele\\artifacts\\model-reports\\trend-model-19-04-2026-02-44-15-20260419014440.json",
       "createdAt": "2026-04-19T01:44:40.608Z"
+    },
+    {
+      "id": "trend-model-20-04-2026-15-26-48-20260420142719",
+      "name": "Trend Model 20/04/2026 15:26:48",
+      "artifactPath": "C:\\Projects\\deepskyn\\src\\modele\\artifacts\\models\\trend-model-20-04-2026-15-26-48-20260420142719.json",
+      "reportPath": "C:\\Projects\\deepskyn\\src\\modele\\artifacts\\model-reports\\trend-model-20-04-2026-15-26-48-20260420142719.json",
+      "createdAt": "2026-04-20T14:27:19.157Z"
+    },
+    {
+      "id": "baseline-model-20260420142719",
+      "name": "Baseline model",
+      "artifactPath": "C:\\Projects\\deepskyn\\src\\modele\\artifacts\\models\\baseline-model-20260420142719.json",
+      "reportPath": "C:\\Projects\\deepskyn\\src\\modele\\artifacts\\model-reports\\baseline-model-20260420142719.json",
+      "createdAt": "2026-04-20T14:27:19.504Z"
     }
   ]
 }

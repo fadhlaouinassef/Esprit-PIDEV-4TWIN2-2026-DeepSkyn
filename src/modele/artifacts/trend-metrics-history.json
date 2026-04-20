@@ -208,5 +208,26 @@
     },
     "users": 1,
     "trainSeries": 1
+  },
+  {
+    "generatedAt": "2026-04-20T14:26:55.372Z",
+    "bestRun": 2,
+    "bestScore": 12.53,
+    "epochs": 13,
+    "finalLoss": 0.3433710038661957,
+    "temporalCv": {
+      "samples": 3,
+      "mae": 4.433333333333333,
+      "rmse": 4.858326186386966,
+      "directionAccuracy": 100
+    },
+    "strictTest": {
+      "samples": 7,
+      "mae": 4.857142857142856,
+      "rmse": 6.027081738761658,
+      "directionAccuracy": 42.857142857142854
+    },
+    "users": 1,
+    "trainSeries": 1
   }
 ]
