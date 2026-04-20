@@ -102,6 +102,8 @@ type AnalysisAccess = {
 
 // N8N Webhook Proxy URL
 const N8N_WEBHOOK_URL = "/api/quiz/n8n";
+const QUESTIONNAIRE_ROUTINE_FEEDBACK_HIDE_UNTIL_KEY = "deepskyn:questionnaire:routine-feedback:hideUntil";
+const QUESTIONNAIRE_ROUTINE_FEEDBACK_HIDE_MS = 14 * 24 * 60 * 60 * 1000;
 
 const normalizeQuestionType = (rawType: unknown): "choice" | "text" => {
     const normalized = String(rawType || "").toLowerCase();
@@ -564,6 +566,13 @@ export default function QuestionnairePage() {
         productRecommendationsEnabled: false,
         autoRoutineEnabled: false,
     });
+    const [showPostAnalysisFeedbackModal, setShowPostAnalysisFeedbackModal] = useState(false);
+    const [redirectToRoutineAfterFeedback, setRedirectToRoutineAfterFeedback] = useState(false);
+    const [feedbackRating, setFeedbackRating] = useState(5);
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [feedbackPublish, setFeedbackPublish] = useState(true);
+    const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+    const [feedbackSaved, setFeedbackSaved] = useState(false);
     const questionnaireSessionIdRef = useRef(`qs-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
     const imageInputRef = useRef<HTMLInputElement>(null);
     const topSuccessAlertTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -904,6 +913,91 @@ export default function QuestionnairePage() {
             }
         };
     }, []);
+
+    const continueToRoutine = () => {
+        window.location.href = "/user/routines";
+    };
+
+    const getRoutineFeedbackHideUntil = () => {
+        if (typeof window === "undefined") return 0;
+        const rawValue = window.localStorage.getItem(QUESTIONNAIRE_ROUTINE_FEEDBACK_HIDE_UNTIL_KEY);
+        const parsedValue = Number(rawValue || 0);
+        return Number.isFinite(parsedValue) ? parsedValue : 0;
+    };
+
+    const setRoutineFeedbackHideUntil = (delayMs = QUESTIONNAIRE_ROUTINE_FEEDBACK_HIDE_MS) => {
+        if (typeof window === "undefined") return;
+        const hideUntil = Date.now() + delayMs;
+        window.localStorage.setItem(QUESTIONNAIRE_ROUTINE_FEEDBACK_HIDE_UNTIL_KEY, String(hideUntil));
+    };
+
+    const openRoutineFeedbackModal = () => {
+        const hideUntil = getRoutineFeedbackHideUntil();
+        if (hideUntil > Date.now()) {
+            continueToRoutine();
+            return;
+        }
+
+        setRedirectToRoutineAfterFeedback(true);
+        setFeedbackSaved(false);
+        setShowPostAnalysisFeedbackModal(true);
+    };
+
+    const closeRoutineFeedbackModalAndContinue = () => {
+        setShowPostAnalysisFeedbackModal(false);
+        setRoutineFeedbackHideUntil();
+        if (redirectToRoutineAfterFeedback) {
+            setRedirectToRoutineAfterFeedback(false);
+            continueToRoutine();
+        }
+    };
+
+    const submitPostAnalysisFeedback = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (feedbackRating < 1 || feedbackRating > 5) {
+            toast.error("Please choose a rating between 1 and 5.");
+            return;
+        }
+
+        if (feedbackMessage.trim().length > 400) {
+            toast.error("Message must be 400 characters or less.");
+            return;
+        }
+
+        setFeedbackSubmitting(true);
+        setFeedbackSaved(false);
+        try {
+            const response = await fetch('/api/user/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    rating: feedbackRating,
+                    message: feedbackMessage.trim(),
+                    publish: feedbackPublish,
+                })
+            });
+
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload?.error || 'Failed to save feedback.');
+            }
+
+            setFeedbackSaved(true);
+            setFeedbackMessage("");
+            setShowPostAnalysisFeedbackModal(false);
+            setRoutineFeedbackHideUntil();
+            if (redirectToRoutineAfterFeedback) {
+                setRedirectToRoutineAfterFeedback(false);
+                continueToRoutine();
+            }
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Failed to save feedback.';
+            toast.error(message);
+        } finally {
+            setFeedbackSubmitting(false);
+        }
+    };
 
     // Initial call to get the first question
     useEffect(() => {
@@ -2001,7 +2095,7 @@ export default function QuestionnairePage() {
                             {/* ── CTA ── */}
                             <div className="flex flex-col sm:flex-row gap-4 w-full">
                                 <motion.button
-                                    onClick={() => window.location.href = "/user/routines"}
+                                    onClick={openRoutineFeedbackModal}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="flex-1 flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-purple-500/30 text-base"
@@ -2270,6 +2364,99 @@ export default function QuestionnairePage() {
                     </div>
                 )}
             </div>
+
+            <AnimatePresence>
+                {showPostAnalysisFeedbackModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[120] flex items-center justify-center p-4"
+                    >
+                        <div
+                            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                            onClick={closeRoutineFeedbackModalAndContinue}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 16, scale: 0.98 }}
+                            className="relative w-full max-w-xl rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-6 shadow-2xl"
+                        >
+                            <button
+                                type="button"
+                                onClick={closeRoutineFeedbackModalAndContinue}
+                                className="absolute top-3 right-3 rounded-full p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                            >
+                                <X className="size-4" />
+                            </button>
+
+                            <div className="pr-8">
+                                <h4 className="font-bold text-gray-900 dark:text-white text-base">How helpful was this analysis?</h4>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Share quick feedback, then we will take you to your routine page.</p>
+                            </div>
+
+                            <form onSubmit={submitPostAnalysisFeedback} className="space-y-4 mt-5">
+                                <div className="flex items-center gap-2">
+                                    {[1, 2, 3, 4, 5].map((value) => {
+                                        const active = value <= feedbackRating;
+                                        return (
+                                            <button
+                                                key={value}
+                                                type="button"
+                                                onClick={() => setFeedbackRating(value)}
+                                                className={`inline-flex size-9 items-center justify-center rounded-full border transition-all ${active
+                                                    ? "border-amber-300 bg-amber-50 text-amber-500"
+                                                    : "border-gray-200 bg-white text-gray-300 hover:text-amber-400 dark:border-gray-700 dark:bg-gray-900"
+                                                    }`}
+                                            >
+                                                <Star size={16} className={active ? "fill-current" : ""} />
+                                            </button>
+                                        );
+                                    })}
+                                    <span className="text-xs font-bold text-gray-500">{feedbackRating}/5</span>
+                                </div>
+
+                                <textarea
+                                    rows={3}
+                                    maxLength={400}
+                                    value={feedbackMessage}
+                                    onChange={(e) => setFeedbackMessage(e.target.value)}
+                                    placeholder="Optional: tell us what could be improved"
+                                    className="w-full p-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm outline-none focus:ring-2 focus:ring-primary/20"
+                                />
+
+                                <label className="flex items-center gap-2 text-xs font-medium text-gray-600 dark:text-gray-300">
+                                    <input
+                                        type="checkbox"
+                                        checked={feedbackPublish}
+                                        onChange={(e) => setFeedbackPublish(e.target.checked)}
+                                        className="size-4 rounded border-gray-300"
+                                    />
+                                    Allow display in public testimonials
+                                </label>
+
+                                <div className="flex items-center justify-between">
+                                    <button
+                                        type="button"
+                                        onClick={closeRoutineFeedbackModalAndContinue}
+                                        className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-600 dark:text-gray-300"
+                                    >
+                                        Later
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={feedbackSubmitting}
+                                        className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold disabled:opacity-60"
+                                    >
+                                        {feedbackSubmitting ? "Saving..." : feedbackSaved ? "Saved" : "Submit feedback"}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <CameraModal
                 isOpen={isCameraOpen}
