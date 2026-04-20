@@ -268,7 +268,6 @@ export default function RoutinePage() {
                 const stepData = routine?.steps?.find((s) => s.id === stepId);
                 toast.success(t("userRoutines.toasts.stepCompleted", { step: stepData?.action || t("userRoutines.toasts.step") }), {
                     description: t("userRoutines.toasts.stepCompletedDescription"),
-                    position: "bottom-right",
                 });
             }
         } catch {
@@ -308,10 +307,10 @@ export default function RoutinePage() {
         setDeleteLoading(true);
         try {
             await dispatch(deleteRoutine(routineToDelete.id)).unwrap();
-            toast.success(t("userRoutines.toasts.routineDeleted"), { position: "bottom-right" });
+            toast.success(t("userRoutines.toasts.routineDeleted"));
             setIsDeleteModalOpen(false);
         } catch {
-            toast.error(t("userRoutines.toasts.deleteFailed"), { position: "bottom-right" });
+            toast.error(t("userRoutines.toasts.deleteFailed"));
         } finally {
             setDeleteLoading(false);
         }
