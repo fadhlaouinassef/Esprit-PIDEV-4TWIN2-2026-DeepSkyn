@@ -3,12 +3,27 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { UserBadgeCard, BadgeVariant } from "@/app/components/user/UserBadgeCard";
-import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays, Facebook, Instagram, Music2, Link2, Download, X, Loader2 } from "lucide-react";
+import { ChevronRight, Share2, Lock, CheckCircle2, TrendingUp, Sparkles, Award, Target, Zap, ShieldCheck, Gem, Trophy, CalendarDays, Facebook, Instagram, Music2, Link2, Download, X, Loader2, TicketPercent, Copy, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { AudioToggleButton } from "@/app/components/user/AudioToggleButton";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+
+type PromoSummary = {
+    id: number;
+    code: string;
+    status: "ACTIVE" | "USED" | "EXPIRED";
+    expires_at: string;
+    campaign: {
+        name: string;
+        brand: string;
+        category?: string | null;
+        discount_type: "PERCENT" | "FIXED";
+        discount_value: number;
+    };
+};
 
 type MotivationSummary = {
     currentBadge: {
@@ -27,6 +42,10 @@ type MotivationSummary = {
     history: any[];
     motivationMessage: string;
     allRules: Record<string, { title: string, conditions: { text: string; met: boolean }[] }>;
+    activePromos?: PromoSummary[];
+    expiredPromos?: PromoSummary[];
+    usedPromos?: PromoSummary[];
+    lastUnlockedPromo?: PromoSummary | null;
 };
 
 const NIVEAU_TO_VARIANT: Record<string, BadgeVariant> = {
@@ -49,6 +68,7 @@ const LEVEL_ICONS: Record<string, any> = {
 
 export default function BadgePage() {
     const t = useTranslations();
+    const router = useRouter();
     const { data: session, status } = useSession();
     const [data, setData] = useState<MotivationSummary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -56,6 +76,7 @@ export default function BadgePage() {
     const [shareBusy, setShareBusy] = useState(false);
     const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
     const [autoSpeech, setAutoSpeech] = useState(false);
+    const [promoBusyId, setPromoBusyId] = useState<number | null>(null);
 
     useEffect(() => {
         if (status === "loading") {
@@ -320,6 +341,70 @@ export default function BadgePage() {
             toast.success(t("userBadge.toasts.captionCopied"));
         } catch {
             toast.error(t("userBadge.toasts.copyCaptionFailed"));
+        }
+    };
+
+    const copyPromoCode = async (code: string) => {
+        try {
+            await navigator.clipboard.writeText(code);
+            toast.success(`Promo code copied: ${code}`);
+        } catch {
+            toast.error("Could not copy promo code");
+        }
+    };
+
+    const goToPromoProducts = (promo: PromoSummary) => {
+        const params = new URLSearchParams({
+            query: promo.campaign.brand,
+            brand: promo.campaign.brand,
+        });
+
+        if (promo.campaign.category) {
+            params.set("category", promo.campaign.category);
+        }
+
+        router.push(`/user/products?${params.toString()}`);
+    };
+
+    const markPromoAsUsed = async (promoId: number) => {
+        setPromoBusyId(promoId);
+
+        try {
+            const response = await fetch("/api/user/promos", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ promoCodeId: promoId, action: "mark_used" }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to update promo status");
+            }
+
+            setData((prev) => {
+                if (!prev) return prev;
+
+                const currentActive = Array.isArray(prev.activePromos) ? prev.activePromos : [];
+                const target = currentActive.find((promo) => promo.id === promoId);
+                const nextActive = currentActive.filter((promo) => promo.id !== promoId);
+                const nextUsed = [
+                    ...(Array.isArray(prev.usedPromos) ? prev.usedPromos : []),
+                    ...(target ? [{ ...target, status: "USED" as const }] : []),
+                ];
+
+                return {
+                    ...prev,
+                    activePromos: nextActive,
+                    usedPromos: nextUsed,
+                };
+            });
+
+            toast.success("Promo marked as used");
+        } catch (error) {
+            const message = (error as Error)?.message || "Could not mark promo as used";
+            toast.error(message);
+        } finally {
+            setPromoBusyId(null);
         }
     };
 
@@ -694,6 +779,93 @@ export default function BadgePage() {
                                 ))}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Promo Rewards */}
+                    <div className="rounded-[36px] border border-amber-200/70 bg-linear-to-br from-amber-50 via-white to-orange-50 p-6 shadow-xl dark:border-amber-900/40 dark:from-amber-950/20 dark:via-gray-900 dark:to-orange-950/10">
+                        <div className="mb-5 flex items-start justify-between gap-4">
+                            <div>
+                                <p className="mb-1 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                    <TicketPercent size={12} /> Badge Rewards
+                                </p>
+                                <h3 className="text-2xl font-black text-gray-900 dark:text-white">Unlocked Promo Codes</h3>
+                                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                    Earn major badges and unlock brand-specific discounts.
+                                </p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Active codes</p>
+                                <p className="text-3xl font-black text-amber-600 dark:text-amber-400">{data?.activePromos?.length ?? 0}</p>
+                                <p className="mt-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400">Used: {data?.usedPromos?.length ?? 0}</p>
+                            </div>
+                        </div>
+
+                        {data?.activePromos?.length ? (
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                {data.activePromos.map((promo) => {
+                                    const discount = promo.campaign.discount_type === "PERCENT"
+                                        ? `${promo.campaign.discount_value}%`
+                                        : `${promo.campaign.discount_value}`;
+
+                                    return (
+                                        <div
+                                            key={promo.id}
+                                            className="rounded-3xl border border-amber-200 bg-white/80 p-5 shadow-sm dark:border-amber-900/40 dark:bg-gray-900/60"
+                                        >
+                                            <div className="mb-4 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400">
+                                                        {promo.campaign.brand}
+                                                    </p>
+                                                    <h4 className="text-lg font-black text-gray-900 dark:text-white">{promo.campaign.name}</h4>
+                                                </div>
+                                                <div className="rounded-2xl bg-amber-100 px-3 py-2 text-lg font-black text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                                    {discount} OFF
+                                                </div>
+                                            </div>
+
+                                            <div className="mb-4 rounded-2xl border border-dashed border-amber-300 bg-amber-50/70 px-3 py-2 font-mono text-sm font-bold tracking-wide text-amber-800 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200">
+                                                {promo.code}
+                                            </div>
+
+                                            <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+                                                Expires: {new Date(promo.expires_at).toLocaleDateString()}
+                                            </p>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => void copyPromoCode(promo.code)}
+                                                    className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 transition hover:bg-gray-50 dark:border-white/10 dark:bg-gray-800 dark:text-gray-200"
+                                                >
+                                                    <Copy size={13} /> Copy code
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => void markPromoAsUsed(promo.id)}
+                                                    disabled={promoBusyId === promo.id}
+                                                    className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300"
+                                                >
+                                                    {promoBusyId === promo.id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+                                                    Mark as used
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => goToPromoProducts(promo)}
+                                                    className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-3 py-2 text-xs font-black text-white transition hover:bg-amber-600"
+                                                >
+                                                    <ExternalLink size={13} /> Find products
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="rounded-3xl border border-dashed border-amber-300 bg-white/70 p-6 text-center text-sm text-gray-600 dark:border-amber-900/40 dark:bg-gray-900/40 dark:text-gray-300">
+                                Unlock GOLD, PLATINUM, or RUBY MASTER badges to receive promo codes.
+                            </div>
+                        )}
                     </div>
                 </div>
 
