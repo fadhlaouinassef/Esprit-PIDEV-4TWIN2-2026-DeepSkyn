@@ -196,6 +196,32 @@ export default function AdminComplaintsPage() {
         }
     };
 
+    const handleFeedbackVisibilityChange = async (
+        feedbackId: number,
+        etat: "visible" | "invisible"
+    ) => {
+        try {
+            await axios.patch(`/api/admin/feedback/${feedbackId}`, { etat });
+
+            setFeedbacks((prev) =>
+                prev.map((feedback) =>
+                    feedback.id === feedbackId ? { ...feedback, etat } : feedback
+                )
+            );
+
+            toast.success(`Feedback updated to ${etat}`);
+        } catch (error: unknown) {
+            const message =
+                typeof error === "object" &&
+                error !== null &&
+                "response" in error &&
+                typeof (error as { response?: { data?: { error?: string } } }).response?.data?.error === "string"
+                    ? (error as { response?: { data?: { error?: string } } }).response?.data?.error
+                    : "Failed to update feedback visibility";
+            toast.error(message);
+        }
+    };
+
     const handleSendReply = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!replyText.trim() || !selectedId || !selectedComplaint) return;
@@ -609,7 +635,23 @@ export default function AdminComplaintsPage() {
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Visibility</p>
-                                        <p className="font-semibold text-gray-900 dark:text-white">{selectedFeedback.etat}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-semibold text-gray-900 dark:text-white">{selectedFeedback.etat}</p>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleFeedbackVisibilityChange(selectedFeedback.id, "visible")}
+                                                className="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
+                                            >
+                                                Visible
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleFeedbackVisibilityChange(selectedFeedback.id, "invisible")}
+                                                className="px-3 py-1 rounded-lg text-xs font-bold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+                                            >
+                                                Invisible
+                                            </button>
+                                        </div>
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Message</p>
