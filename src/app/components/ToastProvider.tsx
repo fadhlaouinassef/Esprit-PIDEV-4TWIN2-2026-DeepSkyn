@@ -10,7 +10,9 @@ export function ToastProvider() {
 
   return (
     <Toaster
-      position="top-center"
+      position="bottom-right"
+      offset={{ bottom: '32px', right: '20px', top: '16px', left: '16px' }}
+      mobileOffset={{ bottom: '24px', right: '12px', left: '12px', top: '12px' }}
       richColors
       closeButton
       expand={true}

@@ -1088,32 +1088,20 @@
   }
 }
 
-/* Force Sonner Toasts to Top Center */
+/* Force Sonner Toasts to Bottom Right */
 [data-sonner-toaster] {
   z-index: 999999999 !important;
-  top: 10px !important;
-  bottom: auto !important;
-  left: 50% !important;
-  right: auto !important;
-  transform: translateX(-50%) !important;
-}
-
-[data-sonner-toaster][data-y-position="top"] {
-  top: 10px !important;
-  bottom: auto !important;
 }
 
 [data-sonner-toaster][data-y-position="bottom"] {
-  top: 10px !important;
-  bottom: auto !important;
+  bottom: 32px !important;
+  top: auto !important;
 }
 
-[data-sonner-toaster][data-x-position="left"],
-[data-sonner-toaster][data-x-position="right"],
-[data-sonner-toaster][data-x-position="center"] {
-  left: 50% !important;
-  right: auto !important;
-  transform: translateX(-50%) !important;
+[data-sonner-toaster][data-x-position="right"] {
+  right: 20px !important;
+  left: auto !important;
+  transform: none !important;
 }
 
 [data-sonner-toast] {
