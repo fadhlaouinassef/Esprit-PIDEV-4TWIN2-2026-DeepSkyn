@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTranslations } from "next-intl"
 
@@ -640,20 +640,35 @@ export const CaseStudiesCarousel = () => {
   const [direction, setDirection] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
-  const currentStudy = caseStudies[currentIndex]
+  const uniqueCaseStudies = useMemo(() => {
+    const seen = new Set<string>()
+    return caseStudies.filter((study) => {
+      const displaySignature = [
+        t(`home.caseStudies.studies.${study.id}.title`),
+        t(`home.caseStudies.studies.${study.id}.quote`),
+        t(`home.caseStudies.studies.${study.id}.attribution`),
+      ].join("|")
+      if (seen.has(displaySignature)) return false
+      seen.add(displaySignature)
+      return true
+    })
+  }, [t])
+  const currentStudy = uniqueCaseStudies[currentIndex]
 
   const nextSlide = () => {
     setDirection(1)
-    setCurrentIndex((prev) => (prev + 1) % caseStudies.length)
+    setCurrentIndex((prev) => (prev + 1) % uniqueCaseStudies.length)
   }
   const prevSlide = () => {
     setDirection(-1)
-    setCurrentIndex((prev) => (prev - 1 + caseStudies.length) % caseStudies.length)
+    setCurrentIndex((prev) => (prev - 1 + uniqueCaseStudies.length) % uniqueCaseStudies.length)
   }
   const goToSlide = (index: number) => {
     setDirection(index > currentIndex ? 1 : -1)
     setCurrentIndex(index)
   }
+
+  const cleanAttribution = (value: string) => value.replace(/\s*([xX\*×])\s*\d+\s*$/u, "").trim()
 
   const startAutoPlay = () => {
     if (autoPlayRef.current) clearInterval(autoPlayRef.current)
@@ -675,6 +690,12 @@ export const CaseStudiesCarousel = () => {
     }
     return () => stopAutoPlay()
   }, [isAutoPlaying, currentIndex])
+
+  useEffect(() => {
+    if (currentIndex >= uniqueCaseStudies.length) {
+      setCurrentIndex(0)
+    }
+  }, [currentIndex, uniqueCaseStudies.length])
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
@@ -775,7 +796,7 @@ export const CaseStudiesCarousel = () => {
                       fontFamily: "var(--font-inter), Inter",
                     }}
                   >
-                    {t(`home.caseStudies.studies.${currentStudy.id}.attribution`)}
+                    {cleanAttribution(t(`home.caseStudies.studies.${currentStudy.id}.attribution`))}
                   </footer>
                 </blockquote>
               </motion.div>
@@ -784,7 +805,7 @@ export const CaseStudiesCarousel = () => {
             {/* Navigation */}
             <div className="flex items-center gap-6">
               <div className="flex gap-2">
-                {caseStudies.map((_, idx) => (
+                {uniqueCaseStudies.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => goToSlide(idx)}
