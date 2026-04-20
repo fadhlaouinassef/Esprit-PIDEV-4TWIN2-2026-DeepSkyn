@@ -1,9 +1,11 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
+import { cookies, headers } from 'next/headers';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { findUserByEmail, createUser } from '@/services/user.service';
 import { evaluateAndAwardBadgesForUser, trackLoginActivity } from '@/services/badge.service';
+import { parseLoginGeoCookie, resolveLoginLocation } from '@/lib/loginLocation';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -53,23 +55,34 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       try {
         console.log('[AuthSign] Process started for:', user.email);
-        if (account?.provider === 'google') {
-          let existingUser = await findUserByEmail(user.email!);
+        let existingUser = await findUserByEmail(user.email!);
 
-          if (!existingUser) {
-            console.log('[AuthSign] Creating new Google user:', user.email);
-            existingUser = await createUser({
-              email: user.email!,
-              password: '',
-              nom: user.name || '',
-              image: user.image || '',
-              verified: true,
-            });
-          }
+        if (account?.provider === 'google' && !existingUser) {
+          console.log('[AuthSign] Creating new Google user:', user.email);
+          existingUser = await createUser({
+            email: user.email!,
+            password: '',
+            nom: user.name || '',
+            image: user.image || '',
+            verified: true,
+          });
+        }
+
+        if (existingUser) {
+          const requestHeaders = await headers();
+          const cookieStore = await cookies();
+          const geoCookieValue = cookieStore.get('login_geo')?.value;
+          const providedGeo = parseLoginGeoCookie(geoCookieValue);
+          const resolvedGeo = await resolveLoginLocation(requestHeaders, providedGeo);
+          const source = account?.provider === 'google'
+            ? 'google'
+            : account?.provider === 'credentials'
+              ? 'credentials'
+              : 'oauth';
 
           try {
             console.log('[AuthSign] Tracking login for user ID:', existingUser.id);
-            await trackLoginActivity(existingUser.id, 'google');
+            await trackLoginActivity(existingUser.id, source, new Date(), resolvedGeo);
 
             console.log('[AuthSign] Evaluating badges for user ID:', existingUser.id);
             await evaluateAndAwardBadgesForUser({

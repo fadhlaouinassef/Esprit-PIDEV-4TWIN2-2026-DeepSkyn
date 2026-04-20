@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-19T23:26:20.054Z",
+  "generatedAt": "2026-04-20T14:16:46.163Z",
   "summary": {
     "rawCount": 1372,
     "cleanedCount": 1372,
@@ -8,44 +8,44 @@
     "vocabularySize": 1731
   },
   "metrics": {
-    "accuracy": 0.9565,
-    "macroPrecision": 0.9624,
-    "macroRecall": 0.9583,
-    "macroF1": 0.9593,
+    "accuracy": 0.9819,
+    "macroPrecision": 0.9806,
+    "macroRecall": 0.9827,
+    "macroF1": 0.9815,
     "classes": [
       {
         "label": "product_recommendation",
-        "precision": 0.9123,
+        "precision": 1,
         "recall": 1,
-        "f1": 0.9541,
+        "f1": 1,
         "support": 52
       },
       {
         "label": "price_analysis",
-        "precision": 0.9333,
-        "recall": 0.875,
-        "f1": 0.9032,
+        "precision": 0.9688,
+        "recall": 0.9688,
+        "f1": 0.9688,
         "support": 32
       },
       {
         "label": "ingredient_insight",
-        "precision": 0.9643,
-        "recall": 0.8438,
-        "f1": 0.9,
+        "precision": 0.9677,
+        "recall": 0.9375,
+        "f1": 0.9524,
         "support": 32
       },
       {
         "label": "brand_info",
-        "precision": 1,
-        "recall": 0.9375,
-        "f1": 0.9677,
+        "precision": 0.9688,
+        "recall": 0.9688,
+        "f1": 0.9688,
         "support": 32
       },
       {
         "label": "product_comparison",
-        "precision": 0.9688,
+        "precision": 1,
         "recall": 0.9688,
-        "f1": 0.9688,
+        "f1": 0.9841,
         "support": 32
       },
       {
@@ -57,23 +57,23 @@
       },
       {
         "label": "dataset_facts",
-        "precision": 0.9231,
-        "recall": 1,
-        "f1": 0.96,
-        "support": 24
-      },
-      {
-        "label": "health_warning",
         "precision": 0.96,
         "recall": 1,
         "f1": 0.9796,
         "support": 24
       },
       {
-        "label": "out_of_scope",
+        "label": "health_warning",
         "precision": 1,
         "recall": 1,
         "f1": 1,
+        "support": 24
+      },
+      {
+        "label": "out_of_scope",
+        "precision": 0.96,
+        "recall": 1,
+        "f1": 0.9796,
         "support": 24
       }
     ],
@@ -90,42 +90,42 @@
         0
       ],
       [
-        3,
-        28,
+        0,
+        31,
         0,
         0,
         0,
-        0,
-        0,
-        1,
-        0
-      ],
-      [
-        2,
-        1,
-        27,
-        0,
-        1,
         0,
         1,
         0,
         0
       ],
       [
-        0,
         0,
         1,
         30,
-        0,
-        0,
         1,
+        0,
+        0,
+        0,
         0,
         0
       ],
       [
         0,
-        1,
         0,
+        0,
+        31,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        1,
         0,
         31,
         0,
@@ -185,17 +185,7 @@
     "confusionHotspots": [
       {
         "actual": "price_analysis",
-        "predicted": "product_recommendation",
-        "count": 3
-      },
-      {
-        "actual": "ingredient_insight",
-        "predicted": "product_recommendation",
-        "count": 2
-      },
-      {
-        "actual": "price_analysis",
-        "predicted": "health_warning",
+        "predicted": "dataset_facts",
         "count": 1
       },
       {
@@ -205,27 +195,17 @@
       },
       {
         "actual": "ingredient_insight",
-        "predicted": "product_comparison",
-        "count": 1
-      },
-      {
-        "actual": "ingredient_insight",
-        "predicted": "dataset_facts",
+        "predicted": "brand_info",
         "count": 1
       },
       {
         "actual": "brand_info",
-        "predicted": "ingredient_insight",
-        "count": 1
-      },
-      {
-        "actual": "brand_info",
-        "predicted": "dataset_facts",
+        "predicted": "out_of_scope",
         "count": 1
       },
       {
         "actual": "product_comparison",
-        "predicted": "price_analysis",
+        "predicted": "ingredient_insight",
         "count": 1
       }
     ],
@@ -247,16 +227,16 @@
         {
           "question": "best product for acne under 50",
           "expected": "product_recommendation",
-          "predicted": "product_recommendation",
-          "confidence": 0.9995,
-          "correct": true
+          "predicted": "out_of_scope",
+          "confidence": 0.4406,
+          "correct": false
         },
         {
           "question": "products from cerave",
           "expected": "brand_info",
-          "predicted": "ingredient_insight",
-          "confidence": 0.5024,
-          "correct": false
+          "predicted": "brand_info",
+          "confidence": 0.6303,
+          "correct": true
         },
         {
           "question": "compare cerave and bioderma",
@@ -276,14 +256,14 @@
           "question": "price of cerave hydrating cleanser",
           "expected": "price_analysis",
           "predicted": "product_recommendation",
-          "confidence": 0.9991,
+          "confidence": 0.3964,
           "correct": false
         },
         {
           "question": "give me routine for sensitive skin",
           "expected": "routine_advice",
           "predicted": "routine_advice",
-          "confidence": 0.9999,
+          "confidence": 1,
           "correct": true
         },
         {
@@ -304,14 +284,14 @@
           "question": "write me a football story",
           "expected": "out_of_scope",
           "predicted": "out_of_scope",
-          "confidence": 0.9999,
+          "confidence": 1,
           "correct": true
         }
       ]
     }
   },
   "improvementLoop": {
-    "userFeedbackPath": "C:\\Users\\HP\\Desktop\\ProjectPI\\DeepSkyn\\deepskyn\\src\\modele\\datasets\\chatbot\\user_feedback_examples.json",
+    "userFeedbackPath": "C:\\Users\\nasse\\OneDrive\\Bureau\\PI\\deepskyn\\src\\modele\\datasets\\chatbot\\user_feedback_examples.json",
     "loadedFeedbackExamples": 0
   }
 }

@@ -18,6 +18,12 @@ export interface SigninData {
   password: string;
 }
 
+export interface SigninContext {
+  location?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
 export const signup = async (data: SignupData) => {
   try {
     // Check if user already exists
@@ -126,7 +132,7 @@ export const verifyOtp = async (userId: number, otp: string) => {
   }
 };
 
-export const signin = async (data: SigninData) => {
+export const signin = async (data: SigninData, context?: SigninContext) => {
   try {
     // Find user by email
     const user = await findUserByEmail(data.email);
@@ -171,7 +177,11 @@ export const signin = async (data: SigninData) => {
     }
 
     try {
-      await trackLoginActivity(user.id, 'credentials');
+      await trackLoginActivity(user.id, 'credentials', new Date(), {
+        location: context?.location ?? null,
+        latitude: context?.latitude ?? null,
+        longitude: context?.longitude ?? null,
+      });
       await evaluateAndAwardBadgesForUser({
         userId: user.id,
         trigger: 'login',
