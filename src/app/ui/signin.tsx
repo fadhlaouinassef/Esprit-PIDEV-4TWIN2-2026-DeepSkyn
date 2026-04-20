@@ -10,8 +10,10 @@ import { signIn, useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { useAppDispatch } from "@/store/hooks"
 import { setUser } from "@/store/slices/authSlice"
+import { stringifyLoginGeoCookie } from "@/lib/loginLocation"
 
 const AUTH_MODE_KEY = 'deepskyn_auth_mode'
+const LOGIN_GEO_COOKIE = 'login_geo'
 
 export default function SignIn() {
   const router = useRouter()
@@ -35,7 +37,7 @@ export default function SignIn() {
       description: t('auth.signin.testToast.description'),
       duration: 5000,
     });
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (status !== 'authenticated' || !session?.user) return;
@@ -98,6 +100,39 @@ export default function SignIn() {
     return Object.keys(newErrors).length === 0
   }
 
+  const getBrowserGeolocation = async (): Promise<{ latitude: number; longitude: number } | null> => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      return null
+    }
+
+    return await new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          })
+        },
+        () => resolve(null),
+        {
+          enableHighAccuracy: true,
+          timeout: 6000,
+          maximumAge: 30000,
+        }
+      )
+    })
+  }
+
+  const setLoginGeoCookie = (geo: { latitude: number; longitude: number } | null) => {
+    if (!geo) return
+    const payload = stringifyLoginGeoCookie({
+      latitude: geo.latitude,
+      longitude: geo.longitude,
+      location: `GPS:${geo.latitude.toFixed(6)},${geo.longitude.toFixed(6)}`,
+    })
+    document.cookie = `${LOGIN_GEO_COOKIE}=${payload}; Max-Age=300; Path=/; SameSite=Lax`
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -106,6 +141,9 @@ export default function SignIn() {
 
       try {
         console.log('Attempting signin with:', { email });
+        const browserGeo = await getBrowserGeolocation();
+        setLoginGeoCookie(browserGeo);
+
         const response = await fetch('/api/local-auth/signin', {
           method: 'POST',
           headers: {
@@ -114,6 +152,7 @@ export default function SignIn() {
           body: JSON.stringify({
             email,
             password,
+            geolocation: browserGeo,
           }),
         });
 
@@ -223,6 +262,9 @@ export default function SignIn() {
 
   const handleGoogleSignIn = async () => {
     try {
+      const browserGeo = await getBrowserGeolocation();
+      setLoginGeoCookie(browserGeo);
+
       await signIn('google', {
         callbackUrl: '/signin',
       });

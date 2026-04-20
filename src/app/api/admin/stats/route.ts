@@ -1,6 +1,57 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+type LoginActivityGeoRow = {
+  user_id: number;
+  location: string | null;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+const normalizeCountryName = (value: string): string => {
+  const input = value.trim();
+  const upper = input.toUpperCase();
+
+  const aliases: Record<string, string> = {
+    USA: 'United States of America',
+    US: 'United States of America',
+    UK: 'United Kingdom',
+    UAE: 'United Arab Emirates',
+    KSA: 'Saudi Arabia',
+    RUSSIA: 'Russian Federation',
+    'SOUTH KOREA': 'Korea, Republic of',
+    'NORTH KOREA': 'Korea, Democratic People\'s Republic of',
+  };
+
+  if (aliases[upper]) return aliases[upper];
+  return input;
+};
+
+const countryFromCoordinates = (latitude: number | null, longitude: number | null): string | null => {
+  if (latitude === null || longitude === null) return null;
+
+  // Tunisia bounding box (approximate)
+  if (latitude >= 30.0 && latitude <= 37.6 && longitude >= 7.4 && longitude <= 11.8) {
+    return 'Tunisia';
+  }
+
+  return null;
+};
+
+const countryFromLocationText = (location: string | null): string | null => {
+  if (!location) return null;
+  const clean = location.trim();
+  if (!clean || clean.startsWith('GPS:') || clean.startsWith('IP:') || clean === 'Localhost' || clean === 'Unknown') {
+    return null;
+  }
+
+  if (clean.includes(',')) {
+    return clean.split(',').pop()?.trim() || null;
+  }
+
+  return clean;
+};
+
 export async function GET() {
   try {
     // 1. TOTALS
@@ -90,11 +141,40 @@ export async function GET() {
       },
     ];
 
+    const loginRows = await prisma.$queryRaw<LoginActivityGeoRow[]>`
+      SELECT "user_id", "location", "latitude", "longitude"
+      FROM "LoginActivity";
+    `;
+
+    const countryBuckets = new Map<string, { userIds: Set<number>; logins: number }>();
+    for (const row of loginRows) {
+      const countryRaw =
+        countryFromLocationText(row.location) ||
+        countryFromCoordinates(row.latitude, row.longitude) ||
+        'Unknown';
+
+      const country = normalizeCountryName(countryRaw);
+      const existing = countryBuckets.get(country) || { userIds: new Set<number>(), logins: 0 };
+      existing.userIds.add(Number(row.user_id));
+      existing.logins += 1;
+      countryBuckets.set(country, existing);
+    }
+
+    const countryMapData = Array.from(countryBuckets.entries())
+      .map(([country, bucket]) => ({
+        country,
+        users: bucket.userIds.size,
+        logins: bucket.logins,
+      }))
+      .sort((a, b) => b.users - a.users || b.logins - a.logins);
+
+    const knownCountries = countryMapData.filter((item) => item.country !== 'Unknown');
+    const topCountries = knownCountries.slice(0, 4);
+    const otherUsers = knownCountries.slice(4).reduce((sum, item) => sum + item.users, 0);
+
     const donutData = [
-      { name: "France", amount: 4500 },
-      { name: "USA", amount: 3500 },
-      { name: "Italy", amount: 1500 },
-      { name: "Others", amount: 500 },
+      ...topCountries.map((item) => ({ name: item.country, amount: item.users })),
+      ...(otherUsers > 0 ? [{ name: 'Others', amount: otherUsers }] : []),
     ];
 
     // 5. SUBSCRIPTION DISTRIBUTION
@@ -146,6 +226,7 @@ export async function GET() {
       paymentsData,
       userGrowthSeries,
       donutData,
+      countryMapData,
       subscriptionDistribution,
       profitData: {
         sales: weeklyStats.map(w => ({ x: w.day, y: w.sales })),
@@ -157,7 +238,7 @@ export async function GET() {
 
 
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Stats API error:', error);
     return NextResponse.json({ error: 'Failed to fetch statistics' }, { status: 500 });
   }
