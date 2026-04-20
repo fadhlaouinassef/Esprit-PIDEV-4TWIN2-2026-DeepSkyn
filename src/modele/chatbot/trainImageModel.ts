@@ -54,9 +54,9 @@ async function train() {
       continue;
     }
 
-    const files = fs.readdirSync(folderPath).filter(f => f.match(/\.(jpg|jpeg|png)$/i)).slice(0, 30);
-    console.log(`[AI] Reading top 30 images from ${folder}...`);
-
+    const files = fs.readdirSync(folderPath).filter(f => f.match(/\.(jpg|jpeg|png)$/i)).slice(0, 100);
+    console.log(`[AI] Lecture rapide : 100 images de ${folder}...`);
+    
     for (const file of files) {
       const tensor = await loadAndProcessImage(path.join(folderPath, file));
       if (tensor) {
@@ -71,27 +71,19 @@ async function train() {
     return;
   }
 
-  // Improved CNN Architecture for better feature extraction (wrinkles, pores, etc.)
+  // Simplified CNN for speed on CPU
   const model = tf.sequential();
 
   model.add(tf.layers.conv2d({
     inputShape: [IMAGE_SIZE, IMAGE_SIZE, 3],
     kernelSize: 3,
-    filters: 32,
-    activation: 'relu'
-  }));
-  model.add(tf.layers.maxPooling2d({ poolSize: 2 }));
-
-  model.add(tf.layers.conv2d({
-    kernelSize: 3,
-    filters: 64,
+    filters: 16,
     activation: 'relu'
   }));
   model.add(tf.layers.maxPooling2d({ poolSize: 2 }));
 
   model.add(tf.layers.flatten());
-  model.add(tf.layers.dense({ units: 128, activation: 'relu' }));
-  model.add(tf.layers.dropout({ rate: 0.2 }));
+  model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
   model.add(tf.layers.dense({ units: CLASSES.length, activation: 'softmax' }));
 
   model.compile({
@@ -100,18 +92,18 @@ async function train() {
     metrics: ['accuracy']
   });
 
-  console.log("[AI] Training deep model... this may take a moment.");
+  console.log("[AI] Training deep model (FAST MODE)... this should only take 1-2 minutes.");
 
   const xStack = tf.stack(xs);
   const yStack = tf.stack(ys);
 
   await model.fit(xStack, yStack, {
-    epochs: 5,
-    batchSize: 8,
+    epochs: 10,
+    batchSize: 16,
     shuffle: true,
     callbacks: {
       onEpochEnd: (epoch, logs) => {
-        console.log(`Epoch ${epoch + 1}: Loss = ${logs?.loss.toFixed(4)}, Acc = ${logs?.acc.toFixed(4)}`);
+        console.log(`Epoch ${epoch + 1}/10: Loss = ${logs?.loss.toFixed(4)}, Acc = ${logs?.acc.toFixed(4)}`);
       }
     }
   });
