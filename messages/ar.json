@@ -176,7 +176,7 @@
         "security": "الأمان",
         "settings": "الإعدادات",
         "helpCenter": "مركز المساعدة",
-        "complaints": "الشكاوى والتقييمات"
+        "complaints": "Complaints & Feedback"
       }
     },
     "admin": {
@@ -197,7 +197,7 @@
         "subscriptions": "الاشتراكات",
         "content": "المدونة والمحتوى",
         "faqs": "الأسئلة الشائعة",
-        "complaints": "الشكاوى والتقييمات",
+        "complaints": "Complaints & Feedback",
         "profile": "الملف الشخصي",
         "systemSettings": "إعدادات النظام",
         "models": "إدارة النماذج",
@@ -910,7 +910,7 @@
       "other": "Other"
     },
     "header": {
-      "title": "RECLAMATION",
+      "title": "COMPLAINTS",
       "titleAccent": "& FEEDBACK",
       "subtitle": "Your voice matters. Track and manage your reports in real-time."
     },

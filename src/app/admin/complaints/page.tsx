@@ -16,7 +16,8 @@ import {
     MoreHorizontal,
     Trash2,
     Bell,
-    X
+    X,
+    Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -50,6 +51,14 @@ interface DBComplaint {
     evidence: { url: string }[];
 }
 
+interface AdminFeedback {
+    id: number;
+    nom: string;
+    message: string;
+    note: number;
+    etat: 'visible' | 'invisible';
+}
+
 export default function AdminComplaintsPage() {
     const t = useTranslations();
     const [complaints, setComplaints] = useState<DBComplaint[]>([]);
@@ -58,8 +67,14 @@ export default function AdminComplaintsPage() {
     const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'ACCEPT' | 'REJECT'>('ALL');
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<"complaints" | "feedback">("complaints");
+    const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>([]);
+    const [feedbackSearch, setFeedbackSearch] = useState("");
+    const [selectedFeedbackId, setSelectedFeedbackId] = useState<number | null>(null);
+    const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
 
     const selectedComplaint = complaints.find(c => c.id === selectedId);
+    const selectedFeedback = feedbacks.find(f => f.id === selectedFeedbackId) || null;
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     async function fetchComplaints(silent = false) {
@@ -73,6 +88,19 @@ export default function AdminComplaintsPage() {
         }
     }
 
+    async function fetchFeedbacks(silent = false) {
+        try {
+            if (!silent) setIsFeedbackLoading(true);
+            const res = await axios.get('/api/admin/feedback');
+            const data = Array.isArray(res.data?.feedbacks) ? res.data.feedbacks : [];
+            setFeedbacks(data);
+        } catch (error) {
+            if (!silent) toast.error("Failed to fetch feedbacks");
+        } finally {
+            if (!silent) setIsFeedbackLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchComplaints();
         const interval = setInterval(() => {
@@ -80,6 +108,15 @@ export default function AdminComplaintsPage() {
         }, 3000);
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        if (activeTab !== "feedback") return;
+        fetchFeedbacks();
+        const interval = setInterval(() => {
+            fetchFeedbacks(true);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [activeTab]);
 
     // Scroll instantly to bottom on selection
     useEffect(() => {
@@ -124,6 +161,15 @@ export default function AdminComplaintsPage() {
         const matchesSearch = userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             c.content.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesStatus && matchesSearch;
+    });
+
+    const filteredFeedbacks = feedbacks.filter((f) => {
+        const query = feedbackSearch.toLowerCase();
+        return (
+            f.nom.toLowerCase().includes(query) ||
+            f.message.toLowerCase().includes(query) ||
+            String(f.note).includes(query)
+        );
     });
 
     const handleUpdateStatus = async (id: number, newStatus: 'PENDING' | 'ACCEPT' | 'REJECT') => {
@@ -213,7 +259,37 @@ export default function AdminComplaintsPage() {
 
     return (
         <AdminLayout>
-            <div className="flex h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden">
+            <div className="mb-4 inline-flex rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-1 shadow-sm">
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("complaints")}
+                    className={cn(
+                        "px-4 py-2 rounded-xl text-sm font-bold transition-all",
+                        activeTab === "complaints"
+                            ? "bg-primary text-white"
+                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    )}
+                >
+                    Complaints
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("feedback")}
+                    className={cn(
+                        "px-4 py-2 rounded-xl text-sm font-bold transition-all",
+                        activeTab === "feedback"
+                            ? "bg-primary text-white"
+                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    )}
+                >
+                    Feedback
+                </button>
+            </div>
+
+            <div className={cn(
+                "flex h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden",
+                activeTab === "feedback" && "hidden"
+            )}>
                 {/* List Sidebar */}
                 <div className={cn(
                     "w-full md:w-80 lg:w-96 border-r border-gray-100 dark:border-gray-700 flex flex-col",
@@ -450,6 +526,105 @@ export default function AdminComplaintsPage() {
                             </div>
                             <h2 className="text-xl font-bold mb-2">{t("adminComplaints.noSelection.title")}</h2>
                             <p className="text-sm max-w-xs">{t("adminComplaints.noSelection.description")}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className={cn(
+                "flex h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden",
+                activeTab === "complaints" && "hidden"
+            )}>
+                <div className={cn(
+                    "w-full md:w-80 lg:w-96 border-r border-gray-100 dark:border-gray-700 flex flex-col",
+                    selectedFeedbackId && "hidden md:flex"
+                )}>
+                    <div className="p-6 border-b border-gray-100 dark:border-gray-700 space-y-4">
+                        <h1 className="text-2xl font-bold flex items-center gap-2">
+                            <Star className="size-6 text-primary" />
+                            Feedback
+                        </h1>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Search feedbacks..."
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 outline-none focus:border-primary transition-colors text-sm"
+                                value={feedbackSearch}
+                                onChange={(e) => setFeedbackSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar scrollbar-hide" data-lenis-prevent>
+                        {isFeedbackLoading ? (
+                            <div className="p-12 text-center">
+                                <span className="loading loading-spinner text-primary text-3xl"></span>
+                            </div>
+                        ) : filteredFeedbacks.length === 0 ? (
+                            <div className="p-12 text-center text-gray-400">
+                                <Star className="size-12 mx-auto mb-4 opacity-20" />
+                                <p className="text-sm">No feedback found</p>
+                            </div>
+                        ) : (
+                            filteredFeedbacks.map((f) => (
+                                <div
+                                    key={f.id}
+                                    onClick={() => setSelectedFeedbackId(f.id)}
+                                    className={cn(
+                                        "p-5 border-b border-gray-50 dark:border-gray-700/50 cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-900/50 rounded-3xl mx-2 mb-2",
+                                        selectedFeedbackId === f.id ? "bg-white dark:bg-gray-800 shadow-lg border-primary/20" : "bg-transparent"
+                                    )}
+                                >
+                                    <div className="flex justify-between items-center mb-2">
+                                        <p className="font-bold text-sm text-gray-900 dark:text-white line-clamp-1">{f.nom}</p>
+                                        <span className="text-xs font-bold text-amber-500">{f.note}/5</span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 line-clamp-2">{f.message || "(No written message)"}</p>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex-1 flex flex-col min-w-0 bg-gray-50/30 dark:bg-gray-900/10 relative overflow-hidden">
+                    {selectedFeedback ? (
+                        <div className="flex-1 p-8 overflow-y-auto custom-scrollbar scrollbar-hide" data-lenis-prevent>
+                            <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-8 shadow-sm">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Feedback detail</h2>
+                                    <button onClick={() => setSelectedFeedbackId(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-400 transition-colors" title="Close">
+                                        <X className="size-5" />
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Name</p>
+                                        <p className="font-semibold text-gray-900 dark:text-white">{selectedFeedback.nom}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Rating</p>
+                                        <p className="font-semibold text-amber-500">{selectedFeedback.note}/5</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Visibility</p>
+                                        <p className="font-semibold text-gray-900 dark:text-white">{selectedFeedback.etat}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Message</p>
+                                        <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{selectedFeedback.message || "(No written message)"}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center text-center p-12 opacity-40">
+                            <div className="size-24 rounded-3xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
+                                <Star className="size-12 text-gray-300" />
+                            </div>
+                            <h2 className="text-xl font-bold mb-2">No feedback selected</h2>
+                            <p className="text-sm max-w-xs">Select feedback from the sidebar to view details.</p>
                         </div>
                     )}
                 </div>
