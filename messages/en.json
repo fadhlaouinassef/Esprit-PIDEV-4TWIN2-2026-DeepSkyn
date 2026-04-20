@@ -176,7 +176,7 @@
         "security": "Security",
         "settings": "Settings",
         "helpCenter": "Help Center",
-        "complaints": "Complaints & feedback"
+        "complaints": "Complaints & Feedback"
       }
     },
     "admin": {
@@ -197,7 +197,7 @@
         "subscriptions": "Subscriptions",
         "content": "Blog & content",
         "faqs": "FAQs",
-        "complaints": "Complaints & feedback",
+        "complaints": "Complaints & Feedback",
         "profile": "Profile",
         "systemSettings": "System settings",
         "models": "Manage Models",
@@ -875,7 +875,7 @@
       "title": "What happened?",
       "selectCategory": "Select Category",
       "detailedReport": "Your detailed report",
-      "reportPlaceholder": "Write your reclamation here...",
+      "reportPlaceholder": "Write your complaint here...",
       "uploadProof": "Upload Proof (Images, Documents)",
       "add": "ADD",
       "submitting": "SUBMITTING...",
@@ -910,7 +910,7 @@
       "other": "Other"
     },
     "header": {
-      "title": "RECLAMATION",
+      "title": "COMPLAINTS",
       "titleAccent": "& FEEDBACK",
       "subtitle": "Your voice matters. Track and manage your reports in real-time."
     },

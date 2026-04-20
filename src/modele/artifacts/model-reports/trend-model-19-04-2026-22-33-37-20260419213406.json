@@ -1,0 +1,94 @@
+{
+  "generatedAt": "2026-04-20T00:23:04.214Z",
+  "runCount": 3,
+  "bestRun": 2,
+  "bestScore": 1.6759354752342608,
+  "artifact": {
+    "epochs": 40,
+    "finalLoss": 0.03502090275287628,
+    "inputCols": 8,
+    "trainedAt": "2026-04-20T00:21:26.861Z"
+  },
+  "data": {
+    "users": 7470,
+    "trainSeries": 7470,
+    "valSeriesCount": 7470,
+    "testSeriesCount": 7470
+  },
+  "metrics": {
+    "temporalCv": {
+      "samples": 14940,
+      "mae": 1.201333333333337,
+      "rmse": 1.5191683150585782,
+      "directionAccuracy": 70.96385542168674
+    },
+    "strictTest": {
+      "samples": 7470,
+      "mae": 1.3414859437751008,
+      "rmse": 1.6741575115543852,
+      "directionAccuracy": 66.90763052208835
+    }
+  },
+  "runs": [
+    {
+      "run": 1,
+      "trainedAt": "2026-04-20T00:19:49.177Z",
+      "finalLoss": 0.03627529740333557,
+      "epochs": 27,
+      "trainUsers": 7470,
+      "trainSeries": 6723,
+      "val": {
+        "samples": 7470,
+        "mae": 1.399880856760372,
+        "rmse": 1.7061265107496355,
+        "directionAccuracy": 67.89825970548861
+      },
+      "temporalCv": {
+        "samples": 14940,
+        "mae": 1.2899812583667918,
+        "rmse": 1.5620277642469913,
+        "directionAccuracy": 70.57563587684069
+      }
+    },
+    {
+      "run": 2,
+      "trainedAt": "2026-04-20T00:21:26.861Z",
+      "finalLoss": 0.03502090275287628,
+      "epochs": 40,
+      "trainUsers": 7470,
+      "trainSeries": 6723,
+      "val": {
+        "samples": 7470,
+        "mae": 1.3155354752342598,
+        "rmse": 1.644177325079393,
+        "directionAccuracy": 68.23293172690764
+      },
+      "temporalCv": {
+        "samples": 14940,
+        "mae": 1.201333333333337,
+        "rmse": 1.5191683150585782,
+        "directionAccuracy": 70.96385542168674
+      }
+    },
+    {
+      "run": 3,
+      "trainedAt": "2026-04-20T00:22:19.188Z",
+      "finalLoss": 0.03575780987739563,
+      "epochs": 15,
+      "trainUsers": 7470,
+      "trainSeries": 6723,
+      "val": {
+        "samples": 7470,
+        "mae": 1.3056345381526084,
+        "rmse": 1.603326507679449,
+        "directionAccuracy": 69.03614457831326
+      },
+      "temporalCv": {
+        "samples": 14940,
+        "mae": 1.2662784471218205,
+        "rmse": 1.569565147530575,
+        "directionAccuracy": 70.61579651941098
+      }
+    }
+  ]
+}

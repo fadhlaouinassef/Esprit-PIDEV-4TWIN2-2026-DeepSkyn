@@ -176,7 +176,7 @@
         "security": "Sécurité",
         "settings": "Paramètres",
         "helpCenter": "Centre d’aide",
-        "complaints": "Réclamations & avis"
+        "complaints": "Complaints & Feedback"
       }
     },
     "admin": {
@@ -197,7 +197,7 @@
         "subscriptions": "Abonnements",
         "content": "Blog & contenu",
         "faqs": "FAQ",
-        "complaints": "Réclamations & avis",
+        "complaints": "Complaints & Feedback",
         "profile": "Profil",
         "systemSettings": "Paramètres système",
         "models": "Gestion des modeles"
@@ -909,7 +909,7 @@
       "other": "Other"
     },
     "header": {
-      "title": "RECLAMATION",
+      "title": "COMPLAINTS",
       "titleAccent": "& FEEDBACK",
       "subtitle": "Your voice matters. Track and manage your reports in real-time."
     },
