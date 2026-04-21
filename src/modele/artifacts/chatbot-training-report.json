@@ -1,23 +1,23 @@
 {
-  "generatedAt": "2026-04-20T14:16:46.163Z",
+  "generatedAt": "2026-04-21T01:46:17.297Z",
   "summary": {
     "rawCount": 1372,
     "cleanedCount": 1372,
     "trainCount": 1096,
     "testCount": 276,
-    "vocabularySize": 1731
+    "vocabularySize": 1737
   },
   "metrics": {
-    "accuracy": 0.9819,
-    "macroPrecision": 0.9806,
-    "macroRecall": 0.9827,
-    "macroF1": 0.9815,
+    "accuracy": 0.9783,
+    "macroPrecision": 0.9773,
+    "macroRecall": 0.9805,
+    "macroF1": 0.9787,
     "classes": [
       {
         "label": "product_recommendation",
         "precision": 1,
-        "recall": 1,
-        "f1": 1,
+        "recall": 0.9808,
+        "f1": 0.9903,
         "support": 52
       },
       {
@@ -29,16 +29,16 @@
       },
       {
         "label": "ingredient_insight",
-        "precision": 0.9677,
-        "recall": 0.9375,
-        "f1": 0.9524,
+        "precision": 0.9394,
+        "recall": 0.9688,
+        "f1": 0.9538,
         "support": 32
       },
       {
         "label": "brand_info",
-        "precision": 0.9688,
-        "recall": 0.9688,
-        "f1": 0.9688,
+        "precision": 0.9677,
+        "recall": 0.9375,
+        "f1": 0.9524,
         "support": 32
       },
       {
@@ -79,8 +79,8 @@
     ],
     "confusionMatrix": [
       [
-        52,
-        0,
+        51,
+        1,
         0,
         0,
         0,
@@ -94,33 +94,33 @@
         31,
         0,
         0,
-        0,
-        0,
-        1,
-        0,
-        0
-      ],
-      [
-        0,
-        1,
-        30,
-        1,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        31,
         0,
         0,
         0,
         0,
         1
+      ],
+      [
+        0,
+        0,
+        31,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        30,
+        0,
+        0,
+        1,
+        0,
+        0
       ],
       [
         0,
@@ -180,17 +180,17 @@
     ],
     "trainSize": 1096,
     "testSize": 276,
-    "vocabularySize": 1731,
+    "vocabularySize": 1737,
     "epochs": 95,
     "confusionHotspots": [
       {
-        "actual": "price_analysis",
-        "predicted": "dataset_facts",
+        "actual": "product_recommendation",
+        "predicted": "price_analysis",
         "count": 1
       },
       {
-        "actual": "ingredient_insight",
-        "predicted": "price_analysis",
+        "actual": "price_analysis",
+        "predicted": "out_of_scope",
         "count": 1
       },
       {
@@ -200,7 +200,12 @@
       },
       {
         "actual": "brand_info",
-        "predicted": "out_of_scope",
+        "predicted": "ingredient_insight",
+        "count": 1
+      },
+      {
+        "actual": "brand_info",
+        "predicted": "dataset_facts",
         "count": 1
       },
       {
@@ -227,16 +232,16 @@
         {
           "question": "best product for acne under 50",
           "expected": "product_recommendation",
-          "predicted": "out_of_scope",
-          "confidence": 0.4406,
-          "correct": false
+          "predicted": "product_recommendation",
+          "confidence": 0.4245,
+          "correct": true
         },
         {
           "question": "products from cerave",
           "expected": "brand_info",
-          "predicted": "brand_info",
-          "confidence": 0.6303,
-          "correct": true
+          "predicted": "dataset_facts",
+          "confidence": 0.5302,
+          "correct": false
         },
         {
           "question": "compare cerave and bioderma",
@@ -249,14 +254,14 @@
           "question": "ingredients in cerave hydrating cleanser",
           "expected": "ingredient_insight",
           "predicted": "ingredient_insight",
-          "confidence": 1,
+          "confidence": 0.9971,
           "correct": true
         },
         {
           "question": "price of cerave hydrating cleanser",
           "expected": "price_analysis",
-          "predicted": "product_recommendation",
-          "confidence": 0.3964,
+          "predicted": "ingredient_insight",
+          "confidence": 0.2545,
           "correct": false
         },
         {
@@ -284,14 +289,14 @@
           "question": "write me a football story",
           "expected": "out_of_scope",
           "predicted": "out_of_scope",
-          "confidence": 1,
+          "confidence": 0.9997,
           "correct": true
         }
       ]
     }
   },
   "improvementLoop": {
-    "userFeedbackPath": "C:\\Users\\nasse\\OneDrive\\Bureau\\PI\\deepskyn\\src\\modele\\datasets\\chatbot\\user_feedback_examples.json",
+    "userFeedbackPath": "C:\\Users\\Ghada\\Desktop\\projetPI\\deepskyn1\\src\\modele\\datasets\\chatbot\\user_feedback_examples.json",
     "loadedFeedbackExamples": 0
   }
 }
