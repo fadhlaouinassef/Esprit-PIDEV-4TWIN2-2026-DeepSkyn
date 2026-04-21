@@ -32,11 +32,11 @@ const plans: PricingPlan[] = [
   {
     id: "premiumYearly",
     name: "Premium Yearly",
-    price: 160,
+    price: 200,
     period: "year",
     popular: true,
     savingsText: "Save 40 DT",
-    originalPrice: 200,
+    originalPrice: 240,
   },
 ]
 

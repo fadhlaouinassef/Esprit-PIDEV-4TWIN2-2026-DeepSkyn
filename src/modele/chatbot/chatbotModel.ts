@@ -2765,11 +2765,11 @@ export const answerChatbotQuestion = async (question: string): Promise<ChatbotAn
     ? "out_of_scope"
     : explicitRuleIntents.has(ruleIntent)
       ? ruleIntent
-    : bestConfidence >= MIN_CONFIDENCE && predictedIntent !== "out_of_scope"
-      ? ruleIntent === "brand_info" || ruleIntent === "product_comparison"
-        ? ruleIntent
-        : predictedIntent
-      : ruleIntent;
+      : bestConfidence >= MIN_CONFIDENCE && predictedIntent !== "out_of_scope"
+        ? ruleIntent === "brand_info" || ruleIntent === "product_comparison"
+          ? ruleIntent
+          : predictedIntent
+        : ruleIntent;
 
   const finalConfidence =
     intent === "out_of_scope"
