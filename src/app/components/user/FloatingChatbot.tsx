@@ -3,10 +3,21 @@
 import { useMemo, useRef, useState } from "react";
 import { Bot, ImagePlus, MessageCircle, SendHorizontal, Sparkles, X } from "lucide-react";
 
+type SkinAnalysis = {
+  problem: string;
+  severity: string;
+  description: string;
+  rootCause: string;
+  routine: string[];
+  products: string[];
+  timeline: string;
+};
+
 type ChatMessage = {
   role: "assistant" | "user";
   content: string;
   image?: string;
+  skinAnalysis?: SkinAnalysis;
 };
 
 type ApiResponse = {
@@ -14,6 +25,7 @@ type ApiResponse = {
   confidence: number;
   intent: string;
   suggestions: string[];
+  skinAnalysis?: SkinAnalysis;
 };
 
 type LocalImageMetrics = {
@@ -261,7 +273,10 @@ export function FloatingChatbot() {
       }
 
       const data = (await response.json()) as ApiResponse;
-      setMessages((prev) => [...prev, { role: "assistant", content: data.answer }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.answer, skinAnalysis: data.skinAnalysis },
+      ]);
       if (Array.isArray(data.suggestions) && data.suggestions.length > 0) {
         setSuggestions(data.suggestions.slice(0, 3));
       }
@@ -315,6 +330,58 @@ export function FloatingChatbot() {
                   key={`${message.role}-${index}`}
                   className={`flex ${isAssistant ? "justify-start" : "justify-end"}`}
                 >
+                  {message.skinAnalysis ? (
+                    <div className="max-w-[95%] overflow-hidden rounded-2xl border border-cyan-100 bg-white shadow-md text-sm">
+                      <div className="bg-gradient-to-r from-cyan-600 to-emerald-600 px-4 py-3 text-white">
+                        <p className="font-bold text-sm">{message.skinAnalysis.problem}</p>
+                        <span className="mt-1 inline-block rounded-full bg-white/20 px-2 py-0.5 text-[10px]">
+                          {message.skinAnalysis.severity}
+                        </span>
+                      </div>
+
+                      <div className="divide-y divide-slate-100">
+                        <div className="px-3 py-2">
+                          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Description</p>
+                          <p className="text-xs text-slate-700">{message.skinAnalysis.description}</p>
+                        </div>
+
+                        <div className="px-3 py-2">
+                          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Root Cause</p>
+                          <p className="text-xs text-slate-700">{message.skinAnalysis.rootCause}</p>
+                        </div>
+
+                        <div className="px-3 py-2">
+                          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Skincare Routine</p>
+                          <ol className="space-y-1.5">
+                            {message.skinAnalysis.routine.map((step, i) => (
+                              <li key={i} className="flex items-start gap-2 text-xs text-slate-700">
+                                <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-cyan-100 text-[10px] font-bold text-cyan-700">
+                                  {i + 1}
+                                </span>
+                                {step}
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+
+                        <div className="px-3 py-2">
+                          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Recommended Actives</p>
+                          <ul className="space-y-1">
+                            {message.skinAnalysis.products.map((p, i) => (
+                              <li key={i} className="flex items-start gap-1.5 text-xs text-slate-700">
+                                <span className="mt-px flex-shrink-0 text-emerald-500">✓</span>
+                                {p}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="bg-amber-50 px-3 py-2">
+                          <p className="text-xs font-medium text-amber-700">⏱ {message.skinAnalysis.timeline}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
                   <div
                     className={`max-w-[90%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                       isAssistant
@@ -332,6 +399,7 @@ export function FloatingChatbot() {
                       />
                     )}
                   </div>
+                  )}
                 </div>
               );
             })}

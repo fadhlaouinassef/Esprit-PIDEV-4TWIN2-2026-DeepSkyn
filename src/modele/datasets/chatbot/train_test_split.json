@@ -46,7 +46,7 @@
       "labelIndex": 4
     },
     {
-      "text": "show me health warning about glucose and skin now please",
+      "text": "je veux could you health warning about glucose and skin now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -71,7 +71,7 @@
       "labelIndex": 3
     },
     {
-      "text": "show me can you donne moi please je veux convert pdf to word please with details rapidement en francais",
+      "text": "could you can you please donne moi who won the world cup with details rapidement for my case now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -86,17 +86,17 @@
       "labelIndex": 4
     },
     {
-      "text": "give me please help me donne moi best beginner skincare routine for men now with details rapidement en francais",
+      "text": "help me please je veux could you quelle routine pour peau sensible please in simple words for my case now",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you je veux give me what csv files are loaded by the chatbot please in simple words",
+      "text": "donne moi help me please what csv files are loaded by the chatbot now with details rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "help me donne moi find me is this a medical diagnosis please in simple words",
+      "text": "j ai besoin de can you is this a medical diagnosis now with details en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -111,7 +111,7 @@
       "labelIndex": 4
     },
     {
-      "text": "could you show me can you generate a logo for my startup now please in simple words",
+      "text": "donne moi je veux j ai besoin de generate a logo for my startup now with details rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -151,7 +151,7 @@
       "labelIndex": 2
     },
     {
-      "text": "can you j ai besoin de show me routine with cleanser serum moisturizer spf now please in simple words en francais",
+      "text": "j ai besoin de can you donne moi help me je cherche une routine anti age douce now with details en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -196,7 +196,7 @@
       "labelIndex": 1
     },
     {
-      "text": "please help me quels risques metabolique pour la peau now with details",
+      "text": "can you donne moi quels risques metabolique pour la peau now in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -206,7 +206,7 @@
       "labelIndex": 3
     },
     {
-      "text": "can you j ai besoin de show me diabete et peau now with details rapidement",
+      "text": "please je veux could you diabete et peau please in simple words for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -246,17 +246,17 @@
       "labelIndex": 1
     },
     {
-      "text": "could you je veux give me please routine matin et soir now with details rapidement for my case",
+      "text": "je veux could you j ai besoin de can you how should i build a routine please rapidement for my case now",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you warning for diabetic skincare now",
+      "text": "je veux warning for diabetic skincare now",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "donne moi find me can you j ai besoin de routine peau mixte matin soir please with details rapidement",
+      "text": "je veux could you j ai besoin de routine peau mixte matin soir with details rapidement for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -301,7 +301,7 @@
       "labelIndex": 8
     },
     {
-      "text": "j ai besoin de show me statistiques du dataset chatbot now please in simple words",
+      "text": "please je veux could you statistiques du dataset chatbot now with details en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -311,27 +311,27 @@
       "labelIndex": 3
     },
     {
-      "text": "je veux routine ete pour peau grasse now",
+      "text": "please routine ete pour peau grasse please",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "show me how many train and test samples do you have",
+      "text": "how many train and test samples do you have now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "help me donne moi best beginner skincare routine for men now with details",
+      "text": "j ai besoin de can you best beginner skincare routine for men please in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you show me can you write me a javascript sorting algorithm now with details",
+      "text": "help me could you can you write me a javascript sorting algorithm please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "donne moi find me can you quel est le nombre de classes du modele now please in simple words",
+      "text": "could you j ai besoin de quel est le nombre de classes du modele now in simple words en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -346,7 +346,7 @@
       "labelIndex": 4
     },
     {
-      "text": "please help me donne moi find me can you quel est le nombre de classes du modele now please in simple words en francais",
+      "text": "please je veux could you j ai besoin de quel est le nombre de classes du modele now in simple words en francais with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -406,12 +406,12 @@
       "labelIndex": 7
     },
     {
-      "text": "find me can you j ai besoin de show me health warning about glucose and skin now please in simple words en francais for my case",
+      "text": "j ai besoin de can you donne moi help me difference between info and diagnosis now with details en francais with details",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "find me can you j ai besoin de show me how many train and test samples do you have please in simple words rapidement",
+      "text": "can you donne moi help me please what csv files are loaded by the chatbot now with details rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -421,7 +421,7 @@
       "labelIndex": 2
     },
     {
-      "text": "je veux give me please help me how many products are in your merged dataset please with details rapidement",
+      "text": "j ai besoin de can you donne moi help me how many products are in your merged dataset please rapidement for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -431,12 +431,12 @@
       "labelIndex": 8
     },
     {
-      "text": "je veux give me routine minimaliste pour peau reactive please",
+      "text": "help me please routine minimaliste pour peau reactive now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "please help me donne moi find me can you can i replace doctor advice with this model now please in simple words en francais",
+      "text": "please je veux could you j ai besoin de can i replace doctor advice with this model now in simple words en francais with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -476,12 +476,12 @@
       "labelIndex": 3
     },
     {
-      "text": "show me solve this calculus equation",
+      "text": "solve this calculus equation now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "could you je veux combien de produits uniques apres nettoyage please in simple words",
+      "text": "help me please je veux combien de produits uniques apres nettoyage with details rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -491,7 +491,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux skin complications and elevated glucose now with details rapidement",
+      "text": "donne moi help me please skin complications and elevated glucose please in simple words en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -506,7 +506,7 @@
       "labelIndex": 1
     },
     {
-      "text": "please help me donne moi find me can you j ai besoin de list the data sources used for training please with details rapidement for my case now",
+      "text": "help me please je veux could you j ai besoin de list the data sources used for training with details rapidement for my case please in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -516,7 +516,7 @@
       "labelIndex": 2
     },
     {
-      "text": "find me help me give me could you show me can you write me a javascript sorting algorithm now with details in simple words en francais for my case",
+      "text": "donne moi je veux j ai besoin de help me could you tell me a football result please in simple words en francais with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -526,7 +526,7 @@
       "labelIndex": 2
     },
     {
-      "text": "can you donne moi please write a cover letter now please in simple words",
+      "text": "je veux j ai besoin de help me write a cover letter now with details rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -586,7 +586,7 @@
       "labelIndex": 0
     },
     {
-      "text": "please help me is high glucose linked to skin issues please",
+      "text": "donne moi help me is high glucose linked to skin issues please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -611,7 +611,7 @@
       "labelIndex": 3
     },
     {
-      "text": "can you j ai besoin de show me could you sources du modele please with details rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me how many products are in your merged dataset please rapidement for my case please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -631,7 +631,7 @@
       "labelIndex": 2
     },
     {
-      "text": "please help me how much data is used for training now with details",
+      "text": "can you donne moi how much data is used for training now in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -641,7 +641,7 @@
       "labelIndex": 0
     },
     {
-      "text": "give me please difference between info and diagnosis now please",
+      "text": "donne moi help me difference between info and diagnosis now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -651,12 +651,12 @@
       "labelIndex": 3
     },
     {
-      "text": "donne moi find me can you how should i build a routine now with details",
+      "text": "j ai besoin de can you how should i build a routine please rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "find me help me compose a rap song now",
+      "text": "j ai besoin de help me compose a rap song please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -666,12 +666,12 @@
       "labelIndex": 0
     },
     {
-      "text": "find me help me comment installer windows now please",
+      "text": "donne moi comment installer windows now in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "give me could you show me can you generate a logo for my startup now please in simple words rapidement",
+      "text": "please donne moi je veux predict tomorrow weather now with details en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -681,12 +681,12 @@
       "labelIndex": 2
     },
     {
-      "text": "please help me donne moi show me data preprocessing stats now with details rapidement",
+      "text": "j ai besoin de can you show me data preprocessing stats please in simple words for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "show me quelle routine pour peau sensible now",
+      "text": "could you quelle routine pour peau sensible please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -701,7 +701,7 @@
       "labelIndex": 4
     },
     {
-      "text": "find me can you j ai besoin de show me diabete et peau now with details rapidement en francais",
+      "text": "j ai besoin de can you donne moi help me please high glucose impact on skin please in simple words for my case now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -716,7 +716,7 @@
       "labelIndex": 0
     },
     {
-      "text": "show me could you je veux give me please high glucose impact on skin now with details rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me please high glucose impact on skin please in simple words for my case now in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -736,7 +736,7 @@
       "labelIndex": 3
     },
     {
-      "text": "find me help me give me could you tell me a football result now with details in simple words",
+      "text": "je veux j ai besoin de help me could you tell me a football result please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -761,7 +761,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you show me can you donne moi please je veux raconte une blague now with details in simple words en francais for my case now",
+      "text": "je veux j ai besoin de help me could you can you please raconte une blague please in simple words en francais please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -771,12 +771,12 @@
       "labelIndex": 0
     },
     {
-      "text": "can you generate a logo for my startup now",
+      "text": "j ai besoin de generate a logo for my startup now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "please help me donne moi find me can you statistiques de vos donnees now with details rapidement for my case",
+      "text": "donne moi help me please je veux could you sources du modele please rapidement for my case now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -796,7 +796,7 @@
       "labelIndex": 0
     },
     {
-      "text": "can you j ai besoin de show me could you warning for diabetic skincare now with details in simple words en francais",
+      "text": "can you donne moi help me please je veux warning for diabetic skincare now in simple words en francais with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -806,12 +806,12 @@
       "labelIndex": 2
     },
     {
-      "text": "donne moi find me can you statistiques de vos donnees now with details",
+      "text": "j ai besoin de can you statistiques de vos donnees please rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "could you show me can you donne moi please write me a poem now with details in simple words en francais",
+      "text": "je veux j ai besoin de help me could you can you write me a javascript sorting algorithm please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -826,12 +826,12 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de routine visage pour peau seche en hiver now",
+      "text": "routine visage pour peau seche en hiver please",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "find me can you j ai besoin de routine visage pour peau seche en hiver now with details in simple words",
+      "text": "je veux could you routine visage pour peau seche en hiver please in simple words en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -871,7 +871,7 @@
       "labelIndex": 4
     },
     {
-      "text": "show me could you est ce que jai le diabete please with details",
+      "text": "please je veux could you est ce que jai le diabete please rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -941,12 +941,12 @@
       "labelIndex": 0
     },
     {
-      "text": "give me please help me how many products are in your merged dataset please with details",
+      "text": "can you donne moi help me how many products are in your merged dataset please rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "j ai besoin de quelle proportion train test utilisez vous now",
+      "text": "quelle proportion train test utilisez vous please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1006,17 +1006,17 @@
       "labelIndex": 3
     },
     {
-      "text": "can you j ai besoin de quelle proportion train test utilisez vous now with details",
+      "text": "could you quelle proportion train test utilisez vous please in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "help me donne moi find me can you j ai besoin de routine visage pour peau seche en hiver now with details in simple words en francais",
+      "text": "help me please je veux could you routine visage pour peau seche en hiver please in simple words en francais now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you je veux give me please high glucose impact on skin now with details rapidement",
+      "text": "can you donne moi help me please high glucose impact on skin please in simple words for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1046,7 +1046,7 @@
       "labelIndex": 0
     },
     {
-      "text": "donne moi please je veux show latest crypto prices now please in simple words rapidement",
+      "text": "je veux j ai besoin de help me could you show latest crypto prices now with details rapidement for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1061,12 +1061,12 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux give me please high glucose impact on skin now with details rapidement for my case",
+      "text": "je veux could you j ai besoin de can you risque metabolique please rapidement for my case now",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "could you je veux give me please routine matin et soir now with details rapidement",
+      "text": "can you donne moi help me please routine matin et soir please in simple words for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1076,7 +1076,7 @@
       "labelIndex": 0
     },
     {
-      "text": "can you j ai besoin de show me could you conseil routine anti acne please with details rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me donne moi une routine simple pour debutant please rapidement for my case please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1096,7 +1096,7 @@
       "labelIndex": 2
     },
     {
-      "text": "je veux give me please nombre de lignes par fichier csv now please in simple words",
+      "text": "can you donne moi help me nombre de lignes par fichier csv now with details en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1106,7 +1106,7 @@
       "labelIndex": 3
     },
     {
-      "text": "please help me donne moi quelle routine pour peau acneique et sensible please in simple words",
+      "text": "j ai besoin de can you donne moi quelle routine pour peau acneique et sensible with details rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1151,12 +1151,12 @@
       "labelIndex": 2
     },
     {
-      "text": "show latest crypto prices now",
+      "text": "could you show latest crypto prices now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "j ai besoin de show me diabete et peau now with details",
+      "text": "je veux could you diabete et peau please in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1221,7 +1221,7 @@
       "labelIndex": 4
     },
     {
-      "text": "help me quels risques metabolique pour la peau now",
+      "text": "donne moi quels risques metabolique pour la peau now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1261,7 +1261,7 @@
       "labelIndex": 4
     },
     {
-      "text": "find me can you statistiques de vos donnees now",
+      "text": "j ai besoin de can you statistiques de vos donnees please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1306,7 +1306,7 @@
       "labelIndex": 4
     },
     {
-      "text": "find me help me give me could you predict tomorrow weather now please in simple words rapidement",
+      "text": "can you please donne moi comment installer windows now in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1326,7 +1326,7 @@
       "labelIndex": 5
     },
     {
-      "text": "find me can you j ai besoin de show me combien de lignes dans vos csv now with details rapidement en francais",
+      "text": "j ai besoin de can you donne moi help me please what datasets are used please in simple words for my case now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1351,7 +1351,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux give me please help me is high glucose linked to skin issues please with details rapidement for my case",
+      "text": "please je veux could you j ai besoin de can diabetes affect skin healing with details rapidement for my case please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1366,7 +1366,7 @@
       "labelIndex": 2
     },
     {
-      "text": "help me donne moi donnees diabetiques et risques cutanes please",
+      "text": "can you donne moi donnees diabetiques et risques cutanes with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1386,12 +1386,12 @@
       "labelIndex": 4
     },
     {
-      "text": "j ai besoin de find me a movie to watch now",
+      "text": "find me a movie to watch please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "routine with cleanser serum moisturizer spf now",
+      "text": "could you routine with cleanser serum moisturizer spf now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1401,7 +1401,7 @@
       "labelIndex": 2
     },
     {
-      "text": "please write a cover letter now",
+      "text": "help me write a cover letter now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1411,7 +1411,7 @@
       "labelIndex": 4
     },
     {
-      "text": "j ai besoin de show me how many train and test samples do you have please",
+      "text": "could you how many train and test samples do you have now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1426,7 +1426,7 @@
       "labelIndex": 0
     },
     {
-      "text": "je veux j ai besoin de find me help me compose a rap song now with details rapidement en francais",
+      "text": "please donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words for my case now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1441,7 +1441,7 @@
       "labelIndex": 4
     },
     {
-      "text": "could you show me can you donne moi who won the world cup please with details rapidement",
+      "text": "can you please donne moi who won the world cup with details rapidement for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1466,7 +1466,7 @@
       "labelIndex": 4
     },
     {
-      "text": "give me please je cherche une routine anti age douce now please",
+      "text": "donne moi help me je cherche une routine anti age douce now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1491,12 +1491,12 @@
       "labelIndex": 0
     },
     {
-      "text": "give me could you show me solve this calculus equation please with details",
+      "text": "can you please solve this calculus equation now with details rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "please help me donne moi find me can you risque metabolique now with details rapidement for my case",
+      "text": "donne moi help me please je veux could you est ce que jai le diabete please rapidement for my case now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1511,12 +1511,12 @@
       "labelIndex": 2
     },
     {
-      "text": "je veux give me please routine matin et soir now with details",
+      "text": "donne moi help me please routine matin et soir please in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "j ai besoin de show me could you je veux routine ete pour peau grasse now with details rapidement en francais",
+      "text": "j ai besoin de can you donne moi help me please routine ete pour peau grasse please in simple words en francais now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1531,12 +1531,12 @@
       "labelIndex": 0
     },
     {
-      "text": "help me give me could you show me can you generate a logo for my startup now please in simple words rapidement for my case",
+      "text": "can you please donne moi je veux predict tomorrow weather now with details en francais please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "show me could you je veux routine ete pour peau grasse now with details rapidement en francais",
+      "text": "could you j ai besoin de can you best beginner skincare routine for men please in simple words for my case now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1561,12 +1561,12 @@
       "labelIndex": 0
     },
     {
-      "text": "can you j ai besoin de routine visage pour peau seche en hiver now with details",
+      "text": "could you routine visage pour peau seche en hiver please in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "help me donne moi find me can you j ai besoin de routine peau mixte matin soir please with details rapidement for my case",
+      "text": "can you donne moi help me please je veux how many steps should my night routine have with details rapidement for my case please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1591,12 +1591,12 @@
       "labelIndex": 4
     },
     {
-      "text": "please je veux show latest crypto prices now please in simple words",
+      "text": "j ai besoin de help me could you show latest crypto prices now with details rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "donne moi find me can you j ai besoin de quelle proportion train test utilisez vous now with details in simple words en francais",
+      "text": "can you donne moi help me please dataset quality metrics please in simple words en francais now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1636,7 +1636,7 @@
       "labelIndex": 0
     },
     {
-      "text": "help me donne moi show me data preprocessing stats now with details",
+      "text": "j ai besoin de can you show me data preprocessing stats please in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1661,7 +1661,7 @@
       "labelIndex": 2
     },
     {
-      "text": "je veux give me please difference between info and diagnosis now please in simple words",
+      "text": "can you donne moi help me difference between info and diagnosis now with details en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1681,7 +1681,7 @@
       "labelIndex": 4
     },
     {
-      "text": "could you sources du modele please",
+      "text": "je veux could you sources du modele please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1721,7 +1721,7 @@
       "labelIndex": 0
     },
     {
-      "text": "find me can you j ai besoin de show me statistiques du dataset chatbot now please in simple words en francais for my case",
+      "text": "j ai besoin de can you donne moi help me nombre de lignes par fichier csv now with details en francais with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1736,7 +1736,7 @@
       "labelIndex": 0
     },
     {
-      "text": "help me comment installer windows now",
+      "text": "donne moi comment installer windows now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1761,12 +1761,12 @@
       "labelIndex": 6
     },
     {
-      "text": "donne moi find me can you risque metabolique now with details",
+      "text": "j ai besoin de can you risque metabolique please rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "show me can you donne moi who won the world cup please with details",
+      "text": "please donne moi who won the world cup with details rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1786,7 +1786,7 @@
       "labelIndex": 7
     },
     {
-      "text": "je veux j ai besoin de find me help me comment installer windows now please in simple words en francais for my case",
+      "text": "help me could you can you please find me a movie to watch please in simple words en francais please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -1811,7 +1811,7 @@
       "labelIndex": 4
     },
     {
-      "text": "help me donne moi quelle routine pour peau acneique et sensible please",
+      "text": "can you donne moi quelle routine pour peau acneique et sensible with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1836,12 +1836,12 @@
       "labelIndex": 3
     },
     {
-      "text": "help me comment construire une routine sans irritation now",
+      "text": "donne moi comment construire une routine sans irritation now",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "can you j ai besoin de show me could you routine am pm for dehydrated skin now with details in simple words en francais",
+      "text": "can you donne moi help me please je veux routine am pm for dehydrated skin now in simple words en francais with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -1861,7 +1861,7 @@
       "labelIndex": 2
     },
     {
-      "text": "give me please help me donne moi find me is this a medical diagnosis please in simple words en francais for my case",
+      "text": "donne moi help me please je veux could you health warning about glucose and skin now with details en francais please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1881,7 +1881,7 @@
       "labelIndex": 2
     },
     {
-      "text": "can you j ai besoin de can diabetes affect skin healing please",
+      "text": "j ai besoin de can diabetes affect skin healing with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1906,7 +1906,7 @@
       "labelIndex": 4
     },
     {
-      "text": "show me statistiques du dataset chatbot now please",
+      "text": "je veux could you statistiques du dataset chatbot now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -1926,7 +1926,7 @@
       "labelIndex": 1
     },
     {
-      "text": "show me could you je veux what does high bmi imply for skin health please in simple words rapidement",
+      "text": "donne moi help me please je veux what does high bmi imply for skin health with details rapidement for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -1961,7 +1961,7 @@
       "labelIndex": 6
     },
     {
-      "text": "j ai besoin de show me combien de lignes dans vos csv now with details",
+      "text": "je veux could you combien de lignes dans vos csv please in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2031,7 +2031,7 @@
       "labelIndex": 4
     },
     {
-      "text": "donne moi please write me a poem now",
+      "text": "can you please write me a poem please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -2041,7 +2041,7 @@
       "labelIndex": 2
     },
     {
-      "text": "show me routine with cleanser serum moisturizer spf now please",
+      "text": "je veux could you routine with cleanser serum moisturizer spf now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2051,7 +2051,7 @@
       "labelIndex": 2
     },
     {
-      "text": "please help me donne moi une routine simple pour debutant please",
+      "text": "donne moi help me donne moi une routine simple pour debutant please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2071,7 +2071,7 @@
       "labelIndex": 4
     },
     {
-      "text": "find me can you j ai besoin de show me quelle routine pour peau sensible now with details rapidement en francais",
+      "text": "j ai besoin de can you donne moi help me please routine matin et soir please in simple words for my case now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2081,12 +2081,12 @@
       "labelIndex": 0
     },
     {
-      "text": "donne moi find me is this a medical diagnosis please",
+      "text": "j ai besoin de can you is this a medical diagnosis now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "give me please help me donne moi une routine simple pour debutant please with details",
+      "text": "can you donne moi help me donne moi une routine simple pour debutant please rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2096,12 +2096,12 @@
       "labelIndex": 0
     },
     {
-      "text": "donne moi find me can you j ai besoin de list the data sources used for training please with details rapidement",
+      "text": "je veux could you j ai besoin de list the data sources used for training with details rapidement for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "could you je veux dataset quality metrics now with details rapidement",
+      "text": "donne moi help me please dataset quality metrics please in simple words en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2131,7 +2131,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux give me please difference between info and diagnosis now please in simple words en francais",
+      "text": "je veux could you j ai besoin de can i replace doctor advice with this model now in simple words en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2141,7 +2141,7 @@
       "labelIndex": 1
     },
     {
-      "text": "can you j ai besoin de routine peau mixte matin soir please",
+      "text": "j ai besoin de routine peau mixte matin soir with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2151,7 +2151,7 @@
       "labelIndex": 0
     },
     {
-      "text": "give me please help me donne moi donnees diabetiques et risques cutanes please in simple words rapidement",
+      "text": "please je veux could you explain metabolic risk and skin now with details rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2211,7 +2211,7 @@
       "labelIndex": 4
     },
     {
-      "text": "give me please help me donne moi find me can you how should i build a routine now with details rapidement for my case",
+      "text": "please je veux could you j ai besoin de can you how should i build a routine please rapidement for my case now in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2221,7 +2221,7 @@
       "labelIndex": 0
     },
     {
-      "text": "can you donne moi please je veux j ai besoin de find me a movie to watch now with details in simple words en francais for my case now",
+      "text": "j ai besoin de help me could you can you please find me a movie to watch please in simple words en francais please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -2231,12 +2231,12 @@
       "labelIndex": 0
     },
     {
-      "text": "j ai besoin de show me explain metabolic risk and skin please",
+      "text": "could you explain metabolic risk and skin now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "find me can you can i replace doctor advice with this model now please",
+      "text": "j ai besoin de can i replace doctor advice with this model now in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2301,7 +2301,7 @@
       "labelIndex": 1
     },
     {
-      "text": "can you donne moi please je veux raconte une blague now with details in simple words en francais",
+      "text": "j ai besoin de help me could you can you please write me a poem please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -2311,22 +2311,22 @@
       "labelIndex": 1
     },
     {
-      "text": "je veux give me please je cherche une routine anti age douce now please in simple words",
+      "text": "can you donne moi help me je cherche une routine anti age douce now with details en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you je veux give me please help me quels risques metabolique pour la peau now with details in simple words en francais",
+      "text": "could you j ai besoin de can you donne moi quels risques metabolique pour la peau now in simple words en francais now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "donne moi find me what order should i apply skincare products please",
+      "text": "j ai besoin de can you what order should i apply skincare products now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you je veux combien de produits uniques apres nettoyage please",
+      "text": "please je veux combien de produits uniques apres nettoyage with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2336,12 +2336,12 @@
       "labelIndex": 5
     },
     {
-      "text": "donne moi find me can you j ai besoin de show me diabete et peau now with details rapidement en francais",
+      "text": "donne moi help me please je veux could you diabete et peau please in simple words for my case now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "je veux give me please help me donne moi show me data preprocessing stats now with details rapidement en francais",
+      "text": "je veux could you j ai besoin de can you show me data preprocessing stats please in simple words for my case now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2351,7 +2351,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux routine ete pour peau grasse now with details",
+      "text": "help me please routine ete pour peau grasse please in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2371,7 +2371,7 @@
       "labelIndex": 2
     },
     {
-      "text": "show me could you je veux how many steps should my night routine have please in simple words rapidement",
+      "text": "donne moi help me please je veux how many steps should my night routine have with details rapidement for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2386,7 +2386,7 @@
       "labelIndex": 8
     },
     {
-      "text": "donne moi find me can you j ai besoin de show me how many train and test samples do you have please in simple words rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me please what csv files are loaded by the chatbot now with details rapidement please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2411,7 +2411,7 @@
       "labelIndex": 4
     },
     {
-      "text": "je veux give me please help me how much data is used for training now with details in simple words en francais",
+      "text": "please je veux could you quelle proportion train test utilisez vous please in simple words en francais now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2436,7 +2436,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux give me does insulin resistance impact acne please in simple words en francais",
+      "text": "could you j ai besoin de can you is this a medical diagnosis now with details en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2446,7 +2446,7 @@
       "labelIndex": 4
     },
     {
-      "text": "can you quel est le nombre de classes du modele now",
+      "text": "j ai besoin de quel est le nombre de classes du modele now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2481,7 +2481,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux give me routine minimaliste pour peau reactive please in simple words en francais",
+      "text": "could you j ai besoin de can you what order should i apply skincare products now with details en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2491,7 +2491,7 @@
       "labelIndex": 0
     },
     {
-      "text": "statistiques du dataset chatbot now",
+      "text": "could you statistiques du dataset chatbot now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2506,12 +2506,12 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux how many steps should my night routine have please in simple words",
+      "text": "help me please je veux how many steps should my night routine have with details rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "can you j ai besoin de show me statistiques du dataset chatbot now please in simple words en francais",
+      "text": "j ai besoin de can you donne moi help me nombre de lignes par fichier csv now with details en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2531,7 +2531,7 @@
       "labelIndex": 3
     },
     {
-      "text": "find me can you j ai besoin de impact du diabete sur hydratation cutanee now with details in simple words",
+      "text": "je veux could you impact du diabete sur hydratation cutanee please in simple words en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2566,7 +2566,7 @@
       "labelIndex": 0
     },
     {
-      "text": "help me give me could you show me can you write me a javascript sorting algorithm now with details in simple words en francais",
+      "text": "donne moi je veux j ai besoin de help me could you tell me a football result please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -2616,7 +2616,7 @@
       "labelIndex": 2
     },
     {
-      "text": "j ai besoin de show me could you what are the intent labels now with details in simple words en francais",
+      "text": "j ai besoin de can you donne moi how much data is used for training now in simple words en francais now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2631,12 +2631,12 @@
       "labelIndex": 0
     },
     {
-      "text": "can you can you suggest a weekly routine schedule now",
+      "text": "j ai besoin de can you suggest a weekly routine schedule now",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you je veux give me please help me how many products are in your merged dataset please with details rapidement for my case",
+      "text": "please je veux could you j ai besoin de list the data sources used for training with details rapidement for my case please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2661,7 +2661,7 @@
       "labelIndex": 3
     },
     {
-      "text": "find me can you j ai besoin de show me routine with cleanser serum moisturizer spf now please in simple words en francais for my case",
+      "text": "j ai besoin de can you donne moi help me je cherche une routine anti age douce now with details en francais with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2716,7 +2716,7 @@
       "labelIndex": 2
     },
     {
-      "text": "could you je veux what does high bmi imply for skin health please in simple words",
+      "text": "help me please je veux what does high bmi imply for skin health with details rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2736,7 +2736,7 @@
       "labelIndex": 3
     },
     {
-      "text": "show me can you write me a javascript sorting algorithm now",
+      "text": "could you can you write me a javascript sorting algorithm please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -2791,17 +2791,17 @@
       "labelIndex": 4
     },
     {
-      "text": "give me could you show me can you donne moi who won the world cup please with details rapidement en francais",
+      "text": "help me could you can you please solve this calculus equation now with details rapidement for my case now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "j ai besoin de find me book me a flight ticket please in simple words",
+      "text": "help me could you can you book me a flight ticket now with details rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "give me could you tell me a football result now",
+      "text": "help me could you tell me a football result please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -2816,7 +2816,7 @@
       "labelIndex": 4
     },
     {
-      "text": "find me can you j ai besoin de quelle proportion train test utilisez vous now with details in simple words",
+      "text": "je veux could you quelle proportion train test utilisez vous please in simple words en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -2836,7 +2836,7 @@
       "labelIndex": 0
     },
     {
-      "text": "can you j ai besoin de show me could you est ce que jai le diabete please with details rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me is high glucose linked to skin issues please rapidement for my case please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2846,22 +2846,22 @@
       "labelIndex": 8
     },
     {
-      "text": "can you donne moi please je veux j ai besoin de quelle est la capitale du japon please with details rapidement en francais",
+      "text": "can you please donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words for my case now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "donne moi find me can you can you suggest a weekly routine schedule now please in simple words",
+      "text": "could you j ai besoin de can you suggest a weekly routine schedule now in simple words en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "please help me donne moi find me dataset summary please please in simple words en francais",
+      "text": "help me please je veux could you statistiques du dataset chatbot now with details en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "can you j ai besoin de show me explain metabolic risk and skin please in simple words",
+      "text": "je veux could you explain metabolic risk and skin now with details rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -2876,7 +2876,7 @@
       "labelIndex": 3
     },
     {
-      "text": "show me could you je veux give me please routine matin et soir now with details rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me please routine matin et soir please in simple words for my case now in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -2981,7 +2981,7 @@
       "labelIndex": 0
     },
     {
-      "text": "donne moi please je veux j ai besoin de find me a movie to watch now with details in simple words en francais for my case",
+      "text": "j ai besoin de help me could you can you please raconte une blague please in simple words en francais please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3011,7 +3011,7 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de show me could you je veux skin complications and elevated glucose now with details rapidement en francais",
+      "text": "j ai besoin de can you donne moi help me please skin complications and elevated glucose please in simple words en francais now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3051,7 +3051,7 @@
       "labelIndex": 2
     },
     {
-      "text": "can you donne moi please write me a poem now with details",
+      "text": "could you can you please write me a poem please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3071,12 +3071,12 @@
       "labelIndex": 0
     },
     {
-      "text": "give me does insulin resistance impact acne",
+      "text": "please does insulin resistance impact acne now",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "can you j ai besoin de show me build me an anti dark spot routine please in simple words",
+      "text": "je veux could you build me an anti dark spot routine now with details rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3091,7 +3091,7 @@
       "labelIndex": 3
     },
     {
-      "text": "please je cherche une routine anti age douce now",
+      "text": "help me je cherche une routine anti age douce now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3101,12 +3101,12 @@
       "labelIndex": 3
     },
     {
-      "text": "help me give me could you predict tomorrow weather now please in simple words",
+      "text": "donne moi je veux predict tomorrow weather now with details en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "could you je veux give me please help me comment construire une routine sans irritation now with details in simple words en francais",
+      "text": "could you j ai besoin de can you donne moi comment construire une routine sans irritation now in simple words en francais now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3116,7 +3116,7 @@
       "labelIndex": 2
     },
     {
-      "text": "help me give me could you show me can you donne moi who won the world cup please with details rapidement en francais",
+      "text": "help me could you can you please donne moi who won the world cup with details rapidement for my case now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3126,7 +3126,7 @@
       "labelIndex": 4
     },
     {
-      "text": "show me could you je veux combien de produits uniques apres nettoyage please in simple words rapidement",
+      "text": "donne moi help me please je veux combien de produits uniques apres nettoyage with details rapidement for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3191,7 +3191,7 @@
       "labelIndex": 1
     },
     {
-      "text": "donne moi please je veux j ai besoin de find me book me a flight ticket please in simple words rapidement for my case",
+      "text": "donne moi je veux j ai besoin de help me could you can you book me a flight ticket now with details rapidement for my case now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3216,7 +3216,7 @@
       "labelIndex": 0
     },
     {
-      "text": "find me help me give me raconte moi une histoire please with details",
+      "text": "could you can you please raconte moi une histoire now with details rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3226,7 +3226,7 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de show me could you je veux combien de produits uniques apres nettoyage please in simple words rapidement for my case",
+      "text": "could you j ai besoin de can you donne moi what is the vocabulary size of the model with details rapidement please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3251,12 +3251,12 @@
       "labelIndex": 0
     },
     {
-      "text": "give me please help me quels risques metabolique pour la peau now with details in simple words",
+      "text": "j ai besoin de can you donne moi quels risques metabolique pour la peau now in simple words en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "donne moi medical disclaimer for your answers now",
+      "text": "can you medical disclaimer for your answers please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3276,7 +3276,7 @@
       "labelIndex": 0
     },
     {
-      "text": "find me is this a medical diagnosis",
+      "text": "can you is this a medical diagnosis now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3306,7 +3306,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you je veux give me please help me donne moi une routine simple pour debutant please with details rapidement for my case",
+      "text": "please je veux could you j ai besoin de routine peau mixte matin soir with details rapidement for my case please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3351,7 +3351,7 @@
       "labelIndex": 3
     },
     {
-      "text": "help me donne moi find me can you j ai besoin de quelle proportion train test utilisez vous now with details in simple words en francais",
+      "text": "help me please je veux could you quelle proportion train test utilisez vous please in simple words en francais now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3371,22 +3371,22 @@
       "labelIndex": 3
     },
     {
-      "text": "show me explain metabolic risk and skin",
+      "text": "explain metabolic risk and skin now",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "please help me comment construire une routine sans irritation now with details",
+      "text": "can you donne moi comment construire une routine sans irritation now in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "donne moi best beginner skincare routine for men now",
+      "text": "can you best beginner skincare routine for men please",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "donne moi please write a cover letter now please",
+      "text": "j ai besoin de help me write a cover letter now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3396,7 +3396,7 @@
       "labelIndex": 1
     },
     {
-      "text": "show me can you donne moi please je veux show latest crypto prices now please in simple words rapidement for my case",
+      "text": "donne moi je veux j ai besoin de help me could you show latest crypto prices now with details rapidement for my case now in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3411,7 +3411,7 @@
       "labelIndex": 3
     },
     {
-      "text": "give me please nombre de lignes par fichier csv now please",
+      "text": "donne moi help me nombre de lignes par fichier csv now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3421,7 +3421,7 @@
       "labelIndex": 2
     },
     {
-      "text": "je veux give me please high glucose impact on skin now with details",
+      "text": "donne moi help me please high glucose impact on skin please in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3431,7 +3431,7 @@
       "labelIndex": 1
     },
     {
-      "text": "please help me donne moi find me can you j ai besoin de can diabetes affect skin healing please with details rapidement for my case now",
+      "text": "help me please je veux could you j ai besoin de can diabetes affect skin healing with details rapidement for my case please in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3441,7 +3441,7 @@
       "labelIndex": 0
     },
     {
-      "text": "j ai besoin de show me could you je veux dataset quality metrics now with details rapidement en francais",
+      "text": "j ai besoin de can you donne moi help me please dataset quality metrics please in simple words en francais now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3471,7 +3471,7 @@
       "labelIndex": 0
     },
     {
-      "text": "help me donne moi medical disclaimer for your answers now with details",
+      "text": "j ai besoin de can you medical disclaimer for your answers please in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3501,7 +3501,7 @@
       "labelIndex": 3
     },
     {
-      "text": "find me can you j ai besoin de show me could you conseil routine anti acne please with details rapidement for my case",
+      "text": "can you donne moi help me please je veux could you conseil routine anti acne please rapidement for my case now in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3516,12 +3516,12 @@
       "labelIndex": 3
     },
     {
-      "text": "please help me donne moi donnees diabetiques et risques cutanes please in simple words",
+      "text": "j ai besoin de can you donne moi donnees diabetiques et risques cutanes with details rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "je veux give me please help me donne moi quelle routine pour peau acneique et sensible please in simple words rapidement for my case",
+      "text": "help me please je veux could you build me an anti dark spot routine now with details rapidement please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3536,12 +3536,12 @@
       "labelIndex": 0
     },
     {
-      "text": "help me donne moi find me can you j ai besoin de impact du diabete sur hydratation cutanee now with details in simple words en francais",
+      "text": "help me please je veux could you impact du diabete sur hydratation cutanee please in simple words en francais now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "j ai besoin de find me a movie to watch now with details",
+      "text": "please find me a movie to watch please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3551,12 +3551,12 @@
       "labelIndex": 4
     },
     {
-      "text": "give me could you predict tomorrow weather now please",
+      "text": "donne moi je veux predict tomorrow weather now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "je veux j ai besoin de find me help me give me raconte moi une histoire please with details rapidement for my case",
+      "text": "je veux j ai besoin de help me could you can you please raconte moi une histoire now with details rapidement for my case now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3571,7 +3571,7 @@
       "labelIndex": 1
     },
     {
-      "text": "can you donne moi please je veux convert pdf to word please with details rapidement",
+      "text": "please donne moi je veux convert pdf to word please rapidement for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3606,7 +3606,7 @@
       "labelIndex": 2
     },
     {
-      "text": "help me donne moi find me can you j ai besoin de list the data sources used for training please with details rapidement for my case",
+      "text": "can you donne moi help me please je veux combien de produits uniques apres nettoyage with details rapidement for my case please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3626,7 +3626,7 @@
       "labelIndex": 0
     },
     {
-      "text": "je veux give me does insulin resistance impact acne please",
+      "text": "help me please does insulin resistance impact acne now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3636,7 +3636,7 @@
       "labelIndex": 6
     },
     {
-      "text": "j ai besoin de find me help me compose a rap song now with details",
+      "text": "je veux j ai besoin de help me compose a rap song please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3656,17 +3656,17 @@
       "labelIndex": 2
     },
     {
-      "text": "show me diabete et peau now",
+      "text": "could you diabete et peau please",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "could you je veux give me please nombre de lignes par fichier csv now please in simple words en francais",
+      "text": "je veux could you j ai besoin de quel est le nombre de classes du modele now in simple words en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "find me what order should i apply skincare products",
+      "text": "can you what order should i apply skincare products now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3706,7 +3706,7 @@
       "labelIndex": 0
     },
     {
-      "text": "help me donne moi find me can you quel est le nombre de classes du modele now please in simple words en francais",
+      "text": "donne moi help me please je veux what are the intent labels now in simple words en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3731,12 +3731,12 @@
       "labelIndex": 0
     },
     {
-      "text": "show me could you je veux give me please what datasets are used now with details rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me please what datasets are used please in simple words for my case now in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "find me can you how should i build a routine now",
+      "text": "j ai besoin de can you how should i build a routine please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3746,7 +3746,7 @@
       "labelIndex": 4
     },
     {
-      "text": "could you je veux give me does insulin resistance impact acne please in simple words",
+      "text": "donne moi help me please does insulin resistance impact acne now with details rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3761,7 +3761,7 @@
       "labelIndex": 1
     },
     {
-      "text": "could you je veux give me please help me donne moi une routine simple pour debutant please with details rapidement for my case now",
+      "text": "could you j ai besoin de can you donne moi help me donne moi une routine simple pour debutant please rapidement for my case please in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3776,7 +3776,7 @@
       "labelIndex": 3
     },
     {
-      "text": "could you je veux give me what csv files are loaded by the chatbot please in simple words en francais",
+      "text": "could you j ai besoin de can you dataset summary please now with details en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3786,7 +3786,7 @@
       "labelIndex": 0
     },
     {
-      "text": "je veux j ai besoin de quelle est la capitale du japon please with details",
+      "text": "donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3801,7 +3801,7 @@
       "labelIndex": 8
     },
     {
-      "text": "j ai besoin de find me help me give me could you show me solve this calculus equation please with details rapidement en francais",
+      "text": "j ai besoin de help me could you can you please solve this calculus equation now with details rapidement for my case now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3841,12 +3841,12 @@
       "labelIndex": 0
     },
     {
-      "text": "please help me donne moi find me can you j ai besoin de routine peau mixte matin soir please with details rapidement for my case now",
+      "text": "help me please je veux could you j ai besoin de routine peau mixte matin soir with details rapidement for my case please in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "show me could you je veux give me routine minimaliste pour peau reactive please in simple words en francais for my case",
+      "text": "je veux could you j ai besoin de can you what order should i apply skincare products now with details en francais please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3856,7 +3856,7 @@
       "labelIndex": 6
     },
     {
-      "text": "please je veux j ai besoin de quelle est la capitale du japon please with details rapidement",
+      "text": "donne moi je veux j ai besoin de quelle est la capitale du japon please in simple words for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -3896,7 +3896,7 @@
       "labelIndex": 1
     },
     {
-      "text": "give me please what datasets are used now",
+      "text": "help me please what datasets are used please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3916,7 +3916,7 @@
       "labelIndex": 1
     },
     {
-      "text": "j ai besoin de show me build me an anti dark spot routine please",
+      "text": "could you build me an anti dark spot routine now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3926,12 +3926,12 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de find me help me give me could you tell me a football result now with details in simple words en francais",
+      "text": "donne moi je veux j ai besoin de help me compose a rap song please in simple words en francais now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "can you j ai besoin de show me quelle routine pour peau sensible now with details rapidement",
+      "text": "please je veux could you quelle routine pour peau sensible please in simple words for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -3976,7 +3976,7 @@
       "labelIndex": 3
     },
     {
-      "text": "help me donne moi find me dataset summary please please in simple words",
+      "text": "j ai besoin de can you dataset summary please now with details en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -3986,7 +3986,7 @@
       "labelIndex": 4
     },
     {
-      "text": "could you je veux skin complications and elevated glucose now with details",
+      "text": "help me please skin complications and elevated glucose please in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -3996,12 +3996,12 @@
       "labelIndex": 2
     },
     {
-      "text": "donne moi find me dataset summary please please",
+      "text": "j ai besoin de can you dataset summary please now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "je veux give me please what datasets are used now with details",
+      "text": "donne moi help me please what datasets are used please in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -4026,7 +4026,7 @@
       "labelIndex": 3
     },
     {
-      "text": "je veux give me please help me is high glucose linked to skin issues please with details rapidement",
+      "text": "j ai besoin de can you donne moi help me is high glucose linked to skin issues please rapidement for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4051,17 +4051,17 @@
       "labelIndex": 1
     },
     {
-      "text": "give me please help me comment construire une routine sans irritation now with details in simple words",
+      "text": "j ai besoin de can you donne moi comment construire une routine sans irritation now in simple words en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "help me donne moi find me can you can you suggest a weekly routine schedule now please in simple words en francais",
+      "text": "donne moi help me please je veux routine am pm for dehydrated skin now in simple words en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "give me please help me how much data is used for training now with details in simple words",
+      "text": "j ai besoin de can you donne moi how much data is used for training now in simple words en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -4071,7 +4071,7 @@
       "labelIndex": 1
     },
     {
-      "text": "could you je veux routine ete pour peau grasse now with details rapidement",
+      "text": "donne moi help me please routine ete pour peau grasse please in simple words en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4101,7 +4101,7 @@
       "labelIndex": 4
     },
     {
-      "text": "help me give me raconte moi une histoire please",
+      "text": "can you please raconte moi une histoire now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4126,7 +4126,7 @@
       "labelIndex": 4
     },
     {
-      "text": "je veux give me please help me donne moi donnees diabetiques et risques cutanes please in simple words rapidement for my case",
+      "text": "help me please je veux could you explain metabolic risk and skin now with details rapidement please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4136,7 +4136,7 @@
       "labelIndex": 4
     },
     {
-      "text": "give me please help me donne moi find me can you risque metabolique now with details rapidement for my case",
+      "text": "please je veux could you j ai besoin de can you risque metabolique please rapidement for my case now in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4156,7 +4156,7 @@
       "labelIndex": 0
     },
     {
-      "text": "show me could you what are the intent labels now with details in simple words",
+      "text": "help me please je veux what are the intent labels now in simple words en francais",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -4171,7 +4171,7 @@
       "labelIndex": 3
     },
     {
-      "text": "show me can you generate a logo for my startup now please",
+      "text": "je veux j ai besoin de generate a logo for my startup now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4181,17 +4181,17 @@
       "labelIndex": 1
     },
     {
-      "text": "please je veux j ai besoin de find me book me a flight ticket please in simple words rapidement for my case",
+      "text": "donne moi je veux j ai besoin de help me could you show latest crypto prices now with details rapidement for my case now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "j ai besoin de show me quelle routine pour peau sensible now with details",
+      "text": "je veux could you quelle routine pour peau sensible please in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you routine am pm for dehydrated skin now",
+      "text": "je veux routine am pm for dehydrated skin now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4206,7 +4206,7 @@
       "labelIndex": 1
     },
     {
-      "text": "j ai besoin de quelle est la capitale du japon please",
+      "text": "je veux j ai besoin de quelle est la capitale du japon please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4226,7 +4226,7 @@
       "labelIndex": 3
     },
     {
-      "text": "can you j ai besoin de impact du diabete sur hydratation cutanee now with details",
+      "text": "could you impact du diabete sur hydratation cutanee please in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4256,12 +4256,12 @@
       "labelIndex": 5
     },
     {
-      "text": "find me can you can you suggest a weekly routine schedule now please",
+      "text": "j ai besoin de can you suggest a weekly routine schedule now in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "give me routine minimaliste pour peau reactive",
+      "text": "please routine minimaliste pour peau reactive now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4296,7 +4296,7 @@
       "labelIndex": 3
     },
     {
-      "text": "je veux skin complications and elevated glucose now",
+      "text": "please skin complications and elevated glucose please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4311,12 +4311,12 @@
       "labelIndex": 2
     },
     {
-      "text": "j ai besoin de find me help me compose a rap song now with details rapidement",
+      "text": "donne moi je veux j ai besoin de help me compose a rap song please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "please help me donne moi find me can you can you suggest a weekly routine schedule now please in simple words en francais",
+      "text": "please je veux could you j ai besoin de can you suggest a weekly routine schedule now in simple words en francais with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4351,7 +4351,7 @@
       "labelIndex": 1
     },
     {
-      "text": "find me help me give me could you show me can you generate a logo for my startup now please in simple words rapidement for my case",
+      "text": "can you please donne moi je veux j ai besoin de generate a logo for my startup now with details rapidement please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4361,7 +4361,7 @@
       "labelIndex": 2
     },
     {
-      "text": "j ai besoin de find me help me comment installer windows now please in simple words",
+      "text": "please donne moi comment installer windows now in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4371,12 +4371,12 @@
       "labelIndex": 2
     },
     {
-      "text": "give me please help me donne moi what is the vocabulary size of the model please in simple words rapidement",
+      "text": "please je veux could you how many train and test samples do you have now with details rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "help me donne moi find me can you can i replace doctor advice with this model now please in simple words en francais",
+      "text": "donne moi help me please je veux warning for diabetic skincare now in simple words en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4386,12 +4386,12 @@
       "labelIndex": 5
     },
     {
-      "text": "find me book me a flight ticket",
+      "text": "can you book me a flight ticket now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "j ai besoin de find me book me a flight ticket please",
+      "text": "could you can you book me a flight ticket now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4411,12 +4411,12 @@
       "labelIndex": 0
     },
     {
-      "text": "could you what are the intent labels now",
+      "text": "je veux what are the intent labels now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "donne moi find me can you j ai besoin de show me quelle routine pour peau sensible now with details rapidement en francais",
+      "text": "donne moi help me please je veux could you quelle routine pour peau sensible please in simple words for my case now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4456,7 +4456,7 @@
       "labelIndex": 3
     },
     {
-      "text": "donne moi find me can you j ai besoin de show me combien de lignes dans vos csv now with details rapidement en francais",
+      "text": "donne moi help me please je veux could you combien de lignes dans vos csv please in simple words for my case now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -4476,12 +4476,12 @@
       "labelIndex": 2
     },
     {
-      "text": "give me please routine matin et soir now",
+      "text": "help me please routine matin et soir please",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "find me can you risque metabolique now",
+      "text": "j ai besoin de can you risque metabolique please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4491,12 +4491,12 @@
       "labelIndex": 8
     },
     {
-      "text": "give me please help me donne moi find me what order should i apply skincare products please in simple words en francais for my case",
+      "text": "donne moi help me please je veux could you routine with cleanser serum moisturizer spf now with details en francais please",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "help me give me could you show me solve this calculus equation please with details rapidement",
+      "text": "could you can you please solve this calculus equation now with details rapidement for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4536,7 +4536,7 @@
       "labelIndex": 4
     },
     {
-      "text": "show me build me an anti dark spot routine",
+      "text": "build me an anti dark spot routine now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4566,7 +4566,7 @@
       "labelIndex": 0
     },
     {
-      "text": "can you can i replace doctor advice with this model now",
+      "text": "j ai besoin de can i replace doctor advice with this model now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4581,7 +4581,7 @@
       "labelIndex": 4
     },
     {
-      "text": "donne moi find me can you can i replace doctor advice with this model now please in simple words",
+      "text": "could you j ai besoin de can i replace doctor advice with this model now in simple words en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4606,12 +4606,12 @@
       "labelIndex": 3
     },
     {
-      "text": "help me donne moi find me what order should i apply skincare products please in simple words",
+      "text": "j ai besoin de can you what order should i apply skincare products now with details en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "je veux give me please help me donne moi medical disclaimer for your answers now with details rapidement en francais",
+      "text": "je veux could you j ai besoin de can you medical disclaimer for your answers please in simple words for my case now with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4621,12 +4621,12 @@
       "labelIndex": 2
     },
     {
-      "text": "je veux dataset quality metrics now",
+      "text": "please dataset quality metrics please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "show me combien de lignes dans vos csv now",
+      "text": "could you combien de lignes dans vos csv please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -4641,7 +4641,7 @@
       "labelIndex": 4
     },
     {
-      "text": "could you je veux give me please help me is high glucose linked to skin issues please with details rapidement for my case now",
+      "text": "could you j ai besoin de can you donne moi help me is high glucose linked to skin issues please rapidement for my case please in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4701,7 +4701,7 @@
       "labelIndex": 4
     },
     {
-      "text": "give me please help me donne moi find me dataset summary please please in simple words en francais for my case",
+      "text": "donne moi help me please je veux could you statistiques du dataset chatbot now with details en francais please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -4721,7 +4721,7 @@
       "labelIndex": 0
     },
     {
-      "text": "give me please high glucose impact on skin now",
+      "text": "help me please high glucose impact on skin please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4776,7 +4776,7 @@
       "labelIndex": 2
     },
     {
-      "text": "show me could you conseil routine anti acne please with details",
+      "text": "please je veux could you conseil routine anti acne please rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4801,7 +4801,7 @@
       "labelIndex": 4
     },
     {
-      "text": "find me can you j ai besoin de show me could you est ce que jai le diabete please with details rapidement for my case",
+      "text": "can you donne moi help me please je veux could you est ce que jai le diabete please rapidement for my case now in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4861,7 +4861,7 @@
       "labelIndex": 3
     },
     {
-      "text": "give me please help me donne moi medical disclaimer for your answers now with details rapidement en francais",
+      "text": "help me please je veux could you diabete et peau please in simple words for my case now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4871,7 +4871,7 @@
       "labelIndex": 2
     },
     {
-      "text": "could you je veux give me routine minimaliste pour peau reactive please in simple words",
+      "text": "donne moi help me please routine minimaliste pour peau reactive now with details rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -4886,27 +4886,27 @@
       "labelIndex": 4
     },
     {
-      "text": "je veux raconte une blague now",
+      "text": "please raconte une blague please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "je veux give me please help me donne moi une routine simple pour debutant please with details rapidement",
+      "text": "j ai besoin de can you donne moi help me donne moi une routine simple pour debutant please rapidement for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "find me can you j ai besoin de show me could you sources du modele please with details rapidement for my case",
+      "text": "can you donne moi help me please je veux could you sources du modele please rapidement for my case now in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "j ai besoin de show me could you sources du modele please with details rapidement",
+      "text": "help me please je veux could you sources du modele please rapidement for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "donne moi find me can you j ai besoin de can diabetes affect skin healing please with details rapidement",
+      "text": "je veux could you j ai besoin de can diabetes affect skin healing with details rapidement for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4921,7 +4921,7 @@
       "labelIndex": 2
     },
     {
-      "text": "give me could you show me can you donne moi please write me a poem now with details in simple words en francais for my case",
+      "text": "donne moi je veux j ai besoin de help me could you can you write me a javascript sorting algorithm please in simple words en francais please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4946,7 +4946,7 @@
       "labelIndex": 3
     },
     {
-      "text": "can you j ai besoin de show me health warning about glucose and skin now please in simple words en francais",
+      "text": "j ai besoin de can you donne moi help me difference between info and diagnosis now with details en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -4961,7 +4961,7 @@
       "labelIndex": 6
     },
     {
-      "text": "j ai besoin de find me help me give me could you predict tomorrow weather now please in simple words rapidement for my case now",
+      "text": "could you can you please donne moi je veux predict tomorrow weather now with details en francais please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -4971,7 +4971,7 @@
       "labelIndex": 4
     },
     {
-      "text": "give me please help me donne moi quelle routine pour peau acneique et sensible please in simple words rapidement",
+      "text": "please je veux could you build me an anti dark spot routine now with details rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5026,7 +5026,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you show me can you donne moi please write a cover letter now please in simple words rapidement for my case",
+      "text": "please donne moi je veux j ai besoin de generate a logo for my startup now with details rapidement please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5046,7 +5046,7 @@
       "labelIndex": 0
     },
     {
-      "text": "help me donne moi find me can you j ai besoin de can diabetes affect skin healing please with details rapidement for my case",
+      "text": "can you donne moi help me please je veux what does high bmi imply for skin health with details rapidement for my case please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5086,12 +5086,12 @@
       "labelIndex": 2
     },
     {
-      "text": "health warning about glucose and skin now",
+      "text": "could you health warning about glucose and skin now",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "give me please help me is high glucose linked to skin issues please with details",
+      "text": "can you donne moi help me is high glucose linked to skin issues please rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5101,7 +5101,7 @@
       "labelIndex": 3
     },
     {
-      "text": "could you je veux give me please what datasets are used now with details rapidement for my case",
+      "text": "je veux could you j ai besoin de can you statistiques de vos donnees please rapidement for my case now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5126,12 +5126,12 @@
       "labelIndex": 2
     },
     {
-      "text": "could you je veux give me please je cherche une routine anti age douce now please in simple words en francais",
+      "text": "je veux could you j ai besoin de can you suggest a weekly routine schedule now in simple words en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "could you predict tomorrow weather now",
+      "text": "je veux predict tomorrow weather now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5151,7 +5151,7 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de impact du diabete sur hydratation cutanee now",
+      "text": "impact du diabete sur hydratation cutanee please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5176,7 +5176,7 @@
       "labelIndex": 5
     },
     {
-      "text": "please je veux j ai besoin de find me help me compose a rap song now with details rapidement en francais",
+      "text": "please donne moi je veux j ai besoin de help me compose a rap song please in simple words en francais now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5186,7 +5186,7 @@
       "labelIndex": 3
     },
     {
-      "text": "show me can you donne moi please je veux raconte une blague now with details in simple words en francais for my case",
+      "text": "je veux j ai besoin de help me could you can you please write me a poem please in simple words en francais please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5196,7 +5196,7 @@
       "labelIndex": 1
     },
     {
-      "text": "je veux give me please help me donne moi what is the vocabulary size of the model please in simple words rapidement for my case",
+      "text": "help me please je veux could you how many train and test samples do you have now with details rapidement please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5211,7 +5211,7 @@
       "labelIndex": 0
     },
     {
-      "text": "please je veux raconte une blague now with details",
+      "text": "can you please raconte une blague please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5226,17 +5226,17 @@
       "labelIndex": 0
     },
     {
-      "text": "help me donne moi find me can you statistiques de vos donnees now with details rapidement",
+      "text": "could you j ai besoin de can you statistiques de vos donnees please rapidement for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "please difference between info and diagnosis now",
+      "text": "help me difference between info and diagnosis now",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "je veux give me please help me donne moi best beginner skincare routine for men now with details rapidement en francais",
+      "text": "je veux could you j ai besoin de can you best beginner skincare routine for men please in simple words for my case now with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5311,7 +5311,7 @@
       "labelIndex": 0
     },
     {
-      "text": "show me could you je veux give me does insulin resistance impact acne please in simple words en francais for my case",
+      "text": "je veux could you j ai besoin de can you is this a medical diagnosis now with details en francais please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5326,12 +5326,12 @@
       "labelIndex": 1
     },
     {
-      "text": "can you j ai besoin de show me could you what are the intent labels now with details in simple words en francais",
+      "text": "can you donne moi help me please je veux what are the intent labels now in simple words en francais with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "find me can you j ai besoin de list the data sources used for training please with details",
+      "text": "could you j ai besoin de list the data sources used for training with details rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5356,7 +5356,7 @@
       "labelIndex": 2
     },
     {
-      "text": "show me could you je veux skin complications and elevated glucose now with details rapidement en francais",
+      "text": "could you j ai besoin de can you medical disclaimer for your answers please in simple words for my case now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5396,12 +5396,12 @@
       "labelIndex": 0
     },
     {
-      "text": "je veux j ai besoin de find me a movie to watch now with details in simple words",
+      "text": "can you please find me a movie to watch please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "could you je veux give me please what datasets are used now with details rapidement",
+      "text": "can you donne moi help me please what datasets are used please in simple words for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5416,7 +5416,7 @@
       "labelIndex": 1
     },
     {
-      "text": "please help me donne moi find me can you how should i build a routine now with details rapidement for my case",
+      "text": "donne moi help me please je veux could you conseil routine anti acne please rapidement for my case now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5431,7 +5431,7 @@
       "labelIndex": 8
     },
     {
-      "text": "j ai besoin de find me help me give me could you predict tomorrow weather now please in simple words rapidement for my case",
+      "text": "could you can you please donne moi comment installer windows now in simple words en francais please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5441,7 +5441,7 @@
       "labelIndex": 0
     },
     {
-      "text": "give me please help me donne moi show me data preprocessing stats now with details rapidement en francais",
+      "text": "help me please je veux could you combien de lignes dans vos csv please in simple words for my case now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5498,7 +5498,7 @@
       "labelIndex": 3
     },
     {
-      "text": "find me can you j ai besoin de routine peau mixte matin soir please with details",
+      "text": "could you j ai besoin de routine peau mixte matin soir with details rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5518,7 +5518,7 @@
       "labelIndex": 7
     },
     {
-      "text": "j ai besoin de show me could you est ce que jai le diabete please with details rapidement",
+      "text": "help me please je veux could you est ce que jai le diabete please rapidement for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5533,12 +5533,12 @@
       "labelIndex": 0
     },
     {
-      "text": "find me can you j ai besoin de show me explain metabolic risk and skin please in simple words rapidement",
+      "text": "can you donne moi help me please does insulin resistance impact acne now with details rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "donne moi please je veux convert pdf to word please with details",
+      "text": "donne moi je veux convert pdf to word please rapidement",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5558,7 +5558,7 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de show me could you routine am pm for dehydrated skin now with details in simple words en francais",
+      "text": "j ai besoin de can you donne moi comment construire une routine sans irritation now in simple words en francais now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5583,7 +5583,7 @@
       "labelIndex": 2
     },
     {
-      "text": "please nombre de lignes par fichier csv now",
+      "text": "help me nombre de lignes par fichier csv now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5593,7 +5593,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you what are the intent labels now with details",
+      "text": "please je veux what are the intent labels now in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5603,7 +5603,7 @@
       "labelIndex": 0
     },
     {
-      "text": "j ai besoin de show me could you je veux how many steps should my night routine have please in simple words rapidement for my case",
+      "text": "could you j ai besoin de can you donne moi quelle routine pour peau acneique et sensible with details rapidement please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5628,7 +5628,7 @@
       "labelIndex": 4
     },
     {
-      "text": "show me could you sources du modele please with details",
+      "text": "please je veux could you sources du modele please rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5668,7 +5668,7 @@
       "labelIndex": 5
     },
     {
-      "text": "can you donne moi please je veux show latest crypto prices now please in simple words rapidement for my case",
+      "text": "donne moi je veux j ai besoin de help me write a cover letter now with details rapidement for my case please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5688,12 +5688,12 @@
       "labelIndex": 2
     },
     {
-      "text": "je veux j ai besoin de find me book me a flight ticket please in simple words rapidement",
+      "text": "j ai besoin de help me could you can you book me a flight ticket now with details rapidement for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "can you j ai besoin de show me combien de lignes dans vos csv now with details rapidement",
+      "text": "please je veux could you combien de lignes dans vos csv please in simple words for my case",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5738,7 +5738,7 @@
       "labelIndex": 5
     },
     {
-      "text": "j ai besoin de find me help me comment installer windows now please in simple words en francais",
+      "text": "could you can you please find me a movie to watch please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5748,17 +5748,17 @@
       "labelIndex": 3
     },
     {
-      "text": "show me can you donne moi please write me a poem now with details in simple words",
+      "text": "help me could you can you please write me a poem please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "please je veux j ai besoin de find me a movie to watch now with details in simple words en francais",
+      "text": "help me could you can you please raconte une blague please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "give me could you show me can you donne moi please write a cover letter now please in simple words rapidement for my case",
+      "text": "please donne moi je veux j ai besoin de help me write a cover letter now with details rapidement for my case please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -5818,7 +5818,7 @@
       "labelIndex": 3
     },
     {
-      "text": "find me can you j ai besoin de show me build me an anti dark spot routine please in simple words rapidement",
+      "text": "can you donne moi help me please routine minimaliste pour peau reactive now with details rapidement",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5828,7 +5828,7 @@
       "labelIndex": 7
     },
     {
-      "text": "could you conseil routine anti acne please",
+      "text": "je veux could you conseil routine anti acne please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5843,7 +5843,7 @@
       "labelIndex": 1
     },
     {
-      "text": "je veux give me please help me comment construire une routine sans irritation now with details in simple words en francais",
+      "text": "please je veux could you routine visage pour peau seche en hiver please in simple words en francais now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5868,7 +5868,7 @@
       "labelIndex": 0
     },
     {
-      "text": "please help me donne moi find me is this a medical diagnosis please in simple words en francais",
+      "text": "help me please je veux could you health warning about glucose and skin now with details en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5903,7 +5903,7 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de show me health warning about glucose and skin now please in simple words",
+      "text": "please je veux could you health warning about glucose and skin now with details en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5918,12 +5918,12 @@
       "labelIndex": 4
     },
     {
-      "text": "j ai besoin de find me help me give me raconte moi une histoire please with details rapidement",
+      "text": "help me could you can you please raconte moi une histoire now with details rapidement for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "find me can you j ai besoin de can diabetes affect skin healing please with details",
+      "text": "could you j ai besoin de can diabetes affect skin healing with details rapidement",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -5948,12 +5948,12 @@
       "labelIndex": 1
     },
     {
-      "text": "j ai besoin de show me routine with cleanser serum moisturizer spf now please in simple words",
+      "text": "please je veux could you routine with cleanser serum moisturizer spf now with details en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "find me dataset summary please",
+      "text": "can you dataset summary please now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -5978,12 +5978,12 @@
       "labelIndex": 0
     },
     {
-      "text": "could you show me can you donne moi please je veux convert pdf to word please with details rapidement en francais",
+      "text": "could you can you please donne moi je veux convert pdf to word please rapidement for my case now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "could you routine am pm for dehydrated skin now with details",
+      "text": "please je veux routine am pm for dehydrated skin now in simple words",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -5993,12 +5993,12 @@
       "labelIndex": 1
     },
     {
-      "text": "could you je veux give me please help me how many products are in your merged dataset please with details rapidement for my case now",
+      "text": "could you j ai besoin de can you donne moi help me how many products are in your merged dataset please rapidement for my case please in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "find me can you quel est le nombre de classes du modele now please",
+      "text": "j ai besoin de quel est le nombre de classes du modele now in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6023,12 +6023,12 @@
       "labelIndex": 3
     },
     {
-      "text": "j ai besoin de show me could you warning for diabetic skincare now with details in simple words en francais",
+      "text": "j ai besoin de can you donne moi quels risques metabolique pour la peau now in simple words en francais now",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "help me how much data is used for training now",
+      "text": "donne moi how much data is used for training now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6063,12 +6063,12 @@
       "labelIndex": 1
     },
     {
-      "text": "help me donne moi what is the vocabulary size of the model please",
+      "text": "can you donne moi what is the vocabulary size of the model with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "show me could you je veux give me what csv files are loaded by the chatbot please in simple words en francais for my case",
+      "text": "je veux could you j ai besoin de can you dataset summary please now with details en francais please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6078,12 +6078,12 @@
       "labelIndex": 1
     },
     {
-      "text": "help me donne moi find me can you risque metabolique now with details rapidement",
+      "text": "could you j ai besoin de can you risque metabolique please rapidement for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "please help me donne moi best beginner skincare routine for men now with details rapidement",
+      "text": "j ai besoin de can you best beginner skincare routine for men please in simple words for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -6133,12 +6133,12 @@
       "labelIndex": 1
     },
     {
-      "text": "could you je veux give me please help me how much data is used for training now with details in simple words en francais",
+      "text": "could you j ai besoin de can you donne moi how much data is used for training now in simple words en francais now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "could you je veux how many steps should my night routine have please",
+      "text": "please je veux how many steps should my night routine have with details",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -6148,7 +6148,7 @@
       "labelIndex": 1
     },
     {
-      "text": "find me help me give me could you show me solve this calculus equation please with details rapidement en francais",
+      "text": "j ai besoin de help me could you can you please raconte moi une histoire now with details rapidement for my case now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6158,7 +6158,7 @@
       "labelIndex": 0
     },
     {
-      "text": "je veux give me please help me quels risques metabolique pour la peau now with details in simple words en francais",
+      "text": "please je veux could you impact du diabete sur hydratation cutanee please in simple words en francais now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6178,7 +6178,7 @@
       "labelIndex": 2
     },
     {
-      "text": "donne moi find me can you j ai besoin de impact du diabete sur hydratation cutanee now with details in simple words en francais",
+      "text": "can you donne moi help me please skin complications and elevated glucose please in simple words en francais now",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6213,7 +6213,7 @@
       "labelIndex": 3
     },
     {
-      "text": "can you donne moi who won the world cup please",
+      "text": "donne moi who won the world cup with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6263,7 +6263,7 @@
       "labelIndex": 6
     },
     {
-      "text": "donne moi find me can you j ai besoin de routine visage pour peau seche en hiver now with details in simple words en francais",
+      "text": "can you donne moi help me please routine ete pour peau grasse please in simple words en francais now",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -6283,27 +6283,27 @@
       "labelIndex": 4
     },
     {
-      "text": "please je veux j ai besoin de find me help me comment installer windows now please in simple words en francais for my case now",
+      "text": "help me could you can you please donne moi comment installer windows now in simple words en francais please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "could you show me solve this calculus equation please",
+      "text": "please solve this calculus equation now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "give me please help me donne moi find me can you statistiques de vos donnees now with details rapidement for my case",
+      "text": "please je veux could you j ai besoin de can you statistiques de vos donnees please rapidement for my case now in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "please help me donne moi what is the vocabulary size of the model please in simple words",
+      "text": "j ai besoin de can you donne moi what is the vocabulary size of the model with details rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "help me donne moi find me can you how should i build a routine now with details rapidement",
+      "text": "could you j ai besoin de can you how should i build a routine please rapidement for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -6318,12 +6318,12 @@
       "labelIndex": 3
     },
     {
-      "text": "give me could you show me can you write me a javascript sorting algorithm now with details in simple words",
+      "text": "j ai besoin de help me could you can you write me a javascript sorting algorithm please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "could you je veux what does high bmi imply for skin health please",
+      "text": "please je veux what does high bmi imply for skin health with details",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6343,7 +6343,7 @@
       "labelIndex": 0
     },
     {
-      "text": "please help me donne moi medical disclaimer for your answers now with details rapidement",
+      "text": "j ai besoin de can you medical disclaimer for your answers please in simple words for my case",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6358,7 +6358,7 @@
       "labelIndex": 5
     },
     {
-      "text": "show me could you je veux dataset quality metrics now with details rapidement en francais",
+      "text": "could you j ai besoin de can you show me data preprocessing stats please in simple words for my case now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6393,7 +6393,7 @@
       "labelIndex": 4
     },
     {
-      "text": "give me raconte moi une histoire",
+      "text": "please raconte moi une histoire now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6408,7 +6408,7 @@
       "labelIndex": 2
     },
     {
-      "text": "can you j ai besoin de show me how many train and test samples do you have please in simple words",
+      "text": "je veux could you how many train and test samples do you have now with details rapidement",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6418,32 +6418,32 @@
       "labelIndex": 1
     },
     {
-      "text": "j ai besoin de show me could you je veux what does high bmi imply for skin health please in simple words rapidement for my case",
+      "text": "could you j ai besoin de can you donne moi donnees diabetiques et risques cutanes with details rapidement please",
       "label": "health_warning",
       "labelIndex": 7
     },
     {
-      "text": "can you j ai besoin de list the data sources used for training please",
+      "text": "j ai besoin de list the data sources used for training with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "show me could you routine am pm for dehydrated skin now with details in simple words",
+      "text": "help me please je veux routine am pm for dehydrated skin now in simple words en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
     {
-      "text": "j ai besoin de find me help me give me raconte moi une histoire please with details rapidement for my case",
+      "text": "je veux j ai besoin de help me could you can you book me a flight ticket now with details rapidement for my case now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
     {
-      "text": "could you je veux dataset quality metrics now with details",
+      "text": "help me please dataset quality metrics please in simple words",
       "label": "dataset_facts",
       "labelIndex": 6
     },
     {
-      "text": "help me give me could you tell me a football result now with details",
+      "text": "j ai besoin de help me could you tell me a football result please in simple words",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6478,7 +6478,7 @@
       "labelIndex": 2
     },
     {
-      "text": "please je veux convert pdf to word please",
+      "text": "donne moi je veux convert pdf to word please",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6508,7 +6508,7 @@
       "labelIndex": 6
     },
     {
-      "text": "donne moi please je veux raconte une blague now with details in simple words",
+      "text": "could you can you please raconte une blague please in simple words en francais",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6548,7 +6548,7 @@
       "labelIndex": 3
     },
     {
-      "text": "show me could you warning for diabetic skincare now with details in simple words",
+      "text": "help me please je veux warning for diabetic skincare now in simple words en francais",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6568,7 +6568,7 @@
       "labelIndex": 0
     },
     {
-      "text": "could you est ce que jai le diabete please",
+      "text": "je veux could you est ce que jai le diabete please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6578,7 +6578,7 @@
       "labelIndex": 2
     },
     {
-      "text": "could you warning for diabetic skincare now with details",
+      "text": "please je veux warning for diabetic skincare now in simple words",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6613,7 +6613,7 @@
       "labelIndex": 3
     },
     {
-      "text": "please help me donne moi find me what order should i apply skincare products please in simple words en francais",
+      "text": "help me please je veux could you routine with cleanser serum moisturizer spf now with details en francais",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -6623,7 +6623,7 @@
       "labelIndex": 1
     },
     {
-      "text": "donne moi please je veux j ai besoin de quelle est la capitale du japon please with details rapidement en francais",
+      "text": "can you please donne moi je veux convert pdf to word please rapidement for my case now",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6633,7 +6633,7 @@
       "labelIndex": 0
     },
     {
-      "text": "donne moi find me can you j ai besoin de show me build me an anti dark spot routine please in simple words rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me please routine minimaliste pour peau reactive now with details rapidement please",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -6653,7 +6653,7 @@
       "labelIndex": 4
     },
     {
-      "text": "show me can you donne moi please write a cover letter now please in simple words rapidement",
+      "text": "donne moi je veux j ai besoin de help me write a cover letter now with details rapidement for my case",
       "label": "out_of_scope",
       "labelIndex": 8
     },
@@ -6663,7 +6663,7 @@
       "labelIndex": 0
     },
     {
-      "text": "j ai besoin de show me could you conseil routine anti acne please with details rapidement",
+      "text": "help me please je veux could you conseil routine anti acne please rapidement for my case",
       "label": "routine_advice",
       "labelIndex": 5
     },
@@ -6698,7 +6698,7 @@
       "labelIndex": 0
     },
     {
-      "text": "je veux give me what csv files are loaded by the chatbot please",
+      "text": "help me please what csv files are loaded by the chatbot now with details",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6733,7 +6733,7 @@
       "labelIndex": 2
     },
     {
-      "text": "give me what csv files are loaded by the chatbot",
+      "text": "please what csv files are loaded by the chatbot now",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6743,7 +6743,7 @@
       "labelIndex": 3
     },
     {
-      "text": "please help me how many products are in your merged dataset please",
+      "text": "donne moi help me how many products are in your merged dataset please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6773,7 +6773,7 @@
       "labelIndex": 1
     },
     {
-      "text": "donne moi show me data preprocessing stats now",
+      "text": "can you show me data preprocessing stats please",
       "label": "dataset_facts",
       "labelIndex": 6
     },
@@ -6828,7 +6828,7 @@
       "labelIndex": 3
     },
     {
-      "text": "donne moi find me can you j ai besoin de show me explain metabolic risk and skin please in simple words rapidement for my case",
+      "text": "j ai besoin de can you donne moi help me please does insulin resistance impact acne now with details rapidement please",
       "label": "health_warning",
       "labelIndex": 7
     },
@@ -6843,7 +6843,7 @@
       "labelIndex": 3
     },
     {
-      "text": "je veux show latest crypto prices now please",
+      "text": "help me could you show latest crypto prices now with details",
       "label": "out_of_scope",
       "labelIndex": 8
     },

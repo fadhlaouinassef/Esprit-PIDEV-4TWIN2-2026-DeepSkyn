@@ -44,7 +44,6 @@ const FACEPP_API_KEY = process.env.FACEPP_API_KEY;
 const FACEPP_API_SECRET = process.env.FACEPP_API_SECRET;
 const FACEPP_DETECT_URL = process.env.FACEPP_DETECT_URL || "https://api-us.faceplusplus.com/facepp/v3/detect";
 const DATA_URL_RE = /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=\r\n]+$/i;
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 const MODEL_PATH = path.resolve(process.cwd(), "src/modele/chatbot/image-model/model.json");
 const CLASSES_PATH = path.resolve(process.cwd(), "src/modele/chatbot/image-model/classes.json");
@@ -71,7 +70,7 @@ async function getOrLoadModel() {
         const classesData = JSON.parse(fs.readFileSync(CLASSES_PATH, "utf8"));
         modelClasses = classesData.classes;
       }
-      console.log("[AI] Modèle de vision DeepSkyn chargé dynamiquement.");
+      console.log("[AI] DeepSkyn vision model loaded.");
       return loadedModel;
     } catch (err) {
       console.error("[AI] Erreur de chargement du modèle:", err);
@@ -85,12 +84,6 @@ const toFinite = (value: unknown, fallback = 0): number => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const clamp01 = (value: number): number => {
-  if (!Number.isFinite(value)) return 0;
-  if (value < 0) return 0;
-  if (value > 1) return 1;
-  return value;
-};
 
 type ConditionDetail = {
   problem: string;
@@ -104,112 +97,112 @@ type ConditionDetail = {
 
 const SKIN_CONDITION_DATABASE: Record<string, ConditionDetail> = {
   "acne": {
-    problem: "Acné et Imperfections",
-    description: "Présence de comédons, papules ou pustules inflammatoires.",
-    severity: "Modérée (dépend de la densité des lésions)",
-    rootCause: "Excès de sébum, accumulation de cellules mortes et prolifération bactérienne (C. acnes).",
+    problem: "Acne & Blemishes",
+    description: "Presence of comedones, papules, or inflammatory pustules on the skin surface.",
+    severity: "Moderate (depends on lesion density)",
+    rootCause: "Excess sebum production, dead skin cell buildup, and bacterial proliferation (C. acnes).",
     routine: [
-      "Nettoyer avec un gel moussant doux au pH neutre",
-      "Appliquer un sérum à l'acide salicylique (BHA) sur les zones cibles",
-      "Hydrater avec un fluide léger non comédogène",
-      "Protéger avec un SPF 30+ matifiant chaque matin"
+      "Cleanse with a gentle pH-balanced foaming gel",
+      "Apply a Salicylic Acid (BHA) serum on targeted areas",
+      "Moisturize with a lightweight non-comedogenic fluid",
+      "Protect with a mattifying SPF 30+ every morning"
     ],
     products: [
-      "Acide Salicylique 2% (Exfoliant lipophile)",
-      "Niacinamide 10% (Régulateur de sébum et apaisant)",
-      "Peroxyde de Benzoyle (Antibactérien puissant)"
+      "Salicylic Acid 2% (Lipophilic exfoliant)",
+      "Niacinamide 10% (Sebum regulator and anti-inflammatory)",
+      "Benzoyl Peroxide (Powerful antibacterial)"
     ],
-    timeline: "4 à 8 semaines pour une réduction visible des lésions."
+    timeline: "4 to 8 weeks for visible reduction of lesions."
   },
   "blackheads": {
-    problem: "Points Noirs (Comédons Ouverts)",
-    description: "Pores obstrués par du sébum ayant noirci au contact de l'air.",
-    severity: "Légère à Modérée",
-    rootCause: "Accumulation de sébum et kératine dans les follicules pileux dilatés.",
+    problem: "Blackheads (Open Comedones)",
+    description: "Pores clogged with sebum that oxidizes and darkens upon air exposure.",
+    severity: "Mild to Moderate",
+    rootCause: "Accumulation of sebum and keratin inside dilated hair follicles.",
     routine: [
-      "Double nettoyage chaque soir (huile démaquillante + gel nettoyant)",
-      "Exfoliation chimique régulière (BHA)",
-      "Masque à l'argile hebdomadaire (Argile blanche ou verte)",
-      "Application de soins hydratants légers à base d'eau"
+      "Double cleanse every evening (cleansing oil + gel cleanser)",
+      "Regular chemical exfoliation with BHA",
+      "Weekly clay mask (white or green clay)",
+      "Apply lightweight water-based moisturizer"
     ],
     products: [
-      "Huile de nettoyage relipidante",
-      "Sérum à l'Acide Salicylique (BHA)",
-      "Masque au Charbon actif"
+      "Relipidating cleansing oil",
+      "Salicylic Acid (BHA) serum",
+      "Activated Charcoal mask"
     ],
-    timeline: "2 à 4 semaines pour une peau plus nette."
+    timeline: "2 to 4 weeks for noticeably cleaner skin."
   },
   "dark_spots": {
-    problem: "Taches Brunes (Hyperpigmentation)",
-    description: "Zones de décoloration sombres résultant d'un surplus de mélanine.",
-    severity: "Variable selon l'ancienneté des taches",
-    rootCause: "Exposition solaire répétée, cicatrices post-inflammatoires ou mélasma.",
+    problem: "Dark Spots (Hyperpigmentation)",
+    description: "Areas of dark discoloration caused by excess melanin production in the skin.",
+    severity: "Varies with spot age and depth",
+    rootCause: "Repeated sun exposure, post-inflammatory scars, or melasma.",
     routine: [
-      "Nettoyage illuminateur doux",
-      "Application de Vitamine C concentrée le matin",
-      "Traitement ciblé à l'Alpha-Arbutine ou Acide Azélaïque le soir",
-      "Protection solaire SPF 50+ stricte (ré-application toutes les 2h)"
+      "Gentle brightening cleanser morning and evening",
+      "Apply concentrated Vitamin C serum in the morning",
+      "Targeted Alpha-Arbutin or Azelaic Acid treatment at night",
+      "Strict SPF 50+ sunscreen (reapply every 2 hours)"
     ],
     products: [
-      "Vitamine C 10-20% (Antioxydant et éclaircissant)",
-      "Alpha-Arbutine 2% + Acide Hyaluronique",
-      "Crème solaire haute protection à large spectre"
+      "Vitamin C 10–20% (Antioxidant and brightening agent)",
+      "Alpha-Arbutin 2% + Hyaluronic Acid",
+      "Broad-spectrum high-protection sunscreen"
     ],
-    timeline: "3 à 6 mois de traitement rigoureux."
+    timeline: "3 to 6 months of consistent treatment."
   },
   "pores": {
-    problem: "Pores Dilatés",
-    description: "Apparence marquée des orifices folliculaires, souvent en zone T.",
-    severity: "Esthétique",
-    rootCause: "Élasticité réduite de la peau ou production de sébum importante.",
+    problem: "Enlarged Pores",
+    description: "Visibly enlarged follicular openings, commonly in the T-zone area.",
+    severity: "Cosmetic (no health risk)",
+    rootCause: "Reduced skin elasticity or excessive sebum production.",
     routine: [
-      "Nettoyage à l'eau fraîche pour tonifier",
-      "Sérum au Niacinamide pour normaliser les pores",
-      "Exfoliation douce (AHA / Lactic Acid)",
-      "Hydratation équilibrante non grasse"
+      "Rinse with cool water to help tighten pores",
+      "Apply Niacinamide serum to normalize pore appearance",
+      "Gentle chemical exfoliation (AHA / Lactic Acid)",
+      "Use a balancing, non-greasy moisturizer"
     ],
     products: [
       "Niacinamide 10% + Zinc 1%",
-      "Lotion à l'Acide Glycolique",
-      "Sérum au Rétinol pour améliorer la texture globale"
+      "Glycolic Acid lotion",
+      "Retinol serum to improve overall skin texture"
     ],
-    timeline: "4 à 6 semaines pour un grain de peau affiné."
+    timeline: "4 to 6 weeks for refined skin texture."
   },
   "wrinkles": {
-    problem: "Rides et Signes de l'Âge",
-    description: "Lignes fines ou marques profondes dues à l'affaiblissement structurel.",
-    severity: "Modérée à Prononcée",
-    rootCause: "Réduction naturelle du collagène, stress oxydatif et UV.",
+    problem: "Wrinkles & Signs of Aging",
+    description: "Fine lines or deeper marks caused by structural weakening of the skin over time.",
+    severity: "Moderate to Pronounced",
+    rootCause: "Natural collagen reduction, oxidative stress, and UV damage.",
     routine: [
-      "Nettoyage avec un baume ou lait onctueux",
-      "Sérum aux Peptides ou Facteurs de croissance",
-      "Traitement au Rétinol ou Rétinal le soir (commencer 2x par semaine)",
-      "Crème barrière riche et protection solaire quotidienne"
+      "Cleanse with a rich balm or creamy milk cleanser",
+      "Apply a Peptide or Growth Factor serum",
+      "Use Retinol or Retinal treatment at night (start 2x per week)",
+      "Apply a rich barrier cream and daily sunscreen"
     ],
     products: [
-      "Rétinol pur ou Bakuchiol (alternative douce)",
-      "Sérum aux Multi-Peptides (Copper Peptides)",
-      "Acide Hyaluronique de différents poids moléculaires"
+      "Pure Retinol or Bakuchiol (gentle alternative)",
+      "Multi-Peptide serum (Copper Peptides)",
+      "Multi-weight Hyaluronic Acid"
     ],
-    timeline: "Hydratation immédiate, amélioration des rides en 3 à 6 mois."
+    timeline: "Immediate hydration; visible wrinkle improvement in 3 to 6 months."
   },
   "general": {
-    problem: "Sensibilité ou Fatigue Cutanée",
-    description: "Peau réactive montrant des signes de déshydratation ou rougeurs légères.",
-    severity: "Légère",
-    rootCause: "Barrière cutanée affaiblie, stress environnemental ou fatigue.",
+    problem: "Skin Sensitivity or Fatigue",
+    description: "Reactive skin showing signs of dehydration or mild redness.",
+    severity: "Mild",
+    rootCause: "Weakened skin barrier, environmental stress, or fatigue.",
     routine: [
-      "Nettoyage ultra-doux (sans parfum)",
-      "Sérum apaisant à la Centella Asiatica ou Panthénol",
-      "Hydratation barrière (Céramides)",
-      "SPF minéral protecteur"
+      "Ultra-gentle fragrance-free cleanser",
+      "Soothing serum with Centella Asiatica or Panthenol",
+      "Barrier-strengthening moisturizer (Ceramides)",
+      "Mineral SPF for daily protection"
     ],
     products: [
-      "Sérum au Panthénol (B5)",
-      "Crème aux Céramides et Squalane",
-      "Eau thermale apaisante"
+      "Panthenol (B5) serum",
+      "Ceramides and Squalane cream",
+      "Soothing thermal water mist"
     ],
-    timeline: "Apaisement en quelques jours."
+    timeline: "Noticeable soothing effect within a few days."
   }
 };
 
@@ -242,18 +235,19 @@ async function classifyImageWithAI(imageDataUrl: string): Promise<string | null>
     // Import Jimp 1.6+ style named export
     const { Jimp } = await import("jimp");
     const image = await Jimp.read(buffer as any);
-    image.resize({ w: 64, h: 64 });
+    image.resize({ w: 32, h: 32 });
 
-    const floatData = new Float32Array(64 * 64 * 3);
+    const pixels = image.bitmap.data as Buffer;
+    const floatData = new Float32Array(32 * 32 * 3);
     let i = 0;
-    image.scan(0, 0, image.bitmap.width, image.bitmap.height, function (x, y, idx) {
-      floatData[i++] = (this.bitmap.data[idx + 0] / 127.5) - 1;
-      floatData[i++] = (this.bitmap.data[idx + 1] / 127.5) - 1;
-      floatData[i++] = (this.bitmap.data[idx + 2] / 127.5) - 1;
-    });
+    for (let p = 0; p < pixels.length; p += 4) {
+      floatData[i++] = (pixels[p + 0] / 127.5) - 1;
+      floatData[i++] = (pixels[p + 1] / 127.5) - 1;
+      floatData[i++] = (pixels[p + 2] / 127.5) - 1;
+    }
 
     return tf.tidy(() => {
-      const tensor = tf.tensor4d(floatData, [1, 64, 64, 3]);
+      const tensor = tf.tensor4d(floatData, [1, 32, 32, 3]);
       const prediction = model.predict(tensor) as tf.Tensor;
       const classId = prediction.argMax(-1).dataSync()[0];
       return modelClasses[classId];
@@ -264,7 +258,7 @@ async function classifyImageWithAI(imageDataUrl: string): Promise<string | null>
   }
 }
 
-const analyzeWithFacePP = async (imageDataUrl: string, question?: string) => {
+const analyzeWithFacePP = async (imageDataUrl: string, _question?: string) => {
   const base64Payload = imageDataUrl.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "");
   const formData = new FormData();
   formData.append("api_key", FACEPP_API_KEY || "");
@@ -279,7 +273,7 @@ const analyzeWithFacePP = async (imageDataUrl: string, question?: string) => {
 
   const faces = payload.faces || [];
   if (faces.length === 0) {
-    return { answer: "Aucun visage détecté.", confidence: 0.6, intent: "image_no_face" };
+    return { answer: "No face detected.", confidence: 0.6, intent: "image_no_face" };
   }
 
   const face = faces[0];
@@ -301,14 +295,12 @@ export async function POST(request: Request) {
     if (!image || !DATA_URL_RE.test(image)) return NextResponse.json({ error: "Image invalide" }, { status: 400 });
 
     let facePPData: any = null;
-    let isFacePPAnalyzed = false;
 
     if (FACEPP_API_KEY && FACEPP_API_SECRET) {
       try {
         const faceResult = await analyzeWithFacePP(image, body.question);
         if (faceResult.intent === "image_analysis") {
           facePPData = faceResult.details;
-          isFacePPAnalyzed = true;
         }
       } catch (e) { console.error(e); }
     }
@@ -322,33 +314,30 @@ export async function POST(request: Request) {
       recommendation: "• **Hydratation :** Sérum acide hyaluronique.\n• **Protection :** SPF 30+."
     };
 
-    const redRatio = toFinite(body.imageMetrics?.redRatio, 0);
-    const redScore = Math.round(clamp01((redRatio - 0.33) / 0.05) * 100);
 
     const answer =
-
-      `ANALYSE DERMATOLOGIQUE EXPERTE\n` +
+      `EXPERT DERMATOLOGICAL ANALYSIS\n` +
       `______________________________________\n\n` +
-      `DIAGNOSTIC PRINCIPAL\n\n` +
+      `MAIN DIAGNOSIS\n\n` +
       `${condition.problem}\n` +
-      `Sévérité : ${condition.severity}\n\n` +
+      `Severity: ${condition.severity}\n\n` +
       `_______________________________________\n\n` +
-      `DESCRIPTION DES SYMPTÔMES\n\n` +
+      `SYMPTOM DESCRIPTION\n\n` +
       `${condition.description}\n\n` +
       `_______________________________________\n\n` +
-      `CAUSE RACINE\n\n` +
+      `ROOT CAUSE\n\n` +
       `${condition.rootCause}\n\n` +
       `_______________________________________\n\n` +
-      `ROUTINE DE SOINS ETAPE PAR ETAPE\n\n` +
+      `STEP-BY-STEP SKINCARE ROUTINE\n\n` +
       (condition.routine || []).map((step, idx) => `${idx + 1}. ${step}`).join('\n\n') + `\n\n` +
       `_______________________________________\n\n` +
-      `ACTIFS ET PRODUITS RECOMMANDES\n\n` +
+      `RECOMMENDED ACTIVES & PRODUCTS\n\n` +
       (condition.products || []).map(p => `- ${p}`).join('\n') + `\n\n` +
       `_______________________________________\n\n` +
-      `TIMELINE DES RESULTATS\n\n` +
+      `RESULTS TIMELINE\n\n` +
       `${condition.timeline}\n\n` +
       `_______________________________________\n\n` +
-      `Note : Cette analyse experte est générée par l'IA DeepSkyn.`;
+      `Note: This expert analysis is generated by DeepSkyn AI.`;
 
 
 
@@ -356,6 +345,15 @@ export async function POST(request: Request) {
       answer,
       confidence: 0.95,
       intent: "complete_skin_analysis",
+      skinAnalysis: {
+        problem: condition.problem,
+        severity: (condition as ConditionDetail).severity ?? "",
+        description: (condition as ConditionDetail).description ?? "",
+        rootCause: (condition as ConditionDetail).rootCause ?? "",
+        routine: (condition as ConditionDetail).routine ?? [],
+        products: (condition as ConditionDetail).products ?? [],
+        timeline: (condition as ConditionDetail).timeline ?? "",
+      },
       details: { conditionDetected: conditionKey, ...facePPData }
     }, { status: 200 });
 
