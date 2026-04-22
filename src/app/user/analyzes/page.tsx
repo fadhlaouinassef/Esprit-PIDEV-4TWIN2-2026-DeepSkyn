@@ -466,6 +466,8 @@ export default function AnalyzesPage() {
     const [statusFilter, setStatusFilter] = useState("All");
     const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
     const [autoSpeech, setAutoSpeech] = useState(false);
+    const [historyInsights, setHistoryInsights] = useState<any[]>([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
 
     useEffect(() => {
         async function fetchAnalyses() {
@@ -481,8 +483,25 @@ export default function AnalyzesPage() {
                 setLoading(false);
             }
         }
+
+        const fetchHistory = async () => {
+            setHistoryLoading(true);
+            try {
+                const res = await fetch(`/api/user/analyses/trend?history=true&locale=${encodeURIComponent(locale)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setHistoryInsights(data.insights || []);
+                }
+            } catch (err) {
+                console.error("Failed to fetch history trends:", err);
+            } finally {
+                setHistoryLoading(false);
+            }
+        };
+
         fetchAnalyses();
-    }, []);
+        fetchHistory();
+    }, [locale]);
 
     useEffect(() => {
         let cancelled = false;
@@ -760,37 +779,59 @@ export default function AnalyzesPage() {
     const exportPdf = async () => {
         const { jsPDF } = await import("jspdf");
         const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
-        const stamp = new Date().toLocaleDateString();
+        const stamp = new Date().toLocaleDateString(locale);
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
         const margin = 24;
 
         const toDataUrl = async (url: string): Promise<string> => {
-            const res = await fetch(url);
-            const blob = await res.blob();
-            return await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(String(reader.result));
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
+            try {
+                const res = await fetch(url);
+                const blob = await res.blob();
+                return await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(String(reader.result));
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (e) {
+                return "";
+            }
         };
 
-        try {
-            const logoDataUrl = await toDataUrl("/logo.png");
-            doc.addImage(logoDataUrl, "PNG", margin, margin - 4, 34, 34);
-        } catch {
-            // Continue without logo if loading fails.
+        // --- Styling Constants ---
+        const colors = {
+            primary: [21, 109, 149], // DeepSkyn Blue
+            secondary: [8, 47, 73],   // Deep Navy
+            accent: [16, 185, 129],  // Emerald
+            danger: [244, 63, 94],   // Rose
+            text: [51, 65, 85],      // Slate 700
+            lightText: [148, 163, 184], // Slate 400
+            bg: [248, 250, 252],     // Slate 50
+            border: [226, 232, 240]  // Slate 200
+        };
+
+        // --- Header Section ---
+        doc.setFillColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.rect(0, 0, pageWidth, 75, "F");
+
+        const logoDataUrl = await toDataUrl("/logo.png");
+        if (logoDataUrl) {
+            doc.addImage(logoDataUrl, "PNG", margin, 15, 45, 45);
         }
 
+        doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text(t("export.pdfTitle"), margin + 42, margin + 14);
+        doc.setFontSize(22);
+        doc.text("DEEPSKYN", margin + 55, 38);
+        doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.text(`${t("export.generatedOn", { date: stamp })} • ${analyses.length} ${t("export.records")}`, margin + 42, margin + 30);
+        doc.text(t("export.pdfTitle"), margin + 55, 52);
 
-        let y = margin + 48;
+        doc.setFontSize(8);
+        doc.text(`${t("export.generatedOn", { date: stamp })}`, pageWidth - margin - 80, 52);
+
+        let y = 95;
 
         const allAnalyses = [...analyses];
         let exportInsight = trendInsight;
@@ -813,261 +854,164 @@ export default function AnalyzesPage() {
         const avgScore = allAnalyses.length
             ? allAnalyses.reduce((sum, item) => sum + Number(item.score || 0), 0) / allAnalyses.length
             : 0;
-        const bestAnalysis = allAnalyses.length
-            ? allAnalyses.reduce((best, item) => (Number(item.score || 0) > Number(best.score || 0) ? item : best), allAnalyses[0])
-            : null;
-        const worstAnalysis = allAnalyses.length
-            ? allAnalyses.reduce((worst, item) => (Number(item.score || 0) < Number(worst.score || 0) ? item : worst), allAnalyses[0])
-            : null;
 
-        const statusCounts = allAnalyses.reduce(
-            (acc, item) => {
-                const s = String(item.status || "Stable");
-                if (s === "Improved") acc.improved += 1;
-                else if (s === "Worse") acc.worse += 1;
-                else acc.stable += 1;
-                return acc;
-            },
-            { improved: 0, worse: 0, stable: 0 }
-        );
-
-        const reportLabels = locale.startsWith("fr")
-            ? {
-                title: "Rapport dynamique global",
-                overview: "Vue d'ensemble",
-                progression: "Progression",
-                health: "Lecture clinique",
-                actions: "Actions prioritaires",
-                empty: "Aucune analyse disponible pour generer le rapport.",
-                analyses: "analyses",
-                average: "Score moyen",
-                latest: "Dernier score",
-                first: "Premier score",
-                best: "Meilleur resultat",
-                worst: "Resultat le plus faible",
-                improved: "cycles d'amelioration",
-                stable: "cycles stables",
-                worse: "cycles de recul",
-            }
-            : locale.startsWith("ar")
-                ? {
-                    title: "تقرير ديناميكي شامل",
-                    overview: "نظرة عامة",
-                    progression: "التطور",
-                    health: "قراءة سريرية",
-                    actions: "إجراءات ذات أولوية",
-                    empty: "لا توجد تحاليل كافية لإنشاء التقرير.",
-                    analyses: "تحليلات",
-                    average: "المعدل العام",
-                    latest: "آخر نتيجة",
-                    first: "أول نتيجة",
-                    best: "أفضل نتيجة",
-                    worst: "أضعف نتيجة",
-                    improved: "دورات تحسن",
-                    stable: "دورات مستقرة",
-                    worse: "دورات تراجع",
-                }
-                : {
-                    title: "Dynamic global report",
-                    overview: "Overview",
-                    progression: "Progression",
-                    health: "Clinical reading",
-                    actions: "Priority actions",
-                    empty: "No analyses available to generate the report.",
-                    analyses: "analyses",
-                    average: "Average score",
-                    latest: "Latest score",
-                    first: "First score",
-                    best: "Best result",
-                    worst: "Lowest result",
-                    improved: "improvement cycles",
-                    stable: "stable cycles",
-                    worse: "decline cycles",
-                };
-
-        const trendSummary = readableExport.summary;
-        const trendWhy = readableExport.why;
-        const trendActions = readableExport.actions.slice(0, 2).join(" ");
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
+        // --- Summary Box ---
         const boxX = margin;
         const boxW = pageWidth - margin * 2;
-        const textW = boxW - 16;
+        doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+        doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+        doc.roundedRect(boxX, y, boxW, 85, 12, 12, "FD");
 
-        const overviewText = allAnalyses.length
-            ? `${allAnalyses.length} ${reportLabels.analyses}. ${reportLabels.average}: ${avgScore.toFixed(1)}/100. ${reportLabels.latest}: ${latest?.score ?? "-"}/100. ${reportLabels.first}: ${oldest?.score ?? "-"}/100.`
-            : reportLabels.empty;
+        doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text(locale.startsWith('fr') ? "RESUME ANALYTIQUE" : "EXECUTIVE SUMMARY", boxX + 15, y + 25);
 
-        const riskLabel = exportInsight?.clarity?.riskLevel
-            ? locale.startsWith("fr")
-                ? exportInsight.clarity.riskLevel === "high"
-                    ? "Risque: eleve"
-                    : exportInsight.clarity.riskLevel === "medium"
-                        ? "Risque: moyen"
-                        : "Risque: faible"
-                : locale.startsWith("ar")
-                    ? exportInsight.clarity.riskLevel === "high"
-                        ? "مستوى الخطر: مرتفع"
-                        : exportInsight.clarity.riskLevel === "medium"
-                            ? "مستوى الخطر: متوسط"
-                            : "مستوى الخطر: منخفض"
-                    : exportInsight.clarity.riskLevel === "high"
-                        ? "Risk level: high"
-                        : exportInsight.clarity.riskLevel === "medium"
-                            ? "Risk level: medium"
-                            : "Risk level: low"
-            : "";
+        // Grid in summary box
+        doc.setFontSize(9);
+        doc.setTextColor(colors.lightText[0], colors.lightText[1], colors.lightText[2]);
+        doc.text(locale.startsWith('fr') ? "Analyses" : "Records", boxX + 20, y + 45);
+        doc.text(locale.startsWith('fr') ? "Score Moyen" : "Avg Score", boxX + 120, y + 45);
+        doc.text(locale.startsWith('fr') ? "Dernier" : "Latest", boxX + 220, y + 45);
+        doc.text(locale.startsWith('fr') ? "Depart" : "Starting", boxX + 320, y + 45);
 
-        const confidenceLabel = exportInsight?.clarity?.confidenceLabel || "";
+        doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+        doc.setFontSize(14);
+        doc.text(String(allAnalyses.length), boxX + 20, y + 65);
+        doc.text(avgScore.toFixed(1), boxX + 120, y + 65);
+        doc.text(String(latest?.score ?? "-"), boxX + 220, y + 65);
+        doc.text(String(oldest?.score ?? "-"), boxX + 320, y + 65);
 
-        const progressionText = allAnalyses.length
-            ? `${reportLabels.best}: ${bestAnalysis?.score ?? "-"}/100 (${bestAnalysis?.date ?? "-"}). ${reportLabels.worst}: ${worstAnalysis?.score ?? "-"}/100 (${worstAnalysis?.date ?? "-"}). ${statusCounts.improved} ${reportLabels.improved}, ${statusCounts.stable} ${reportLabels.stable}, ${statusCounts.worse} ${reportLabels.worse}.`
-            : "";
-
-        const summaryLines = doc.splitTextToSize(`${reportLabels.overview}: ${overviewText}`, textW);
-        const progressLines = progressionText ? doc.splitTextToSize(`${reportLabels.progression}: ${progressionText}`, textW) : [];
-        const trendLines = doc.splitTextToSize(`${reportLabels.health}: ${trendSummary} ${trendWhy} ${riskLabel} ${confidenceLabel}`.trim(), textW);
-        const thisWeekActions = readableExport.actions.join(" ");
-        const actionLines = (thisWeekActions || trendActions)
-            ? doc.splitTextToSize(`${reportLabels.actions}: ${thisWeekActions || trendActions}`, textW)
-            : [];
-
-        const lineGap = 11;
-        const boxH = 28 + (summaryLines.length + progressLines.length + trendLines.length + actionLines.length) * lineGap + 12;
-
-        doc.setDrawColor(203, 213, 225);
-        doc.setFillColor(239, 246, 255);
-        doc.roundedRect(boxX, y, boxW, boxH, 8, 8, "FD");
-
-        doc.setTextColor(8, 47, 73);
-        doc.text(reportLabels.title, boxX + 8, y + 16);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-
-        let textY = y + 30;
-        [...summaryLines, ...progressLines, ...trendLines, ...actionLines].forEach((line) => {
-            doc.text(line, boxX + 8, textY);
-            textY += lineGap;
-        });
-
-        y += boxH + 8;
-        doc.setTextColor(0, 0, 0);
-
-        const sectionLabels = locale.startsWith("fr")
-            ? {
-                before: "1) Avant",
-                now: "2) Maintenant",
-                why: "3) Pourquoi",
-                actions: "4) Prochaines actions",
-                noReason: "Aucune cause forte detectee sur la derniere transition.",
-                firstScore: "Score de depart",
-                lastScore: "Score actuel",
-                avg: "Moyenne",
-                confidence: "Niveau de confiance",
-                risk: "Niveau de risque",
-                evidence: "Preuves observees",
-            }
-            : locale.startsWith("ar")
-                ? {
-                    before: "1) قبل",
-                    now: "2) الآن",
-                    why: "3) لماذا",
-                    actions: "4) الخطوات القادمة",
-                    noReason: "لا توجد أسباب قوية واضحة في آخر انتقال.",
-                    firstScore: "النتيجة في البداية",
-                    lastScore: "النتيجة الحالية",
-                    avg: "المتوسط",
-                    confidence: "مستوى الثقة",
-                    risk: "مستوى الخطر",
-                    evidence: "الأدلة المرصودة",
-                }
-                : {
-                    before: "1) Before",
-                    now: "2) Now",
-                    why: "3) Why",
-                    actions: "4) Next actions",
-                    noReason: "No strong reason detected in the latest transition.",
-                    firstScore: "Starting score",
-                    lastScore: "Current score",
-                    avg: "Average",
-                    confidence: "Confidence",
-                    risk: "Risk level",
-                    evidence: "Observed evidence",
-                };
+        y += 105;
 
         const ensureSpace = (requiredHeight: number) => {
-            if (y + requiredHeight <= pageHeight - margin) return;
+            if (y + requiredHeight <= pageHeight - 50) return;
             doc.addPage();
-            y = margin;
+            // Draw small header on next pages
+            doc.setFillColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+            doc.rect(0, 0, pageWidth, 40, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.text("DeepSkyn - Report Continued", margin, 25);
+            y = 60;
         };
 
-        const drawSectionTitle = (title: string) => {
-            ensureSpace(24);
+        const drawSectionTitle = (title: string, color = colors.primary) => {
+            ensureSpace(35);
+            doc.setTextColor(color[0], color[1], color[2]);
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(10);
-            doc.setTextColor(8, 47, 73);
-            doc.text(title, margin, y + 12);
-            y += 18;
-            doc.setDrawColor(226, 232, 240);
-            doc.line(margin, y, pageWidth - margin, y);
-            y += 8;
-            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            // Sanitize title for PDF
+            const cleanTitle = title.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            doc.text(cleanTitle, margin, y + 15);
+            y += 20;
+            doc.setDrawColor(color[0], color[1], color[2]);
+            doc.setLineWidth(1.5);
+            doc.line(margin, y, margin + 40, y);
+            doc.setLineWidth(0.5);
+            doc.line(margin + 45, y, pageWidth - margin, y);
+            y += 15;
+            doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
         };
 
         const drawParagraph = (text: string) => {
-            const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
-            ensureSpace(lines.length * 11 + 4);
+            const cleanText = String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const lines = doc.splitTextToSize(cleanText, pageWidth - margin * 2);
+            ensureSpace(lines.length * 13 + 5);
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFontSize(10);
             lines.forEach((line: string) => {
                 doc.text(line, margin, y + 10);
-                y += 11;
+                y += 13;
             });
-            y += 3;
+            y += 5;
         };
 
         const drawBullet = (text: string) => {
-            const lines = doc.splitTextToSize(text, pageWidth - margin * 2 - 14);
-            ensureSpace(lines.length * 11 + 4);
+            const cleanText = String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const lines = doc.splitTextToSize(cleanText, pageWidth - margin * 2 - 20);
+            ensureSpace(lines.length * 13 + 5);
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
-            doc.text("•", margin + 2, y + 10);
+            doc.setFontSize(10);
+            doc.setFillColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+            doc.circle(margin + 5, y + 7, 2, "F");
             lines.forEach((line: string, idx: number) => {
-                doc.text(line, margin + 12, y + 10 + idx * 11);
+                doc.text(line, margin + 15, y + 10 + idx * 13);
             });
-            y += lines.length * 11 + 2;
+            y += lines.length * 13 + 5;
         };
 
-        drawSectionTitle(sectionLabels.before);
-        drawParagraph(`${sectionLabels.firstScore}: ${oldest?.score ?? "-"}/100 • ${sectionLabels.avg}: ${avgScore.toFixed(1)}/100`);
+        // --- Content ---
+        if (exportInsight) {
+            drawSectionTitle(locale.startsWith('fr') ? "Analyse Predictive TensorFlow" : "TensorFlow AI Insights");
+            drawParagraph(readableExport.summary);
+            drawParagraph(readableExport.why);
 
-        drawSectionTitle(sectionLabels.now);
-        drawParagraph(`${sectionLabels.lastScore}: ${latest?.score ?? "-"}/100 • ${sectionLabels.risk}: ${riskLabel || "-"} • ${sectionLabels.confidence}: ${confidenceLabel || "-"}`);
-        drawParagraph(trendSummary);
+            if (readableExport.actions.length > 0) {
+                drawParagraph(locale.startsWith('fr') ? "Actions Recommandees :" : "Recommended Actions:");
+                readableExport.actions.forEach(act => drawBullet(act));
+            }
+        }
 
-        drawSectionTitle(sectionLabels.why);
-        drawParagraph(trendWhy || sectionLabels.noReason);
-        const importantDrivers = [
-            ...(exportInsight?.declineDrivers || []).slice(0, 2),
-            ...(exportInsight?.improvementDrivers || []).slice(0, 2),
-        ].slice(0, 3);
+        if (historyInsights.length > 0) {
+            drawSectionTitle(locale.startsWith('fr') ? "Journal de Progression Historique" : "Historical Evolution Journey");
 
-        if (importantDrivers.length) {
-            drawParagraph(sectionLabels.evidence);
-            importantDrivers.forEach((driver) => {
-                drawBullet(simplifyForEveryone(`${driver.short} ${driver.mechanism}`));
+            historyInsights.forEach((h, i) => {
+                const rawDate = new Date(h.date).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
+                const dateStr = rawDate.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const directionSymbol = h.direction === 'improving' ? '(+)' : h.direction === 'declining' ? '(-)' : '(o)';
+                const directionColor = h.direction === 'improving' ? colors.accent : h.direction === 'declining' ? colors.danger : colors.lightText;
+
+                ensureSpace(60);
+
+                // Timeline marker
+                doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+                doc.line(margin + 10, y, margin + 10, y + 50);
+                doc.setFillColor(directionColor[0], directionColor[1], directionColor[2]);
+                doc.circle(margin + 10, y + 10, 4, "F");
+
+                doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.text(`${dateStr} - Score: ${h.score} ${directionSymbol}`, margin + 25, y + 13);
+
+                y += 18;
+                doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                const desc = (h.clarity?.headline || h.summary || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const descLines = doc.splitTextToSize(desc, pageWidth - margin * 2 - 35);
+                descLines.forEach((line: string) => {
+                    doc.text(line, margin + 25, y + 8);
+                    y += 11;
+                });
+
+                const why = (h.clarity?.plainWhy || h.why || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const whyLines = doc.splitTextToSize(why, pageWidth - margin * 2 - 35);
+                doc.setTextColor(colors.lightText[0], colors.lightText[1], colors.lightText[2]);
+                whyLines.forEach((line: string) => {
+                    doc.text(line, margin + 25, y + 8);
+                    y += 11;
+                });
+
+                y += 10;
             });
         }
 
-        drawSectionTitle(sectionLabels.actions);
-        if (readableExport.actions.length === 0) {
-            drawBullet(trendActions || pdfTrendText.noData);
-        } else {
-            readableExport.actions.forEach((rec, idx) => drawBullet(`${idx + 1}) ${rec}`));
-        }
+        // --- Footer ---
+        const addFooter = () => {
+            const pageCount = (doc as any).internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(colors.lightText[0], colors.lightText[1], colors.lightText[2]);
+                doc.text(`DeepSkyn Intelligence Report — Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 20, { align: "center" });
+                doc.text("deepskyn", margin, pageHeight - 20);
+            }
+        };
+        addFooter();
 
-        const filename = `deepskyn-dynamic-report-${new Date().toISOString().slice(0, 10)}.pdf`;
+        const filename = `DeepSkyn_Intelligence_Report_${new Date().toISOString().slice(0, 10)}.pdf`;
         doc.save(filename);
     };
 
@@ -1197,6 +1141,44 @@ export default function AnalyzesPage() {
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        )}
+
+                        {historyInsights.length > 0 && (
+                            <div className="mb-12">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="size-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                                        <TrendingUp size={22} />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Journal de Progression Déroulé</h2>
+                                </div>
+                                <div className="space-y-4">
+                                    {historyInsights.map((h, i) => (
+                                        <motion.div
+                                            key={`history-${i}`}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.1 }}
+                                            className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between group hover:border-[#156d95]/30 transition-all"
+                                        >
+                                            <div className="flex items-center gap-6">
+                                                <div className="flex flex-col items-center">
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(h.date).toLocaleDateString(locale, { day: '2-digit', month: 'short' })}</span>
+                                                    <div className={`mt-2 size-10 rounded-full flex items-center justify-center font-black text-white ${h.direction === 'improving' ? 'bg-emerald-500' : h.direction === 'declining' ? 'bg-rose-500' : 'bg-gray-400'}`}>
+                                                        {h.score}
+                                                    </div>
+                                                </div>
+                                                <div className="max-w-2xl">
+                                                    <h4 className="font-bold text-gray-900 dark:text-white">{h.clarity?.headline || h.summary}</h4>
+                                                    <p className="text-sm text-gray-500 mt-1 line-clamp-1 group-hover:line-clamp-none transition-all">{h.clarity?.plainWhy || h.why}</p>
+                                                </div>
+                                            </div>
+                                            <div className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest ${h.direction === 'improving' ? 'bg-emerald-50 text-emerald-600' : h.direction === 'declining' ? 'bg-rose-50 text-rose-600' : 'bg-gray-50 text-gray-400'}`}>
+                                                {h.direction}
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
