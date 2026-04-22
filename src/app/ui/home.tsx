@@ -12,6 +12,7 @@ import { Footer } from "@/app/components/home_page/Footer"
 import HealthyStepsSection from "@/app/components/home_page/HealthyStepsSection"
 import DeepSkynExperienceMap from "@/app/components/home_page/DeepSkynExperienceMap"
 import SkinQuizSection from "@/app/components/home_page/SkinQuizSection"
+import SkinBarrierDefenderSection from "@/app/components/home_page/SkinBarrierDefenderSection"
 
 
 
@@ -61,6 +62,10 @@ export default function HomePage() {
 
       <motion.section id="healthy-steps" variants={fadeInUp}>
       <HealthyStepsSection />
+      </motion.section>
+
+      <motion.section id="skin-game" variants={fadeInUp}>
+        <SkinBarrierDefenderSection />
       </motion.section>
 
       

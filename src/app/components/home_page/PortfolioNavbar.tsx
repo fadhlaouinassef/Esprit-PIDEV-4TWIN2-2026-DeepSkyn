@@ -10,7 +10,7 @@ import { OPEN_SKIN_QUIZ_EVENT } from "./SkinQuizSection"
 import { useTranslations } from "next-intl"
 
 type NavLink = {
-  id: "products" | "routines" | "testimonials" | "faq" | "journey";
+  id: "products" | "routines" | "testimonials" | "faq" | "journey" | "game";
   href: string;
 };
 
@@ -25,6 +25,7 @@ export const PortfolioNavbar = () => {
     { id: "routines", href: "#healthy-steps" },
     { id: "testimonials", href: "#testimonials" },
     { id: "faq", href: "#faq" },
+    { id: "game", href: "#skin-game" },
     { id: "journey", href: "#healthy-steps" },
   ]
 
