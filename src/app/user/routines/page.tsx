@@ -168,6 +168,43 @@ const ProgressBar = ({ current, total, type }: { current: number; total: number;
     );
 };
 
+const SequentialWarningModal = ({ isOpen, onClose, message }: { isOpen: boolean; onClose: () => void; message: string }) => {
+    const t = useTranslations();
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        className="w-full max-w-md bg-card border border-border rounded-[2rem] p-8 shadow-2xl relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+                        <div className="relative flex flex-col items-center text-center">
+                            <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6">
+                                <AlertTriangle className="w-10 h-10 text-primary" />
+                            </div>
+                            <h3 className="text-2xl font-black text-foreground mb-3 leading-tight">
+                                {t("userRoutines.toasts.validationRequired")}
+                            </h3>
+                            <p className="text-muted-foreground text-lg leading-relaxed mb-8">
+                                {message}
+                            </p>
+                            <button
+                                onClick={onClose}
+                                className="w-full py-4 bg-primary text-primary-foreground font-black rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95"
+                            >
+                                {t("userRoutines.toasts.gotIt")}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
+    );
+};
+
 export default function RoutinePage() {
     const t = useTranslations();
     const { data: session } = useSession();
@@ -188,6 +225,8 @@ export default function RoutinePage() {
     const [isScrapingEnabled, setIsScrapingEnabled] = useState(true);
     const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
     const [autoSpeech, setAutoSpeech] = useState(false);
+    const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
+    const [warningModalMessage, setWarningModalMessage] = useState("");
 
     // Fetch user and routines
     useEffect(() => {
@@ -251,9 +290,27 @@ export default function RoutinePage() {
     const completedCount = currentSteps.filter(s => s.completed).length;
 
     const toggleStep = async (routineId: number, stepId: number) => {
-        const routine = currentRoutines.find((r) => r.id === routineId);
-        const step = routine?.steps?.find((s) => s.id === stepId);
-        const newCompleted = !step?.completed;
+        // Find routine directly from state to ensure we have latest data
+        const routine = routines.find((r) => r.id === routineId);
+        if (!routine || !routine.steps) return;
+
+        const sortedSteps = [...routine.steps].sort((a, b) => a.ordre - b.ordre);
+        const stepIndex = sortedSteps.findIndex((s) => s.id === stepId);
+        const step = sortedSteps[stepIndex];
+        
+        if (!step) return;
+
+        const isMarkingCompleted = !step.completed;
+
+        // Constraint: only apply when trying to mark a step as completed
+        if (isMarkingCompleted && stepIndex > 0) {
+            const previousStep = sortedSteps[stepIndex - 1];
+            if (!previousStep.completed) {
+                setWarningModalMessage(t("userRoutines.toasts.previousStepRequired"));
+                setIsWarningModalOpen(true);
+                return;
+            }
+        }
 
         dispatch(toggleStepCompletedLocally({ routineId, stepId }));
 
@@ -261,10 +318,10 @@ export default function RoutinePage() {
             await dispatch(markStepCompleted({
                 routineId,
                 stepId,
-                completed: newCompleted
+                completed: isMarkingCompleted
             })).unwrap();
 
-            if (newCompleted) {
+            if (isMarkingCompleted) {
                 const stepData = routine?.steps?.find((s) => s.id === stepId);
                 toast.success(t("userRoutines.toasts.stepCompleted", { step: stepData?.action || t("userRoutines.toasts.step") }), {
                     description: t("userRoutines.toasts.stepCompletedDescription"),
@@ -813,6 +870,12 @@ export default function RoutinePage() {
                     onConfirm={confirmDeleteRoutine}
                     routineName={routineToDelete?.objectif || routineToDelete?.envie || t("userRoutines.labels.routine")}
                     loading={deleteLoading}
+                />
+
+                <SequentialWarningModal
+                    isOpen={isWarningModalOpen}
+                    onClose={() => setIsWarningModalOpen(false)}
+                    message={warningModalMessage}
                 />
             </div>
         </UserLayout>

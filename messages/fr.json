@@ -1140,7 +1140,10 @@
       "stepCompletedDescription": "Votre peau vous remercie.",
       "updateFailed": "Échec de la mise à jour.",
       "routineDeleted": "Routine supprimée ✨",
-      "deleteFailed": "Échec de suppression de la routine"
+      "deleteFailed": "Échec de suppression de la routine",
+      "previousStepRequired": "Veuillez valider l'étape précédente d'abord.",
+      "validationRequired": "Validation requise",
+      "gotIt": "Compris"
     },
     "progress": {
       "routineType": "Routine {type}",

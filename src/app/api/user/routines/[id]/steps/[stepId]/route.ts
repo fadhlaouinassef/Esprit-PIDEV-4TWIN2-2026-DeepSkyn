@@ -56,6 +56,29 @@ export async function PUT(
 
     if (typeof completed === 'boolean') {
       if (completed) {
+        // Constraint: Check if previous step is completed for the same day
+        if (step.ordre > 1) {
+          const allSteps = await prisma.routineStep.findMany({
+            where: { routine_id: routineId },
+            orderBy: { ordre: 'asc' }
+          });
+          
+          const stepIndex = allSteps.findIndex(s => s.id === stepId);
+          if (stepIndex > 0) {
+            const prevStep = allSteps[stepIndex - 1];
+            const prevCompletion = await findCompletionForStepAndDay({ 
+              routine_step_id: prevStep.id, 
+              day 
+            });
+            
+            if (!prevCompletion) {
+              return NextResponse.json({ 
+                error: 'Sequential validation required', 
+                details: 'Please complete the previous step first.' 
+              }, { status: 400 });
+            }
+          }
+        }
         await upsertRoutineStepCompletion({ routine_step_id: stepId, day });
       } else {
         try {

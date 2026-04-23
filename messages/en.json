@@ -1141,7 +1141,10 @@
       "stepCompletedDescription": "Your skin thanks you.",
       "updateFailed": "Failed to update.",
       "routineDeleted": "Routine deleted ✨",
-      "deleteFailed": "Failed to delete routine"
+      "deleteFailed": "Failed to delete routine",
+      "previousStepRequired": "Please validate the previous step first.",
+      "validationRequired": "Validation Required",
+      "gotIt": "Got it"
     },
     "progress": {
       "routineType": "Routine {type}",

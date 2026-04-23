@@ -1141,7 +1141,10 @@
       "stepCompletedDescription": "بشرتك تشكرك.",
       "updateFailed": "فشل التحديث.",
       "routineDeleted": "تم حذف الروتين ✨",
-      "deleteFailed": "فشل حذف الروتين"
+      "deleteFailed": "فشل حذف الروتين",
+      "previousStepRequired": "يرجى التحقق من الخطوة السابقة أولاً.",
+      "validationRequired": "التحقق مطلوب",
+      "gotIt": "فهمت"
     },
     "progress": {
       "routineType": "Routine {type}",
