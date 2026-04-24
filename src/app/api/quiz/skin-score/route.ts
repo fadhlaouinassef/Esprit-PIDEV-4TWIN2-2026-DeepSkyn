@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
       finalScoreOverride?: number;
       finalRecommendationsOverride?: unknown;
       finalRoutineOverride?: unknown;
+      mode?: 'questionnaire' | 'images-only';
     };
 
     const sessionUser = await prisma.user.findUnique({
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
       finalScoreOverride: Number(body.finalScoreOverride),
       finalRecommendationsOverride: body.finalRecommendationsOverride,
       finalRoutineOverride: body.finalRoutineOverride,
+      mode: body.mode || 'questionnaire',
     });
 
     await evaluateAndAwardBadgesForUser({

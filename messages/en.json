@@ -1941,6 +1941,10 @@
       "analyzeWithGemini": "Analyze with Gemini",
       "title": "Add images for Gemini"
     },
+    "skip": {
+      "button": "Skip questionnaire",
+      "message": "Direct analysis with photos. Add your images below."
+    },
     "analyzingTitle": "Analyzing your skin..."
   },
   "adminAnalytics": {

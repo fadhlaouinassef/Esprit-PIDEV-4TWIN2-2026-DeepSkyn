@@ -1,4 +1,4 @@
-﻿import * as tf from "@tensorflow/tfjs";
+import * as tf from "@tensorflow/tfjs";
 
 export type TrendDirection = "improving" | "declining" | "stable";
 export type TrendLocale = "en" | "fr" | "ar";
@@ -93,27 +93,57 @@ export type SerializedTrendModelArtifact = {
   epochs: number;
   trainedAt: string;
   layers: SerializedDenseLayer[];
+  config?: {
+    hiddenLayers: number[];
+    learningRate: number;
+  };
+  metrics?: {
+    mae: number;
+    directionAccuracy: number;
+  };
+  history?: {
+    loss: number[];
+    val_loss?: number[];
+  };
+};
+
+export type TrainingOptions = {
+  epochs?: number;
+  learningRate?: number;
+  batchSize?: number;
+  hiddenLayers?: number[];
+  patience?: number;
+  validationSplit?: number;
 };
 
 export type TrendAnalyzeOptions = {
   cacheKey?: string;
   pretrainedArtifact?: SerializedTrendModelArtifact;
   disableTraining?: boolean;
+  trainingOptions?: TrainingOptions;
 };
 
 const trendModelCache = new Map<string, CachedTrendModel>();
 
-const createCompiledTrendModel = (xCols: number): tf.Sequential => {
-  const model = tf.sequential({
-    layers: [
-      tf.layers.dense({ inputShape: [xCols], units: 18, activation: "relu" }),
-      tf.layers.dense({ units: 10, activation: "relu" }),
-      tf.layers.dense({ units: 1 }),
-    ],
-  });
+const createCompiledTrendModel = (xCols: number, options?: TrainingOptions): tf.Sequential => {
+  const learningRate = options?.learningRate ?? 0.02;
+  const hidden = options?.hiddenLayers ?? [18, 10];
+
+  const model = tf.sequential();
+  
+  // Input + First hidden layer
+  model.add(tf.layers.dense({ inputShape: [xCols], units: hidden[0], activation: "relu" }));
+  
+  // Extra hidden layers
+  for (let i = 1; i < hidden.length; i++) {
+    model.add(tf.layers.dense({ units: hidden[i], activation: "relu" }));
+  }
+  
+  // Output layer
+  model.add(tf.layers.dense({ units: 1 }));
 
   model.compile({
-    optimizer: tf.train.adam(0.02),
+    optimizer: tf.train.adam(learningRate),
     loss: "meanSquaredError",
   });
 
@@ -134,7 +164,10 @@ const serializeModelToArtifact = (
   yMean: number,
   yStd: number,
   finalLoss: number,
-  epochs: number
+  epochs: number,
+  config?: SerializedTrendModelArtifact["config"],
+  history?: SerializedTrendModelArtifact["history"],
+  metrics?: SerializedTrendModelArtifact["metrics"]
 ): SerializedTrendModelArtifact => {
   const weights = model.getWeights();
   const layers: SerializedDenseLayer[] = [];
@@ -162,11 +195,18 @@ const serializeModelToArtifact = (
     epochs,
     trainedAt: new Date().toISOString(),
     layers,
+    config,
+    history,
+    metrics,
   };
 };
 
 const modelFromArtifact = (artifact: SerializedTrendModelArtifact): tf.Sequential => {
-  const model = createCompiledTrendModel(artifact.inputCols);
+  const xCols = artifact.inputCols;
+  const model = createCompiledTrendModel(xCols, {
+    hiddenLayers: artifact.config?.hiddenLayers,
+    learningRate: artifact.config?.learningRate,
+  });
   const tensors: tf.Tensor[] = [];
 
   for (const layer of artifact.layers) {
@@ -190,7 +230,8 @@ const toMetrics = (points: TrendInputPoint[]): [number, number, number, number][
 };
 
 export const trainTrendModelArtifactFromSeries = async (
-  series: TrendInputPoint[][]
+  series: TrendInputPoint[][],
+  options?: TrainingOptions
 ): Promise<SerializedTrendModelArtifact | null> => {
   if (!Array.isArray(series) || !series.length) return null;
 
@@ -218,22 +259,26 @@ export const trainTrendModelArtifactFromSeries = async (
   const xs = tf.tensor2d(xNorm);
   const ys = tf.tensor2d(yNorm, [yNorm.length, 1]);
 
-  const model = createCompiledTrendModel(xCols);
+  const model = createCompiledTrendModel(xCols, options);
 
-  const validationSplit = trainingRows.length >= 8 ? 0.2 : 0;
+  const validationSplit = options?.validationSplit ?? (trainingRows.length >= 20 ? 0.2 : 0);
+  const epochs = options?.epochs ?? TRAIN_EPOCHS;
+  const batchSize = options?.batchSize ?? Math.min(32, trainingRows.length);
+  const patience = options?.patience ?? 15;
+
   const history = await model.fit(xs, ys, {
-    epochs: TRAIN_EPOCHS,
-    batchSize: Math.min(16, trainingRows.length),
+    epochs,
+    batchSize,
     shuffle: true,
     validationSplit,
     verbose: 0,
     callbacks: validationSplit > 0
-      ? [tf.callbacks.earlyStopping({ monitor: "val_loss", patience: 12 })]
+      ? [tf.callbacks.earlyStopping({ monitor: "val_loss", patience })]
       : undefined,
   });
 
   const finalLoss = safeFinite(Number(history.history.loss?.slice(-1)[0] ?? 1), 1);
-  const trainedEpochs = Number(history.epoch.length || TRAIN_EPOCHS);
+  const trainedEpochs = Number(history.epoch.length || epochs);
 
   const artifact = serializeModelToArtifact(
     model,
@@ -242,7 +287,15 @@ export const trainTrendModelArtifactFromSeries = async (
     yMean,
     yStd,
     finalLoss,
-    trainedEpochs
+    trainedEpochs,
+    {
+      hiddenLayers: options?.hiddenLayers ?? [18, 10],
+      learningRate: options?.learningRate ?? 0.02,
+    },
+    {
+      loss: history.history.loss as number[],
+      val_loss: history.history.val_loss as number[],
+    }
   );
 
   model.dispose();
@@ -996,8 +1049,16 @@ export const analyzeUserTrendWithTensorflow = async (
   if (blendedDelta > SCORE_DELTA_THRESHOLD) direction = "improving";
   else if (blendedDelta < -SCORE_DELTA_THRESHOLD) direction = "declining";
 
+  // Base confidence on training quality if using a pretrained model
+  let trainingBonus = 0;
+  if (pretrainedArtifact?.metrics) {
+    const acc = pretrainedArtifact.metrics.directionAccuracy || 0.5;
+    trainingBonus = clamp01((acc - 0.5) * 0.5); // Bonus de 0 à 0.25 si acc de 50% à 100%
+  }
+
   const confidence = clamp01(
     (0.2 +
+      trainingBonus +
       Math.min(trainingRows.length / 30, 0.28) +
       Math.min(Math.abs(blendedDelta) / 24, 0.18) +
       0.24 * modelTrust) *
