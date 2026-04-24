@@ -535,6 +535,7 @@ export default function Profile({ redirectOnSaveTo }: { redirectOnSaveTo?: strin
                             </form>
                         </ShowcaseSection>
                     )}
+
                 </div>
 
                 {/* Right Column: Photo Upload */}

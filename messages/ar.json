@@ -176,7 +176,7 @@
         "security": "الأمان",
         "settings": "الإعدادات",
         "helpCenter": "مركز المساعدة",
-        "complaints": "الشكاوى والتقييمات"
+        "complaints": "Complaints & Feedback"
       }
     },
     "admin": {
@@ -197,9 +197,10 @@
         "subscriptions": "الاشتراكات",
         "content": "المدونة والمحتوى",
         "faqs": "الأسئلة الشائعة",
-        "complaints": "الشكاوى والتقييمات",
+        "complaints": "Complaints & Feedback",
         "profile": "الملف الشخصي",
         "systemSettings": "إعدادات النظام",
+        "models": "إدارة النماذج",
         "manageModels": "إدارة النماذج"
       },
       "subItems": {
@@ -435,6 +436,7 @@
       "testimonials": "آراء المستخدمين",
       "faq": "الأسئلة الشائعة",
       "journey": "الرحلة",
+      "game": "لعبة الجلد",
       "mapButton": "خريطة DeepSkyn",
       "openMapAria": "فتح خريطة تجربة DeepSkyn",
       "toggleMobileMenu": "تبديل قائمة الهاتف"
@@ -909,7 +911,7 @@
       "other": "Other"
     },
     "header": {
-      "title": "RECLAMATION",
+      "title": "COMPLAINTS",
       "titleAccent": "& FEEDBACK",
       "subtitle": "Your voice matters. Track and manage your reports in real-time."
     },
@@ -1139,7 +1141,10 @@
       "stepCompletedDescription": "بشرتك تشكرك.",
       "updateFailed": "فشل التحديث.",
       "routineDeleted": "تم حذف الروتين ✨",
-      "deleteFailed": "فشل حذف الروتين"
+      "deleteFailed": "فشل حذف الروتين",
+      "previousStepRequired": "يرجى التحقق من الخطوة السابقة أولاً.",
+      "validationRequired": "التحقق مطلوب",
+      "gotIt": "فهمت"
     },
     "progress": {
       "routineType": "Routine {type}",

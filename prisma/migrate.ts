@@ -89,6 +89,22 @@ async function migrate() {
       END $$;
     `);
 
+    await prisma.$executeRawUnsafe(`
+      DO $$ BEGIN
+        CREATE TYPE "PromoDiscountType" AS ENUM ('PERCENT', 'FIXED');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      DO $$ BEGIN
+        CREATE TYPE "PromoCodeStatus" AS ENUM ('ACTIVE', 'USED', 'EXPIRED');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
+
     console.log('✅ Types enum créés');
 
 
@@ -132,9 +148,32 @@ async function migrate() {
         "user_id" INTEGER NOT NULL,
         "source" VARCHAR(100) NOT NULL,
         "day_key" VARCHAR(10) NOT NULL,
+        "location" VARCHAR(255),
+        "latitude" DOUBLE PRECISION,
+        "longitude" DOUBLE PRECISION,
         "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE
       );
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      ADD COLUMN IF NOT EXISTS "location" VARCHAR(255);
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      ADD COLUMN IF NOT EXISTS "latitude" DOUBLE PRECISION;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      ADD COLUMN IF NOT EXISTS "longitude" DOUBLE PRECISION;
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "LoginActivity"
+      DROP COLUMN IF EXISTS "altitude";
     `);
 
     await prisma.$executeRawUnsafe(
@@ -426,6 +465,80 @@ async function migrate() {
       'CREATE INDEX IF NOT EXISTS "ImageSurvey_analyse_id_idx" ON "ImageSurvey"("analyse_id");'
     );
 
+    // Table PromoCampaign
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "PromoCampaign" (
+        "id" SERIAL PRIMARY KEY,
+        "name" TEXT NOT NULL,
+        "description" TEXT,
+        "badge_level" "NiveauBadge" NOT NULL,
+        "brand" TEXT NOT NULL,
+        "category" TEXT,
+        "discount_type" "PromoDiscountType" NOT NULL,
+        "discount_value" DOUBLE PRECISION NOT NULL,
+        "code_prefix" TEXT,
+        "expires_in_days" INTEGER DEFAULT 14 NOT NULL,
+        "starts_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "ends_at" TIMESTAMP,
+        "is_active" BOOLEAN DEFAULT true NOT NULL,
+        "max_redemptions_user" INTEGER DEFAULT 1 NOT NULL,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+      );
+    `);
+
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "PromoCampaign_badge_level_is_active_idx" ON "PromoCampaign"("badge_level", "is_active");'
+    );
+
+    // Table UserPromoCode
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS "UserPromoCode" (
+        "id" SERIAL PRIMARY KEY,
+        "user_id" INTEGER NOT NULL,
+        "campaign_id" INTEGER NOT NULL,
+        "badge_id" INTEGER,
+        "code" TEXT NOT NULL UNIQUE,
+        "status" "PromoCodeStatus" DEFAULT 'ACTIVE' NOT NULL,
+        "issued_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "expires_at" TIMESTAMP NOT NULL,
+        "used_at" TIMESTAMP,
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE,
+        FOREIGN KEY ("campaign_id") REFERENCES "PromoCampaign"("id") ON DELETE CASCADE,
+        FOREIGN KEY ("badge_id") REFERENCES "Badge"("id") ON DELETE SET NULL,
+        UNIQUE ("user_id", "campaign_id")
+      );
+    `);
+
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "UserPromoCode_user_id_status_idx" ON "UserPromoCode"("user_id", "status");'
+    );
+
+    await prisma.$executeRawUnsafe(
+      'CREATE INDEX IF NOT EXISTS "UserPromoCode_expires_at_idx" ON "UserPromoCode"("expires_at");'
+    );
+
+    // Seed default campaigns (idempotent)
+    await prisma.$executeRawUnsafe(`
+      INSERT INTO "PromoCampaign"
+        ("name", "description", "badge_level", "brand", "category", "discount_type", "discount_value", "code_prefix", "expires_in_days", "is_active", "updated_at")
+      SELECT *
+      FROM (
+        VALUES
+          ('Gold Reward', 'Unlocked with Gold badge', 'GOLD'::"NiveauBadge", 'SVR', 'skincare', 'PERCENT'::"PromoDiscountType", 10, 'GLD', 14, true, CURRENT_TIMESTAMP),
+          ('Platinum Reward', 'Unlocked with Platinum badge', 'PLATINUM'::"NiveauBadge", 'La Roche-Posay', 'serum', 'PERCENT'::"PromoDiscountType", 15, 'PLT', 21, true, CURRENT_TIMESTAMP),
+          ('Ruby Master Reward', 'Unlocked with Ruby Master badge', 'RUBY_MASTER'::"NiveauBadge", 'CeraVe', 'moisturizer', 'PERCENT'::"PromoDiscountType", 20, 'RBY', 30, true, CURRENT_TIMESTAMP)
+      ) AS v("name", "description", "badge_level", "brand", "category", "discount_type", "discount_value", "code_prefix", "expires_in_days", "is_active", "updated_at")
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM "PromoCampaign" p
+        WHERE p."name" = v."name"
+          AND p."badge_level" = v."badge_level"
+      );
+    `);
+
     console.log('✅ Toutes les tables ont été créées avec succès!');
 
     // =========================
@@ -466,6 +579,12 @@ async function migrate() {
 
     // Badge: titre
     await addColumnIfMissing('Badge', `"titre" VARCHAR(255) NOT NULL DEFAULT 'Badge'`);
+
+    // LoginActivity: geolocation fields
+    await addColumnIfMissing('LoginActivity', '"location" VARCHAR(255)');
+    await addColumnIfMissing('LoginActivity', '"latitude" DOUBLE PRECISION');
+    await addColumnIfMissing('LoginActivity', '"longitude" DOUBLE PRECISION');
+    await prisma.$executeRawUnsafe('ALTER TABLE "LoginActivity" DROP COLUMN IF EXISTS "altitude";');
 
     // Routine: envie
     await addColumnIfMissing('Routine', '"envie" TEXT');

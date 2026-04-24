@@ -11,6 +11,8 @@ import { FAQSection } from "@/app/components/home_page/FAQSection"
 import { Footer } from "@/app/components/home_page/Footer"
 import HealthyStepsSection from "@/app/components/home_page/HealthyStepsSection"
 import DeepSkynExperienceMap from "@/app/components/home_page/DeepSkynExperienceMap"
+import SkinQuizSection from "@/app/components/home_page/SkinQuizSection"
+import SkinBarrierDefenderSection from "@/app/components/home_page/SkinBarrierDefenderSection"
 
 
 
@@ -62,6 +64,10 @@ export default function HomePage() {
       <HealthyStepsSection />
       </motion.section>
 
+      <motion.section id="skin-game" variants={fadeInUp}>
+        <SkinBarrierDefenderSection />
+      </motion.section>
+
       
       <motion.div variants={fadeInUp}>
         <PricingSection />
@@ -69,6 +75,10 @@ export default function HomePage() {
       
       <motion.section id="faq" variants={fadeInUp}>
         <FAQSection />
+      </motion.section>
+
+      <motion.section id="skin-quiz" variants={fadeInUp}>
+        <SkinQuizSection />
       </motion.section>
       
       <motion.div variants={fadeInUp}>

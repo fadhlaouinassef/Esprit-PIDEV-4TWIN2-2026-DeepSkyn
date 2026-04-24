@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import * as tf from "@tensorflow/tfjs";
+import * as path from "path";
+import * as fs from "fs";
 
 type AnalyzeImageBody = {
   image?: string;
@@ -25,14 +28,8 @@ type FacePlusPlusDetectResponse = {
       height?: number;
     };
     attributes?: {
-      headpose?: {
-        pitch_angle?: number;
-        yaw_angle?: number;
-        roll_angle?: number;
-      };
-      facequality?: {
-        value?: number;
-      };
+      headpose?: { pitch_angle?: number; yaw_angle?: number; roll_angle?: number };
+      facequality?: { value?: number };
       blur?: {
         blurness?: { value?: number; threshold?: number };
         motionblur?: { value?: number; threshold?: number };
@@ -45,313 +42,322 @@ type FacePlusPlusDetectResponse = {
 
 const FACEPP_API_KEY = process.env.FACEPP_API_KEY;
 const FACEPP_API_SECRET = process.env.FACEPP_API_SECRET;
-const FACEPP_DETECT_URL =
-  process.env.FACEPP_DETECT_URL || "https://api-us.faceplusplus.com/facepp/v3/detect";
-
+const FACEPP_DETECT_URL = process.env.FACEPP_DETECT_URL || "https://api-us.faceplusplus.com/facepp/v3/detect";
 const DATA_URL_RE = /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=\r\n]+$/i;
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+
+const MODEL_PATH = path.resolve(process.cwd(), "src/modele/chatbot/image-model/model.json");
+const CLASSES_PATH = path.resolve(process.cwd(), "src/modele/chatbot/image-model/classes.json");
+
+let loadedModel: tf.LayersModel | null = null;
+let modelClasses: string[] = [];
+
+async function getOrLoadModel() {
+  if (loadedModel) return loadedModel;
+
+  if (fs.existsSync(MODEL_PATH)) {
+    try {
+      const modelJson = JSON.parse(fs.readFileSync(MODEL_PATH, "utf8"));
+      const weightsPath = path.join(path.dirname(MODEL_PATH), "model.weights.bin");
+      const weightsBuffer = fs.readFileSync(weightsPath);
+
+      loadedModel = await tf.loadLayersModel(tf.io.fromMemory(
+        modelJson.modelTopology,
+        modelJson.weightsManifest[0].weights,
+        weightsBuffer.buffer as ArrayBuffer
+      ));
+
+      if (fs.existsSync(CLASSES_PATH)) {
+        const classesData = JSON.parse(fs.readFileSync(CLASSES_PATH, "utf8"));
+        modelClasses = classesData.classes;
+      }
+      console.log("[AI] DeepSkyn vision model loaded.");
+      return loadedModel;
+    } catch (err) {
+      console.error("[AI] Erreur de chargement du modèle:", err);
+    }
+  }
+  return null;
+}
 
 const toFinite = (value: unknown, fallback = 0): number => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const exceedsThreshold = (metric?: { value?: number; threshold?: number }): boolean => {
-  const value = Number(metric?.value);
-  const threshold = Number(metric?.threshold);
 
-  if (!Number.isFinite(value)) return false;
-  if (Number.isFinite(threshold)) return value > threshold;
-
-  return value > 50;
+type ConditionDetail = {
+  problem: string;
+  description: string;
+  severity: string;
+  rootCause: string;
+  routine: string[];
+  products: string[];
+  timeline: string;
 };
 
-const estimateBytesFromDataUrl = (dataUrl: string): number => {
-  const base64 = dataUrl.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "");
-  return Math.floor((base64.length * 3) / 4);
-};
-
-const clamp01 = (value: number): number => {
-  if (!Number.isFinite(value)) return 0;
-  if (value < 0) return 0;
-  if (value > 1) return 1;
-  return value;
-};
-
-const buildFallbackAnalysis = (question?: string) => {
-  const asked = String(question || "").trim();
-  const intro = asked
-    ? `Image question received: \"${asked}\".`
-    : "Image received without an additional question.";
-
-  return {
-    answer:
-      `${intro} Local simplified analysis is enabled. ` +
-      "Recommended skincare base: gentle cleanser, hydrating serum, barrier moisturizer, SPF 30+ every morning.",
-    confidence: 0.6,
-    intent: "image_analysis_fallback",
-    suggestions: [
-      "Re-upload a clear frontal image in natural light.",
-      "Add your skin type for a more precise recommendation.",
-      "Ask for a personalized AM/PM routine.",
+const SKIN_CONDITION_DATABASE: Record<string, ConditionDetail> = {
+  "acne": {
+    problem: "Acne & Blemishes",
+    description: "Presence of comedones, papules, or inflammatory pustules on the skin surface.",
+    severity: "Moderate (depends on lesion density)",
+    rootCause: "Excess sebum production, dead skin cell buildup, and bacterial proliferation (C. acnes).",
+    routine: [
+      "Cleanse with a gentle pH-balanced foaming gel",
+      "Apply a Salicylic Acid (BHA) serum on targeted areas",
+      "Moisturize with a lightweight non-comedogenic fluid",
+      "Protect with a mattifying SPF 30+ every morning"
     ],
-  };
+    products: [
+      "Salicylic Acid 2% (Lipophilic exfoliant)",
+      "Niacinamide 10% (Sebum regulator and anti-inflammatory)",
+      "Benzoyl Peroxide (Powerful antibacterial)"
+    ],
+    timeline: "4 to 8 weeks for visible reduction of lesions."
+  },
+  "blackheads": {
+    problem: "Blackheads (Open Comedones)",
+    description: "Pores clogged with sebum that oxidizes and darkens upon air exposure.",
+    severity: "Mild to Moderate",
+    rootCause: "Accumulation of sebum and keratin inside dilated hair follicles.",
+    routine: [
+      "Double cleanse every evening (cleansing oil + gel cleanser)",
+      "Regular chemical exfoliation with BHA",
+      "Weekly clay mask (white or green clay)",
+      "Apply lightweight water-based moisturizer"
+    ],
+    products: [
+      "Relipidating cleansing oil",
+      "Salicylic Acid (BHA) serum",
+      "Activated Charcoal mask"
+    ],
+    timeline: "2 to 4 weeks for noticeably cleaner skin."
+  },
+  "dark_spots": {
+    problem: "Dark Spots (Hyperpigmentation)",
+    description: "Areas of dark discoloration caused by excess melanin production in the skin.",
+    severity: "Varies with spot age and depth",
+    rootCause: "Repeated sun exposure, post-inflammatory scars, or melasma.",
+    routine: [
+      "Gentle brightening cleanser morning and evening",
+      "Apply concentrated Vitamin C serum in the morning",
+      "Targeted Alpha-Arbutin or Azelaic Acid treatment at night",
+      "Strict SPF 50+ sunscreen (reapply every 2 hours)"
+    ],
+    products: [
+      "Vitamin C 10–20% (Antioxidant and brightening agent)",
+      "Alpha-Arbutin 2% + Hyaluronic Acid",
+      "Broad-spectrum high-protection sunscreen"
+    ],
+    timeline: "3 to 6 months of consistent treatment."
+  },
+  "pores": {
+    problem: "Enlarged Pores",
+    description: "Visibly enlarged follicular openings, commonly in the T-zone area.",
+    severity: "Cosmetic (no health risk)",
+    rootCause: "Reduced skin elasticity or excessive sebum production.",
+    routine: [
+      "Rinse with cool water to help tighten pores",
+      "Apply Niacinamide serum to normalize pore appearance",
+      "Gentle chemical exfoliation (AHA / Lactic Acid)",
+      "Use a balancing, non-greasy moisturizer"
+    ],
+    products: [
+      "Niacinamide 10% + Zinc 1%",
+      "Glycolic Acid lotion",
+      "Retinol serum to improve overall skin texture"
+    ],
+    timeline: "4 to 6 weeks for refined skin texture."
+  },
+  "wrinkles": {
+    problem: "Wrinkles & Signs of Aging",
+    description: "Fine lines or deeper marks caused by structural weakening of the skin over time.",
+    severity: "Moderate to Pronounced",
+    rootCause: "Natural collagen reduction, oxidative stress, and UV damage.",
+    routine: [
+      "Cleanse with a rich balm or creamy milk cleanser",
+      "Apply a Peptide or Growth Factor serum",
+      "Use Retinol or Retinal treatment at night (start 2x per week)",
+      "Apply a rich barrier cream and daily sunscreen"
+    ],
+    products: [
+      "Pure Retinol or Bakuchiol (gentle alternative)",
+      "Multi-Peptide serum (Copper Peptides)",
+      "Multi-weight Hyaluronic Acid"
+    ],
+    timeline: "Immediate hydration; visible wrinkle improvement in 3 to 6 months."
+  },
+  "general": {
+    problem: "Skin Sensitivity or Fatigue",
+    description: "Reactive skin showing signs of dehydration or mild redness.",
+    severity: "Mild",
+    rootCause: "Weakened skin barrier, environmental stress, or fatigue.",
+    routine: [
+      "Ultra-gentle fragrance-free cleanser",
+      "Soothing serum with Centella Asiatica or Panthenol",
+      "Barrier-strengthening moisturizer (Ceramides)",
+      "Mineral SPF for daily protection"
+    ],
+    products: [
+      "Panthenol (B5) serum",
+      "Ceramides and Squalane cream",
+      "Soothing thermal water mist"
+    ],
+    timeline: "Noticeable soothing effect within a few days."
+  }
 };
 
-const buildLocalMetricsAnalysis = (
-  question: string | undefined,
-  metrics: AnalyzeImageBody["imageMetrics"]
-) => {
-  const asked = String(question || "").trim();
-  const intro = asked
-    ? `Image question received: \"${asked}\". `
-    : "Image received without an additional question. ";
-
-  const avgBrightness = toFinite(metrics?.avgBrightness, 0);
-  const contrast = toFinite(metrics?.contrast, 0);
+const identifyConditionFromMetrics = (metrics: AnalyzeImageBody["imageMetrics"]): string => {
   const redRatio = toFinite(metrics?.redRatio, 0);
-  const darkRatio = toFinite(metrics?.darkRatio, 0);
-  const highlightRatio = toFinite(metrics?.highlightRatio, 0);
-  const width = Math.round(toFinite(metrics?.width, 0));
-  const height = Math.round(toFinite(metrics?.height, 0));
+  const contrast = toFinite(metrics?.contrast, 0);
 
-  const lightAssessment =
-    avgBrightness < 85
-      ? "low brightness"
-      : avgBrightness > 170
-        ? "high brightness"
-        : "balanced brightness";
+  // PRIORITÉ RIDES (Peau Mature) : Si le contraste est élevé, c'est un signe fort de relief/rides
+  if (contrast > 40) return "wrinkles";
 
-  const contrastAssessment =
-    contrast < 35 ? "low contrast" : contrast > 65 ? "high contrast" : "medium contrast";
+  // ACNÉ : Si la rougeur est le signe dominant après avoir vérifié le relief
+  if (redRatio > 0.38) return "acne";
 
-  const rednessSignal =
-    redRatio > 0.355
-      ? "strong red dominance (possible visible irritation)"
-      : redRatio > 0.338
-        ? "slight red dominance"
-        : "moderate red dominance";
+  // Autres conditions
+  if (redRatio > 0.35 && contrast > 35) return "acne";
+  if (redRatio > 0.34 && contrast < 40) return "general";
+  if (contrast > 60) return "dark_spots";
 
-  const exposureSignal =
-    darkRatio > 0.4
-      ? "important dark areas"
-      : highlightRatio > 0.28
-        ? "important overexposed areas"
-        : "overall usable exposure";
-
-  const recommendations: string[] = [];
-
-  const rednessScore = clamp01((redRatio - 0.33) / 0.05);
-  const underExposureScore = clamp01((0.34 - avgBrightness) / 0.34);
-  const overExposureScore = clamp01((highlightRatio - 0.2) / 0.35);
-  const lowContrastScore = clamp01((30 - contrast) / 30);
-
-  const primaryIssue = [
-    {
-      key: "redness",
-      score: rednessScore,
-      advice:
-        "Prioritize a soothing routine: gentle cleanser, hydrating serum, barrier moisturizer, SPF 30+, and pause irritating actives.",
-    },
-    {
-      key: "underExposure",
-      score: underExposureScore,
-      advice: "Retake the photo in frontal natural light for more reliable skin reading.",
-    },
-    {
-      key: "overExposure",
-      score: overExposureScore,
-      advice: "Reduce direct light/flash to avoid overexposure in shiny areas.",
-    },
-    {
-      key: "lowContrast",
-      score: lowContrastScore,
-      advice: "Add a clear profile photo to better assess texture and relief.",
-    },
-  ].sort((a, b) => b.score - a.score)[0];
-
-  if (avgBrightness < 85) {
-    recommendations.push(
-      "Retake the photo with frontal natural light for a more reliable analysis."
-    );
-  }
-  if (highlightRatio > 0.28) {
-    recommendations.push(
-      "Avoid strong direct light or flash to reduce overexposure."
-    );
-  }
-  if (redRatio > 0.355) {
-    recommendations.push(
-      "Prioritize a soothing routine: gentle cleanser, hydrating serum, barrier moisturizer, SPF 30+."
-    );
-    recommendations.push(
-      "Temporarily reduce irritating actives (strong AHA/BHA, frequent retinoids)."
-    );
-  } else {
-    recommendations.push(
-      "Recommended base routine: gentle cleanser, hydrating serum, barrier moisturizer, daily SPF 30+."
-    );
-  }
-
-  if (contrast < 35) {
-    recommendations.push(
-      "Add a profile photo and a clear frontal photo to better assess texture and relief."
-    );
-  }
-
-  if (primaryIssue.score > 0.18) {
-    recommendations.unshift(primaryIssue.advice);
-  }
-
-  const answer =
-    `${intro}Local analysis completed (${width}x${height}). ` +
-    `Result: ${lightAssessment}, ${contrastAssessment}, ${rednessSignal}, ${exposureSignal}. ` +
-    `Scores: redness ${Math.round(rednessScore * 100)}%, under-exposure ${Math.round(underExposureScore * 100)}%, ` +
-    `over-exposure ${Math.round(overExposureScore * 100)}%, low-contrast ${Math.round(lowContrastScore * 100)}%. ` +
-    `Main advice: ${recommendations[0] || "continue a gentle and consistent routine."}`;
-
-  return {
-    answer,
-    confidence: 0.74,
-    intent: "image_analysis_local",
-    suggestions: recommendations.slice(0, 3),
-  };
+  return "general";
 };
 
-const analyzeWithFacePP = async (imageDataUrl: string, question?: string) => {
-  const base64Payload = imageDataUrl.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "");
+async function classifyImageWithAI(imageDataUrl: string): Promise<string | null> {
+  const model = await getOrLoadModel();
+  if (!model || modelClasses.length === 0) return null;
 
+  try {
+    const base64 = imageDataUrl.split(",")[1];
+    const buffer = Buffer.from(base64, "base64");
+
+    // Import Jimp 1.6+ style named export
+    const { Jimp } = await import("jimp");
+    const image = await Jimp.read(buffer as any);
+    image.resize({ w: 32, h: 32 });
+
+    const pixels = image.bitmap.data as Buffer;
+    const floatData = new Float32Array(32 * 32 * 3);
+    let i = 0;
+    for (let p = 0; p < pixels.length; p += 4) {
+      floatData[i++] = (pixels[p + 0] / 127.5) - 1;
+      floatData[i++] = (pixels[p + 1] / 127.5) - 1;
+      floatData[i++] = (pixels[p + 2] / 127.5) - 1;
+    }
+
+    return tf.tidy(() => {
+      const tensor = tf.tensor4d(floatData, [1, 32, 32, 3]);
+      const prediction = model.predict(tensor) as tf.Tensor;
+      const classId = prediction.argMax(-1).dataSync()[0];
+      return modelClasses[classId];
+    });
+  } catch (err) {
+    console.error("[AI] Classification error:", err);
+    return null;
+  }
+}
+
+const analyzeWithFacePP = async (imageDataUrl: string, _question?: string) => {
+  const base64Payload = imageDataUrl.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "");
   const formData = new FormData();
   formData.append("api_key", FACEPP_API_KEY || "");
   formData.append("api_secret", FACEPP_API_SECRET || "");
   formData.append("image_base64", base64Payload);
   formData.append("return_attributes", "headpose,blur,facequality");
 
-  const response = await fetch(FACEPP_DETECT_URL, {
-    method: "POST",
-    body: formData,
-    cache: "no-store",
-  });
+  const response = await fetch(FACEPP_DETECT_URL, { method: "POST", body: formData });
+  const payload = await response.json() as FacePlusPlusDetectResponse;
 
-  const payload = (await response.json().catch(() => ({}))) as FacePlusPlusDetectResponse;
+  if (!response.ok || payload.error_message) throw new Error(payload.error_message);
 
-  if (!response.ok || payload.error_message) {
-    throw new Error(payload.error_message || "Face++ request failed");
-  }
-
-  const faces = Array.isArray(payload.faces) ? payload.faces : [];
+  const faces = payload.faces || [];
   if (faces.length === 0) {
-    return {
-      answer:
-        "No face detected. Upload a frontal face photo, well lit, without filters, for a more precise analysis.",
-      confidence: 0.66,
-      intent: "image_no_face",
-      suggestions: [
-        "Frontal photo with full face visible",
-        "Natural light, without backlighting",
-        "Sharp image without blur",
-      ],
-    };
-  }
-
-  if (faces.length > 1) {
-    return {
-      answer:
-        "Multiple faces detected. Please upload an image with a single face for reliable skincare analysis.",
-      confidence: 0.72,
-      intent: "image_multiple_faces",
-      suggestions: [
-        "Crop the image to a single face",
-        "Avoid group photos",
-        "Keep the face centered",
-      ],
-    };
+    return { answer: "No face detected.", confidence: 0.6, intent: "image_no_face" };
   }
 
   const face = faces[0];
-  const headpose = face.attributes?.headpose;
-  const blur = face.attributes?.blur;
-
-  const yaw = Math.abs(toFinite(headpose?.yaw_angle));
-  const pitch = Math.abs(toFinite(headpose?.pitch_angle));
-  const roll = Math.abs(toFinite(headpose?.roll_angle));
   const faceQuality = toFinite(face.attributes?.facequality?.value, 50);
-
-  const blurry =
-    exceedsThreshold(blur?.blurness) ||
-    exceedsThreshold(blur?.motionblur) ||
-    exceedsThreshold(blur?.gaussianblur);
-
-  const orientationGood = yaw <= 28 && pitch <= 28 && roll <= 28;
-
-  const qualityLabel =
-    faceQuality >= 70 ? "good" : faceQuality >= 40 ? "medium" : "low";
-
-  const focusLabel = blurry ? "blurry" : "sharp";
-
-  const asked = String(question || "").trim();
-  const askedPrefix = asked ? `Question: \"${asked}\". ` : "";
-
-  const answer =
-    `${askedPrefix}Image analysis: quality ${qualityLabel}, sharpness ${focusLabel}, ` +
-    `${orientationGood ? "frontal face is acceptable" : "face orientation should be corrected"}. ` +
-    "Recommendation: gentle routine (non-aggressive cleanser, hydrating care, SPF 30+) and avoid irritating actives if sensitivity is visible.";
-
-  const suggestions = [
-    orientationGood ? "Frontal photo is OK" : "Retake a more frontal photo",
-    blurry ? "Retake a sharper photo" : "Sharpness is sufficient",
-    "Ask for a targeted routine (acne/spots/sensitivity)",
-  ];
+  const blurry = (face.attributes?.blur?.blurness?.value || 0) > (face.attributes?.blur?.blurness?.threshold || 50);
 
   return {
-    answer,
-    confidence: 0.83,
+    answer: "Face detected",
+    confidence: 0.85,
     intent: "image_analysis",
-    suggestions,
-    details: {
-      yaw,
-      pitch,
-      roll,
-      faceQuality,
-      blurry,
-      imageWidth: toFinite(payload.image_width),
-      imageHeight: toFinite(payload.image_height),
-    },
+    details: { faceQuality, focusLabel: blurry ? "floue" : "nette" }
   };
 };
 
 export async function POST(request: Request) {
-  let parsedBody: AnalyzeImageBody = {};
   try {
-    const body = (await request.json().catch(() => ({}))) as AnalyzeImageBody;
-    parsedBody = body;
-    const image = String(body.image || "");
+    const body = (await request.json()) as AnalyzeImageBody;
+    const image = body.image || "";
+    if (!image || !DATA_URL_RE.test(image)) return NextResponse.json({ error: "Image invalide" }, { status: 400 });
 
-    if (!image || !DATA_URL_RE.test(image)) {
-      return NextResponse.json(
-        { error: "Invalid image. Use an image data URL (png/jpeg/jpg/webp)." },
-        { status: 400 }
-      );
+    let facePPData: any = null;
+
+    if (FACEPP_API_KEY && FACEPP_API_SECRET) {
+      try {
+        const faceResult = await analyzeWithFacePP(image, body.question);
+        if (faceResult.intent === "image_analysis") {
+          facePPData = faceResult.details;
+        }
+      } catch (e) { console.error(e); }
     }
 
-    const byteLength = estimateBytesFromDataUrl(image);
-    if (byteLength > MAX_IMAGE_BYTES) {
-      return NextResponse.json(
-        { error: "Image is too large. Maximum is 8MB." },
-        { status: 400 }
-      );
-    }
+    const aiCondition = await classifyImageWithAI(image);
+    const metricCondition = identifyConditionFromMetrics(body.imageMetrics);
+    const conditionKey = aiCondition || metricCondition;
+    const condition = SKIN_CONDITION_DATABASE[conditionKey] || {
+      problem: "Sensibilité Générale",
+      consequence: "Fatigue cutanée passagère.",
+      recommendation: "• **Hydratation :** Sérum acide hyaluronique.\n• **Protection :** SPF 30+."
+    };
 
-    if (!FACEPP_API_KEY || !FACEPP_API_SECRET || FACEPP_API_KEY === FACEPP_API_SECRET) {
-      const localResult = buildLocalMetricsAnalysis(body.question, body.imageMetrics);
-      return NextResponse.json(localResult, { status: 200 });
-    }
 
-    const result = await analyzeWithFacePP(image, body.question);
-    return NextResponse.json(result, { status: 200 });
+    const answer =
+      `EXPERT DERMATOLOGICAL ANALYSIS\n` +
+      `______________________________________\n\n` +
+      `MAIN DIAGNOSIS\n\n` +
+      `${condition.problem}\n` +
+      `Severity: ${condition.severity}\n\n` +
+      `_______________________________________\n\n` +
+      `SYMPTOM DESCRIPTION\n\n` +
+      `${condition.description}\n\n` +
+      `_______________________________________\n\n` +
+      `ROOT CAUSE\n\n` +
+      `${condition.rootCause}\n\n` +
+      `_______________________________________\n\n` +
+      `STEP-BY-STEP SKINCARE ROUTINE\n\n` +
+      (condition.routine || []).map((step, idx) => `${idx + 1}. ${step}`).join('\n\n') + `\n\n` +
+      `_______________________________________\n\n` +
+      `RECOMMENDED ACTIVES & PRODUCTS\n\n` +
+      (condition.products || []).map(p => `- ${p}`).join('\n') + `\n\n` +
+      `_______________________________________\n\n` +
+      `RESULTS TIMELINE\n\n` +
+      `${condition.timeline}\n\n` +
+      `_______________________________________\n\n` +
+      `Note: This expert analysis is generated by DeepSkyn AI.`;
+
+
+
+    return NextResponse.json({
+      answer,
+      confidence: 0.95,
+      intent: "complete_skin_analysis",
+      skinAnalysis: {
+        problem: condition.problem,
+        severity: (condition as ConditionDetail).severity ?? "",
+        description: (condition as ConditionDetail).description ?? "",
+        rootCause: (condition as ConditionDetail).rootCause ?? "",
+        routine: (condition as ConditionDetail).routine ?? [],
+        products: (condition as ConditionDetail).products ?? [],
+        timeline: (condition as ConditionDetail).timeline ?? "",
+      },
+      details: { conditionDetected: conditionKey, ...facePPData }
+    }, { status: 200 });
+
   } catch (error) {
-    console.error("Chatbot image analysis error:", error);
-    const localResult = buildLocalMetricsAnalysis(parsedBody.question, parsedBody.imageMetrics);
-    return NextResponse.json(localResult, { status: 200 });
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }

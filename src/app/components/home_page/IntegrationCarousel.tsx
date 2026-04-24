@@ -1,118 +1,47 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
-type IntegrationApp = {
-  name: string
-  logo: string
+
+type PublicFeedback = {
+  id: number
+  nom: string
+  message: string
+  note: number
 }
+
 type IntegrationCarouselProps = {
   buttonText?: string
   buttonHref?: string
   title?: string
   subtitle?: string
-  topRowApps?: IntegrationApp[]
-  bottomRowApps?: IntegrationApp[]
 }
-const defaultTopRowApps: IntegrationApp[] = [
+
+const fallbackFeedbacks: PublicFeedback[] = [
   {
-    name: "Integration 1",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-389-Hc8XBOUI8vkVmIwWQZs33kxMF353Xj.png",
+    id: -1,
+    nom: "DeepSkyn User",
+    message: "Great experience with the analysis.",
+    note: 5,
   },
   {
-    name: "Integration 2",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-407-eyikTTM6ccO0f4I7ZmNk5LpFI4EKOG.png",
+    id: -2,
+    nom: "DeepSkyn User",
+    message: "Routine suggestions are very helpful.",
+    note: 5,
   },
   {
-    name: "Integration 3",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-379-5hDaxwIw4LzjwXzWuorEXi7ESrGYl1.png",
+    id: -3,
+    nom: "DeepSkyn User",
+    message: "Very practical recommendations.",
+    note: 4,
   },
   {
-    name: "Integration 4",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-374-bp0RaoVnQI1JMqR9fjessWI8v33kLV.png",
-  },
-  {
-    name: "Integration 5",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-381-eKw7vkCp2Wq9hivZJaN1ERJdjCqR0d.png",
-  },
-  {
-    name: "Integration 6",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-401-F6mjMLGEZt4HAohKA889Z8Gf5fMzIw.png",
-  },
-  {
-    name: "Integration 7",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-403-HnBAGFYWgxxMGrH2PI45UorQOsQHFo.png",
-  },
-  {
-    name: "Integration 1",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-389-Hc8XBOUI8vkVmIwWQZs33kxMF353Xj.png",
-  },
-  {
-    name: "Integration 2",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-407-eyikTTM6ccO0f4I7ZmNk5LpFI4EKOG.png",
-  },
-  {
-    name: "Integration 3",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-379-5hDaxwIw4LzjwXzWuorEXi7ESrGYl1.png",
-  },
-  {
-    name: "Integration 4",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-374-bp0RaoVnQI1JMqR9fjessWI8v33kLV.png",
-  },
-  {
-    name: "Integration 5",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-381-eKw7vkCp2Wq9hivZJaN1ERJdjCqR0d.png",
-  },
-]
-const defaultBottomRowApps: IntegrationApp[] = [
-  {
-    name: "Integration 6",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-401-F6mjMLGEZt4HAohKA889Z8Gf5fMzIw.png",
-  },
-  {
-    name: "Integration 7",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-403-HnBAGFYWgxxMGrH2PI45UorQOsQHFo.png",
-  },
-  {
-    name: "Integration 1",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-389-Hc8XBOUI8vkVmIwWQZs33kxMF353Xj.png",
-  },
-  {
-    name: "Integration 2",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-407-eyikTTM6ccO0f4I7ZmNk5LpFI4EKOG.png",
-  },
-  {
-    name: "Integration 3",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-379-5hDaxwIw4LzjwXzWuorEXi7ESrGYl1.png",
-  },
-  {
-    name: "Integration 4",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-374-bp0RaoVnQI1JMqR9fjessWI8v33kLV.png",
-  },
-  {
-    name: "Integration 5",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-381-eKw7vkCp2Wq9hivZJaN1ERJdjCqR0d.png",
-  },
-  {
-    name: "Integration 6",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-401-F6mjMLGEZt4HAohKA889Z8Gf5fMzIw.png",
-  },
-  {
-    name: "Integration 7",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-403-HnBAGFYWgxxMGrH2PI45UorQOsQHFo.png",
-  },
-  {
-    name: "Integration 1",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-389-Hc8XBOUI8vkVmIwWQZs33kxMF353Xj.png",
-  },
-  {
-    name: "Integration 2",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-407-eyikTTM6ccO0f4I7ZmNk5LpFI4EKOG.png",
-  },
-  {
-    name: "Integration 3",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logoipsum-379-5hDaxwIw4LzjwXzWuorEXi7ESrGYl1.png",
+    id: -4,
+    nom: "DeepSkyn User",
+    message: "The app is easy to use.",
+    note: 4,
   },
 ]
 
@@ -122,15 +51,42 @@ export const IntegrationCarousel = ({
   buttonHref = "#partners",
   title,
   subtitle,
-  topRowApps = defaultTopRowApps,
-  bottomRowApps = defaultBottomRowApps,
 }: IntegrationCarouselProps) => {
   const t = useTranslations()
+  const [feedbacks, setFeedbacks] = useState<PublicFeedback[]>([])
   const resolvedButtonText = buttonText ?? t("home.integrations.buttonText")
   const resolvedTitle = title ?? t("home.integrations.title")
   const resolvedSubtitle = subtitle ?? t("home.integrations.subtitle")
   const topRowRef = useRef<HTMLDivElement>(null)
   const bottomRowRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const loadFeedbacks = async () => {
+      try {
+        const response = await fetch("/api/user/feedback", { method: "GET" })
+        const data = await response.json().catch(() => ({}))
+        const rows = Array.isArray(data?.feedbacks) ? data.feedbacks : []
+        setFeedbacks(rows)
+      } catch {
+        setFeedbacks([])
+      }
+    }
+
+    loadFeedbacks()
+  }, [])
+
+  const { topRowFeedbacks, bottomRowFeedbacks } = useMemo(() => {
+    const sourceFeedbacks = feedbacks.length > 0 ? feedbacks : fallbackFeedbacks
+
+    const top = sourceFeedbacks.filter((_, index) => index % 2 === 0)
+    const bottom = sourceFeedbacks.filter((_, index) => index % 2 !== 0)
+
+    return {
+      topRowFeedbacks: top.length > 0 ? top : sourceFeedbacks,
+      bottomRowFeedbacks: bottom.length > 0 ? bottom : sourceFeedbacks,
+    }
+  }, [feedbacks])
+
   useEffect(() => {
     let topAnimationId: number
     let bottomAnimationId: number
@@ -230,17 +186,23 @@ export const IntegrationCarousel = ({
             willChange: "transform",
           }}
         >
-          {[...topRowApps, ...topRowApps].map((app, index) => (
+          {[...topRowFeedbacks, ...topRowFeedbacks].map((feedback, index) => (
             <div
-              key={`top-${index}`}
-              className="flex items-center justify-center w-24 h-24 rounded-3xl flex-shrink-0"
+              key={`top-feedback-${feedback.id}-${index}`}
+              className="w-72 h-24 rounded-3xl flex-shrink-0 p-3 flex flex-col justify-between"
               style={{
                 backgroundImage: "linear-gradient(rgb(255, 255, 255), rgb(252, 252, 252))",
                 boxShadow:
                   "rgba(0, 0, 0, 0.04) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 1px 1px 0px, rgba(0, 0, 0, 0.04) 0px 3px 3px -1.4px, rgba(0, 0, 0, 0.04) 0px 6px 6px -3px, rgba(0, 0, 0, 0.04) 0px 12px 12px -6px, rgba(0, 0, 0, 0.04) 0px 12px 12px -12px",
               }}
             >
-              <img src={app.logo || "/placeholder.svg"} alt={app.name} className="w-9 h-9 block object-contain" />
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-bold text-gray-900 truncate">{feedback.nom}</p>
+                <p className="text-xs font-bold text-amber-500">
+                  {"★".repeat(Math.max(1, Math.min(5, Number(feedback.note || 0))))}
+                </p>
+              </div>
+              <p className="text-xs text-gray-600 line-clamp-2">{feedback.message || "No message"}</p>
             </div>
           ))}
         </div>
@@ -266,17 +228,23 @@ export const IntegrationCarousel = ({
             willChange: "transform",
           }}
         >
-          {[...bottomRowApps, ...bottomRowApps].map((app, index) => (
+          {[...bottomRowFeedbacks, ...bottomRowFeedbacks].map((feedback, index) => (
             <div
-              key={`bottom-${index}`}
-              className="flex items-center justify-center w-24 h-24 rounded-3xl flex-shrink-0"
+              key={`bottom-feedback-${feedback.id}-${index}`}
+              className="w-72 h-24 rounded-3xl flex-shrink-0 p-3 flex flex-col justify-between"
               style={{
                 backgroundImage: "linear-gradient(rgb(255, 255, 255), rgb(252, 252, 252))",
                 boxShadow:
                   "rgba(0, 0, 0, 0.04) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 1px 1px 0px, rgba(0, 0, 0, 0.04) 0px 3px 3px -1.4px, rgba(0, 0, 0, 0.04) 0px 6px 6px -3px, rgba(0, 0, 0, 0.04) 0px 12px 12px -6px, rgba(0, 0, 0, 0.04) 0px 12px 12px -12px",
               }}
             >
-              <img src={app.logo || "/placeholder.svg"} alt={app.name} className="w-9 h-9 block object-contain" />
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-bold text-gray-900 truncate">{feedback.nom}</p>
+                <p className="text-xs font-bold text-amber-500">
+                  {"★".repeat(Math.max(1, Math.min(5, Number(feedback.note || 0))))}
+                </p>
+              </div>
+              <p className="text-xs text-gray-600 line-clamp-2">{feedback.message || "No message"}</p>
             </div>
           ))}
         </div>

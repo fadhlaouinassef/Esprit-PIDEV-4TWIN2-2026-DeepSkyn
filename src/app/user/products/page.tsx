@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { UserLayout } from "@/app/ui/UserLayout";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import {
   Search,
   Globe,
@@ -174,6 +175,7 @@ function OgImageFallback({ url, alt }: { url?: string; alt: string }) {
 /* ─────────────────────── Page ── */
 export default function ProductsPage() {
   const t = useTranslations();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("skincare");
   const [brand, setBrand] = useState("");
@@ -200,9 +202,17 @@ export default function ProductsPage() {
     }
   };
 
-  const handleSearch = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const trimmed = query.trim();
+  const runSearch = async (payload: {
+    query: string;
+    category: string;
+    brand: string;
+    site: string;
+    countryCode: string;
+    languageCode: string;
+    maxResults: number;
+    fromPrefill?: boolean;
+  }) => {
+    const trimmed = payload.query.trim();
     if (!trimmed) {
       toast.error(t("userProducts.toasts.enterQuery"));
       return;
@@ -214,7 +224,15 @@ export default function ProductsPage() {
       const res = await fetch("/api/scraping/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: trimmed, category, brand, site, countryCode, languageCode, maxResults }),
+        body: JSON.stringify({
+          query: trimmed,
+          category: payload.category,
+          brand: payload.brand,
+          site: payload.site,
+          countryCode: payload.countryCode,
+          languageCode: payload.languageCode,
+          maxResults: payload.maxResults,
+        }),
       });
       const data: SearchResponse = await res.json();
       if (!res.ok || data.error) {
@@ -222,13 +240,57 @@ export default function ProductsPage() {
         return;
       }
       setSearchData(data);
-      toast.success(t("userProducts.toasts.resultsFound", { total: data.totalResults, query: trimmed }));
+      if (!payload.fromPrefill) {
+        toast.success(t("userProducts.toasts.resultsFound", { total: data.totalResults, query: trimmed }));
+      }
     } catch (err: unknown) {
       toast.error((err as Error).message || t("userProducts.toasts.networkError"));
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSearch = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    await runSearch({
+      query,
+      category,
+      brand,
+      site,
+      countryCode,
+      languageCode,
+      maxResults,
+    });
+  };
+
+  useEffect(() => {
+    if (!searchParams) return;
+
+    const prefillQuery = String(searchParams.get("query") || "").trim();
+    if (!prefillQuery) return;
+
+    const prefillBrand = String(searchParams.get("brand") || "").trim();
+    const prefillCategory = String(searchParams.get("category") || "").trim();
+    const prefillSite = String(searchParams.get("site") || "").trim();
+
+    setQuery(prefillQuery);
+    if (prefillBrand) setBrand(prefillBrand);
+    if (prefillCategory) setCategory(prefillCategory);
+    if (prefillSite) setSite(prefillSite);
+
+    void runSearch({
+      query: prefillQuery,
+      category: prefillCategory || category,
+      brand: prefillBrand,
+      site: prefillSite || site,
+      countryCode,
+      languageCode,
+      maxResults,
+      fromPrefill: true,
+    });
+    // Run only when URL params change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleExampleClick = (example: string) => {
     setQuery(example);
@@ -557,7 +619,6 @@ export default function ProductsPage() {
                             /* eslint-disable-next-line @next/next/no-img-element */
                             <img
                               src={result.imageUrl}
-                              alt={result.title || "Product"}
                               alt={result.title || t("userProducts.results.productAlt")}
                               className="absolute inset-0 w-full h-full object-contain p-8 mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-500"
                             />

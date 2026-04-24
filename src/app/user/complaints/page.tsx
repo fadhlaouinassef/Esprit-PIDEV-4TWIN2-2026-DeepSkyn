@@ -20,7 +20,8 @@ import {
     FileText,
     AlertTriangle,
     Trash2,
-    Bell
+    Bell,
+    Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ComplaintCategory, ChatMessage } from "@/lib/complaintsData";
@@ -50,6 +51,13 @@ interface DBComplaint {
     evidence: { url: string }[];
 }
 
+interface PublicFeedback {
+    id: number;
+    nom: string;
+    message: string;
+    note: number;
+}
+
 export default function UserComplaintsPage() {
     const t = useTranslations();
     const [complaints, setComplaints] = useState<DBComplaint[]>([]);
@@ -66,6 +74,13 @@ export default function UserComplaintsPage() {
     const [isSending, setIsSending] = useState(false);
     const [speakingIndex, setSpeakingIndex] = useState<string | null>(null);
     const [autoSpeech, setAutoSpeech] = useState(false);
+    const [activeTab, setActiveTab] = useState<"complaints" | "feedback">("complaints");
+    const [feedbackRating, setFeedbackRating] = useState(5);
+    const [feedbackMessage, setFeedbackMessage] = useState("");
+    const [publishFeedback, setPublishFeedback] = useState(true);
+    const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+    const [feedbackSaved, setFeedbackSaved] = useState(false);
+    const [publicFeedbacks, setPublicFeedbacks] = useState<PublicFeedback[]>([]);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const chatEndRef = useRef<HTMLDivElement>(null);
@@ -129,6 +144,48 @@ export default function UserComplaintsPage() {
         } catch (error) {
             if (!silent) toast.error(t("userComplaints.toasts.fetchFailed"));
             setIsLoading(false);
+        }
+    };
+
+    const fetchPublicFeedbacks = async () => {
+        try {
+            const res = await axios.get('/api/user/feedback');
+            setPublicFeedbacks(Array.isArray(res.data?.feedbacks) ? res.data.feedbacks : []);
+        } catch (error) {
+            console.error("Failed to fetch feedbacks", error);
+        }
+    };
+
+    const submitFeedback = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (feedbackRating < 1 || feedbackRating > 5) {
+            toast.error("Please choose a rating between 1 and 5.");
+            return;
+        }
+        if (feedbackMessage.trim().length > 400) {
+            toast.error("Message must be 400 characters or less.");
+            return;
+        }
+
+        setFeedbackSubmitting(true);
+        setFeedbackSaved(false);
+        try {
+            const res = await axios.post('/api/user/feedback', {
+                rating: feedbackRating,
+                message: feedbackMessage.trim(),
+                publish: publishFeedback,
+            });
+
+            if (res.status >= 200 && res.status < 300) {
+                setFeedbackSaved(true);
+                setFeedbackMessage("");
+                fetchPublicFeedbacks();
+                setTimeout(() => setFeedbackSaved(false), 2500);
+            }
+        } catch (error: any) {
+            toast.error(error?.response?.data?.error || "Failed to save feedback.");
+        } finally {
+            setFeedbackSubmitting(false);
         }
     };
 
@@ -335,6 +392,12 @@ export default function UserComplaintsPage() {
         };
     }, []);
 
+    useEffect(() => {
+        if (activeTab === "feedback") {
+            fetchPublicFeedbacks();
+        }
+    }, [activeTab]);
+
     return (
         <UserLayout>
             {/* Background Decor */}
@@ -378,6 +441,35 @@ export default function UserComplaintsPage() {
                         )}
                     </div>
                 </div>
+
+                <div className="inline-flex rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 shadow-sm">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("complaints")}
+                        className={cn(
+                            "px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
+                            activeTab === "complaints"
+                                ? "bg-[#156d95] text-white"
+                                : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        )}
+                    >
+                        Complaints
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("feedback")}
+                        className={cn(
+                            "px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
+                            activeTab === "feedback"
+                                ? "bg-[#156d95] text-white"
+                                : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        )}
+                    >
+                        Feedback
+                    </button>
+                </div>
+
+                {activeTab === "complaints" ? (
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
                     {/* List Panel */}
@@ -708,6 +800,101 @@ export default function UserComplaintsPage() {
                         </AnimatePresence>
                     </div>
                 </div>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                        <div className="lg:col-span-6">
+                            <div className="bg-white dark:bg-gray-800 rounded-[2rem] border border-gray-100 dark:border-gray-700 p-6 md:p-8 shadow-2xl">
+                                <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Share your feedback</h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                                    Tell us how helpful your experience was.
+                                </p>
+
+                                <form onSubmit={submitFeedback} className="space-y-5">
+                                    <div>
+                                        <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3">Rating</label>
+                                        <div className="flex items-center gap-2">
+                                            {[1, 2, 3, 4, 5].map((value) => {
+                                                const active = value <= feedbackRating;
+                                                return (
+                                                    <button
+                                                        key={value}
+                                                        type="button"
+                                                        onClick={() => setFeedbackRating(value)}
+                                                        className={cn(
+                                                            "inline-flex size-10 items-center justify-center rounded-full border transition-all",
+                                                            active
+                                                                ? "border-amber-300 bg-amber-50 text-amber-500"
+                                                                : "border-gray-200 bg-white text-gray-300 hover:text-amber-400 dark:border-gray-700 dark:bg-gray-900"
+                                                        )}
+                                                    >
+                                                        <Star size={18} className={active ? "fill-current" : ""} />
+                                                    </button>
+                                                );
+                                            })}
+                                            <span className="ml-2 text-xs font-bold text-gray-500">{feedbackRating}/5</span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-3">Message (optional)</label>
+                                        <textarea
+                                            rows={4}
+                                            maxLength={400}
+                                            value={feedbackMessage}
+                                            onChange={(e) => setFeedbackMessage(e.target.value)}
+                                            placeholder="What did you like and what should be improved?"
+                                            className="w-full p-4 rounded-2xl border-none ring-1 ring-gray-200 dark:ring-gray-700 bg-gray-50 dark:bg-gray-900/50 focus:ring-2 focus:ring-primary outline-none transition-all resize-none"
+                                        />
+                                        <p className="mt-2 text-xs text-gray-400">{feedbackMessage.length}/400</p>
+                                    </div>
+
+                                    <label className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300">
+                                        <input
+                                            type="checkbox"
+                                            checked={publishFeedback}
+                                            onChange={(e) => setPublishFeedback(e.target.checked)}
+                                            className="size-4 rounded border-gray-300"
+                                        />
+                                        Allow display in public testimonials
+                                    </label>
+
+                                    <button
+                                        type="submit"
+                                        disabled={feedbackSubmitting}
+                                        className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[1.2rem] font-black uppercase tracking-widest transition-all disabled:opacity-50"
+                                    >
+                                        {feedbackSubmitting ? "Saving..." : feedbackSaved ? "Saved" : "Submit feedback"}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-6 space-y-4">
+                            <div className="bg-white dark:bg-gray-800 rounded-[2rem] border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+                                <h3 className="text-lg font-black text-gray-900 dark:text-white">Recent public feedback</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Visible feedback from users</p>
+                            </div>
+
+                            {publicFeedbacks.length === 0 ? (
+                                <div className="text-center py-12 bg-white/50 dark:bg-gray-800/50 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-gray-700">
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">No public feedback yet.</p>
+                                </div>
+                            ) : (
+                                publicFeedbacks.map((item) => (
+                                    <div key={item.id} className="bg-white dark:bg-gray-800 rounded-[2rem] border border-gray-100 dark:border-gray-700 p-5 shadow-sm">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <p className="text-sm font-black text-gray-900 dark:text-white">{item.nom}</p>
+                                            <span className="text-xs font-bold text-amber-500">{item.note}/5</span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                            {item.message || "(No written message)"}
+                                        </p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
         </UserLayout>
     );

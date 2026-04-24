@@ -143,7 +143,7 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-[32px] shadow-sm p-8 border border-gray-100 dark:border-gray-700 overflow-hidden">
-                        <RegionLabels data={stats?.donutData} />
+                        <RegionLabels data={stats?.countryMapData} />
                     </div>
                 </div>
             </div>

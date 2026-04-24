@@ -2,6 +2,8 @@ import { NiveauBadge, Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { findRoutinesByUserId } from '@/entities/Routine';
 import { findCompletionsForStepsAndDays } from '@/entities/RoutineStepCompletion';
+import { issuePromoCodeForBadge, getUserPromos, ensureRetroactivePromosForUser } from '@/services/promo.service';
+import { createNotification } from '@/services/notification.service';
 
 const toDayStringUTC = (date: Date) => date.toISOString().slice(0, 10);
 
@@ -126,12 +128,20 @@ export const evaluateBadgeRules = (metrics: BadgeRuleMetrics): RuleResult[] => [
 export const trackLoginActivity = async (
   userId: number,
   source: 'credentials' | 'google' | 'oauth' = 'credentials',
-  at: Date = new Date()
+  at: Date = new Date(),
+  geo?: {
+    location?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+  }
 ) => {
   const dayKey = toDayStringUTC(at);
+  const locationValue = geo?.location?.trim() || 'Unknown';
+  const latitude = geo?.latitude ?? null;
+  const longitude = geo?.longitude ?? null;
   await prisma.$executeRaw`
-    INSERT INTO "LoginActivity" ("user_id", "source", "day_key", "created_at")
-    VALUES (${userId}, ${source}, ${dayKey}, ${at});
+    INSERT INTO "LoginActivity" ("user_id", "source", "day_key", "created_at", "location", "latitude", "longitude")
+    VALUES (${userId}, ${source}, ${dayKey}, ${at}, ${locationValue}, ${latitude}, ${longitude});
   `;
 };
 
@@ -361,17 +371,45 @@ const awardBadgeIfMissing = async (data: {
   level: NiveauBadge;
   at: Date;
 }) => {
-  await prisma.$executeRaw`
-    INSERT INTO "Badge" ("user_id", "titre", "description", "niveau", "date")
-    SELECT ${data.userId}, ${data.title}, ${data.description}, ${data.level}::"NiveauBadge", ${data.at}
-    WHERE NOT EXISTS (
-      SELECT 1
-      FROM "Badge"
-      WHERE "user_id" = ${data.userId}
-        AND "titre" = ${data.title}
-        AND "niveau"::text = ${data.level}
-    );
-  `;
+  const existing = await prisma.badge.findFirst({
+    where: {
+      user_id: data.userId,
+      titre: data.title,
+      niveau: data.level,
+    },
+  });
+
+  if (existing) {
+    return { badge: existing, created: false };
+  }
+
+  try {
+    const created = await prisma.badge.create({
+      data: {
+        user_id: data.userId,
+        titre: data.title,
+        description: data.description,
+        niveau: data.level,
+        date: data.at,
+      },
+    });
+
+    return { badge: created, created: true };
+  } catch (error) {
+    const fallback = await prisma.badge.findFirst({
+      where: {
+        user_id: data.userId,
+        titre: data.title,
+        niveau: data.level,
+      },
+    });
+
+    if (fallback) {
+      return { badge: fallback, created: false };
+    }
+
+    throw error;
+  }
 };
 
 
@@ -385,15 +423,40 @@ export const evaluateAndAwardBadgesForUser = async (params: {
   const evaluations = evaluateBadgeRules(metrics);
 
   const earned = evaluations.filter((rule) => rule.earned);
+  const newlyCreatedBadges: Array<{ id: number; level: NiveauBadge; title: string }> = [];
+  const issuedPromoCodes: string[] = [];
+
   for (const rule of earned) {
     console.log(`[BadgeService] User ${params.userId} earned badge: ${rule.title} triggered by ${params.trigger}`);
-    await awardBadgeIfMissing({
+    const awarded = await awardBadgeIfMissing({
       userId: params.userId,
       title: rule.title,
       description: rule.description,
       level: rule.badgeLevel,
       at: now,
     });
+
+    if (awarded.created) {
+      newlyCreatedBadges.push({ id: awarded.badge.id, level: awarded.badge.niveau, title: awarded.badge.titre });
+
+      const promo = await issuePromoCodeForBadge({
+        userId: params.userId,
+        badgeId: awarded.badge.id,
+        badgeLevel: awarded.badge.niveau,
+        now,
+      });
+
+      if (promo) {
+        issuedPromoCodes.push(promo.code);
+        await createNotification({
+          userId: params.userId,
+          title: `Promo unlocked with ${awarded.badge.titre}`,
+          subTitle: `${promo.code} - ${promo.status}`,
+          type: 'promo',
+          message: 'You unlocked a brand promo code from your badge milestone.',
+        });
+      }
+    }
   }
 
   return {
@@ -401,12 +464,15 @@ export const evaluateAndAwardBadgesForUser = async (params: {
     metrics,
     evaluations,
     awardedLevels: earned.map((r) => r.badgeLevel),
+    newlyCreatedBadges,
+    issuedPromoCodes,
   };
 };
 
 export const getMotivationSummary = async (userId: number) => {
   console.log(`[BadgeService:getMotivationSummary] Start for user ${userId}`);
   const now = new Date();
+  await ensureRetroactivePromosForUser(userId);
   const metrics = await toMetrics(userId, now);
   console.log(`[BadgeService:getMotivationSummary] Metrics done for user ${userId}`);
   const historyRaw = await findBadgesByUserId(userId);
@@ -487,6 +553,11 @@ export const getMotivationSummary = async (userId: number) => {
   if (metrics.streakDays > 5) motivationMessage = `Incredible ${metrics.streakDays} day streak! You are a skin hero.`;
   if (metrics.netScoreImproveLast3 > 5) motivationMessage = "Your skin is clearly improving! The data doesn't lie.";
 
+  const promos = await getUserPromos(userId, now);
+  const activePromos = promos.filter((p) => p.status === 'ACTIVE');
+  const expiredPromos = promos.filter((p) => p.status === 'EXPIRED');
+  const usedPromos = promos.filter((p) => p.status === 'USED');
+
   return {
     currentBadge,
     nextBadge: nextLevel ? { level: nextLevel, progress: Math.max(0, progressToNext) } : null,
@@ -494,6 +565,10 @@ export const getMotivationSummary = async (userId: number) => {
     metrics,
     history,
     motivationMessage,
+    activePromos,
+    expiredPromos,
+    usedPromos,
+    lastUnlockedPromo: promos[0] ?? null,
     allRules: {
       "BRONZE": {
         title: 'Bronze Level',

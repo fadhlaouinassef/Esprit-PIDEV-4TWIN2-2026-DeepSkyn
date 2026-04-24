@@ -6,10 +6,11 @@ import { Menu, X } from "lucide-react"
 import { LoadingLink } from "../LoadingLink"
 import LanguageSwitcher from "../LanguageSwitcher"
 import { OPEN_DEEPSKYN_EXPERIENCE_MAP_EVENT } from "./DeepSkynExperienceMap"
+import { OPEN_SKIN_QUIZ_EVENT } from "./SkinQuizSection"
 import { useTranslations } from "next-intl"
 
 type NavLink = {
-  id: "products" | "routines" | "testimonials" | "faq" | "journey";
+  id: "products" | "routines" | "testimonials" | "faq" | "journey" | "game";
   href: string;
 };
 
@@ -24,11 +25,17 @@ export const PortfolioNavbar = () => {
     { id: "routines", href: "#healthy-steps" },
     { id: "testimonials", href: "#testimonials" },
     { id: "faq", href: "#faq" },
+    { id: "game", href: "#skin-game" },
     { id: "journey", href: "#healthy-steps" },
   ]
 
   const openExperienceMap = () => {
     window.dispatchEvent(new Event(OPEN_DEEPSKYN_EXPERIENCE_MAP_EVENT))
+    closeMobileMenu()
+  }
+
+  const openSkinQuiz = () => {
+    window.dispatchEvent(new Event(OPEN_SKIN_QUIZ_EVENT))
     closeMobileMenu()
   }
 
@@ -108,6 +115,13 @@ export const PortfolioNavbar = () => {
 
           <div className="hidden md:flex items-center space-x-6">
             <LanguageSwitcher />
+            <button
+              onClick={openSkinQuiz}
+              className="rounded-full border border-[#156d95]/35 px-4 py-2 text-sm font-semibold text-[#156d95] transition hover:bg-[#e6f4fb]"
+              style={{ fontFamily: "Satoshi" }}
+            >
+              Skin Test
+            </button>
             <button
               onClick={openExperienceMap}
               className="rounded-full border border-[#156d95]/35 px-4 py-2 text-sm font-semibold text-[#156d95] transition hover:bg-[#e6f4fb]"
@@ -190,6 +204,13 @@ export const PortfolioNavbar = () => {
                   <span>{t(`home.nav.${link.id}`)}</span>
                 </button>
               ))}
+              <button
+                onClick={openSkinQuiz}
+                className="block w-full rounded-xl border border-[#156d95]/30 px-4 py-3 text-left text-base font-medium text-[#156d95] transition-colors hover:bg-[#e6f4fb]"
+                style={{ fontFamily: "Satoshi, sans-serif", fontWeight: "500" }}
+              >
+                Skin Test
+              </button>
               <button
                 onClick={openExperienceMap}
                 className="block w-full rounded-xl border border-[#156d95]/30 px-4 py-3 text-left text-base font-medium text-[#156d95] transition-colors hover:bg-[#e6f4fb]"

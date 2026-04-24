@@ -1,0 +1,94 @@
+{
+  "generatedAt": "2026-04-20T14:26:55.372Z",
+  "runCount": 3,
+  "bestRun": 2,
+  "bestScore": 12.53,
+  "artifact": {
+    "epochs": 13,
+    "finalLoss": 0.3433710038661957,
+    "inputCols": 8,
+    "trainedAt": "2026-04-20T14:26:55.164Z"
+  },
+  "data": {
+    "users": 1,
+    "trainSeries": 1,
+    "valSeriesCount": 1,
+    "testSeriesCount": 1
+  },
+  "metrics": {
+    "temporalCv": {
+      "samples": 3,
+      "mae": 4.433333333333333,
+      "rmse": 4.858326186386966,
+      "directionAccuracy": 100
+    },
+    "strictTest": {
+      "samples": 7,
+      "mae": 4.857142857142856,
+      "rmse": 6.027081738761658,
+      "directionAccuracy": 42.857142857142854
+    }
+  },
+  "runs": [
+    {
+      "run": 1,
+      "trainedAt": "2026-04-20T14:26:54.990Z",
+      "finalLoss": 0.3459588587284088,
+      "epochs": 13,
+      "trainUsers": 1,
+      "trainSeries": 1,
+      "val": {
+        "samples": 7,
+        "mae": 11.671428571428569,
+        "rmse": 13.222329598070075,
+        "directionAccuracy": 28.57142857142857
+      },
+      "temporalCv": {
+        "samples": 3,
+        "mae": 3.733333333333339,
+        "rmse": 4.489988864128734,
+        "directionAccuracy": 100
+      }
+    },
+    {
+      "run": 2,
+      "trainedAt": "2026-04-20T14:26:55.164Z",
+      "finalLoss": 0.3433710038661957,
+      "epochs": 13,
+      "trainUsers": 1,
+      "trainSeries": 1,
+      "val": {
+        "samples": 7,
+        "mae": 11.2,
+        "rmse": 13.008788238286126,
+        "directionAccuracy": 42.857142857142854
+      },
+      "temporalCv": {
+        "samples": 3,
+        "mae": 4.433333333333333,
+        "rmse": 4.858326186386966,
+        "directionAccuracy": 100
+      }
+    },
+    {
+      "run": 3,
+      "trainedAt": "2026-04-20T14:26:55.302Z",
+      "finalLoss": 0.3470686078071594,
+      "epochs": 13,
+      "trainUsers": 1,
+      "trainSeries": 1,
+      "val": {
+        "samples": 7,
+        "mae": 11.214285714285712,
+        "rmse": 12.949407046546293,
+        "directionAccuracy": 28.57142857142857
+      },
+      "temporalCv": {
+        "samples": 3,
+        "mae": 4.733333333333334,
+        "rmse": 5.092478113191389,
+        "directionAccuracy": 66.66666666666666
+      }
+    }
+  ]
+}
