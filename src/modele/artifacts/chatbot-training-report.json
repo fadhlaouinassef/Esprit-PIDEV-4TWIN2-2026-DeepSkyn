@@ -1,5 +1,6 @@
 {
   "generatedAt": "2026-04-22T09:01:49.411Z",
+  "generatedAt": "2026-04-22T08:21:05.100Z",
   "summary": {
     "rawCount": 1372,
     "cleanedCount": 1372,
@@ -12,12 +13,17 @@
     "macroPrecision": 0.9832,
     "macroRecall": 0.9826,
     "macroF1": 0.9823,
+    "macroPrecision": 0.9839,
+    "macroRecall": 0.984,
+    "macroF1": 0.9834,
     "classes": [
       {
         "label": "product_recommendation",
         "precision": 1,
         "recall": 1,
         "f1": 1,
+        "recall": 0.9808,
+        "f1": 0.9903,
         "support": 52
       },
       {
@@ -25,6 +31,9 @@
         "precision": 0.8889,
         "recall": 1,
         "f1": 0.9412,
+        "precision": 0.9143,
+        "recall": 1,
+        "f1": 0.9552,
         "support": 32
       },
       {
@@ -32,6 +41,9 @@
         "precision": 1,
         "recall": 0.9375,
         "f1": 0.9677,
+        "precision": 0.9412,
+        "recall": 1,
+        "f1": 0.9697,
         "support": 32
       },
       {
@@ -81,7 +93,9 @@
       [
         52,
         0,
+        51,
         0,
+        1,
         0,
         0,
         0,
@@ -102,8 +116,10 @@
       ],
       [
         0,
-        2,
-        30,
+        32,
+        0,
+        0,
+        32,
         0,
         0,
         0,
@@ -113,6 +129,20 @@
       ],
       [
         0,
+        2,
+        30,
+        0,
+        0,
+        30,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
         1,
         0,
         30,
@@ -185,6 +215,7 @@
     "confusionHotspots": [
       {
         "actual": "ingredient_insight",
+        "actual": "brand_info",
         "predicted": "price_analysis",
         "count": 2
       },
@@ -196,11 +227,18 @@
       {
         "actual": "brand_info",
         "predicted": "dataset_facts",
+        "actual": "product_recommendation",
+        "predicted": "ingredient_insight",
         "count": 1
       },
       {
         "actual": "product_comparison",
         "predicted": "price_analysis",
+        "count": 1
+      },
+      {
+        "actual": "product_comparison",
+        "predicted": "ingredient_insight",
         "count": 1
       }
     ],
@@ -224,6 +262,7 @@
           "expected": "product_recommendation",
           "predicted": "product_recommendation",
           "confidence": 0.4359,
+          "confidence": 0.3113,
           "correct": true
         },
         {
@@ -231,6 +270,8 @@
           "expected": "brand_info",
           "predicted": "dataset_facts",
           "confidence": 0.3072,
+          "predicted": "price_analysis",
+          "confidence": 0.4898,
           "correct": false
         },
         {
@@ -252,13 +293,14 @@
           "expected": "price_analysis",
           "predicted": "product_recommendation",
           "confidence": 0.3479,
+          "confidence": 0.845,
           "correct": false
         },
         {
           "question": "give me routine for sensitive skin",
           "expected": "routine_advice",
           "predicted": "routine_advice",
-          "confidence": 0.9999,
+          "confidence": 0.9984,
           "correct": true
         },
         {
@@ -280,13 +322,14 @@
           "expected": "out_of_scope",
           "predicted": "out_of_scope",
           "confidence": 0.9961,
+          "confidence": 0.9992,
           "correct": true
         }
       ]
     }
   },
   "improvementLoop": {
-    "userFeedbackPath": "C:\\Projects\\deepskyn\\src\\modele\\datasets\\chatbot\\user_feedback_examples.json",
+    "userFeedbackPath": "C:\\Users\\HP\\Desktop\\ProjectPI\\DeepSkyn\\deepskyn\\src\\modele\\datasets\\chatbot\\user_feedback_examples.json",
     "loadedFeedbackExamples": 0
   }
 }
