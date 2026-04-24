@@ -21,6 +21,8 @@
     "ml:test-trend": "tsx scripts/ml/test-trend-model.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.91.0",
+    "@google/generative-ai": "^0.24.1",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.2",
     "@radix-ui/react-icons": "^1.3.2",

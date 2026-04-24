@@ -3,6 +3,13 @@
 import { useMemo, useRef, useState } from "react";
 import { Bot, ImagePlus, MessageCircle, SendHorizontal, Sparkles, X } from "lucide-react";
 
+type DetectedCondition = {
+  name: string;
+  severity: string;
+  zone: string;
+  description: string;
+};
+
 type SkinAnalysis = {
   problem: string;
   severity: string;
@@ -11,6 +18,10 @@ type SkinAnalysis = {
   routine: string[];
   products: string[];
   timeline: string;
+  skinType?: string;
+  overallScore?: number;
+  detectedConditions?: DetectedCondition[];
+  warnings?: string[];
 };
 
 type ChatMessage = {
@@ -353,7 +364,7 @@ export function FloatingChatbot() {
                         <div className="px-3 py-2">
                           <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Skincare Routine</p>
                           <ol className="space-y-1.5">
-                            {message.skinAnalysis.routine.map((step, i) => (
+                            {message.skinAnalysis.routine.slice(0, 4).map((step, i) => (
                               <li key={i} className="flex items-start gap-2 text-xs text-slate-700">
                                 <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-cyan-100 text-[10px] font-bold text-cyan-700">
                                   {i + 1}
@@ -367,7 +378,7 @@ export function FloatingChatbot() {
                         <div className="px-3 py-2">
                           <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Recommended Actives</p>
                           <ul className="space-y-1">
-                            {message.skinAnalysis.products.map((p, i) => (
+                            {message.skinAnalysis.products.slice(0, 3).map((p, i) => (
                               <li key={i} className="flex items-start gap-1.5 text-xs text-slate-700">
                                 <span className="mt-px flex-shrink-0 text-emerald-500">✓</span>
                                 {p}
@@ -377,7 +388,7 @@ export function FloatingChatbot() {
                         </div>
 
                         <div className="bg-amber-50 px-3 py-2">
-                          <p className="text-xs font-medium text-amber-700">⏱ {message.skinAnalysis.timeline}</p>
+                          <p className="text-xs font-medium text-amber-700">⏱ {message.skinAnalysis.timeline.split(".")[0]}.</p>
                         </div>
                       </div>
                     </div>

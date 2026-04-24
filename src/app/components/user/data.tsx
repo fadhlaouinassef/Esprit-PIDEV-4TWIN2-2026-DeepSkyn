@@ -107,7 +107,7 @@ export const USER_NAV_DATA = [
                 id: "helpCenter",
                 title: "Help Center",
                 icon: CircleHelp,
-                url: "/user/help center",
+                url: "/user/helpcenter",
                 items: []
             },
             {
