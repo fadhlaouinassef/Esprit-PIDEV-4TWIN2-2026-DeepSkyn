@@ -556,6 +556,7 @@ export default function QuestionnairePage() {
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [speakingIndex, setSpeakingIndex] = useState<number | string | null>(null);
     const [autoSpeech, setAutoSpeech] = useState(false);
+    const [analysisMode, setAnalysisMode] = useState<"questionnaire" | "photos-only">("questionnaire");
     const [analysisAccess, setAnalysisAccess] = useState<AnalysisAccess>({
         loading: true,
         isPremium: false,
@@ -756,6 +757,7 @@ export default function QuestionnairePage() {
                         finalScoreOverride: Number.isFinite(incomingScore) ? incomingScore : undefined,
                         finalRecommendationsOverride: parsedN8nRecommendations,
                         finalRoutineOverride: parsedN8nRoutine,
+                        mode: analysisMode === 'photos-only' ? 'images-only' : 'questionnaire',
                     })
                 });
 
@@ -1099,6 +1101,20 @@ export default function QuestionnairePage() {
             container.removeEventListener("wheel", onWheel);
         };
     }, [analysisResult]);
+
+    const handleSkipToPhotos = () => {
+        setAnalysisMode("photos-only");
+        setIsImageStep(true);
+        setCurrentQuestion(null);
+        setPendingFinalResult({ status: "complete" });
+
+        const skipMsg = t('skip.message') || "Direct analysis with photos. Add your images below.";
+        setMessages([{ role: "assistant", content: skipMsg }]);
+        
+        if (questionnaireContainerRef.current) {
+            questionnaireContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     const fetchNextStep = async (currentAnswers: { questionId: number; answer: string }[], lastAnswerData?: { questionId: number; answer: string }) => {
         setIsStreaming(true);
@@ -1564,9 +1580,20 @@ export default function QuestionnairePage() {
                             />
                         </div>
                         {!analysisResult && analysisAccess.canCreateAnalysis && (
-                            <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
-                                {t('header.questions', { count: answersSoFar.length + (currentQuestion ? 1 : 0) })}
-                            </span>
+                            <div className="flex items-center gap-2">
+                                {!isImageStep && (
+                                    <button
+                                        onClick={handleSkipToPhotos}
+                                        className="text-xs font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-1 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full"
+                                    >
+                                        <ChevronRight className="size-3" />
+                                        {t('skip.button')}
+                                    </button>
+                                )}
+                                <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
+                                    {t('header.questions', { count: answersSoFar.length + (currentQuestion ? 1 : 0) })}
+                                </span>
+                            </div>
                         )}
                     </div>
                     {!analysisResult && analysisAccess.canCreateAnalysis && (

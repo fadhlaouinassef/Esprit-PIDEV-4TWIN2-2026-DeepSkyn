@@ -4,7 +4,6 @@ import {
     Users,
     Settings,
     User,
-    Package,
     BarChart3,
     CreditCard,
     Sparkles,
@@ -104,13 +103,6 @@ export const NAV_DATA: NavSection[] = [
                 title: "Subscriptions",
                 url: "/admin/subscriptions",
                 icon: CreditCard,
-                items: [],
-            },
-            {
-                id: "models",
-                title: "Manage Models",
-                url: "/admin/models",
-                icon: Package,
                 items: [],
             },
 

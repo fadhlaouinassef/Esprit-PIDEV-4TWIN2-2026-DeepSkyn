@@ -164,14 +164,42 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    const fullHistory = request.nextUrl.searchParams.get("history") === "true";
+
     const pretrainedArtifact = await loadPretrainedTrendArtifact();
-    const insight = await analyzeUserTrendWithTensorflow(
-      points,
-      locale,
-      pretrainedArtifact
-        ? { pretrainedArtifact, disableTraining: true }
-        : { cacheKey: `user:${userId}` }
-    );
+    if (!pretrainedArtifact) {
+      return NextResponse.json(
+        { error: "Trend model is not available. Train and save the artifact first." },
+        { status: 503 }
+      );
+    }
+
+    if (fullHistory) {
+      // Calculate insights for每一 session starting from the 3rd one
+      const historyInsights = [];
+      const pointsReversed = [...points].reverse(); // from oldest to newest
+      
+      for (let i = 3; i <= pointsReversed.length; i++) {
+        const subPoints = pointsReversed.slice(0, i).reverse(); // back to newest-first for the function
+        const insight = await analyzeUserTrendWithTensorflow(subPoints, locale, {
+          pretrainedArtifact,
+          disableTraining: true,
+        });
+        if (insight) {
+          historyInsights.push({
+            date: pointsReversed[i-1].date,
+            score: pointsReversed[i-1].score,
+            ...insight
+          });
+        }
+      }
+      return NextResponse.json({ insights: historyInsights.reverse() }, { status: 200 });
+    }
+
+    const insight = await analyzeUserTrendWithTensorflow(points, locale, {
+      pretrainedArtifact,
+      disableTraining: true,
+    });
 
     if (!insight) {
       return NextResponse.json({ insight: null }, { status: 200 });
