@@ -1937,7 +1937,7 @@
       "remove": "Retirer",
       "continueWithout": "Continuer sans images",
       "analyzing": "Analyse en cours...",
-      "analyzeWithGemini": "Analyser avec Gemini",
+      "analyzeWithGemini": "Analyser",
       "title": "Ajouter des images pour Gemini"
     },
     "skip": {
