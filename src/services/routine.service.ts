@@ -2,8 +2,9 @@ import prisma from '@/lib/prisma';
 
 export const createRoutine = async (data: {
   user_id: number;
-  nom: string;
-  description?: string;
+  type: string;
+  objectif?: string;
+  envie?: string;
 }) => {
   return await prisma.routine.create({ data });
 };
@@ -30,7 +31,7 @@ export const findAllRoutines = async () => {
 
 export const updateRoutine = async (
   id: number,
-  data: { nom?: string; description?: string }
+  data: { type?: string; objectif?: string; envie?: string }
 ) => {
   return await prisma.routine.update({ where: { id }, data });
 };

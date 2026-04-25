@@ -66,10 +66,11 @@ const buildDateRange = (
   billingCycle: "monthly" | "yearly",
   subscription: Stripe.Subscription | null
 ): { dateDebut: Date; dateFin: Date } => {
-  if (subscription?.current_period_start && subscription?.current_period_end) {
+  const item = subscription?.items?.data?.[0];
+  if (item?.current_period_start && item?.current_period_end) {
     return {
-      dateDebut: new Date(subscription.current_period_start * 1000),
-      dateFin: new Date(subscription.current_period_end * 1000),
+      dateDebut: new Date(item.current_period_start * 1000),
+      dateFin: new Date(item.current_period_end * 1000),
     };
   }
 

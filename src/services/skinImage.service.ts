@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 
 export const createSkinImage = async (data: {
   analyse_id: number;
-  url: string;
+  image_url: string;
 }) => {
   return await prisma.skinImage.create({ data });
 };
@@ -23,7 +23,7 @@ export const findAllSkinImages = async () => {
 
 export const updateSkinImage = async (
   id: number,
-  data: { url?: string }
+  data: { image_url?: string }
 ) => {
   return await prisma.skinImage.update({ where: { id }, data });
 };

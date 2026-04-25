@@ -1,9 +1,9 @@
 import prisma from '@/lib/prisma';
 
 export const createIngredient = async (data: {
-  nom: string;
+  routine_step_id: number;
+  ingredient: string;
   description?: string;
-  bienfaits?: string;
 }) => {
   return await prisma.ingredient.create({ data });
 };
@@ -11,17 +11,17 @@ export const createIngredient = async (data: {
 export const findIngredientById = async (id: number) => {
   return await prisma.ingredient.findUnique({
     where: { id },
-    include: { conflicts: true },
+    include: { ingredientConflicts: true },
   });
 };
 
-export const findIngredientByName = async (nom: string) => {
-  return await prisma.ingredient.findUnique({ where: { nom } });
+export const findIngredientByName = async (ingredient: string) => {
+  return await prisma.ingredient.findFirst({ where: { ingredient } });
 };
 
 export const findAllIngredients = async () => {
   return await prisma.ingredient.findMany({
-    include: { conflicts: true },
+    include: { ingredientConflicts: true },
   });
 };
 
@@ -29,7 +29,7 @@ export const searchIngredients = async (searchTerm: string) => {
   return await prisma.ingredient.findMany({
     where: {
       OR: [
-        { nom: { contains: searchTerm, mode: 'insensitive' } },
+        { ingredient: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } },
       ],
     },
@@ -38,7 +38,7 @@ export const searchIngredients = async (searchTerm: string) => {
 
 export const updateIngredient = async (
   id: number,
-  data: { nom?: string; description?: string; bienfaits?: string }
+  data: { ingredient?: string; description?: string }
 ) => {
   return await prisma.ingredient.update({ where: { id }, data });
 };

@@ -1142,7 +1142,7 @@
       "updateFailed": "Failed to update.",
       "routineDeleted": "Routine deleted ✨",
       "deleteFailed": "Failed to delete routine",
-      "previousStepRequired": "Please validate the previous step first.",
+      "previousStepRequired": "Warning: This step cannot be validated until the previous one has been completed. Proceeding out of order may lead to skin care issues.",
       "validationRequired": "Validation Required",
       "gotIt": "Got it"
     },

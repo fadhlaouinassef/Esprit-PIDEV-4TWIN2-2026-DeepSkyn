@@ -182,18 +182,25 @@ const SequentialWarningModal = ({ isOpen, onClose, message }: { isOpen: boolean;
                     >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
                         <div className="relative flex flex-col items-center text-center">
-                            <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6">
-                                <AlertTriangle className="w-10 h-10 text-primary" />
+                            <div className="w-20 h-20 bg-amber-500/10 rounded-3xl flex items-center justify-center mb-6">
+                                <AlertTriangle className="w-10 h-10 text-amber-500" />
                             </div>
                             <h3 className="text-2xl font-black text-foreground mb-3 leading-tight">
                                 {t("userRoutines.toasts.validationRequired")}
                             </h3>
                             <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-                                {message}
+                                {message.split(':').length > 1 ? (
+                                    <>
+                                        <span className="text-amber-600 dark:text-amber-400 font-bold">{message.split(':')[0]}:</span>
+                                        {message.split(':').slice(1).join(':')}
+                                    </>
+                                ) : (
+                                    message
+                                )}
                             </p>
                             <button
                                 onClick={onClose}
-                                className="w-full py-4 bg-primary text-primary-foreground font-black rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95"
+                                className="w-full py-4 bg-amber-500 text-white font-black rounded-2xl hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 active:scale-95"
                             >
                                 {t("userRoutines.toasts.gotIt")}
                             </button>

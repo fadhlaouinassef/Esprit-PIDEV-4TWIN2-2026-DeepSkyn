@@ -171,7 +171,7 @@ export default function ProfilePage() {
 
             if (profile.skinAnalyses && profile.skinAnalyses.length > 0) {
                 const latest = profile.skinAnalyses[0];
-                fullText += t("userProfile.speech.latestScore", { score: latest.score, date: new Date(latest.date_creation).toLocaleDateString() });
+                fullText += t("userProfile.speech.latestScore", { score: latest.score ?? 0, date: new Date(latest.date_creation).toLocaleDateString() });
             }
 
             if (profile.badges && profile.badges.length > 0) {
