@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 export const createSurveyAnswer = async (data: {
   user_id: number;
   question_id: number;
+  quiz_id: number;
   reponse: string;
 }) => {
   return await prisma.surveyAnswer.create({ data });

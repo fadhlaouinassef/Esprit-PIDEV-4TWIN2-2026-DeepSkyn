@@ -2,46 +2,31 @@ import prisma from '@/lib/prisma';
 import { EtatFeedback } from '../entities/Enums';
 
 export const createFeedback = async (data: {
-  user_id: number;
-  contenu: string;
-  rating?: number;
+  nom: string;
+  message: string;
+  note: number;
   etat?: EtatFeedback;
 }) => {
   return await prisma.feedback.create({ data });
 };
 
 export const findFeedbackById = async (id: number) => {
-  return await prisma.feedback.findUnique({
-    where: { id },
-    include: { user: true },
-  });
-};
-
-export const findFeedbacksByUserId = async (userId: number) => {
-  return await prisma.feedback.findMany({
-    where: { user_id: userId },
-    orderBy: { date: 'desc' },
-  });
+  return await prisma.feedback.findUnique({ where: { id } });
 };
 
 export const findVisibleFeedbacks = async () => {
   return await prisma.feedback.findMany({
-    where: { etat: EtatFeedback.visible },
-    include: { user: true },
-    orderBy: { date: 'desc' },
+    where: { etat: EtatFeedback.VISIBLE },
   });
 };
 
 export const findAllFeedbacks = async () => {
-  return await prisma.feedback.findMany({
-    include: { user: true },
-    orderBy: { date: 'desc' },
-  });
+  return await prisma.feedback.findMany();
 };
 
 export const updateFeedback = async (
   id: number,
-  data: { contenu?: string; rating?: number; etat?: EtatFeedback }
+  data: { nom?: string; message?: string; note?: number; etat?: EtatFeedback }
 ) => {
   return await prisma.feedback.update({ where: { id }, data });
 };

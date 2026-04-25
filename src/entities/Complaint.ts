@@ -1,21 +1,21 @@
 import { EtatComplaint } from './Enums';
+import { ComplaintCategory } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 export class Complaint {
   id!: number;
   user_id!: number;
-  nom!: string;
-  message!: string;
-  image?: string;
-  etat!: EtatComplaint;
+  category!: ComplaintCategory;
+  content!: string;
+  status!: EtatComplaint;
+  created_at!: Date;
 }
 
 // Fonctions utilitaires pour Complaint
 export const createComplaint = async (data: {
   user_id: number;
-  nom: string;
-  message: string;
-  image?: string;
+  content: string;
+  category?: ComplaintCategory;
 }) => {
   return await prisma.complaint.create({ data });
 };
@@ -29,7 +29,7 @@ export const findComplaintsByUserId = async (user_id: number) => {
 };
 
 export const findComplaintsByEtat = async (etat: EtatComplaint) => {
-  return await prisma.complaint.findMany({ where: { etat } });
+  return await prisma.complaint.findMany({ where: { status: etat } });
 };
 
 export const findAllComplaints = async () => {
@@ -41,7 +41,7 @@ export const updateComplaint = async (id: number, data: Partial<Omit<Complaint, 
 };
 
 export const updateComplaintEtat = async (id: number, etat: EtatComplaint) => {
-  return await prisma.complaint.update({ where: { id }, data: { etat } });
+  return await prisma.complaint.update({ where: { id }, data: { status: etat } });
 };
 
 export const deleteComplaint = async (id: number) => {

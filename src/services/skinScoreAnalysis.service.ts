@@ -22,6 +22,9 @@ type AnalysisSnapshot = {
     immediate: string[];
     weekly: string[];
     avoid: string[];
+    detailedImmediate?: unknown[];
+    detailedWeekly?: unknown[];
+    detailedAvoid?: unknown[];
   };
   routine: {
     morning: string[];
@@ -41,6 +44,7 @@ type ComputeOptions = {
   finalScoreOverride?: number;
   finalRecommendationsOverride?: unknown;
   finalRoutineOverride?: unknown;
+  mode?: string;
 };
 
 const toStringList = (value: unknown): string[] =>
@@ -369,6 +373,7 @@ export const computeAndStoreSkinScoreAnalysis = async ({
   finalScoreOverride,
   finalRecommendationsOverride,
   finalRoutineOverride,
+  mode: _mode,
 }: ComputeOptions) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },

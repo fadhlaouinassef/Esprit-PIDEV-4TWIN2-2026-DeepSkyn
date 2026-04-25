@@ -3,8 +3,7 @@ import prisma from '@/lib/prisma';
 export const createRoutineStep = async (data: {
   routine_id: number;
   ordre: number;
-  description: string;
-  duree?: number;
+  action: string;
 }) => {
   return await prisma.routineStep.create({ data });
 };
@@ -28,7 +27,7 @@ export const findAllRoutineSteps = async () => {
 
 export const updateRoutineStep = async (
   id: number,
-  data: { ordre?: number; description?: string; duree?: number }
+  data: { ordre?: number; action?: string }
 ) => {
   return await prisma.routineStep.update({ where: { id }, data });
 };
