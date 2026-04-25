@@ -386,7 +386,7 @@ async function analyzeWithGemini(imageDataUrl: string): Promise<ConditionDetail 
   try {
     const { GoogleGenerativeAI } = await import("@google/generative-ai");
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const mediaTypeMatch = imageDataUrl.match(/^data:image\/(png|jpeg|jpg|webp)/);
     const rawType = mediaTypeMatch?.[1] ?? "jpeg";
