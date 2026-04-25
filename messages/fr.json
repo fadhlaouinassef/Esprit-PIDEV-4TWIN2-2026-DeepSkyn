@@ -1141,7 +1141,7 @@
       "updateFailed": "Échec de la mise à jour.",
       "routineDeleted": "Routine supprimée ✨",
       "deleteFailed": "Échec de suppression de la routine",
-      "previousStepRequired": "Veuillez valider l'étape précédente d'abord.",
+      "previousStepRequired": "Attention : Cette étape ne peut pas être validée tant que la précédente n'est pas terminée. Procéder dans le désordre peut entraîner des problèmes de soins de la peau.",
       "validationRequired": "Validation requise",
       "gotIt": "Compris"
     },
