@@ -22,6 +22,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ARG STRIPE_SECRET_KEY
+ENV STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
