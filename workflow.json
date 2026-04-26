@@ -184,7 +184,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer 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"
+              "value": "Bearer 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"
             },
             {
               "name": "Content-Type",
@@ -280,7 +280,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer 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"
+              "value": "Bearer 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"
             },
             {
               "name": "Content-Type",
