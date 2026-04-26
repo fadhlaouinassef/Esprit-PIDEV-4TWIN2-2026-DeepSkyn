@@ -6,6 +6,7 @@ import { Pool } from 'pg';
 const prismaClientSingleton = () => {
   const connectionString = process.env.DATABASE_URL;
 
+  
   if (connectionString) {
     // Utiliser la connection string (production ou avec DATABASE_URL)
     const pool = new Pool({ connectionString });
