@@ -6,6 +6,8 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 
 RUN npm install --legacy-peer-deps
 
@@ -42,7 +44,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
-
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/next.config.* ./
 
 EXPOSE 3000
